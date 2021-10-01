@@ -139,6 +139,17 @@ namespace Imgeneus.World.Game.Player
         public ushort SkillId => _dbItem.Range;
         public byte SkillLevel => _dbItem.AttackTime;
 
+        public ushort Reqlevel { get => _dbItem.Reqlevel; }
+
+        public ItemClassType ItemClassType { get => _dbItem.Country; }
+
+        public bool IsForFighter { get => _dbItem.Attackfighter == 1; }
+        public bool IsForDefender { get => _dbItem.Defensefighter == 1; }
+        public bool IsForRanger { get => _dbItem.Patrolrogue == 1; }
+        public bool IsForArcher { get => _dbItem.Shootrogue == 1; }
+        public bool IsForMage { get => _dbItem.Attackmage == 1; }
+        public bool IsForPriest { get => _dbItem.Defensemage == 1; }
+
         /// <summary>
         /// Str contains yellow(default) stat + orange stat (take it from craft name later).
         /// </summary>
@@ -580,7 +591,7 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Can be used in basic, ultimate etc. mode.
         /// </summary>
-        public byte Grow => _dbItem.Grow;
+        public Mode Grow => _dbItem.Grow;
 
         /// <summary>
         /// Defines "color" of item.
@@ -1052,6 +1063,16 @@ namespace Imgeneus.World.Game.Player
                     return 0;
             }
         }
+
+        public static Dictionary<byte, int> ReqIgToCooldownInMilliseconds = new Dictionary<byte, int>()
+        {
+            { 1, 15000 },
+            { 2, 20000 },
+            { 3, 25000 },
+            { 4, 30000 },
+            { 5, 60000 },
+            { 6, 120000 }
+        };
 
         #endregion
 

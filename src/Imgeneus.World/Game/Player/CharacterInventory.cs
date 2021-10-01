@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using MvvmHelpers;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Imgeneus.World.Game.Player
@@ -845,6 +846,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             item.Count--;
+            _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
             ApplyItemEffect(item);
             OnUsedItem?.Invoke(this, item);
 
@@ -1082,12 +1084,96 @@ namespace Imgeneus.World.Game.Player
                 Bless.Instance.DarkAmount += 500;
         }
 
+        private readonly Dictionary<byte, DateTime> _itemCooldowns = new Dictionary<byte, DateTime>();
+
         /// <summary>
         /// Checks if item can be used. E.g. cooldown is over, required level is right etc.
         /// </summary>
         private bool CanUseItem(Item item)
         {
-            // TODO: implement checks.
+            if (item.ReqIg != 0)
+            {
+                if (_itemCooldowns.ContainsKey(item.ReqIg) && Item.ReqIgToCooldownInMilliseconds.ContainsKey(item.ReqIg))
+                {
+                    if (DateTime.UtcNow.Subtract(_itemCooldowns[item.ReqIg]).TotalMilliseconds < Item.ReqIgToCooldownInMilliseconds[item.ReqIg])
+                        return false;
+                }
+            }
+
+            if (item.Reqlevel > Level)
+                return false;
+
+            if (Mode < item.Grow)
+                return false;
+
+            switch (item.ItemClassType)
+            {
+                case ItemClassType.Human:
+                    if (Race != Race.Human)
+                        return false;
+                    break;
+
+                case ItemClassType.Elf:
+                    if (Race != Race.Elf)
+                        return false;
+                    break;
+
+                case ItemClassType.AllLights:
+                    if (Country != Fraction.Light)
+                        return false;
+                    break;
+
+                case ItemClassType.Deatheater:
+                    if (Race != Race.DeathEater)
+                        return false;
+                    break;
+
+                case ItemClassType.Vail:
+                    if (Race != Race.Vail)
+                        return false;
+                    break;
+
+                case ItemClassType.AllFury:
+                    if (Country != Fraction.Dark)
+                        return false;
+                    break;
+            }
+
+            if (item.ItemClassType != ItemClassType.AllFactions)
+            {
+                switch (Class)
+                {
+                    case CharacterProfession.Fighter:
+                        if (!item.IsForFighter)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Defender:
+                        if (!item.IsForDefender)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Ranger:
+                        if (!item.IsForRanger)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Archer:
+                        if (!item.IsForArcher)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Mage:
+                        if (!item.IsForMage)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Priest:
+                        if (!item.IsForPriest)
+                            return false;
+                        break;
+                }
+            }
 
             switch (item.Special)
             {

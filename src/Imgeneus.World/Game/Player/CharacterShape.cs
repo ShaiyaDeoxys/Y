@@ -18,7 +18,7 @@ namespace Imgeneus.World.Game.Player
 
                 if (IsOnVehicle)
                 {
-                    var value1 = Mount.Grow >= 2 ? 15 : 14;
+                    var value1 = (byte)Mount.Grow >= 2 ? 15 : 14;
                     var value2 = Mount.Range < 2 ? Mount.Range * 2 : Mount.Range + 7;
                     var mountType = value1 + value2;
                     return (CharacterShapeEnum)mountType;

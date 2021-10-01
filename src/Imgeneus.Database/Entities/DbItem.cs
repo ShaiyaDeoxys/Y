@@ -38,10 +38,10 @@ namespace Imgeneus.Database.Entities
         public ushort Reqlevel { get; set; }
 
         /// <summary>
-        /// Fury, lights or both. TODO: maybe use enum here.
+        /// Fury, lights or both.
         /// </summary>
         [Required]
-        public byte Country { get; set; }
+        public ItemClassType Country { get; set; }
 
         /// <summary>
         /// Indicates if it can be used by Fighter. TODO: maybe migrate to bool.
@@ -80,10 +80,10 @@ namespace Imgeneus.Database.Entities
         public byte Defensemage { get; set; }
 
         /// <summary>
-        /// ?
+        /// Easy, normal, ultimate.
         /// </summary>
         [Required]
-        public byte Grow { get; set; }
+        public Mode Grow { get; set; }
 
         /// <summary>
         /// Required strength to use it.
