@@ -11,6 +11,7 @@ using Imgeneus.World.Game.Zone;
 using System.Collections.Generic;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Guild;
+using Imgeneus.Core.Extensions;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -1029,6 +1030,62 @@ namespace Imgeneus.World.Game.Player
             var etins = await _guildManager.ReturnEtin(this);
 
             _packetsHelper.SendEtinReturnResult(Client, etins);
+        }
+
+        private void HandleVehicleRequestPacket(int characterId)
+        {
+            if (!IsOnVehicle || Vehicle2CharacterID != 0)
+            {
+                SendVehicleResponse(VehicleResponse.Error);
+                return;
+            }
+
+            var player = Map.GetPlayer(characterId);
+            if (player is null || player.IsOnVehicle || player.Country != Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
+            {
+                SendVehicleResponse(VehicleResponse.Error);
+                return;
+            }
+
+            player.VehicleRequesterID = Id;
+            player.SendVehicleRequest(Id);
+        }
+
+        private void HandleVehicleResponsePacket(bool rejected)
+        {
+            if (IsOnVehicle)
+            {
+                return;
+            }
+
+            var player = Map.GetPlayer(VehicleRequesterID);
+            if (player is null || !player.IsOnVehicle || player.Vehicle2CharacterID != 0 || player.Country != Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
+            {
+                return;
+            }
+
+            if (rejected)
+            {
+                player.SendVehicleResponse(VehicleResponse.Rejected);
+            }
+            else
+            {
+                Vehicle2CharacterID = VehicleRequesterID;
+                VehicleRequesterID = 0;
+                IsOnVehicle = true;
+                player.SendVehicleResponse(VehicleResponse.Accepted);
+            }
+        }
+
+        private void HandleUseVehicle2Packet()
+        {
+            if (Vehicle2CharacterID == 0)
+            {
+                return;
+            }
+
+            Vehicle2CharacterID = 0;
+            IsOnVehicle = false;
         }
     }
 }

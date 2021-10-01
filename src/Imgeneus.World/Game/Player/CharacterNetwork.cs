@@ -1,4 +1,5 @@
-﻿using Imgeneus.Database.Constants;
+﻿using Imgeneus.Core.Extensions;
+using Imgeneus.Database.Constants;
 using Imgeneus.Network.Data;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
@@ -286,6 +287,18 @@ namespace Imgeneus.World.Game.Player
                         RemoveVehicle();
                     else
                         CallVehicle();
+                    break;
+
+                case VehicleRequestPacket vehicleRequestPacket:
+                    HandleVehicleRequestPacket(vehicleRequestPacket.CharacterId);
+                    break;
+
+                case VehicleResponsePacket vehicleResponsePacket:
+                    HandleVehicleResponsePacket(vehicleResponsePacket.Rejected);
+                    break;
+
+                case UseVehicle2Packet useVehicle2Packet:
+                    HandleUseVehicle2Packet();
                     break;
 
                 case GemAddPacket gemAddPacket:

@@ -79,6 +79,7 @@ namespace Imgeneus.World.Game.Player
         public void RemoveVehicle()
         {
             IsOnVehicle = false;
+            Vehicle2CharacterID = 0;
         }
 
         /// <summary>
@@ -94,5 +95,55 @@ namespace Imgeneus.World.Game.Player
             SendUseVehicle(true, true);
             IsOnVehicle = true;
         }
+
+        /// <summary>
+        /// Event, that is fired, when 2 vehicle character changes.
+        /// </summary>
+        public Action<Character, int> OnVehiclePassengerChanged;
+
+        private int _vehicle2CharacterID;
+
+        private Character _vehicleOwner;
+
+        /// <summary>
+        /// Id of player, that is vehicle owner (2 places mount).
+        /// </summary>
+        public int Vehicle2CharacterID
+        {
+            get => _vehicle2CharacterID;
+            set
+            {
+                if (_vehicle2CharacterID == value)
+                    return;
+
+                _vehicle2CharacterID = value;
+                OnVehiclePassengerChanged?.Invoke(this, _vehicle2CharacterID);
+
+                if (_vehicle2CharacterID == 0)
+                {
+                    _vehicleOwner.OnShapeChange -= VehicleOwner_OnShapeChange;
+                    _vehicleOwner = null;
+                }
+                else
+                {
+                    _vehicleOwner = _gameWorld.Players[_vehicle2CharacterID];
+                    _vehicleOwner.OnShapeChange += VehicleOwner_OnShapeChange;
+                }
+            }
+        }
+
+        private void VehicleOwner_OnShapeChange(Character sender)
+        {
+            if (!sender.IsOnVehicle)
+            {
+                Vehicle2CharacterID = 0;
+                IsOnVehicle = false;
+            }
+        }
+
+        /// <summary>
+        /// Id of player, who has sent vehicle request.
+        /// </summary>
+        public int VehicleRequesterID { get; set; }
     }
 }

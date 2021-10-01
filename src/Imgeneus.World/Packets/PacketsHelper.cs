@@ -207,6 +207,20 @@ namespace Imgeneus.World.Packets
             client.SendPacket(packet);
         }
 
+        internal void SendVehicleRequest(IWorldClient client, int requesterId)
+        {
+            using var packet = new Packet(PacketType.VEHICLE_REQUEST);
+            packet.Write(requesterId);
+            client.SendPacket(packet);
+        }
+
+        internal void SendVehicleResponse(IWorldClient client, VehicleResponse status)
+        {
+            using var packet = new Packet(PacketType.VEHICLE_RESPONSE);
+            packet.Write((byte)status);
+            client.SendPacket(packet);
+        }
+
         internal void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems)
         {
             using var packet = new Packet(PacketType.CHARACTER_SKILL_BAR);
@@ -518,6 +532,14 @@ namespace Imgeneus.World.Packets
             packet.Write(soldItem.TypeId);
             packet.Write(soldItem.Count);
             packet.Write(gold);
+            client.SendPacket(packet);
+        }
+
+        internal void VehiclePassengerChanged(IWorldClient client, int passengerId, int vehicleCharId)
+        {
+            using var packet = new Packet(PacketType.USE_VEHICLE_2);
+            packet.Write(passengerId);
+            packet.Write(vehicleCharId);
             client.SendPacket(packet);
         }
 
@@ -1176,10 +1198,7 @@ namespace Imgeneus.World.Packets
             packet1.Write(new CharacterMove(character).Serialize());
             client.SendPacket(packet1);
 
-            using var packet2 = new Packet(PacketType.CHARACTER_SHAPE_UPDATE);
-            packet2.Write(character.Id);
-            packet2.Write((byte)character.Shape);
-            client.SendPacket(packet2);
+            SendShapeUpdate(client, character);
         }
 
         internal void SendMobEnter(IWorldClient client, Mob mob, bool isNew)

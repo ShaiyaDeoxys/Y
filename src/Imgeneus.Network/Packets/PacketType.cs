@@ -46,6 +46,9 @@
 
         USE_VEHICLE = 0x0216, // 534
         USE_VEHICLE_READY = 0x0217, // 535
+        USE_VEHICLE_2 = 0x021C, // 540
+        VEHICLE_REQUEST = 0x021D, // 541
+        VEHICLE_RESPONSE = 0x021E, // 542
 
         // Map
         MAP_ADD_ITEM = 0x0401, // 1025

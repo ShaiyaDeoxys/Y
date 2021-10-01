@@ -215,6 +215,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnStartSummonVehicle += Character_OnStartSummonVehicle;
             character.OnLevelUp += Character_OnLevelUp;
             character.OnAdminLevelChange += Character_OnAdminLevelChange;
+            character.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
         }
 
         /// <summary>
@@ -244,6 +245,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
             character.OnLevelUp -= Character_OnLevelUp;
             character.OnAdminLevelChange -= Character_OnAdminLevelChange;
+            character.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
         }
 
         #region Character listeners
@@ -450,6 +452,15 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 _packetsHelper.SendLevelUp(player.Client, sender, true);
+        }
+
+        /// <summary>
+        /// Notifies other players that 2 character now move together on 1 vehicle.
+        /// </summary>
+        private void Character_OnVehiclePassengerChanged(Character sender, int vehicle2CharacterID)
+        {
+            foreach (var player in GetAllPlayers(true))
+                _packetsHelper.VehiclePassengerChanged(player.Client, sender.Id, vehicle2CharacterID);
         }
 
         #endregion

@@ -259,6 +259,8 @@ namespace Imgeneus.World.Game.Zone
 
             if (success)
             {
+                character.RemoveVehicle();
+
                 if (character.IsDead)
                 {
                     var rebirthMap = GetRebirthMap(character);
