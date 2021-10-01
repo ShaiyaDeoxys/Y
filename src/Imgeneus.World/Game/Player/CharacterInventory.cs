@@ -830,7 +830,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         /// <param name="bag">bag, where item is situated</param>
         /// <param name="slot">slot, where item is situated</param>
-        public void UseItem(byte bag, byte slot)
+        public void TryUseItem(byte bag, byte slot)
         {
             InventoryItems.TryGetValue((bag, slot), out var item);
             if (item is null)
@@ -1089,8 +1089,14 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Checks if item can be used. E.g. cooldown is over, required level is right etc.
         /// </summary>
-        private bool CanUseItem(Item item)
+        public bool CanUseItem(Item item)
         {
+            if (item.Special == SpecialEffect.None && item.HP == 0 && item.MP == 0 && item.SP == 0 && item.SkillId == 0)
+                return false;
+
+            if (item.Type == Item.GEM_ITEM_TYPE)
+                return true;
+
             if (item.ReqIg != 0)
             {
                 if (_itemCooldowns.ContainsKey(item.ReqIg) && Item.ReqIgToCooldownInMilliseconds.ContainsKey(item.ReqIg))

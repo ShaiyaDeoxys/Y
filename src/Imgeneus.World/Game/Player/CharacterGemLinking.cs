@@ -12,7 +12,7 @@ namespace Imgeneus.World.Game.Player
         public void AddGem(byte bag, byte slot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
         {
             InventoryItems.TryGetValue((bag, slot), out var gem);
-            if (gem is null || gem.Type != Gem.GEM_TYPE)
+            if (gem is null || gem.Type != Item.GEM_ITEM_TYPE)
                 return;
 
             var linkingGold = _linkingManager.GetGold(gem);
@@ -35,7 +35,7 @@ namespace Imgeneus.World.Game.Player
             {
                 saveItem = InventoryItems.Select(itm => itm.Value).FirstOrDefault(itm => itm.Special == SpecialEffect.LuckyCharm);
                 if (saveItem != null)
-                    UseItem(saveItem.Bag, saveItem.Slot);
+                    TryUseItem(saveItem.Bag, saveItem.Slot);
             }
 
             var result = _linkingManager.AddGem(item, gem, hammer, CalculateExtraRate());
@@ -56,7 +56,7 @@ namespace Imgeneus.World.Game.Player
                 _taskQueue.Enqueue(ActionType.UPDATE_GEM, Id, item.Bag, item.Slot, result.Slot, (int)gem.TypeId);
 
             if (hammer != null)
-                UseItem(hammer.Bag, hammer.Slot);
+                TryUseItem(hammer.Bag, hammer.Slot);
 
             _packetsHelper.SendAddGem(Client, result.Success, gem, item, result.Slot, Gold, saveItem, hammer);
 
@@ -195,7 +195,7 @@ namespace Imgeneus.World.Game.Player
 
                 InventoryItems.TryGetValue((hammerBag, hammerSlot), out var hammer);
                 if (hammer != null)
-                    UseItem(hammer.Bag, hammer.Slot);
+                    TryUseItem(hammer.Bag, hammer.Slot);
 
                 success = _linkingManager.RemoveGem(item, gem, hammer, CalculateExtraRate());
                 spentGold += _linkingManager.GetRemoveGold(gem);
@@ -203,7 +203,7 @@ namespace Imgeneus.World.Game.Player
                 if (success)
                 {
                     savedGems.Add(gem);
-                    var gemItem = new Item(_databasePreloader, Gem.GEM_TYPE, (byte)gem.TypeId);
+                    var gemItem = new Item(_databasePreloader, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                     AddItemToInventory(gemItem);
 
                     if (gemItem != null)
@@ -243,7 +243,7 @@ namespace Imgeneus.World.Game.Player
                     if (success)
                     {
                         savedGems.Add(gem);
-                        var gemItem = new Item(_databasePreloader, Gem.GEM_TYPE, (byte)gem.TypeId);
+                        var gemItem = new Item(_databasePreloader, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                         AddItemToInventory(gemItem);
 
                         if (gemItem != null)

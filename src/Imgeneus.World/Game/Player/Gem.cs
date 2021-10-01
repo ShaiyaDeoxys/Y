@@ -7,11 +7,6 @@ namespace Imgeneus.World.Game.Player
 {
     public class Gem
     {
-        /// <summary>
-        /// 30 type is always lapis.
-        /// </summary>
-        public const byte GEM_TYPE = 30;
-
         private readonly IDatabasePreloader _databasePreloader;
         private readonly DbItem _item;
 
@@ -23,7 +18,7 @@ namespace Imgeneus.World.Game.Player
             TypeId = typeId;
             Position = position;
 
-            _item = _databasePreloader.Items[(GEM_TYPE, (byte)TypeId)];
+            _item = _databasePreloader.Items[(Item.GEM_ITEM_TYPE, (byte)TypeId)];
         }
 
         /// <summary>

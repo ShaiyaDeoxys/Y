@@ -20,7 +20,7 @@ namespace Imgeneus.World.Tests.ItemTests
             character.MoveItem(1, 0, 0, 5);
 
             character.AddItemToInventory(new Item(databasePreloader.Object, Item_HealthRemedy_Level_1.Type, Item_HealthRemedy_Level_1.TypeId));
-            character.UseItem(1, 0);
+            character.TryUseItem(1, 0);
 
             Assert.NotEmpty(character.ActiveBuffs);
             Assert.Equal(Skill_HealthRemedy_Level1.AbilityValue1 + 100, character.MaxHP);
@@ -41,7 +41,7 @@ namespace Imgeneus.World.Tests.ItemTests
             character.MoveItem(1, 0, 0, 5);
 
             character.AddItemToInventory(new Item(databasePreloader.Object, Item_AbsorbRemedy.Type, Item_AbsorbRemedy.TypeId));
-            character.UseItem(1, 0);
+            character.TryUseItem(1, 0);
 
             Assert.Equal(20, character.Absorption);
 

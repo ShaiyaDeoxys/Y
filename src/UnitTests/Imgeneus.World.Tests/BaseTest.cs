@@ -163,6 +163,7 @@ namespace Imgeneus.World.Tests
                     { (30, 7), Gem_Str_Level_7 },
                     { (100, 1), EtainPotion },
                     { (25, 1), RedApple },
+                    { (25, 13), GreenApple },
                     { (42, 1), HorseSummonStone },
                     { (42, 136), Nimbus1d },
                     { (100, 95), Item_HealthRemedy_Level_1  },
@@ -503,7 +504,8 @@ namespace Imgeneus.World.Tests
             ItemName = "Perfect Linking Hammer",
             Special = SpecialEffect.PerfectLinkingHammer,
             Count = 255,
-            Quality = 0
+            Quality = 0,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem PerfectExtractingHammer = new DbItem()
@@ -513,7 +515,8 @@ namespace Imgeneus.World.Tests
             ItemName = "GM Extraction Hammer",
             Special = SpecialEffect.PerfectExtractionHammer,
             Count = 10,
-            Quality = 0
+            Quality = 0,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem LuckyCharm = new DbItem()
@@ -523,7 +526,8 @@ namespace Imgeneus.World.Tests
             ItemName = "Lucky Charm",
             Special = SpecialEffect.LuckyCharm,
             Count = 255,
-            Quality = 0
+            Quality = 0,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem JustiaArmor = new DbItem()
@@ -606,7 +610,8 @@ namespace Imgeneus.World.Tests
             ConstHP = 75,
             ConstMP = 75,
             ConstSP = 75,
-            Special = SpecialEffect.PercentHealingPotion
+            Special = SpecialEffect.PercentHealingPotion,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem RedApple = new DbItem()
@@ -614,7 +619,19 @@ namespace Imgeneus.World.Tests
             Type = 25,
             TypeId = 1,
             Special = SpecialEffect.None,
-            ConstHP = 50
+            ConstHP = 50,
+            ReqIg = 1,
+            Country = ItemClassType.AllFactions
+        };
+
+        protected DbItem GreenApple = new DbItem()
+        {
+            Type = 25,
+            TypeId = 13,
+            Special = SpecialEffect.None,
+            ConstMP = 50,
+            ReqIg = 1,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem HorseSummonStone = new DbItem()
@@ -635,7 +652,8 @@ namespace Imgeneus.World.Tests
             Type = 100,
             TypeId = 95,
             Range = 256,
-            AttackTime = 1
+            AttackTime = 1,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem Item_AbsorbRemedy = new DbItem()
@@ -643,7 +661,8 @@ namespace Imgeneus.World.Tests
             Type = 101,
             TypeId = 71,
             Range = 418,
-            AttackTime = 11
+            AttackTime = 11,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem Etin_100 = new DbItem()

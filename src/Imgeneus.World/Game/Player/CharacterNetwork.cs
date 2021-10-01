@@ -137,7 +137,7 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 case UseItemPacket useItemPacket:
-                    UseItem(useItemPacket.Bag, useItemPacket.Slot);
+                    TryUseItem(useItemPacket.Bag, useItemPacket.Slot);
                     break;
 
                 case ChatNormalPacket chatNormalPacket:

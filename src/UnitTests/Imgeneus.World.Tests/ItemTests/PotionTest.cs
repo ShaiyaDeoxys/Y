@@ -26,7 +26,7 @@ namespace Imgeneus.World.Tests.ItemTests
             Assert.Equal(10, character.CurrentHP);
 
             character.AddItemToInventory(new Item(databasePreloader.Object, EtainPotion.Type, EtainPotion.TypeId));
-            character.UseItem(1, 0);
+            character.TryUseItem(1, 0);
 
             Assert.Equal(85, character.CurrentHP);
             Assert.Equal(150, character.CurrentMP);
@@ -53,9 +53,30 @@ namespace Imgeneus.World.Tests.ItemTests
             Assert.Equal(10, character.CurrentHP);
 
             character.AddItemToInventory(new Item(databasePreloader.Object, RedApple.Type, RedApple.TypeId));
-            character.UseItem(1, 0);
+            character.TryUseItem(1, 0);
 
             Assert.Equal(60, character.CurrentHP);
+        }
+
+        [Fact]
+        [Description("Apple should have 15 sec cooldown. If red apple is used, green apple can not be use.")]
+        public void RedAndGreenAppleTest()
+        {
+            var character = CreateCharacter();
+
+            character.AddItemToInventory(new Item(databasePreloader.Object, RedApple.Type, RedApple.TypeId));
+            character.AddItemToInventory(new Item(databasePreloader.Object, GreenApple.Type, GreenApple.TypeId));
+
+            // Can use green apple
+            Assert.True(character.CanUseItem(character.InventoryItems[(1, 1)]));
+
+            // Used red apple.
+            character.TryUseItem(1, 0);
+            Assert.False(character.CanUseItem(character.InventoryItems[(1, 1)]));
+
+            // Green apple is still in inventory.
+            character.TryUseItem(1, 1);
+            Assert.NotNull(character.InventoryItems[(1, 1)]);
         }
     }
 }

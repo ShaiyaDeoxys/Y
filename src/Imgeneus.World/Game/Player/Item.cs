@@ -19,6 +19,11 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public const byte MONEY_ITEM_TYPE = 26;
 
+        /// <summary>
+        /// 30 type is always lapis.
+        /// </summary>
+        public const byte GEM_ITEM_TYPE = 30;
+
         public byte Bag;
         public byte Slot;
         public byte Type;
