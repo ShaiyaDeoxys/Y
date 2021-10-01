@@ -7,13 +7,12 @@ namespace Imgeneus.Network.Common
     {
         private bool disposedValue;
 
-        public bool IsDispose => disposedValue;
+        public bool IsDispose { get => disposedValue; }
 
         /// <summary>
         /// Gets the connection unique identifier.
         /// </summary>
         public Guid Id { get; set; }
-
 
         /// <summary>
         /// Gets the connection socket.

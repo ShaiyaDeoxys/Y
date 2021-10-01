@@ -42,6 +42,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public void ClearConnection()
         {
+            _client.OnPacketArrived -= Client_OnPacketArrived;
             _client = null;
         }
 

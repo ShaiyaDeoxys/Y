@@ -89,7 +89,11 @@ namespace Imgeneus.World.Game.Player
 
         private void SendRemoveBuff(ActiveBuff buff) => _packetsHelper.SendRemoveBuff(Client, buff);
 
-        private void SendSkillBar() => _packetsHelper.SendSkillBar(Client, QuickItems);
+        private void SendSkillBar()
+        {
+            _packetsHelper.SendSkillBar(Client, QuickItems);
+            Client.CryptoManager.UseExpandedKey = true; // Fix for encryption after selection screen.
+        }
 
         protected override void SendAdditionalStats()
         {

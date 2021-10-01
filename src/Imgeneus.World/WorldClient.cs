@@ -30,6 +30,11 @@ namespace Imgeneus.World
         /// </summary>
         public bool IsConnected => this.UserID != 0;
 
+        /// <summary>
+        /// Is character about to log off?
+        /// </summary>
+        public bool IsLoggingOff;
+
         /// <inheritdoc />
         public override event Action<ServerClient, IDeserializedPacket> OnPacketArrived;
 
@@ -96,6 +101,7 @@ namespace Imgeneus.World
         {
             { PacketType.GAME_HANDSHAKE, (s) => new HandshakePacket(s) },
             { PacketType.PING, (s) => new PingPacket(s) },
+            { PacketType.QUIT_GAME, (s) => new QuitGamePacket(s) },
             { PacketType.CASH_POINT, (s) => new CashPointPacket(s) },
             { PacketType.CHANGE_ENCRYPTION, (s) => new ChangeEncryptionPacket(s) },
             { PacketType.LOGOUT, (s) => new LogOutPacket(s) },

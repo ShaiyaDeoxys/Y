@@ -52,7 +52,7 @@ namespace Imgeneus.Network.Common
                 {
                     PacketData packet = this.sendingQueue.Take(this.cancellationToken);
 
-                    if (packet.Connection != null && packet.Data != null)
+                    if (packet.Connection != null && packet.Data != null && !packet.Connection.IsDispose)
                     {
                         this.SendPacket(packet);
                     }

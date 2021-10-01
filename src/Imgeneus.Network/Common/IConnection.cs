@@ -14,5 +14,10 @@ namespace Imgeneus.Network.Common
         /// Gets the connection socket.
         /// </summary>
         Socket Socket { get; }
+
+        /// <summary>
+        /// Already disposed?
+        /// </summary>
+        bool IsDispose { get; }
     }
 }

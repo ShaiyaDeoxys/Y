@@ -244,6 +244,10 @@ namespace Imgeneus.World.Game.Zone
                 character.OnPositionChanged += Character_OnPositionChanged;
                 _logger.LogDebug($"Player {character.Id} connected to map {Id}, cell index {character.CellId}.");
             }
+            else
+            {
+                _logger.LogError($"Failed to load player {character.Id} connected to map {Id}");
+            }
 
             return success;
         }

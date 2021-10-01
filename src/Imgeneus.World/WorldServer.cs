@@ -73,7 +73,7 @@ namespace Imgeneus.World
         }
 
         /// <inheritdoc />
-        protected override void OnClientDisconnected(WorldClient client)
+        protected async override void OnClientDisconnected(WorldClient client)
         {
             base.OnClientDisconnected(client);
 
@@ -81,7 +81,11 @@ namespace Imgeneus.World
             manager.Dispose();
             client.OnPacketArrived -= Client_OnPacketArrived;
 
-            _gameWorld.RemovePlayer(client.CharID);
+            if (_gameWorld.Players.ContainsKey(client.CharID))
+            {
+                await Task.Delay(1000 * 10);
+                _gameWorld.RemovePlayer(client.CharID);
+            }
         }
 
         /// <inheritdoc />
@@ -139,13 +143,23 @@ namespace Imgeneus.World
                 sender.SendPacket(dummyPacket);
             }
 
+            if (packet is MotionPacket)
+            {
+                (sender as WorldClient).IsLoggingOff = false;
+            }
+
             if (packet is LogOutPacket)
             {
+                var worldClient = sender as WorldClient;
+                worldClient.IsLoggingOff = true;
+
                 // TODO: For sure, here should be timer!
                 await Task.Delay(1000 * 10); // 10 seconds * 1000 milliseconds
 
-                if (sender.IsDispose)
+                if (sender.IsDispose || !worldClient.IsLoggingOff)
                     return;
+
+                _gameWorld.RemovePlayer(worldClient.CharID);
 
                 using var logoutPacket = new Packet(PacketType.LOGOUT);
                 sender.SendPacket(logoutPacket);
@@ -154,6 +168,23 @@ namespace Imgeneus.World
 
                 if (SelectionScreenManagers.ContainsKey(sender.Id))
                     SelectionScreenManagers[sender.Id].SendSelectionScrenInformation(((WorldClient)sender).UserID);
+            }
+
+            if (packet is QuitGamePacket)
+            {
+                var worldClient = sender as WorldClient;
+                worldClient.IsLoggingOff = true;
+
+                // TODO: For sure, here should be timer!
+                await Task.Delay(1000 * 10); // 10 seconds * 1000 milliseconds
+
+                if (sender.IsDispose || !worldClient.IsLoggingOff)
+                    return;
+
+                _gameWorld.RemovePlayer(worldClient.CharID);
+
+                using var logoutPacket = new Packet(PacketType.QUIT_GAME);
+                sender.SendPacket(logoutPacket);
             }
         }
 
