@@ -1,10 +1,8 @@
-﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Database.Constants;
+﻿using Imgeneus.Database.Constants;
 using Imgeneus.Network.Data;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.Network.Server;
-using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
@@ -85,6 +83,28 @@ namespace Imgeneus.World.Game.Player
 
                 case GMGetItemPacket gMGetItemPacket:
                     HandleGMGetItemPacket(gMGetItemPacket);
+                    break;
+
+                case GMCharacterOnPacket gMCharacterOnPacket:
+                    if (!IsAdmin)
+                        return;
+
+                    if (IsAdminStealth) // Already in admin stealth.
+                        _packetsHelper.SendGmCommandError(Client, PacketType.GM_CHAR_ON);
+
+                    IsAdminStealth = true;
+                    _packetsHelper.SendGmCommandSuccess(Client);
+                    break;
+
+                case GMCharacterOffPacket gMCharacterOffPacket:
+                    if (!IsAdmin)
+                        return;
+
+                    if (!IsAdminStealth) // Alredy not in stealth.
+                        _packetsHelper.SendGmCommandError(Client, PacketType.GM_CHAR_OFF);
+
+                    IsAdminStealth = false;
+                    _packetsHelper.SendGmCommandSuccess(Client);
                     break;
 
                 case SkillBarPacket skillBarPacket:

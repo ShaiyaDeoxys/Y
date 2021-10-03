@@ -193,7 +193,25 @@ namespace Imgeneus.World.Game.Player
                 SendRunMode(); // Do we need this in new eps?
                 InvokeAttackOrMoveChanged();
             }
-            get => _isStealth;
+            get => _isStealth || _isAdminStealth;
+        }
+
+        private bool _isAdminStealth = false;
+
+        public bool IsAdminStealth
+        {
+            protected set
+            {
+                if (!IsAdmin || _isAdminStealth == value)
+                    return;
+
+                _isAdminStealth = value;
+
+                OnShapeChange?.Invoke(this);
+                InvokeAttackOrMoveChanged();
+            }
+
+            get => _isAdminStealth;
         }
 
         #endregion
@@ -386,6 +404,7 @@ namespace Imgeneus.World.Game.Player
                 Victories = dbCharacter.Victories,
                 Defeats = dbCharacter.Defeats,
                 IsAdmin = dbCharacter.User.Authority == 0,
+                IsAdminStealth = dbCharacter.User.Authority == 0,
                 Country = dbCharacter.User.Faction,
                 Points = dbCharacter.User.Points,
                 GuildId = dbCharacter.GuildId

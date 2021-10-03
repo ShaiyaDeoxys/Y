@@ -384,7 +384,7 @@ namespace Imgeneus.World.Game.Monster
             var players = Map.Cells[CellId].GetPlayers(PosX, PosZ, _dbMob.ChaseRange, EnemyPlayersFraction);
 
             // No players, keep watching.
-            if (!players.Any())
+            if (!players.Any(x => !(x as Character).IsStealth))
             {
                 _watchTimer.Start();
                 return false;
@@ -533,14 +533,25 @@ namespace Imgeneus.World.Game.Monster
                 if (_target != null)
                 {
                     _target.OnDead -= Target_OnDead;
+                    (_target as Character).OnShapeChange -= Target_OnShapeChange;
                 }
                 _target = value;
 
                 if (_target != null)
                 {
                     _target.OnDead += Target_OnDead;
+                    (_target as Character).OnShapeChange += Target_OnShapeChange;
                 }
             }
+        }
+
+        /// <summary>
+        /// When target (player) goes into stealth or turns into a mob, mob returns to its' original place.
+        /// </summary>
+        private void Target_OnShapeChange(Character sender)
+        {
+            if (sender.IsStealth)
+                ClearTarget();
         }
 
         /// <summary>

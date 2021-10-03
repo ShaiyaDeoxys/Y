@@ -145,7 +145,8 @@ namespace Imgeneus.World.Tests
                     { (0, 2) , skill1_level2 },
                     { (418, 11), BlastAbsorbRedemySkill },
                     { (655, 1), Untouchable },
-                    { (724, 1), BullsEye }
+                    { (724, 1), BullsEye },
+                    { (63, 1), Stealth }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -471,6 +472,17 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             TargetType = TargetType.SelectedEnemy
+        };
+
+        protected DbSkill Stealth = new DbSkill()
+        {
+            SkillId = 63,
+            SkillLevel = 1,
+            SkillName = "Stealth Lvl1",
+            SuccessValue = 100,
+            TypeDetail = TypeDetail.Stealth,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            TargetType = TargetType.Caster
         };
 
         #endregion

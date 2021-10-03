@@ -126,6 +126,8 @@ namespace Imgeneus.World
             { PacketType.TARGET_MOB_GET_STATE, (s) => new TargetGetMobStatePacket(s) },
             { PacketType.GM_CREATE_MOB, (s) => new GMCreateMobPacket(s) },
             { PacketType.GM_COMMAND_GET_ITEM, (s) => new GMGetItemPacket(s) },
+            { PacketType.GM_CHAR_ON, (s) => new GMCharacterOnPacket(s) },
+            { PacketType.GM_CHAR_OFF, (s) => new GMCharacterOffPacket(s) },
             { PacketType.CHARACTER_SKILL_BAR, (s) => new SkillBarPacket(s) },
             { PacketType.CHARACTER_MOB_AUTO_ATTACK, (s) => new MobAutoAttackPacket(s) },
             { PacketType.CHARACTER_CHARACTER_AUTO_ATTACK, (s) => new CharacterAutoAttackPacket(s) },

@@ -1,4 +1,5 @@
 ﻿using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Player;
 using Xunit;
 
 namespace Imgeneus.World.Tests.MobTests
@@ -39,6 +40,21 @@ namespace Imgeneus.World.Tests.MobTests
 
             Assert.True(character.IsDead);
             Assert.Equal(MobState.BackToBirthPosition, mob.State);
+        }
+
+        [Fact]
+        public void MobWontSeePlayerInStealth()
+        {
+            var map = testMap;
+            var mob = new Mob(CrypticImmortal.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), map, mobLoggerMock.Object, databasePreloader.Object);
+
+            var character = CreateCharacter();
+            character.UsedStealthSkill(new Skill(Stealth, 0, 0), character);
+
+            map.LoadPlayer(character);
+            map.AddMob(mob);
+
+            Assert.False(mob.TryGetPlayer());
         }
     }
 }

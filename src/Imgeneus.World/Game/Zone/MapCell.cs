@@ -77,6 +77,10 @@ namespace Imgeneus.World.Game.Zone
                     // Notify new player, about already loaded player.
                     _packetsHelper.SendCharacterEnter(character.Client, player);
                 }
+                else // Original server sends this also to player himself, although I'm not sure if it's needed.
+                     // Added it as a fix for admin stealth.
+                    if (character.OldCellId == -1)
+                    _packetsHelper.SendCharacterEnter(character.Client, character);
 
             // Send update npcs.
             var oldCellNPCs = character.OldCellId != -1 ? Map.Cells[character.OldCellId].GetAllNPCs(true) : new List<Npc>();
