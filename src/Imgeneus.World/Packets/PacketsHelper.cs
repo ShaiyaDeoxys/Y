@@ -1198,6 +1198,8 @@ namespace Imgeneus.World.Packets
             packet1.Write(new CharacterMove(character).Serialize());
             client.SendPacket(packet1);
 
+            SendCharacterShape(client, character); // Fix for admin in stealth + dye.
+
             SendShapeUpdate(client, character);
         }
 
