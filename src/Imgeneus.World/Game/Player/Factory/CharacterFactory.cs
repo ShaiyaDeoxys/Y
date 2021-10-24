@@ -1,5 +1,4 @@
 ﻿using Imgeneus.Database;
-using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.World.Game.Chat;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 using Imgeneus.World.Game.Notice;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Player.Config;
 
 namespace Imgeneus.World.Game.Player
 {

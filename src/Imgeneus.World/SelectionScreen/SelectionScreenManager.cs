@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imgeneus.Core.Extensions;
+using Imgeneus.World.Game.Player.Config;
+using Imgeneus.Database.Preload;
 
 namespace Imgeneus.World.SelectionScreen
 {
@@ -39,13 +41,15 @@ namespace Imgeneus.World.SelectionScreen
         private readonly IGameWorld _gameWorld;
         private readonly ICharacterConfiguration _characterConfiguration;
         private readonly IDatabase _database;
+        private readonly IDatabasePreloader _databasePreloader;
 
-        public SelectionScreenManager(WorldClient client, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database)
+        public SelectionScreenManager(WorldClient client, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database, IDatabasePreloader databasePreloader)
         {
             _client = client;
             _gameWorld = gameWorld;
             _characterConfiguration = characterConfiguration;
             _database = database;
+            _databasePreloader = databasePreloader;
             _client.OnPacketArrived += Client_OnPacketArrived;
         }
 
@@ -156,10 +160,18 @@ namespace Imgeneus.World.SelectionScreen
             }
 
             var defaultStats = _characterConfiguration.DefaultStats.FirstOrDefault(s => s.Job == createCharacterPacket.Class);
-
             if (defaultStats is null)
             {
                 // Something went very wrong. No default stats for this job.
+                SendCreatedCharacter(false);
+                return;
+            }
+
+            var user = _database.Users.Find(_client.UserID);
+            var createConfig = _characterConfiguration.CreateConfigs.FirstOrDefault(p => p.Country == user.Faction && p.Job == createCharacterPacket.Class);
+            if (createConfig is null)
+            {
+                // Something went very wrong. No default position for this job.
                 SendCreatedCharacter(false);
                 return;
             }
@@ -189,15 +201,43 @@ namespace Imgeneus.World.SelectionScreen
                 Luck = defaultStats.Luc,
                 Level = 1,
                 Slot = freeSlot,
-                UserId = _client.UserID
+                UserId = _client.UserID,
+                Map = createConfig.MapId,
+                PosX = createConfig.X,
+                PosY = createConfig.Y,
+                PosZ = createConfig.Z,
+                HealthPoints = 1000,
+                ManaPoints = 1000,
+                StaminaPoints = 1000,
             };
 
-            await _database.Characters.AddAsync(character);
+            var result = await _database.Characters.AddAsync(character);
             if (await _database.SaveChangesAsync() > 0)
             {
+                for (byte i = 0; i < createConfig.StartItems.Length; i++)
+                {
+                    var itm = createConfig.StartItems[i];
+                    await _database.CharacterItems.AddAsync(new DbCharacterItems()
+                    {
+                        CharacterId = result.Entity.Id,
+                        Type = itm.Type,
+                        TypeId = itm.TypeId,
+                        Count = itm.Count,
+                        Quality = _databasePreloader.Items[(itm.Type, itm.TypeId)].Quality,
+                        Bag = 1,
+                        Slot = i
+                    });
+                }
+
+                await _database.SaveChangesAsync();
+
                 characters.Add(character);
                 SendCreatedCharacter(true);
                 SendCharacterList(characters);
+            }
+            else
+            {
+                SendCreatedCharacter(false);
             }
         }
 

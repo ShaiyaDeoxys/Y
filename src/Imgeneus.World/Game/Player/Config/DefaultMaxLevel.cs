@@ -1,6 +1,6 @@
 using Imgeneus.Database.Entities;
 
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Player.Config
 {
     public class DefaultMaxLevel
     {

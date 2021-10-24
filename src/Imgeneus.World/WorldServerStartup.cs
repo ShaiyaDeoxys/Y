@@ -12,6 +12,7 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Notice;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;

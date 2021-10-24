@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
+using Imgeneus.Database.Preload;
 using Imgeneus.World.Game;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Player.Config;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -20,7 +21,7 @@ namespace Imgeneus.World.SelectionScreen
             var scope = _provider.CreateScope();
             var scopedProvider = scope.ServiceProvider;
 
-            return new SelectionScreenManager(client, scopedProvider.GetService<IGameWorld>(), scopedProvider.GetService<ICharacterConfiguration>(), scopedProvider.GetService<IDatabase>());
+            return new SelectionScreenManager(client, scopedProvider.GetService<IGameWorld>(), scopedProvider.GetService<ICharacterConfiguration>(), scopedProvider.GetService<IDatabase>(), scopedProvider.GetService<IDatabasePreloader>());
         }
     }
 }

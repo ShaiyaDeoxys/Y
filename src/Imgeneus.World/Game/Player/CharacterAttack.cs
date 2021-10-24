@@ -123,7 +123,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void Attack(int skillNumber, IKillable target = null)
         {
-            if (IsStealth)
+            if (IsStealth && !IsAdminStealth)
             {
                 var stealthBuff = ActiveBuffs.FirstOrDefault(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
                 stealthBuff.CancelBuff();

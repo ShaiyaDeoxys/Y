@@ -2622,5 +2622,257 @@
       "StatPoint": 9,
       "SkillPoint": 5
     }
+  ],
+  "CreateConfigs": [
+    {
+      "Country": 0,
+      "Job": 0,
+      "MapId": 1,
+      "X": 580,
+      "Y": 78,
+      "Z": 1760,
+      "StartItems": [
+        {
+          "Type": 1,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 0,
+      "Job": 1,
+      "MapId": 1,
+      "X": 580,
+      "Y": 78,
+      "Z": 1760,
+      "StartItems": [
+        {
+          "Type": 1,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 19,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 0,
+      "Job": 2,
+      "MapId": 1,
+      "X": 580,
+      "Y": 78,
+      "Z": 1760,
+      "StartItems": [
+        {
+          "Type": 15,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 0,
+      "Job": 3,
+      "MapId": 1,
+      "X": 580,
+      "Y": 78,
+      "Z": 1760,
+      "StartItems": [
+        {
+          "Type": 13,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 0,
+      "Job": 4,
+      "MapId": 1,
+      "X": 580,
+      "Y": 78,
+      "Z": 1760,
+      "StartItems": [
+        {
+          "Type": 12,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 0,
+      "Job": 5,
+      "MapId": 1,
+      "X": 580,
+      "Y": 78,
+      "Z": 1760,
+      "StartItems": [
+        {
+          "Type": 12,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 1,
+      "Job": 0,
+      "MapId": 2,
+      "X": 265,
+      "Y": 108,
+      "Z": 205,
+      "StartItems": [
+        {
+          "Type": 3,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 1,
+      "Job": 1,
+      "MapId": 2,
+      "X": 265,
+      "Y": 108,
+      "Z": 205,
+      "StartItems": [
+        {
+          "Type": 3,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 34,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 1,
+      "Job": 2,
+      "MapId": 2,
+      "X": 265,
+      "Y": 108,
+      "Z": 205,
+      "StartItems": [
+        {
+          "Type": 15,
+          "TypeId": 1,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 1,
+      "Job": 3,
+      "MapId": 2,
+      "X": 265,
+      "Y": 108,
+      "Z": 205,
+      "StartItems": [
+        {
+          "Type": 13,
+          "TypeId": 6,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 1,
+      "Job": 4,
+      "MapId": 2,
+      "X": 265,
+      "Y": 108,
+      "Z": 205,
+      "StartItems": [
+        {
+          "Type": 12,
+          "TypeId": 6,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    },
+    {
+      "Country": 1,
+      "Job": 5,
+      "MapId": 2,
+      "X": 265,
+      "Y": 108,
+      "Z": 205,
+      "StartItems": [
+        {
+          "Type": 12,
+          "TypeId": 6,
+          "Count": 1
+        },
+        {
+          "Type": 25,
+          "TypeId": 1,
+          "Count": 10
+        }
+      ]
+    }
   ]
 }

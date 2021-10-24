@@ -20,6 +20,7 @@ using Imgeneus.World.Game.Guild;
 using Imgeneus.Database;
 using Imgeneus.World.Game.Time;
 using System.Collections.Concurrent;
+using Imgeneus.World.Game.Player.Config;
 
 namespace Imgeneus.World.Tests
 {

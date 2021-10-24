@@ -22,6 +22,7 @@ using Imgeneus.World.Game.Notice;
 using Imgeneus.World.Game.Zone.MapConfig;
 using System.Collections.Concurrent;
 using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Player.Config;
 
 namespace Imgeneus.World.Game.Player
 {

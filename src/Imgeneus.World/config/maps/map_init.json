@@ -17,6 +17,14 @@
       "NoneWeatherDuration": 60
     },
     {
+      "MapId": 2,
+      "MapType": "Field",
+      "WeatherState": "Rain",
+      "WeatherPower": "Hard",
+      "WeatherDuration": 30,
+      "NoneWeatherDuration": 60
+    },
+    {
       "MapId": 5,
       "MapType": "Dungeon",
       "CreateType": "Party",
