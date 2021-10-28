@@ -480,7 +480,7 @@ namespace Imgeneus.World.Game.Monster
         {
             get
             {
-                return MathExtensions.Distance(PosX, StartPosX, PosZ, StartPosZ) > _dbMob.ChaseRange * 4;
+                return MathExtensions.Distance(PosX, StartPosX, PosZ, StartPosZ) > _dbMob.ChaseRange + 30;
             }
         }
 
