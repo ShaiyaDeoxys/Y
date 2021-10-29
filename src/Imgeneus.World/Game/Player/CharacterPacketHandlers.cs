@@ -633,7 +633,11 @@ namespace Imgeneus.World.Game.Player
         {
             if (!_databasePreloader.Mobs.ContainsKey(gmCreateMobPacket.MobId))
             {
+#if SHAIYA_US
+                _packetsHelper.SendGmCommandError(Client, PacketType.GM_SHAIYA_US_CREATE_MOB);
+#else
                 _packetsHelper.SendGmCommandError(Client, PacketType.GM_CREATE_MOB);
+#endif
                 return;
             }
 

@@ -1481,7 +1481,12 @@ namespace Imgeneus.World.Packets
 
         internal void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue)
         {
+#if SHAIYA_US
+            using var packet = new Packet(PacketType.GM_SHAIYA_US_ATTRIBUTE_SET);
+#else
             using var packet = new Packet(PacketType.CHARACTER_ATTRIBUTE_SET);
+#endif
+
             packet.Write(new CharacterAttribute(attribute, attributeValue).Serialize());
             client.SendPacket(packet);
         }
