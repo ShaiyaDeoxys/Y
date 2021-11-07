@@ -160,6 +160,10 @@ namespace Imgeneus.World.Game.Player
                     TryUseItem(useItemPacket.Bag, useItemPacket.Slot);
                     break;
 
+                case UseItem2Packet useItem2Packet:
+                    TryUseItem(useItem2Packet.Bag, useItem2Packet.Slot, useItem2Packet.TargetId);
+                    break;
+
                 case ChatNormalPacket chatNormalPacket:
                     _chatManager.SendMessage(this, Chat.MessageType.Normal, chatNormalPacket.Message);
                     break;

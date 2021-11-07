@@ -61,12 +61,12 @@ namespace Imgeneus.World.Game
         void RemovePlayer(int characterId);
 
         /// <summary>
-        /// Checks, if player can be teleported with this portal. I.e. checks level, money, if map is open etc.
+        /// Checks, if player can be teleported to map.
         /// </summary>
         /// <param name="player">player to teleport</param>
-        /// <param name="portalIndex">portal index</param>
+        /// <param name="mapId">map index</param>
         /// <param name="reason">optional out param, that indicates the reason why teleport is not allowed for this character</param>
         /// <returns>true, if it can teleport</returns>
-        bool CanTeleport(Character player, byte portalIndex, out PortalTeleportNotAllowedReason reason);
+        bool CanTeleport(Character player, ushort mapId, out PortalTeleportNotAllowedReason reason);
     }
 }

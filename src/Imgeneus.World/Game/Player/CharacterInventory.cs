@@ -830,7 +830,8 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         /// <param name="bag">bag, where item is situated</param>
         /// <param name="slot">slot, where item is situated</param>
-        public void TryUseItem(byte bag, byte slot)
+        /// <param name="targetId">id of another player</param>
+        public void TryUseItem(byte bag, byte slot, int? targetId = null)
         {
             InventoryItems.TryGetValue((bag, slot), out var item);
             if (item is null)
@@ -845,9 +846,18 @@ namespace Imgeneus.World.Game.Player
                 return;
             }
 
+            if (targetId != null)
+            {
+                if (!CanUseItemOnTarget(item, (int)targetId))
+                {
+                    _packetsHelper.SendCanNotUseItem(Client, Id);
+                    return;
+                }
+            }
+
             item.Count--;
             _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
-            ApplyItemEffect(item);
+            ApplyItemEffect(item, targetId);
             OnUsedItem?.Invoke(this, item);
 
             if (item.Count > 0)
@@ -866,7 +876,7 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Adds the effect of the item to the character.
         /// </summary>
-        private void ApplyItemEffect(Item item)
+        private void ApplyItemEffect(Item item, int? targetId = null)
         {
             switch (item.Special)
             {
@@ -998,7 +1008,11 @@ namespace Imgeneus.World.Game.Player
 
                 case SpecialEffect.SkillResetStone:
                     ResetSkills();
+                    break;
 
+                case SpecialEffect.MovementRune:
+                    if (_gameWorld.Players.TryGetValue((int)targetId, out var target))
+                        Teleport(target.Map.Id, target.PosX, target.PosY, target.PosZ);
                     break;
 
                 default:
@@ -1195,6 +1209,29 @@ namespace Imgeneus.World.Game.Player
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks if item can be used on another player.
+        /// </summary>
+        public bool CanUseItemOnTarget(Item item, int targetId)
+        {
+            switch (item.Special)
+            {
+                case SpecialEffect.MovementRune:
+                    if (_gameWorld.Players.TryGetValue(targetId, out var target))
+                    {
+                        if (target.Party != Party)
+                            return false;
+
+                        return _gameWorld.CanTeleport(this, target.MapId, out var reason);
+                    }
+                    else
+                        return false;
+
+                default:
+                    return true;
+            }
         }
 
         #endregion

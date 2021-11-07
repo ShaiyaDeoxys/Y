@@ -81,41 +81,16 @@ namespace Imgeneus.World.Game
         }
 
         /// <inheritdoc />
-        public bool CanTeleport(Character player, byte portalIndex, out PortalTeleportNotAllowedReason reason)
+        public bool CanTeleport(Character player, ushort destinationMapId, out PortalTeleportNotAllowedReason reason)
         {
             reason = PortalTeleportNotAllowedReason.Unknown;
 
-            var map = player.Map;
-            if (map.Portals.Count <= portalIndex)
-            {
-                _logger.LogWarning($"Unknown portal {portalIndex} for map {map.Id}. Send from character {player.Id}.");
-                return false;
-            }
-
-            var portal = map.Portals[portalIndex];
-            if (!portal.IsInPortalZone(player.PosX, player.PosY, player.PosZ))
-            {
-                _logger.LogWarning($"Character position is not in portal, map {map.Id}. Portal index {portalIndex}. Send from character {player.Id}.");
-                return false;
-            }
-
-            if (!portal.IsSameFaction(player.Country))
-            {
-                return false;
-            }
-
-            if (!portal.IsRightLevel(player.Level))
-            {
-                return false;
-            }
-
-            if (Maps.ContainsKey(portal.MapId))
+            if (Maps.ContainsKey(destinationMapId))
             {
                 return true;
             }
             else // Not "usual" map.
             {
-                var destinationMapId = portal.MapId;
                 var destinationMapDef = _mapDefinitions.Maps.FirstOrDefault(d => d.Id == destinationMapId);
 
                 if (destinationMapDef is null)

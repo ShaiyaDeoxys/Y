@@ -112,6 +112,7 @@
         USE_MOB_RANGE_SKILL = 0x0519, // 1305
         DEAD_REBIRTH = 0x0551,// 1361
         REBIRTH_TO_NEAREST_TOWN = 0x0553, // 1363
+        USE_ITEM_2 = 0x0557, // 1367
         CHARACTER_LEAVE_DEAD = 0x0406, // 1030
 
         // GM commands

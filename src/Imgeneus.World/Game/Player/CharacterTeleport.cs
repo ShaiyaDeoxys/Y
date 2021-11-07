@@ -2,6 +2,7 @@
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Portals;
+using Microsoft.Extensions.Logging;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -63,9 +64,32 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public bool TryTeleport(byte portalIndex, out PortalTeleportNotAllowedReason reason)
         {
-            if (_gameWorld.CanTeleport(this, portalIndex, out reason))
+            reason = PortalTeleportNotAllowedReason.Unknown;
+            if (Map.Portals.Count <= portalIndex)
             {
-                var portal = Map.Portals[portalIndex];
+                _logger.LogWarning($"Unknown portal {portalIndex} for map {Map.Id}. Send from character {Id}.");
+                return false;
+            }
+
+            var portal = Map.Portals[portalIndex];
+            if (!portal.IsInPortalZone(PosX, PosY, PosZ))
+            {
+                _logger.LogWarning($"Character position is not in portal, map {Map.Id}. Portal index {portalIndex}. Send from character {Id}.");
+                return false;
+            }
+
+            if (!portal.IsSameFaction(Country))
+            {
+                return false;
+            }
+
+            if (!portal.IsRightLevel(Level))
+            {
+                return false;
+            }
+
+            if (_gameWorld.CanTeleport(this, portal.MapId, out reason))
+            {
                 Teleport(portal.MapId, portal.Destination_X, portal.Destination_Y, portal.Destination_Z);
                 return true;
             }
