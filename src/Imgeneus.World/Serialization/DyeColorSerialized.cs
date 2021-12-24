@@ -2,7 +2,7 @@
 
 namespace Imgeneus.World.Serialization
 {
-    public struct DyeColorSerialized
+    public class DyeColorSerialized
     {
         [FieldOrder(0)]
         public byte Saturation;

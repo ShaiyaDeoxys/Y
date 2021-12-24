@@ -84,7 +84,7 @@ namespace Imgeneus.Login
                 return;
             }
 
-            DbUser dbUser = _database.Users.First(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            DbUser dbUser = _database.Users.First(x => x.Username == username);
 
             if (_server.IsClientConnected(dbUser.Id))
             {
@@ -130,7 +130,7 @@ namespace Imgeneus.Login
 
         public AuthenticationResult Authentication(string username, string password)
         {
-            DbUser dbUser = _database.Users.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            DbUser dbUser = _database.Users.FirstOrDefault(x => x.Username == username);
 
             if (dbUser == null)
             {
