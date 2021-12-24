@@ -65,6 +65,7 @@ Any game feature must have a corresponding unit test.
 - Database type:  `MySQL`, Version `8.0.26`
 - Configuration files type:  `JSON`
 - Environment: `Visual Studio 2022`
+- OS: `Win 11`
 
 #### Client versions support
 Our main goal is learning, clients are used only for testing. We are not trying to harm any server or dev team. That's why we are not exposing any clients or server name, where these clients are used. Next versions supported:
