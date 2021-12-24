@@ -16,4 +16,10 @@
     <ProjectReference Include="..\Imgeneus.Database\Imgeneus.Database.csproj" />
     <ProjectReference Include="..\Imgeneus.Network\Imgeneus.Network.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

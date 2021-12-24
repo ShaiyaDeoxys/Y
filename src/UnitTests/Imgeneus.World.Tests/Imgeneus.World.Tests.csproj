@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
 
     <Configurations>Debug;Release</Configurations>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>

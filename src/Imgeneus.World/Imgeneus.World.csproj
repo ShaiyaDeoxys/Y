@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Configurations>Debug;Release;EP8_V1;EP8_V2;SHAIYA_US</Configurations>
     <Platforms>AnyCPU</Platforms>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>
