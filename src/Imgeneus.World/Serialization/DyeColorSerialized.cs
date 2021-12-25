@@ -16,6 +16,14 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(3)]
         public byte B;
 
+        public DyeColorSerialized()
+        {
+            Saturation = 0;
+            R = 0;
+            G = 0;
+            B = 0;
+        }
+
         public DyeColorSerialized(byte s, byte r, byte g, byte b)
         {
             Saturation = s;

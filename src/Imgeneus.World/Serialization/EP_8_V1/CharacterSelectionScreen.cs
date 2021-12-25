@@ -137,7 +137,11 @@ namespace Imgeneus.World.Serialization.EP_8_V1
                     EquipmentItemHasColor[i] = item.HasDyeColor;
                     if (item.HasDyeColor)
                         Colors[i] = new DyeColorSerialized(item.DyeColorSaturation, item.DyeColorR, item.DyeColorG, item.DyeColorB);
+                    else
+                        Colors[i] = new DyeColorSerialized();
                 }
+                else
+                    Colors[i] = new DyeColorSerialized();
             }
 
             Name = character.Name;
