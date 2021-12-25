@@ -1,6 +1,6 @@
 # Imgeneus
 
-Imgeneus is a simple and elegant Shaiya EP8 socket server over the TCP/IP protocol, built with C# 8 and .NET Core Framework 3.1.
+Imgeneus is a simple and elegant Shaiya EP8 socket server over the TCP/IP protocol, built with C# 10 and .NET 6.0.
 
 This project has been created for learning purposes about the network and game logic problematics on the server-side.
 We choose [Shaiya](https://shaiya.fandom.com/wiki/Main_Page) because  it is a simple game, but enough complex to learn the basic functions of an MMO game architecture.
@@ -59,12 +59,13 @@ Any game feature must have a corresponding unit test.
 * To fulfill the database with example data open `src\Imgeneus.Database\Migrations\sql` folder and run `setup.bat` file (Don't forget to set your password there). This will populate your database with ep6 original data.
 
 ## Details
-- Language:  `C# 8`
-- Framework:  `.NET Core 3.1`
+- Language:  `C# 10`
+- Framework:  `.NET 6.0`
 - Application type:  `Console`
-- Database type:  `MySQL`, Version `8.0.22`
+- Database type:  `MySQL`, Version `8.0.26`
 - Configuration files type:  `JSON`
-- Environment: `Visual Studio 2019`
+- Environment: `Visual Studio 2022`
+- OS: `Win 11`
 
 #### Client versions support
 Our main goal is learning, clients are used only for testing. We are not trying to harm any server or dev team. That's why we are not exposing any clients or server name, where these clients are used. Next versions supported:
