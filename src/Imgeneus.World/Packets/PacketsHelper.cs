@@ -1356,11 +1356,8 @@ namespace Imgeneus.World.Packets
             packet.Write((byte)sender.Shape);
 
             // Only for ep 8.
-            if (sender.Shape == CharacterShapeEnum.EP_8_Vehicles)
-            {
-                packet.Write((int)sender.Mount.Type);
-                packet.Write((int)sender.Mount.TypeId);
-            }
+            packet.Write((int)sender.Mount.Type);
+            packet.Write((int)sender.Mount.TypeId);
 
             client.SendPacket(packet);
         }
