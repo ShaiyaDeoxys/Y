@@ -1356,8 +1356,11 @@ namespace Imgeneus.World.Packets
             packet.Write((byte)sender.Shape);
 
             // Only for ep 8.
-            packet.Write((int)sender.Mount.Type);
-            packet.Write((int)sender.Mount.TypeId);
+            if (sender.Mount != null)
+            {
+                packet.Write((int)sender.Mount.Type);
+                packet.Write((int)sender.Mount.TypeId);
+            }
 
             client.SendPacket(packet);
         }
