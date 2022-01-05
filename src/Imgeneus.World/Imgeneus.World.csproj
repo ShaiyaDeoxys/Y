@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\submodules\LiteNetwork\src\LiteNetwork\LiteNetwork.csproj" />
+    <ProjectReference Include="..\..\submodules\Sylver.HandlerInvoker\src\Sylver.HandlerInvoker\Sylver.HandlerInvoker.csproj" />
     <ProjectReference Include="..\Imgeneus.InterServer\Imgeneus.InterServer.csproj" />
     <ProjectReference Include="..\Imgeneus.Logs\Imgeneus.Logs.csproj" />
     <ProjectReference Include="..\Imgeneus.DatabaseBackgroundService\Imgeneus.DatabaseBackgroundService.csproj" />

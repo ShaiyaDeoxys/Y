@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\LiteNetwork\src\LiteNetwork\LiteNetwork.csproj" />
     <ProjectReference Include="..\Imgeneus.Database\Imgeneus.Database.csproj" />
     <ProjectReference Include="..\Imgeneus.InterServer\Imgeneus.InterServer.csproj" />
   </ItemGroup>
