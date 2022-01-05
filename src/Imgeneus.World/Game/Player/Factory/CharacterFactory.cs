@@ -44,7 +44,7 @@ namespace Imgeneus.World.Game.Player
                                                         .Include(c => c.QuickItems)
                                                         .Include(c => c.User)
                                                         .ThenInclude(c => c.BankItems)
-                                                        .FirstOrDefaultAsync(c => c.Id == characterId);
+                                                        .FirstOrDefaultAsync(c => c.Id == characterId && c.UserId == client.UserId);
 
             if (dbCharacter is null)
             {
@@ -69,7 +69,7 @@ namespace Imgeneus.World.Game.Player
                                         scopedProvider.GetService<INpcFactory>(),
                                         scopedProvider.GetService<INoticeManager>(),
                                         scopedProvider.GetService<IGuildManager>());
-            player.Client = client;
+            //player.Client = (IWorldClient)client;
 
             return player;
         }

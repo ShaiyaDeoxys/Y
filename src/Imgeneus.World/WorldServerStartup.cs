@@ -3,6 +3,8 @@ using Imgeneus.Database;
 using Imgeneus.Database.Preload;
 using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.Logs;
+using Imgeneus.Network.Server;
+using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Dyeing;
@@ -17,6 +19,7 @@ using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
+using Imgeneus.World.Packets;
 using Imgeneus.World.SelectionScreen;
 using InterServer.Client;
 using InterServer.Common;
@@ -26,6 +29,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sylver.HandlerInvoker;
 
 namespace Imgeneus.World
 {
@@ -35,6 +39,8 @@ namespace Imgeneus.World
         public void ConfigureServices(IServiceCollection services)
         {
             // Add options.
+            services.AddOptions<ImgeneusServerOptions>()
+                .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("TcpServer").Bind(settings));
             services.AddOptions<WorldConfiguration>()
                 .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("WorldServer").Bind(settings));
             services.AddOptions<DatabaseConfiguration>()
@@ -46,10 +52,12 @@ namespace Imgeneus.World
 
             services.RegisterDatabaseServices();
 
+            services.AddHandlers();
+
             services.AddSingleton<IInterServerClient, ISClient>();
             services.AddSingleton<IWorldServer, WorldServer>();
+            services.AddSingleton<IGamePacketFactory, GamePacketFactory>();
             services.AddSingleton<IGameWorld, GameWorld>();
-            services.AddSingleton<ISelectionScreenFactory, SelectionScreenFactory>();
             services.AddSingleton<IMapsLoader, MapsLoader>();
             services.AddSingleton<IMapFactory, MapFactory>();
             services.AddSingleton<IMobFactory, MobFactory>();
@@ -72,6 +80,9 @@ namespace Imgeneus.World
             services.AddSingleton<INoticeManager, NoticeManager>();
             services.AddSingleton<IGuildRankingManager, GuildRankingManager>();
 
+            services.AddScoped<ISelectionScreenManager, SelectionScreenManager>();
+
+            services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
             services.AddTransient<ILinkingManager, LinkingManager>();
             services.AddTransient<IDyeingManager, DyeingManager>();

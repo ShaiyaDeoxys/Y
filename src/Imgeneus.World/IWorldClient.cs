@@ -1,11 +1,12 @@
-﻿using Imgeneus.Network.Packets.Game;
+﻿using Imgeneus.Network.Data;
+using Imgeneus.Network.Packets.Game;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
 using System;
 
 namespace Imgeneus.World
 {
-    public interface IWorldClient : IServerClient
+    public interface IWorldClient
     {
         /// <summary>
         /// Gets the client's logged user id.
@@ -22,9 +23,6 @@ namespace Imgeneus.World
         /// </summary>
         CryptoManager CryptoManager { get; }
 
-        /// <summary>
-        /// Event, that is fired, when new packet arrives.
-        /// </summary>
-        event Action<ServerClient, IDeserializedPacket> OnPacketArrived;
+        void SendPacket(Packet packet);
     }
 }

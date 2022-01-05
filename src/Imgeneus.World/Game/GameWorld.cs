@@ -329,12 +329,12 @@ namespace Imgeneus.World.Game
             DuelManagers.TryAdd(newPlayer.Id, new DuelManager(this, newPlayer));
 
             _logger.LogDebug($"Player {newPlayer.Id} connected to game world");
-            newPlayer.Client.OnPacketArrived += Client_OnPacketArrived;
+            //newPlayer.Client.OnPacketArrived += Client_OnPacketArrived;
 
             return newPlayer;
         }
 
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
+        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
             switch (packet)
             {
@@ -343,7 +343,7 @@ namespace Imgeneus.World.Game
                     break;
             }
 
-        }
+        }*/
 
         /// <inheritdoc />
         public void LoadPlayerInMap(int characterId)
@@ -454,7 +454,7 @@ namespace Imgeneus.World.Game
                 DuelManagers.TryRemove(characterId, out var duelManager);
                 duelManager.Dispose();
 
-                player.Client.OnPacketArrived -= Client_OnPacketArrived;
+                //player.Client.OnPacketArrived -= Client_OnPacketArrived;
 
                 IMap map = null;
 

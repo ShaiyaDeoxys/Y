@@ -1,29 +1,20 @@
-﻿using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets.Game;
-using System;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Login
 {
-    public struct AuthenticationPacket : IEquatable<AuthenticationPacket>, IDeserializedPacket
+    public record AuthenticationPacket : IPacketDeserializer
     {
-        public string Username { get; }
+        public string Username { get; private set; }
 
-        public string Unknow { get; }
+        public string Unknow { get; private set; }
 
-        public string Password { get; }
+        public string Password { get; private set; }
 
-        public AuthenticationPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            this.Username = packet.ReadString(19);
-            this.Unknow = packet.ReadString(13);
-            this.Password = packet.ReadString(16);
-        }
-
-        public bool Equals(AuthenticationPacket other)
-        {
-            return this.Unknow == other.Unknow &&
-                this.Username == other.Username &&
-                this.Password == other.Password;
+            Username = packetStream.ReadString(19);
+            Unknow = packetStream.ReadString(13);
+            Password = packetStream.ReadString(16);
         }
     }
 }

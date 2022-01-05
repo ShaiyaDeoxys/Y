@@ -1,24 +1,18 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 using System;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct HandshakePacket : IEquatable<HandshakePacket>, IDeserializedPacket
+    public record HandshakePacket : IPacketDeserializer
     {
-        public int UserId { get; }
+        public int UserId { get; private set; }
 
-        public Guid SessionId { get; }
+        public Guid SessionId { get; private set; }
 
-        public HandshakePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            this.UserId = packet.Read<int>();
-            this.SessionId = new Guid(packet.Read<byte>(16));
-        }
-
-        public bool Equals(HandshakePacket other)
-        {
-            return this.UserId == other.UserId &&
-                this.SessionId == other.SessionId;
+            UserId = packetStream.Read<int>();
+            SessionId = new Guid(packetStream.Read<byte>(16));
         }
     }
 }

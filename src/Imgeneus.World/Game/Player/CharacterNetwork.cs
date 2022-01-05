@@ -26,7 +26,7 @@ namespace Imgeneus.World.Game.Player
                 if (_client is null)
                 {
                     _client = value;
-                    _client.OnPacketArrived += Client_OnPacketArrived;
+                    //_client.OnPacketArrived += Client_OnPacketArrived;
                 }
                 else
                 {
@@ -40,7 +40,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public void ClearConnection()
         {
-            _client.OnPacketArrived -= Client_OnPacketArrived;
+            //_client.OnPacketArrived -= Client_OnPacketArrived;
             _client = null;
         }
 
@@ -49,7 +49,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         /// <param name="sender">TCP connection with client</param>
         /// <param name="packet">packet, that clients sends</param>
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
+        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
             switch (packet)
             {
@@ -553,6 +553,6 @@ namespace Imgeneus.World.Game.Player
                         _packetsHelper.SendFullInventory(Client);
                     break;
             }
-        }
+        }*/
     }
 }

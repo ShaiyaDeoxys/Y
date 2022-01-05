@@ -38,8 +38,6 @@ namespace Imgeneus.World.Game.Player
 #if EP8_V1
             SendAccountPoints(); // WARNING: This is necessary if you have an in-game item mall.
 #endif
-
-            SendSkillBar(); // Should be always the last! Changes packet encryption to xor!
         }
 
         private void SendWorldDay() => _packetsHelper.SendWorldDay(Client);
@@ -88,12 +86,6 @@ namespace Imgeneus.World.Game.Player
         private void SendAddBuff(ActiveBuff buff) => _packetsHelper.SendAddBuff(Client, buff);
 
         private void SendRemoveBuff(ActiveBuff buff) => _packetsHelper.SendRemoveBuff(Client, buff);
-
-        private void SendSkillBar()
-        {
-            _packetsHelper.SendSkillBar(Client, QuickItems);
-            Client.CryptoManager.UseExpandedKey = true; // Fix for encryption after selection screen.
-        }
 
         protected override void SendAdditionalStats()
         {

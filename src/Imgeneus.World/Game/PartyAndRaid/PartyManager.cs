@@ -20,15 +20,15 @@ namespace Imgeneus.World.Game.PartyAndRaid
         {
             _gameWorld = gameWorld;
             _player = player;
-            _player.Client.OnPacketArrived += Client_OnPacketArrived;
+            //_player.Client.OnPacketArrived += Client_OnPacketArrived;
         }
 
         public void Dispose()
         {
-            _player.Client.OnPacketArrived -= Client_OnPacketArrived;
+            //_player.Client.OnPacketArrived -= Client_OnPacketArrived;
         }
 
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
+        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
             var worldSender = (IWorldClient)sender;
 
@@ -202,7 +202,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     (_player.Party as Raid).MoveCharacter(raidMovePlayerPacket.SourceIndex, raidMovePlayerPacket.DestinationIndex);
                     break;
             }
-        }
+        }*/
 
         private void RequestParty(int requesterId, int requestedId)
         {
@@ -218,14 +218,14 @@ namespace Imgeneus.World.Game.PartyAndRaid
             using var packet = new Packet(PacketType.RAID_PARTY_ERROR);
             packet.Write((int)partyError);
             packet.Write(id);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendPartyRequest(IWorldClient client, int requesterId)
         {
             using var packet = new Packet(PacketType.PARTY_REQUEST);
             packet.Write(requesterId);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendDeclineParty(IWorldClient client, int charID)
@@ -233,7 +233,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             using var packet = new Packet(PacketType.PARTY_RESPONSE);
             packet.Write(false);
             packet.Write(charID);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendRaidCreated(IWorldClient client, Raid raid)
@@ -244,7 +244,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             packet.Write((int)raid.DropType);
             packet.Write(raid.GetIndex(raid.Leader));
             packet.Write(raid.GetIndex(raid.SubLeader));
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
     }
 }

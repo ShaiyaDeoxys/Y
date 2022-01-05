@@ -190,7 +190,7 @@ namespace Imgeneus.World.Game.Chat
 #else
             packet.WriteString(message);
 #endif
-            character.Client.SendPacket(packet);
+            //character.Client.SendPacket(packet);
         }
 
         private void SendMessage(PacketType packetType, Character character, int senderId, string message)
@@ -210,7 +210,7 @@ namespace Imgeneus.World.Game.Chat
             packet.WriteString(message);
 #endif
 
-            character.Client.SendPacket(packet);
+            //character.Client.SendPacket(packet);
         }
 
         #endregion

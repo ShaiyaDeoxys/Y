@@ -1,21 +1,14 @@
-﻿using System;
-using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets.Game;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Login
 {
-    public struct OAuthAuthenticationPacket : IEquatable<OAuthAuthenticationPacket>, IDeserializedPacket
+    public record OAuthAuthenticationPacket : IPacketDeserializer
     {
-        public String key { get; }
+        public string key { get; private set; }
 
-        public OAuthAuthenticationPacket(IPacketStream stream)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            key = stream.ReadString(40);
-        }
-
-        public bool Equals(OAuthAuthenticationPacket other)
-        {
-            return other.key == key;
+            key = packetStream.ReadString(40);
         }
     }
 }

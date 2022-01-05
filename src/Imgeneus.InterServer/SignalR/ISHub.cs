@@ -40,7 +40,7 @@ namespace InterServer.SignalR
                     IPAddress.Parse(config.Host).GetAddressBytes(),
                     config.Name,
                     config.BuildVersion,
-                    (ushort)config.MaximumNumberOfConnections);
+                    config.MaximumNumberOfConnections);
             _interServer.AddWorldServer(worldInfo);
         }
 

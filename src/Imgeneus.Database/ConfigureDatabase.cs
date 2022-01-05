@@ -17,12 +17,13 @@ namespace Imgeneus.Database
         public static IServiceCollection RegisterDatabaseServices(this IServiceCollection serviceCollection)
         {
             return serviceCollection
-                .AddDbContext<DatabaseContext>(options =>
+                .AddDbContext<IDatabase, DatabaseContext>(options =>
                 {
                     var dbConfig = serviceCollection.BuildServiceProvider().GetService<IOptions<DatabaseConfiguration>>();
                     options.ConfigureCorrectDatabase(dbConfig.Value);
-                }, ServiceLifetime.Transient)
-                .AddTransient<IDatabase, DatabaseContext>();
+                },
+                contextLifetime: ServiceLifetime.Transient,
+                optionsLifetime: ServiceLifetime.Singleton);
         }
     }
 }

@@ -21,15 +21,15 @@ namespace Imgeneus.World.Game.Trade
         {
             _gameWorld = gameWorld;
             _player = player;
-            _player.Client.OnPacketArrived += Client_OnPacketArrived;
+            //_player.Client.OnPacketArrived += Client_OnPacketArrived;
         }
 
         public void Dispose()
         {
-            _player.Client.OnPacketArrived -= Client_OnPacketArrived;
+            //_player.Client.OnPacketArrived -= Client_OnPacketArrived;
         }
 
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
+        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
             switch (packet)
             {
@@ -86,16 +86,16 @@ namespace Imgeneus.World.Game.Trade
                     }
                     break;
             }
-        }
+        }*/
 
         /// <summary>
         /// Handles trade request from player to player.
         /// </summary>
         /// <param name="sender">Player, that starts trade</param>
         /// <param name="targetId">id of player to whom trade was sent</param>
-        private void HandleTradeRequestPacket(WorldClient sender, int targetId)
+        private void HandleTradeRequestPacket(WorldClient client, int targetId)
         {
-            var tradeRequester = _gameWorld.Players[sender.CharID];
+            var tradeRequester = _gameWorld.Players[client.CharID];
             var tradeReceiver = _gameWorld.Players[targetId];
 
             tradeRequester.TradePartner = tradeReceiver;
@@ -121,9 +121,9 @@ namespace Imgeneus.World.Game.Trade
         /// Handles event, when player adds something to trade window. 
         /// </summary>
         /// <param name="sender">player, that added something</param>
-        private void AddedItemToTrade(WorldClient sender, TradeAddItemPacket tradeAddItemPacket)
+        private void AddedItemToTrade(WorldClient client, TradeAddItemPacket tradeAddItemPacket)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             trader.InventoryItems.TryGetValue((tradeAddItemPacket.Bag, tradeAddItemPacket.Slot), out var tradeItem);
@@ -150,9 +150,9 @@ namespace Imgeneus.World.Game.Trade
         /// Removes item from trade.
         /// </summary>
         /// <param name="sender">player, that removed item</param>
-        private void RemoveItemFromTrade(WorldClient sender, TradeRemoveItemPacket tradeRemoveItemPacket)
+        private void RemoveItemFromTrade(WorldClient client, TradeRemoveItemPacket tradeRemoveItemPacket)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             trader.TradeItems.TryRemove(tradeRemoveItemPacket.SlotInTradeWindow, out var removed);
@@ -162,7 +162,7 @@ namespace Imgeneus.World.Game.Trade
                 return;
             }
 
-            TradeDecideDecline(sender);
+            TradeDecideDecline(client);
 
             SendRemovedItemFromTrade(trader.Client, 1);
             SendRemovedItemFromTrade(partner.Client, 2);
@@ -172,9 +172,9 @@ namespace Imgeneus.World.Game.Trade
         /// Adds money to trade.
         /// </summary>
         /// <param name="sender">player, that added money</param>
-        private void AddMoneyToTrade(IWorldClient sender, TradeAddMoneyPacket tradeAddMoneyPacket)
+        private void AddMoneyToTrade(IWorldClient client, TradeAddMoneyPacket tradeAddMoneyPacket)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             trader.TradeMoney = tradeAddMoneyPacket.Money < trader.Gold ? tradeAddMoneyPacket.Money : trader.Gold;
@@ -187,14 +187,14 @@ namespace Imgeneus.World.Game.Trade
         {
             using var packet = new Packet(PacketType.TRADE_REQUEST);
             packet.Write(tradeRequesterId);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendTradeStart(IWorldClient client, int traderId)
         {
             using var packet = new Packet(PacketType.TRADE_START);
             packet.Write(traderId);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendAddedItemToTrade(IWorldClient client, byte bag, byte slot, byte quantity, byte slotInTradeWindow)
@@ -204,14 +204,14 @@ namespace Imgeneus.World.Game.Trade
             packet.Write(slot);
             packet.Write(quantity);
             packet.Write(slotInTradeWindow);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendAddedItemToTrade(IWorldClient client, Item tradeItem, byte quantity, byte slotInTradeWindow)
         {
             using var packet = new Packet(PacketType.TRADE_RECEIVER_ADD_ITEM);
             packet.Write(new TradeItem(slotInTradeWindow, quantity, tradeItem).Serialize());
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
 
@@ -219,7 +219,7 @@ namespace Imgeneus.World.Game.Trade
         {
             using var packet = new Packet(PacketType.TRADE_REMOVE_ITEM);
             packet.Write(byWho);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendAddedMoneyToTrade(IWorldClient client, byte traderId, uint tradeMoney)
@@ -227,15 +227,15 @@ namespace Imgeneus.World.Game.Trade
             using var packet = new Packet(PacketType.TRADE_ADD_MONEY);
             packet.Write(traderId);
             packet.Write(tradeMoney);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
         /// Called, when user clicks "Decide" button.
         /// </summary>
-        private void TraderDecideConfirm(WorldClient sender)
+        private void TraderDecideConfirm(WorldClient client)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             if (trader.TradeRequest.IsDecided_1)
@@ -244,26 +244,26 @@ namespace Imgeneus.World.Game.Trade
                 trader.TradeRequest.IsDecided_1 = true;
 
             // 1 means sender, 2 means partner.
-            SendTradeDecide(1, true, sender);
-            SendTradeDecide(2, true, partner.Client);
+            //SendTradeDecide(1, true, sender);
+            //SendTradeDecide(2, true, partner.Client);
         }
 
         /// <summary>
         /// Called, when user clicks "Decide" button again, which declines previous decide.
         /// </summary>
-        private void TradeDecideDecline(WorldClient sender)
+        private void TradeDecideDecline(WorldClient client)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             trader.TradeRequest.IsDecided_1 = false;
             trader.TradeRequest.IsDecided_2 = false;
 
             // Decline both.
-            SendTradeDecide(1, false, sender);
-            SendTradeDecide(2, false, partner.Client);
-            SendTradeDecide(2, false, sender);
-            SendTradeDecide(1, false, partner.Client);
+            //SendTradeDecide(1, false, sender);
+            //SendTradeDecide(2, false, partner.Client);
+            //SendTradeDecide(2, false, sender);
+            //SendTradeDecide(1, false, partner.Client);
         }
 
         private void SendTradeDecide(byte senderId, bool isDecided, IWorldClient client)
@@ -271,24 +271,24 @@ namespace Imgeneus.World.Game.Trade
             using var packet = new Packet(PacketType.TRADE_DECIDE);
             packet.WriteByte(senderId);
             packet.Write(isDecided);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
-        private void TradeCancel(WorldClient sender)
+        private void TradeCancel(WorldClient client)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             trader.ClearTrade();
             partner.ClearTrade();
 
-            SendTradeCanceled(sender);
+            //SendTradeCanceled(sender);
             SendTradeCanceled(partner.Client);
         }
 
-        private void TradeConfirmed(WorldClient sender)
+        private void TradeConfirmed(WorldClient client)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             if (trader.TradeRequest.IsConfirmed_1)
@@ -297,7 +297,7 @@ namespace Imgeneus.World.Game.Trade
                 trader.TradeRequest.IsConfirmed_1 = true;
 
             // 1 means sender, 2 means partner.
-            SendTradeConfirm(1, false, sender);
+            //SendTradeConfirm(1, false, sender);
             SendTradeConfirm(2, false, partner.Client);
 
             if (trader.TradeRequest.IsConfirmed_1 && trader.TradeRequest.IsConfirmed_2)
@@ -306,18 +306,18 @@ namespace Imgeneus.World.Game.Trade
             }
         }
 
-        private void TradeConfirmDeclined(WorldClient sender)
+        private void TradeConfirmDeclined(WorldClient client)
         {
-            var trader = _gameWorld.Players[sender.CharID];
+            var trader = _gameWorld.Players[client.CharID];
             var partner = trader.TradePartner;
 
             trader.TradeRequest.IsConfirmed_1 = false;
             trader.TradeRequest.IsConfirmed_2 = false;
 
             // Decline both.
-            SendTradeConfirm(1, true, sender);
+            //SendTradeConfirm(1, true, sender);
             SendTradeConfirm(2, true, partner.Client);
-            SendTradeConfirm(2, true, sender);
+            //SendTradeConfirm(2, true, sender);
             SendTradeConfirm(1, true, partner.Client);
         }
 
@@ -326,7 +326,7 @@ namespace Imgeneus.World.Game.Trade
             using var packet = new Packet(PacketType.TRADE_FINISH);
             packet.WriteByte(senderId);
             packet.Write(isDeclined);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void FinishTradeSuccessful(Character trader, Character partner)
@@ -388,14 +388,14 @@ namespace Imgeneus.World.Game.Trade
         {
             using var packet = new Packet(PacketType.TRADE_STOP);
             packet.WriteByte(0);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         private void SendTradeCanceled(IWorldClient client)
         {
             using var packet = new Packet(PacketType.TRADE_STOP);
             packet.WriteByte(2);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
     }
 }

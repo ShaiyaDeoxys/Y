@@ -1,59 +1,37 @@
 ﻿using Imgeneus.Core.Structures.Configuration;
-using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets;
-using Imgeneus.Network.Packets.Game;
 using Imgeneus.Network.Server;
-using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game;
-using Imgeneus.World.SelectionScreen;
 using InterServer.Client;
-using InterServer.Common;
 using InterServer.SignalR;
+using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Imgeneus.World
 {
-    public sealed class WorldServer : Server<WorldClient>, IWorldServer
+    public sealed class WorldServer : LiteServer<WorldClient>, IWorldServer
     {
         private readonly ILogger<WorldServer> _logger;
         private readonly WorldConfiguration _worldConfiguration;
         private readonly IGameWorld _gameWorld;
         private readonly IInterServerClient _interClient;
-        private readonly ISelectionScreenFactory _selectionScreenFactory;
 
-        public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> configuration, IGameWorld gameWorld, IInterServerClient interClient, ISelectionScreenFactory selectionScreenFactory)
-            : base(new ServerConfiguration(configuration.Value.Host, configuration.Value.Port, configuration.Value.MaximumNumberOfConnections), logger)
+        public WorldServer(ILogger<WorldServer> logger, IOptions<ImgeneusServerOptions> tcpConfiguration, IServiceProvider serviceProvider, IOptions<WorldConfiguration> worldConfiguration, IGameWorld gameWorld, IInterServerClient interClient)
+            : base(tcpConfiguration.Value, serviceProvider)
         {
             _logger = logger;
-            _worldConfiguration = configuration.Value;
+            _worldConfiguration = worldConfiguration.Value;
             _gameWorld = gameWorld;
             _interClient = interClient;
-            _selectionScreenFactory = selectionScreenFactory;
         }
 
-        public override void Start()
-        {
-            try
-            {
-                _logger.LogInformation("Starting WorldServer...");
-                base.Start();
-            }
-            catch (Exception e)
-            {
-                _logger.LogCritical(e, $"An unexpected error occured in WorldServer.");
-            }
-        }
-
-        protected override void OnStart()
+        protected override void OnAfterStart()
         {
             _logger.LogTrace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}",
-                _worldConfiguration.Host,
-                _worldConfiguration.Port,
-                _worldConfiguration.MaximumNumberOfConnections);
+                Options.Host,
+                Options.Port,
+                Options.Backlog);
             _interClient.Connect();
             _interClient.OnConnected += SendWorldInfo;
         }
@@ -63,17 +41,11 @@ namespace Imgeneus.World
             _interClient.OnConnected -= SendWorldInfo;
             _interClient.Send(new ISMessage(ISMessageType.WORLD_INFO, _worldConfiguration));
 
-            _interClient.OnSessionResponse += LoadSelectionScreen;
+            //_interClient.OnSessionResponse += LoadSelectionScreen;
         }
 
         /// <inheritdoc />
-        protected override void OnError(Exception exception)
-        {
-            _logger.LogInformation($"World Server error: {exception.Message}");
-        }
-
-        /// <inheritdoc />
-        protected async override void OnClientDisconnected(WorldClient client)
+        /*protected async override void OnClientDisconnected(WorldClient client)
         {
             base.OnClientDisconnected(client);
 
@@ -86,10 +58,10 @@ namespace Imgeneus.World
                 await Task.Delay(1000 * 10);
                 _gameWorld.RemovePlayer(client.CharID);
             }
-        }
+        }*/
 
         /// <inheritdoc />
-        protected override void OnClientConnected(WorldClient client)
+        /*protected override void OnClientConnected(WorldClient client)
         {
             base.OnClientConnected(client);
 
@@ -196,5 +168,6 @@ namespace Imgeneus.World
         private readonly Dictionary<Guid, ISelectionScreenManager> SelectionScreenManagers = new Dictionary<Guid, ISelectionScreenManager>();
 
         #endregion
+        */
     }
 }

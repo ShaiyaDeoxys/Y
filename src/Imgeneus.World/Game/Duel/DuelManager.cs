@@ -29,7 +29,7 @@ namespace Imgeneus.World.Game.Duel
             _gameWorld = gameWorld;
             Sender = player;
             Sender.OnDuelFinish += Sender_OnDuelFinish;
-            Sender.Client.OnPacketArrived += Client_OnPacketArrived;
+            //Sender.Client.OnPacketArrived += Client_OnPacketArrived;
 
             _duelRequestTimer.Interval = 10000; // 10 seconds.
             _duelRequestTimer.Elapsed += DuelRequestTimer_Elapsed;
@@ -46,13 +46,13 @@ namespace Imgeneus.World.Game.Duel
             if (Sender.IsDuelApproved)
                 Sender_OnDuelFinish(DuelCancelReason.OpponentDisconnected);
 
-            Sender.Client.OnPacketArrived -= Client_OnPacketArrived;
+            //Sender.Client.OnPacketArrived -= Client_OnPacketArrived;
             Sender.OnDuelFinish -= Sender_OnDuelFinish;
             _duelRequestTimer.Elapsed -= DuelRequestTimer_Elapsed;
             _duelStartTimer.Elapsed -= DuelStartTimer_Elapsed;
         }
 
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
+        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
             switch (packet)
             {
@@ -80,7 +80,7 @@ namespace Imgeneus.World.Game.Duel
                     HandleDuelWindowClick(duelOkPacket.Result);
                     break;
             }
-        }
+        }*/
 
         #region Handlers
 
@@ -240,7 +240,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_REQUEST);
             packet.Write(duelStarterId);
             packet.Write(duelOpponentId);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_RESPONSE);
             packet.Write((byte)response);
             packet.Write(characterId);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace Imgeneus.World.Game.Duel
         {
             using var packet = new Packet(PacketType.DUEL_TRADE_OPPONENT_ADD_ITEM);
             packet.Write(new TradeItem(slotInTradeWindow, quantity, tradeItem).Serialize());
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace Imgeneus.World.Game.Duel
             packet.Write(slot);
             packet.Write(quantity);
             packet.Write(slotInTradeWindow);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_TRADE_REMOVE_ITEM);
             packet.Write(senderType);
             packet.Write(slotInTradeWindow);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Imgeneus.World.Game.Duel
         {
             using var packet = new Packet(PacketType.DUEL_CLOSE_TRADE);
             packet.Write((byte)reason);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -307,7 +307,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_TRADE_OK);
             packet.Write(senderType);
             packet.Write(isDuelDeclined);
-            client.SendPacket(packet);
+           // client.SendPacket(packet);
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace Imgeneus.World.Game.Duel
         {
             using var packet = new Packet(PacketType.DUEL_WIN_LOSE);
             packet.WriteByte(isWin ? (byte)1 : (byte)2); // 1 - win, 2 - lose
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_CANCEL);
             packet.Write((byte)cancelReason);
             packet.Write(playerId);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         #endregion
@@ -350,7 +350,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_TRADE);
             packet.Write(characterId);
             packet.WriteByte(0); // ?
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_TRADE_ADD_MONEY);
             packet.Write(senderType);
             packet.Write(tradeMoney);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace Imgeneus.World.Game.Duel
             using var packet = new Packet(PacketType.DUEL_READY);
             packet.Write(x);
             packet.Write(z);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         /// <summary>
@@ -381,7 +381,7 @@ namespace Imgeneus.World.Game.Duel
         private void SendDuelStart(IWorldClient client)
         {
             using var packet = new Packet(PacketType.DUEL_START);
-            client.SendPacket(packet);
+            //client.SendPacket(packet);
         }
 
         #endregion
