@@ -62,18 +62,18 @@ namespace Imgeneus.World.Game.Player
 
             if (result.Success && item.Bag == 0)
             {
-                ExtraStr += gem.Str;
-                ExtraDex += gem.Dex;
-                ExtraRec += gem.Rec;
-                ExtraInt += gem.Int;
-                ExtraLuc += gem.Luc;
-                ExtraWis += gem.Wis;
-                ExtraHP += gem.HP;
-                ExtraSP += gem.SP;
-                ExtraMP += gem.MP;
-                ExtraDefense += gem.Defense;
-                ExtraResistance += gem.Resistance;
-                Absorption += gem.Absorb;
+                StatsManager.ExtraStr += gem.Str;
+                StatsManager.ExtraDex += gem.Dex;
+                StatsManager.ExtraRec += gem.Rec;
+                StatsManager.ExtraInt += gem.Int;
+                StatsManager.ExtraLuc += gem.Luc;
+                StatsManager.ExtraWis += gem.Wis;
+                StatsManager.ExtraHP += gem.HP;
+                StatsManager.ExtraSP += gem.SP;
+                StatsManager.ExtraMP += gem.MP;
+                StatsManager.ExtraDefense += gem.Defense;
+                StatsManager.ExtraResistance += gem.Resistance;
+                StatsManager.Absorption += gem.Absorb;
                 MoveSpeed += gem.MoveSpeed;
                 SetAttackSpeedModifier(gem.AttackSpeed);
 
@@ -91,8 +91,8 @@ namespace Imgeneus.World.Game.Player
 
                 if (item.Bag == 0)
                 {
-                    if (item == Helmet)
-                        Helmet = null;
+                    /*if (item == InventoryManager.Helmet)
+                        InventoryManager.Helmet = null;
                     else if (item == Armor)
                         Armor = null;
                     else if (item == Pants)
@@ -122,7 +122,7 @@ namespace Imgeneus.World.Game.Player
                     else if (item == Pet)
                         Pet = null;
                     else if (item == Costume)
-                        Costume = null;
+                        Costume = null;*/
                 }
             }
         }
@@ -275,7 +275,7 @@ namespace Imgeneus.World.Game.Player
             {
                 if (itemDestroyed)
                 {
-                    if (item == Helmet)
+                    /*if (item == Helmet)
                         Helmet = null;
                     else if (item == Armor)
                         Armor = null;
@@ -306,24 +306,24 @@ namespace Imgeneus.World.Game.Player
                     else if (item == Pet)
                         Pet = null;
                     else if (item == Costume)
-                        Costume = null;
+                        Costume = null;*/
                 }
                 else
                 {
                     foreach (var gem in removedGems)
                     {
-                        ExtraStr -= gem.Str;
-                        ExtraDex -= gem.Dex;
-                        ExtraRec -= gem.Rec;
-                        ExtraInt -= gem.Int;
-                        ExtraLuc -= gem.Luc;
-                        ExtraWis -= gem.Wis;
-                        ExtraHP -= gem.HP;
-                        ExtraSP -= gem.SP;
-                        ExtraMP -= gem.MP;
-                        ExtraDefense -= gem.Defense;
-                        ExtraResistance -= gem.Resistance;
-                        Absorption -= gem.Absorb;
+                        StatsManager.ExtraStr -= gem.Str;
+                        StatsManager.ExtraDex -= gem.Dex;
+                        StatsManager.ExtraRec -= gem.Rec;
+                        StatsManager.ExtraInt -= gem.Int;
+                        StatsManager.ExtraLuc -= gem.Luc;
+                        StatsManager.ExtraWis -= gem.Wis;
+                        StatsManager.ExtraHP -= gem.HP;
+                        StatsManager.ExtraSP -= gem.SP;
+                        StatsManager.ExtraMP -= gem.MP;
+                        StatsManager.ExtraDefense -= gem.Defense;
+                        StatsManager.ExtraResistance -= gem.Resistance;
+                        StatsManager.Absorption -= gem.Absorb;
                         MoveSpeed -= gem.MoveSpeed;
                         SetAttackSpeedModifier(gem.AttackSpeed * (-1));
 

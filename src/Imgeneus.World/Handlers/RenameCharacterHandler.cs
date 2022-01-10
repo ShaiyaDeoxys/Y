@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Imgeneus.World.SelectionScreen;
 using Sylver.HandlerInvoker.Attributes;
@@ -11,7 +12,7 @@ namespace Imgeneus.World.Handlers
     public class RenameCharacterHandler : BaseHandler
     {
         private readonly ISelectionScreenManager _selectionScreenManager;
-        public RenameCharacterHandler(IGamePacketFactory packetFactory, ISelectionScreenManager selectionScreenManager) : base(packetFactory)
+        public RenameCharacterHandler(IGamePacketFactory packetFactory, IGameSession gameSession, ISelectionScreenManager selectionScreenManager) : base(packetFactory, gameSession)
         {
             _selectionScreenManager = selectionScreenManager;
         }

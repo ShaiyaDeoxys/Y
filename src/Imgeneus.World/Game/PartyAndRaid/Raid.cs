@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Serialization;
@@ -468,72 +469,72 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         private void SendPlayerJoinedParty(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RAID_ENTER);
+            using var packet = new ImgeneusPacket(PacketType.RAID_ENTER);
             packet.Write(new RaidMember(character, (ushort)GetIndex(character)).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendRaidDismantle(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.RAID_DISMANTLE);
-            client.SendPacket(packet);
+            using var packet = new ImgeneusPacket(PacketType.RAID_DISMANTLE);
+            client.Send(packet);
         }
 
         private void SendPlayerLeftRaid(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RAID_LEAVE);
+            using var packet = new ImgeneusPacket(PacketType.RAID_LEAVE);
             packet.Write(character.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendAutoJoinChanged(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.RAID_CHANGE_AUTOINVITE);
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_AUTOINVITE);
             packet.Write(AutoJoin);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendDropType(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.RAID_CHANGE_LOOT);
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_LOOT);
             packet.Write((int)DropType);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendAddBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
         {
-            using var packet = new Packet(PacketType.RAID_ADDED_BUFF);
+            using var packet = new ImgeneusPacket(PacketType.RAID_ADDED_BUFF);
             packet.Write(senderId);
             packet.Write(skillId);
             packet.Write(skillLevel);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendRemoveBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
         {
-            using var packet = new Packet(PacketType.RAID_REMOVED_BUFF);
+            using var packet = new ImgeneusPacket(PacketType.RAID_REMOVED_BUFF);
             packet.Write(senderId);
             packet.Write(skillId);
             packet.Write(skillLevel);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void Send_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type)
         {
-            using var packet = new Packet(PacketType.RAID_CHARACTER_SP_MP);
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHARACTER_SP_MP);
             packet.Write(id);
             packet.Write(type);
             packet.Write(value);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void Send_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
         {
-            using var packet = new Packet(PacketType.RAID_SET_MAX);
+            using var packet = new ImgeneusPacket(PacketType.RAID_SET_MAX);
             packet.Write(id);
             packet.Write(type);
             packet.Write(value);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void Send_HP_SP_MP(IWorldClient client, Character partyMember)
@@ -548,42 +549,42 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         protected override void SendNewLeader(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RAID_CHANGE_LEADER);
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_LEADER);
             packet.Write(character.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendNewSubLeader(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RAID_CHANGE_SUBLEADER);
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_SUBLEADER);
             packet.Write(character.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendKickMember(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RAID_KICK);
+            using var packet = new ImgeneusPacket(PacketType.RAID_KICK);
             packet.Write(character.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendPlayerMove(IWorldClient client, int sourceIndex, int destinationIndex, int leaderIndex, int subLeaderIndex)
         {
-            using var packet = new Packet(PacketType.RAID_MOVE_PLAYER);
+            using var packet = new ImgeneusPacket(PacketType.RAID_MOVE_PLAYER);
             packet.Write(sourceIndex);
             packet.Write(destinationIndex);
             packet.Write(leaderIndex);
             packet.Write(subLeaderIndex);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendMemberGetItem(IWorldClient client, int characterId, Item item)
         {
-            using var packet = new Packet(PacketType.RAID_MEMBER_GET_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.RAID_MEMBER_GET_ITEM);
             packet.Write(characterId);
             packet.Write(item.Type);
             packet.Write(item.TypeId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendLevel(IWorldClient client, Character sender)

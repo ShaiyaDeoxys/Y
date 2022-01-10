@@ -18,9 +18,9 @@ namespace Imgeneus.World.Game.Player
             IsTeleporting = false;
 
             // Send map values.
-            SendWeather();
-            SendObelisks();
-            SendMyShape(); // Should fix the issue with dye color, when first connection.
+            //SendWeather();
+            //SendObelisks();
+            //SendMyShape(); // Should fix the issue with dye color, when first connection.
         }
 
         /// <summary>

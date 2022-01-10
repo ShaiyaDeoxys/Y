@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
+using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -27,11 +28,14 @@ namespace Imgeneus.World.Game.Zone
         private readonly MapDefinition _definition;
         private readonly MapConfiguration _config;
         private readonly ILogger<Map> _logger;
+        private readonly IGamePacketFactory _packetFactory;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IMobFactory _mobFactory;
         private readonly INpcFactory _npcFactory;
         private readonly IObeliskFactory _obeliskfactory;
         private readonly ITimeService _timeService;
+
+        public IGamePacketFactory PacketFactory { get => _packetFactory; }
 
         /// <summary>
         /// Map id.
@@ -55,12 +59,13 @@ namespace Imgeneus.World.Game.Zone
 
         public static readonly ushort TEST_MAP_ID = 9999;
 
-        public Map(ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+        public Map(ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
         {
             Id = id;
             _definition = definition;
             _config = config;
             _logger = logger;
+            _packetFactory = packetFactory;
             _databasePreloader = databasePreloader;
             _mobFactory = mobFactory;
             _npcFactory = npcFactory;

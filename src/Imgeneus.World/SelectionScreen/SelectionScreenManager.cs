@@ -17,9 +17,7 @@ namespace Imgeneus.World.SelectionScreen
     /// <inheritdoc/>
     public class SelectionScreenManager : ISelectionScreenManager
     {
-#if EP8_V1
-        public const byte MaxCharacterNumber = 5;
-#elif EP8_V2
+#if EP8_V2
         public const byte MaxCharacterNumber = 6;
 #else
         public const byte MaxCharacterNumber = 5;
@@ -39,7 +37,18 @@ namespace Imgeneus.World.SelectionScreen
             _characterConfiguration = characterConfiguration;
             _database = database;
             _databasePreloader = databasePreloader;
+
+#if DEBUG
+            _logger.LogDebug($"SelectionScreenManager {GetHashCode()} created");
+#endif
         }
+
+#if DEBUG
+        ~SelectionScreenManager()
+        {
+            _logger.LogDebug($"SelectionScreenManager {GetHashCode()} collected by GC");
+        }
+#endif
 
         public async Task<IEnumerable<DbCharacter>> GetCharacters(int userId)
         {
@@ -160,10 +169,10 @@ namespace Imgeneus.World.SelectionScreen
             var user = await _database.Users.FindAsync(userId);
 
             Mode maxMode = Mode.Normal;
-#if EP8_V1 || SHAIYA_US
-            maxMode = user.MaxMode;
-#elif EP8_V2
+#if EP8_V2
             maxMode = Mode.Ultimate;
+#else
+            maxMode = user.MaxMode;
 #endif
             return maxMode;
         }

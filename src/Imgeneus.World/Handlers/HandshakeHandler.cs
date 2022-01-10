@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Imgeneus.World.SelectionScreen;
 using InterServer.Client;
@@ -20,7 +21,7 @@ namespace Imgeneus.World.Handlers
         private readonly ISelectionScreenManager _selectionScreenManager;
         private Guid _sessionId;
 
-        public HandshakeHandler(IGamePacketFactory packetFactory, IWorldServer server, IInterServerClient interClient, ISelectionScreenManager selectionScreenManager): base(packetFactory)
+        public HandshakeHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IWorldServer server, IInterServerClient interClient, ISelectionScreenManager selectionScreenManager): base(packetFactory, gameSession)
         {
             _server = server;
             _interClient = interClient;
@@ -45,6 +46,8 @@ namespace Imgeneus.World.Handlers
 
             var worldClient = _server.ConnectedUsers.First(x => x.Id == _sessionId);
             worldClient.CryptoManager.GenerateAES(sessionInfo.KeyPair.Key, sessionInfo.KeyPair.IV);
+
+            _gameSession.Client = worldClient;
 
             _packetFactory.SendGameHandshake(worldClient);
 

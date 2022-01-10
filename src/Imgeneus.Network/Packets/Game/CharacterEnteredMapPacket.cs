@@ -1,12 +1,13 @@
 ﻿using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct CharacterEnteredMapPacket : IDeserializedPacket
+    public record CharacterEnteredMapPacket : IPacketDeserializer
     {
-        public CharacterEnteredMapPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            // Doesn't contain any inforation, jus notification, that map was loaded on client side.
+            // Doesn't contain any inforation, just notification, that map was loaded on client side.
         }
     }
 }

@@ -343,7 +343,7 @@ namespace Imgeneus.World.Game.Player
                 return CanUseSkill(skill, target);
             }
 
-            if (Weapon is null)
+            if (InventoryManager.Weapon is null)
             {
                 SendAutoAttackWrongEquipment(target);
                 return false;
@@ -374,13 +374,13 @@ namespace Imgeneus.World.Game.Player
                 return false;
             }
 
-            if (Weapon is null || (!skill.RequiredWeapons.Contains(Weapon.Type) && skill.RequiredWeapons.Count != 0))
+            if (InventoryManager.Weapon is null || (!skill.RequiredWeapons.Contains(InventoryManager.Weapon.Type) && skill.RequiredWeapons.Count != 0))
             {
                 SendSkillWrongEquipment(target, skill);
                 return false;
             }
 
-            if (skill.Number != ITEM_SKILL_NUMBER && skill.NeedShield && Shield is null)
+            if (skill.Number != ITEM_SKILL_NUMBER && skill.NeedShield && InventoryManager.Shield is null)
             {
                 SendSkillWrongEquipment(target, skill);
                 return false;

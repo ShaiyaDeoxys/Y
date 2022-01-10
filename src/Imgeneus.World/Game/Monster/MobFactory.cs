@@ -1,24 +1,53 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Monster
 {
     public class MobFactory : IMobFactory
     {
-        private readonly ILogger<Mob> _logger;
-        private readonly IDatabasePreloader _preloader;
+        private readonly IServiceProvider _serviceProvider;
 
-        public MobFactory(ILogger<Mob> logger, IDatabasePreloader preloader)
+        private readonly Dictionary<Mob, IServiceScope> _mobScopes = new Dictionary<Mob, IServiceScope>(); 
+
+        public MobFactory(IServiceProvider serviceProvider)
         {
-            _logger = logger;
-            _preloader = preloader;
+            _serviceProvider = serviceProvider;
         }
 
         /// <inheritdoc/>
         public Mob CreateMob(ushort mobId, bool shouldRebirth, MoveArea moveArea, Map map)
         {
-            return new Mob(mobId, shouldRebirth, moveArea, map, _logger, _preloader);
+            var scope = _serviceProvider.CreateScope();
+
+            var mob = new Mob(mobId,
+                              shouldRebirth,
+                              moveArea,
+                              map,
+                              scope.ServiceProvider.GetRequiredService<ILogger<Mob>>(),
+                              scope.ServiceProvider.GetRequiredService<IDatabasePreloader>(),
+                              scope.ServiceProvider.GetRequiredService<IStatsManager>());
+            mob.OnDead += Mob_OnDead;
+
+            _mobScopes.Add(mob, scope);
+
+            return mob;
+        }
+
+        private void Mob_OnDead(IKillable sender, IKiller killer)
+        {
+            var mob = sender as Mob;
+            if (mob.ShouldRebirth)
+                return;
+
+            mob.OnDead -= Mob_OnDead;
+            _mobScopes.Remove(mob, out var scope);
+            scope.Dispose();
+            scope = null;
         }
     }
 }

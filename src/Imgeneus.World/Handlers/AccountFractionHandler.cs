@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Imgeneus.World.Handlers
     public class AccountFractionHandler : BaseHandler
     {
         private readonly IDatabase _database;
-        public AccountFractionHandler(IGamePacketFactory packetFactory, IDatabase database) : base(packetFactory)
+        public AccountFractionHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabase database) : base(packetFactory, gameSession)
         {
             _database = database;
         }

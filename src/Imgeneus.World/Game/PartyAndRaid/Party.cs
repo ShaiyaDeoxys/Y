@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Serialization;
@@ -176,80 +177,80 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         private void SendPlayerJoinedParty(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.PARTY_ENTER);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_ENTER);
             packet.Write(new PartyMember(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendPlayerLeftParty(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.PARTY_LEAVE);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_LEAVE);
             packet.Write(character.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         private void SendKickMember(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.PARTY_KICK);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_KICK);
             packet.Write(character.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendNewLeader(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.PARTY_CHANGE_LEADER);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_CHANGE_LEADER);
             packet.Write(character.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendAddBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
         {
-            using var packet = new Packet(PacketType.PARTY_ADDED_BUFF);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_ADDED_BUFF);
             packet.Write(senderId);
             packet.Write(skillId);
             packet.Write(skillLevel);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendRemoveBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
         {
-            using var packet = new Packet(PacketType.PARTY_REMOVED_BUFF);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_REMOVED_BUFF);
             packet.Write(senderId);
             packet.Write(skillId);
             packet.Write(skillLevel);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void Send_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type)
         {
-            using var packet = new Packet(PacketType.PARTY_CHARACTER_SP_MP);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_CHARACTER_SP_MP);
             packet.Write(id);
             packet.Write(type);
             packet.Write(value);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void Send_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
         {
-            using var packet = new Packet(PacketType.PARTY_SET_MAX);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_SET_MAX);
             packet.Write(id);
             packet.Write(type);
             packet.Write(value);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void Send_HP_SP_MP(IWorldClient client, Character partyMember)
         {
-            using var packet = new Packet(PacketType.PARTY_MEMBER_HP_SP_MP);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_HP_SP_MP);
             packet.Write(new PartyMember_HP_SP_MP(partyMember).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void Send_Max_HP_SP_MP(IWorldClient client, Character partyMember)
         {
-            using var packet = new Packet(PacketType.PARTY_MEMBER_MAX_HP_SP_MP);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_MAX_HP_SP_MP);
             packet.Write(new PartyMemberMax_HP_SP_MP(partyMember).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         public override void Dismantle()
@@ -263,18 +264,18 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         private void SendMemberGetItem(IWorldClient client, int characterId, Item item)
         {
-            using var packet = new Packet(PacketType.PARTY_MEMBER_GET_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_GET_ITEM);
             packet.Write(characterId);
             packet.Write(item.Type);
             packet.Write(item.TypeId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         protected override void SendLevel(IWorldClient client, Character sender)
         {
-            using var packet = new Packet(PacketType.PARTY_MEMBER_LEVEL);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_LEVEL);
             packet.Write(new PartyMemberLevelChange(sender).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         #endregion

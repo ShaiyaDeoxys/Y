@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,7 +19,8 @@ namespace Imgeneus.World.Game.Monster
                    MoveArea moveArea,
                    Map map,
                    ILogger<Mob> logger,
-                   IDatabasePreloader databasePreloader) : base(databasePreloader)
+                   IDatabasePreloader databasePreloader,
+                   IStatsManager statsManager) : base(databasePreloader, statsManager)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -143,7 +145,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, _statsManager);
         }
 
         public override void Dispose()

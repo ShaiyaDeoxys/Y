@@ -68,12 +68,6 @@ namespace Imgeneus.World.Game.Player
             UpdatePosition(packet.X, packet.Y, packet.Z, packet.Angle, packet.MovementType == MovementType.Stopped);
         }
 
-        private void HandleMoveItem(MoveItemInInventoryPacket moveItemPacket)
-        {
-            var items = MoveItem(moveItemPacket.CurrentBag, moveItemPacket.CurrentSlot, moveItemPacket.DestinationBag, moveItemPacket.DestinationSlot);
-            _packetsHelper.SendMoveItemInInventory(Client, items.sourceItem, items.destinationItem);
-        }
-
         private void HandleLearnNewSkill(LearnNewSkillPacket learnNewSkillsPacket)
         {
             LearnNewSkill(learnNewSkillsPacket.SkillId, learnNewSkillsPacket.SkillLevel);
@@ -338,8 +332,8 @@ namespace Imgeneus.World.Game.Player
             {
                 _taskQueue.Enqueue(ActionType.CREATE_DYE_COLOR, Id, item.Bag, item.Slot, color.Alpha, color.Saturation, color.R, color.G, color.B);
 
-                if (item.Bag == 0)
-                    OnEquipmentChanged?.Invoke(this, item, item.Slot);
+                //if (item.Bag == 0)
+                    //OnEquipmentChanged?.Invoke(this, item, item.Slot);
 
                 TryUseItem(dyeItem.Bag, dyeItem.Slot);
             }
@@ -388,15 +382,15 @@ namespace Imgeneus.World.Game.Player
 
             if (item.Bag == 0)
             {
-                ExtraStr -= item.ComposedStr;
-                ExtraDex -= item.ComposedDex;
-                ExtraRec -= item.ComposedRec;
-                ExtraInt -= item.ComposedInt;
-                ExtraWis -= item.ComposedWis;
-                ExtraLuc -= item.ComposedLuc;
-                ExtraHP -= item.ComposedHP;
-                ExtraMP -= item.ComposedMP;
-                ExtraSP -= item.ComposedSP;
+                StatsManager.ExtraStr -= item.ComposedStr;
+                StatsManager.ExtraDex -= item.ComposedDex;
+                StatsManager.ExtraRec -= item.ComposedRec;
+                StatsManager.ExtraInt -= item.ComposedInt;
+                StatsManager.ExtraWis -= item.ComposedWis;
+                StatsManager.ExtraLuc -= item.ComposedLuc;
+                StatsManager.ExtraHP -= item.ComposedHP;
+                StatsManager.ExtraMP -= item.ComposedMP;
+                StatsManager.ExtraSP -= item.ComposedSP;
             }
 
             _linkingManager.Item = item;
@@ -406,15 +400,15 @@ namespace Imgeneus.World.Game.Player
 
             if (item.Bag == 0)
             {
-                ExtraStr += item.ComposedStr;
-                ExtraDex += item.ComposedDex;
-                ExtraRec += item.ComposedRec;
-                ExtraInt += item.ComposedInt;
-                ExtraWis += item.ComposedWis;
-                ExtraLuc += item.ComposedLuc;
-                ExtraHP += item.ComposedHP;
-                ExtraMP += item.ComposedMP;
-                ExtraSP += item.ComposedSP;
+                StatsManager.ExtraStr += item.ComposedStr;
+                StatsManager.ExtraDex += item.ComposedDex;
+                StatsManager.ExtraRec += item.ComposedRec;
+                StatsManager.ExtraInt += item.ComposedInt;
+                StatsManager.ExtraWis += item.ComposedWis;
+                StatsManager.ExtraLuc += item.ComposedLuc;
+                StatsManager.ExtraHP += item.ComposedHP;
+                StatsManager.ExtraMP += item.ComposedMP;
+                StatsManager.ExtraSP += item.ComposedSP;
 
                 SendAdditionalStats();
             }

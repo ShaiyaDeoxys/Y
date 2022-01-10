@@ -1,4 +1,6 @@
-﻿using Imgeneus.Database.Entities;
+﻿using Imgeneus.Database.Constants;
+using Imgeneus.Database.Entities;
+using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Player;
 using System.Collections.Generic;
 
@@ -7,23 +9,47 @@ namespace Imgeneus.World.Packets
     public interface IGamePacketFactory
     {
         #region Handshake
-        void SendGameHandshake(WorldClient worldClient);
+        void SendGameHandshake(IWorldClient IWorldClient);
+        void SendLogout(IWorldClient client);
+        void SendQuitGame(IWorldClient client);
         #endregion
 
         #region Selection screen
-        void SendCreatedCharacter(WorldClient client, bool isCreated);
-        void SendCheckName(WorldClient client, bool isAvailable);
-        void SendFaction(WorldClient client, Fraction faction, Mode maxMode);
-        void SendCharacterList(WorldClient client, IEnumerable<DbCharacter> characters);
-        void SendCharacterSelected(WorldClient client, bool ok, int id);
-        void SendDeletedCharacter(WorldClient client, bool ok, int id);
-        void SendRestoredCharacter(WorldClient client, bool ok, int id);
-        void SendRenamedCharacter(WorldClient client, bool ok, int id);
+        void SendCreatedCharacter(IWorldClient client, bool isCreated);
+        void SendCheckName(IWorldClient client, bool isAvailable);
+        void SendFaction(IWorldClient client, Fraction faction, Mode maxMode);
+        void SendCharacterList(IWorldClient client, IEnumerable<DbCharacter> characters);
+        void SendCharacterSelected(IWorldClient client, bool ok, int id);
+        void SendDeletedCharacter(IWorldClient client, bool ok, int id);
+        void SendRestoredCharacter(IWorldClient client, bool ok, int id);
+        void SendRenamedCharacter(IWorldClient client, bool ok, int id);
         #endregion
 
         #region Character
-        void SendDetails(WorldClient client, Character character);
-        void SendSkillBar(WorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems);
+        void SendDetails(IWorldClient client, Character character);
+        void SendAdditionalStats(IWorldClient client, Character character);
+        void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems);
+        #endregion
+
+        #region Inventory
+        void SendInventoryItems(IWorldClient client, ICollection<Item> inventoryItems);
+        void SendItemExpiration(IWorldClient client, Item item);
+        void SendAddItem(IWorldClient client, Item item);
+        void SendMoveItem(IWorldClient client, Item sourceItem, Item destinationItem);
+        void SendRemoveItem(IWorldClient client, Item item, bool fullRemove);
+        void SendItemDoesNotBelong(IWorldClient client);
+        void SendFullInventory(IWorldClient client);
+        #endregion
+
+        #region Map
+        void SendCharacterMotion(IWorldClient client, int characterId, Motion motion);
+        void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot);
+        void SendCharacterShape(IWorldClient client, Character character);
+        #endregion
+
+        #region GM
+        void SendGmCommandSuccess(IWorldClient client);
+        void SendGmCommandError(IWorldClient client, PacketType error);
         #endregion
     }
 }

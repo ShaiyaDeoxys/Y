@@ -6,14 +6,15 @@ using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
+using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 
 namespace Imgeneus.World.Game.Zone
 {
     public class GuildHouseMap : GuildMap
     {
-        public GuildHouseMap(int guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
-            : base(guildId, guildRankingManager, id, definition, config, logger, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
+        public GuildHouseMap(int guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+            : base(guildId, guildRankingManager, id, definition, config, logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
         {
 
         }

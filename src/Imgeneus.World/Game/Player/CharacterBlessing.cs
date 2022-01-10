@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Blessing;
 using System;
@@ -34,15 +35,15 @@ namespace Imgeneus.World.Game.Player
         {
             if (args.OldValue >= Bless.MAX_HP_SP_MP && args.NewValue < Bless.MAX_HP_SP_MP)
             {
-                ExtraHP -= ConstHP / 5;
-                ExtraMP -= ConstMP / 5;
-                ExtraSP -= ConstSP / 5;
+                StatsManager.ExtraHP -= ConstHP / 5;
+                StatsManager.ExtraMP -= ConstMP / 5;
+                StatsManager.ExtraSP -= ConstSP / 5;
             }
             if (args.OldValue < Bless.MAX_HP_SP_MP && args.NewValue >= Bless.MAX_HP_SP_MP)
             {
-                ExtraHP += ConstHP / 5;
-                ExtraMP += ConstMP / 5;
-                ExtraSP += ConstSP / 5;
+                StatsManager.ExtraHP += ConstHP / 5;
+                StatsManager.ExtraMP += ConstMP / 5;
+                StatsManager.ExtraSP += ConstSP / 5;
             }
         }
 
@@ -51,10 +52,10 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void SendBlessUpdate(byte fraction, int amount)
         {
-            using var packet = new Packet(PacketType.BLESS_UPDATE);
+            using var packet = new ImgeneusPacket(PacketType.BLESS_UPDATE);
             packet.Write(fraction);
             packet.Write(amount);
-            Client.SendPacket(packet);
+            Client.Send(packet);
         }
 
         /// <summary>
@@ -62,14 +63,14 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void SendBlessAmount()
         {
-            using var packet = new Packet(PacketType.BLESS_INIT);
+            using var packet = new ImgeneusPacket(PacketType.BLESS_INIT);
             packet.Write((byte)Country);
 
             var blessAmount = Country == Fraction.Light ? Bless.Instance.LightAmount : Bless.Instance.DarkAmount;
             packet.Write(blessAmount);
             packet.Write(Bless.Instance.RemainingTime);
 
-            Client.SendPacket(packet);
+            Client.Send(packet);
         }
     }
 }

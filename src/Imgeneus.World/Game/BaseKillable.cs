@@ -7,6 +7,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using MvvmHelpers;
 
@@ -18,10 +19,12 @@ namespace Imgeneus.World.Game
     public abstract class BaseKillable : IKillable, IMapMember, IDisposable
     {
         protected readonly IDatabasePreloader _databasePreloader;
+        protected readonly IStatsManager _statsManager;
 
-        public BaseKillable(IDatabasePreloader databasePreloader)
+        public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager)
         {
             _databasePreloader = databasePreloader;
+            _statsManager = statsManager;
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
         }
@@ -663,94 +666,94 @@ namespace Imgeneus.World.Game
 
                 case AbilityType.Str:
                     if (addAbility)
-                        ExtraStr += abilityValue;
+                        _statsManager.ExtraStr += abilityValue;
                     else
-                        ExtraStr -= abilityValue;
+                        _statsManager.ExtraStr -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Rec:
                     if (addAbility)
-                        ExtraRec += abilityValue;
+                        _statsManager.ExtraRec += abilityValue;
                     else
-                        ExtraRec -= abilityValue;
+                        _statsManager.ExtraRec -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Int:
                     if (addAbility)
-                        ExtraInt += abilityValue;
+                        _statsManager.ExtraInt += abilityValue;
                     else
-                        ExtraInt -= abilityValue;
+                        _statsManager.ExtraInt -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Wis:
                     if (addAbility)
-                        ExtraWis += abilityValue;
+                        _statsManager.ExtraWis += abilityValue;
                     else
-                        ExtraWis -= abilityValue;
+                        _statsManager.ExtraWis -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Dex:
                     if (addAbility)
-                        ExtraDex += abilityValue;
+                        _statsManager.ExtraDex += abilityValue;
                     else
-                        ExtraDex -= abilityValue;
+                        _statsManager.ExtraDex -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Luc:
                     if (addAbility)
-                        ExtraLuc += abilityValue;
+                        _statsManager.ExtraLuc += abilityValue;
                     else
-                        ExtraLuc -= abilityValue;
+                        _statsManager.ExtraLuc -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.HP:
                     if (addAbility)
-                        ExtraHP += abilityValue;
+                        _statsManager.ExtraHP += abilityValue;
                     else
-                        ExtraHP -= abilityValue;
+                        _statsManager.ExtraHP -= abilityValue;
                     break;
 
                 case AbilityType.MP:
                     if (addAbility)
-                        ExtraMP += abilityValue;
+                        _statsManager.ExtraMP += abilityValue;
                     else
-                        ExtraMP -= abilityValue;
+                        _statsManager.ExtraMP -= abilityValue;
                     break;
 
                 case AbilityType.SP:
                     if (addAbility)
-                        ExtraSP += abilityValue;
+                        _statsManager.ExtraSP += abilityValue;
                     else
-                        ExtraSP -= abilityValue;
+                        _statsManager.ExtraSP -= abilityValue;
                     break;
 
                 case AbilityType.PhysicalDefense:
                 case AbilityType.ShootingDefense:
                     if (addAbility)
-                        ExtraDefense += abilityValue;
+                        _statsManager.ExtraDefense += abilityValue;
                     else
-                        ExtraDefense -= abilityValue;
+                        _statsManager.ExtraDefense -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.MagicResistance:
                     if (addAbility)
-                        ExtraResistance += abilityValue;
+                        _statsManager.ExtraResistance += abilityValue;
                     else
-                        ExtraResistance -= abilityValue;
+                        _statsManager.ExtraResistance -= abilityValue;
 
                     SendAdditionalStats();
                     return;
@@ -771,9 +774,9 @@ namespace Imgeneus.World.Game
 
                 case AbilityType.AbsorptionAura:
                     if (addAbility)
-                        Absorption += abilityValue;
+                        _statsManager.Absorption += abilityValue;
                     else
-                        Absorption -= abilityValue;
+                        _statsManager.Absorption -= abilityValue;
                     return;
 
                 default:
@@ -1016,107 +1019,6 @@ namespace Imgeneus.World.Game
 
         #endregion
 
-        #region Extra stats
-
-        /// <summary>
-        /// Yellow strength stat, that is calculated based on worn items, orange stats and active buffs.
-        /// </summary>
-        public int ExtraStr { get; protected set; }
-
-        /// <summary>
-        /// Yellow dexterity stat, that is calculated based on worn items, orange stats and active buffs.
-        /// </summary>
-        public int ExtraDex { get; protected set; }
-
-        /// <summary>
-        /// Yellow rec stat, that is calculated based on worn items, orange stats and active buffs.
-        /// </summary>
-        public int ExtraRec { get; protected set; }
-
-        /// <summary>
-        /// Yellow intelligence stat, that is calculated based on worn items, orange stats and active buffs.
-        /// </summary>
-        public int ExtraInt { get; protected set; }
-
-        /// <summary>
-        /// Yellow luck stat, that is calculated based on worn items, orange stats and active buffs.
-        /// </summary>
-        public int ExtraLuc { get; protected set; }
-
-        /// <summary>
-        /// Yellow wisdom stat, that is calculated based on worn items, orange stats and active buffs.
-        /// </summary>
-        public int ExtraWis { get; protected set; }
-
-        /// <summary>
-        /// Physical defense from equipment and buffs.
-        /// </summary>
-        public int ExtraDefense { get; protected set; }
-
-        /// <summary>
-        /// Magical resistance from equipment and buffs.
-        /// </summary>
-        public int ExtraResistance { get; protected set; }
-
-        private int _extraHP;
-        /// <summary>
-        /// Health points, that are provided by equipment and buffs.
-        /// </summary>
-        public int ExtraHP
-        {
-            get => _extraHP;
-            protected set
-            {
-                _extraHP = value;
-
-                if (CurrentHP > MaxHP)
-                {
-                    CurrentHP = MaxHP;
-                    SendCurrentHitpoints();
-                }
-
-                OnMaxHPChanged?.Invoke(this, MaxHP);
-            }
-        }
-
-        private int _extraSP;
-        /// <summary>
-        /// Stamina points, that are provided by equipment and buffs.
-        /// </summary>
-        public int ExtraSP
-        {
-            get => _extraSP;
-            protected set
-            {
-                _extraSP = value;
-
-                if (CurrentSP > MaxSP)
-                    CurrentSP = MaxSP;
-
-                OnMaxSPChanged?.Invoke(this, MaxSP);
-            }
-        }
-
-        private int _extraMP;
-        /// <summary>
-        /// Mana points, that are provided by equipment and buffs.
-        /// </summary>
-        public int ExtraMP
-        {
-            get => _extraMP;
-            protected set
-            {
-                _extraMP = value;
-
-                if (CurrentMP > MaxMP)
-                    CurrentMP = MaxMP;
-
-                OnMaxMPChanged?.Invoke(this, MaxMP);
-            }
-        }
-
-        #endregion
-
         #region Hitting chances
 
         /// <summary>
@@ -1260,13 +1162,6 @@ namespace Imgeneus.World.Game
 
         #endregion
 
-        #region Absorption
-
-        /// <inheritdoc/>
-        public ushort Absorption { get; protected set; }
-
-        #endregion
-
         #region Untouchable
 
         ///  <inheritdoc/>
@@ -1277,6 +1172,12 @@ namespace Imgeneus.World.Game
         #region Stealth
 
         public abstract bool IsStealth { get; protected set; }
+
+        #endregion
+
+        #region Absorption
+
+        public ushort Absorption { get => _statsManager.Absorption; }
 
         #endregion
 

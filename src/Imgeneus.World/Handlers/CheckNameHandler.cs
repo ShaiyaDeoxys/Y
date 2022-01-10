@@ -2,6 +2,7 @@
 using Imgeneus.Database;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IDatabase _database;
 
-        public CheckNameHandler(IGamePacketFactory packetFactory, IDatabase database): base(packetFactory)
+        public CheckNameHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabase database): base(packetFactory, gameSession)
         {
             _database = database;
         }

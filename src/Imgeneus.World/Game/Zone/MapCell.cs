@@ -199,7 +199,7 @@ namespace Imgeneus.World.Game.Zone
                 return;
             character.OnPositionChanged += Character_OnPositionChanged;
             character.OnMotion += Character_OnMotion;
-            character.OnEquipmentChanged += Character_OnEquipmentChanged;
+            character.InventoryManager.OnEquipmentChanged += Character_OnEquipmentChanged;
             character.OnPartyChanged += Character_OnPartyChanged;
             character.OnAttackOrMoveChanged += Character_OnAttackOrMoveChanged;
             character.OnUsedSkill += Character_OnUsedSkill;
@@ -229,7 +229,7 @@ namespace Imgeneus.World.Game.Zone
         {
             character.OnPositionChanged -= Character_OnPositionChanged;
             character.OnMotion -= Character_OnMotion;
-            character.OnEquipmentChanged -= Character_OnEquipmentChanged;
+            character.InventoryManager.OnEquipmentChanged -= Character_OnEquipmentChanged;
             character.OnPartyChanged -= Character_OnPartyChanged;
             character.OnAttackOrMoveChanged -= Character_OnAttackOrMoveChanged;
             character.OnUsedSkill -= Character_OnUsedSkill;
@@ -270,19 +270,19 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnMotion(Character playerWithMotion, Motion motion)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendCharacterMotion(player.Client, playerWithMotion.Id, motion);
+                Map.PacketFactory.SendCharacterMotion(player.Client, playerWithMotion.Id, motion);
         }
 
         /// <summary>
         /// Notifies other players, that this player changed equipment.
         /// </summary>
-        /// <param name="sender">player, that changed equipment</param>
+        /// <param name="characterId">player, that changed equipment</param>
         /// <param name="equipmentItem">item, that was worn</param>
         /// <param name="slot">item slot</param>
-        private void Character_OnEquipmentChanged(Character sender, Item equipmentItem, byte slot)
+        private void Character_OnEquipmentChanged(int characterId, Item equipmentItem, byte slot)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendCharacterChangedEquipment(player.Client, sender.Id, equipmentItem, slot);
+                Map.PacketFactory.SendCharacterChangedEquipment(player.Client, characterId, equipmentItem, slot);
         }
 
         /// <summary>
@@ -583,8 +583,8 @@ namespace Imgeneus.World.Game.Zone
 
         private void Mob_OnMove(Mob sender)
         {
-            foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMobMove(player.Client, sender);
+            //foreach (var player in GetAllPlayers(true))
+                //_packetsHelper.SendMobMove(player.Client, sender);
         }
 
         private void Mob_OnAttack(IKiller sender, IKillable target, AttackResult attackResult)

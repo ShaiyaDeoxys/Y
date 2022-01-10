@@ -17,7 +17,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game
 {
@@ -29,17 +28,15 @@ namespace Imgeneus.World.Game
         private readonly ILogger<GameWorld> _logger;
         private readonly IMapsLoader _mapsLoader;
         private readonly IMapFactory _mapFactory;
-        private readonly ICharacterFactory _characterFactory;
         private readonly ITimeService _timeService;
         private readonly IGuildRankingManager _guildRankingManager;
         private MapDefinitions _mapDefinitions;
 
-        public GameWorld(ILogger<GameWorld> logger, IMapsLoader mapsLoader, IMapFactory mapFactory, ICharacterFactory characterFactory, ITimeService timeService, IGuildRankingManager guildRankingManager)
+        public GameWorld(ILogger<GameWorld> logger, IMapsLoader mapsLoader, IMapFactory mapFactory, ITimeService timeService, IGuildRankingManager guildRankingManager)
         {
             _logger = logger;
             _mapsLoader = mapsLoader;
             _mapFactory = mapFactory;
-            _characterFactory = characterFactory;
             _timeService = timeService;
             _guildRankingManager = guildRankingManager;
 
@@ -317,33 +314,20 @@ namespace Imgeneus.World.Game
         public ConcurrentDictionary<int, DuelManager> DuelManagers { get; private set; } = new ConcurrentDictionary<int, DuelManager>();
 
         /// <inheritdoc />
-        public async Task<Character> LoadPlayer(int characterId, WorldClient client)
+        public bool TryLoadPlayer(Character newPlayer)
         {
-            var newPlayer = await _characterFactory.CreateCharacter(characterId, client);
-            if (newPlayer is null)
-                return null;
+            var result = Players.TryAdd(newPlayer.Id, newPlayer);
+            //TradeManagers.TryAdd(newPlayer.Id, new TradeManager(this, newPlayer));
+            //PartyManagers.TryAdd(newPlayer.Id, new PartyManager(this, newPlayer));
+            //DuelManagers.TryAdd(newPlayer.Id, new DuelManager(this, newPlayer));
 
-            Players.TryAdd(newPlayer.Id, newPlayer);
-            TradeManagers.TryAdd(newPlayer.Id, new TradeManager(this, newPlayer));
-            PartyManagers.TryAdd(newPlayer.Id, new PartyManager(this, newPlayer));
-            DuelManagers.TryAdd(newPlayer.Id, new DuelManager(this, newPlayer));
+            if(result)
+                _logger.LogDebug($"Player {newPlayer.Id} connected to game world");
+            else
+                _logger.LogError($"Could not load player {newPlayer.Id} to game world");
 
-            _logger.LogDebug($"Player {newPlayer.Id} connected to game world");
-            //newPlayer.Client.OnPacketArrived += Client_OnPacketArrived;
-
-            return newPlayer;
+            return result;
         }
-
-        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
-        {
-            switch (packet)
-            {
-                case CharacterEnteredMapPacket enteredMapPacket:
-                    LoadPlayerInMap(((WorldClient)sender).CharID);
-                    break;
-            }
-
-        }*/
 
         /// <inheritdoc />
         public void LoadPlayerInMap(int characterId)
@@ -445,16 +429,14 @@ namespace Imgeneus.World.Game
             {
                 _logger.LogDebug($"Player {characterId} left game world");
 
-                TradeManagers.TryRemove(characterId, out var tradeManager);
+                /*TradeManagers.TryRemove(characterId, out var tradeManager);
                 tradeManager.Dispose();
 
                 PartyManagers.TryRemove(characterId, out var partyManager);
                 partyManager.Dispose();
 
                 DuelManagers.TryRemove(characterId, out var duelManager);
-                duelManager.Dispose();
-
-                //player.Client.OnPacketArrived -= Client_OnPacketArrived;
+                duelManager.Dispose();*/
 
                 IMap map = null;
 

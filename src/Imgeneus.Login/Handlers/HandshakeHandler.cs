@@ -1,5 +1,4 @@
-﻿using Imgeneus.Login.Packets;
-using Imgeneus.Network.Packets;
+﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Login;
 using InterServer.Common;
 using InterServer.Server;

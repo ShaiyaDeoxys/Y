@@ -6,6 +6,7 @@ using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.Network.Serialization;
@@ -25,10 +26,8 @@ using Imgeneus.World.Serialization;
 using Imgeneus.World.Serialization.EP_8_V1;
 #elif EP8_V2
 using Imgeneus.World.Serialization.EP_8_V2;
-#elif SHAIYA_US
-using Imgeneus.World.Serialization.SHAIYA_US;
 #else
-using Imgeneus.World.Serialization.EP_8_V1;
+using Imgeneus.World.Serialization.SHAIYA_US;
 #endif
 
 namespace Imgeneus.World.Packets
@@ -49,16 +48,16 @@ namespace Imgeneus.World.Packets
                 var length = i == steps ? left : 50;
                 var endIndex = startIndex + length;
 
-                using var packet = new Packet(PacketType.CHARACTER_ITEMS);
+                using var packet = new ImgeneusPacket(PacketType.CHARACTER_ITEMS);
                 packet.Write(new InventoryItems(inventoryItems[startIndex..endIndex]).Serialize());
-                client.SendPacket(packet);
+                client.Send(packet);
             }
         }
 
         internal void SendGuildList(IWorldClient client, DbGuild[] guilds)
         {
-            using var start = new Packet(PacketType.GUILD_LIST_LOADING_START);
-            client.SendPacket(start);
+            using var start = new ImgeneusPacket(PacketType.GUILD_LIST_LOADING_START);
+            client.Send(start);
 
             var steps = guilds.Length / 15;
             var left = guilds.Length % 15;
@@ -69,13 +68,13 @@ namespace Imgeneus.World.Packets
                 var length = i == steps ? left : 15;
                 var endIndex = startIndex + length;
 
-                using var packet = new Packet(PacketType.GUILD_LIST);
+                using var packet = new ImgeneusPacket(PacketType.GUILD_LIST);
                 packet.Write(new GuildList(guilds[startIndex..endIndex]).Serialize());
-                client.SendPacket(packet);
+                client.Send(packet);
             }
 
-            using var end = new Packet(PacketType.GUILD_LIST_LOADING_END);
-            client.SendPacket(end);
+            using var end = new ImgeneusPacket(PacketType.GUILD_LIST_LOADING_END);
+            client.Send(end);
         }
 
         internal void SendGuildMembersOnline(IWorldClient client, List<DbCharacter> members, bool online)
@@ -89,96 +88,96 @@ namespace Imgeneus.World.Packets
                 var length = i == steps ? left : 40;
                 var endIndex = startIndex + length;
 
-                Packet packet;
+                ImgeneusPacket packet;
                 if (online)
-                    packet = new Packet(PacketType.GUILD_USER_LIST_ONLINE);
+                    packet = new ImgeneusPacket(PacketType.GUILD_USER_LIST_ONLINE);
                 else
-                    packet = new Packet(PacketType.GUILD_USER_LIST_NOT_ONLINE);
+                    packet = new ImgeneusPacket(PacketType.GUILD_USER_LIST_NOT_ONLINE);
 
                 packet.Write(new GuildListOnline(members.GetRange(startIndex, endIndex)).Serialize());
-                client.SendPacket(packet);
+                client.Send(packet);
                 packet.Dispose();
             }
         }
 
         internal void SendWorldDay(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.WORLD_DAY);
+            using var packet = new ImgeneusPacket(PacketType.WORLD_DAY);
             packet.Write(new DateTime(2020, 01, 01, 12, 30, 00).ToShaiyaTime());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterTeleport(IWorldClient client, Character player, bool teleportedByAdmin)
         {
-            using var packet = new Packet(teleportedByAdmin ? PacketType.CHARACTER_MAP_TELEPORT : PacketType.GM_TELEPORT_MAP_COORDINATES);
+            using var packet = new ImgeneusPacket(teleportedByAdmin ? PacketType.CHARACTER_MAP_TELEPORT : PacketType.GM_TELEPORT_MAP_COORDINATES);
             packet.Write(player.Id);
             packet.Write(player.MapId);
             packet.Write(player.PosX);
             packet.Write(player.PosY);
             packet.Write(player.PosZ);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildNpcs(IWorldClient client, IEnumerable<DbGuildNpcLvl> npcs)
         {
-            using var packet = new Packet(PacketType.GUILD_NPC_LIST);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_NPC_LIST);
             packet.Write(new GuildNpcList(npcs).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCurrentHitpoints(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHARACTER_CURRENT_HITPOINTS);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_CURRENT_HITPOINTS);
             packet.Write(new CharacterHitpoints(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendDetails(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHARACTER_DETAILS);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_DETAILS);
             packet.Write(new CharacterDetails(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendLearnedNewSkill(IWorldClient client, Skill skill)
         {
-            using var answerPacket = new Packet(PacketType.LEARN_NEW_SKILL);
+            using var answerPacket = new ImgeneusPacket(PacketType.LEARN_NEW_SKILL);
             answerPacket.Write(new LearnedSkill(skill).Serialize());
-            client.SendPacket(answerPacket);
+            client.Send(answerPacket);
         }
 
         internal void SendLearnedSkills(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHARACTER_SKILLS);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILLS);
             packet.Write(new CharacterSkills(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendActiveBuffs(IWorldClient client, ICollection<ActiveBuff> activeBuffs)
         {
-            using var packet = new Packet(PacketType.CHARACTER_ACTIVE_BUFFS);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ACTIVE_BUFFS);
             packet.Write(new CharacterActiveBuffs(activeBuffs).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAddBuff(IWorldClient client, ActiveBuff buff)
         {
-            using var packet = new Packet(PacketType.BUFF_ADD);
+            using var packet = new ImgeneusPacket(PacketType.BUFF_ADD);
             packet.Write(new SerializedActiveBuff(buff).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRemoveBuff(IWorldClient client, ActiveBuff buff)
         {
-            using var packet = new Packet(PacketType.BUFF_REMOVE);
+            using var packet = new ImgeneusPacket(PacketType.BUFF_REMOVE);
             packet.Write(buff.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMoveItemInInventory(IWorldClient client, Item sourceItem, Item destinationItem)
         {
             // Send move item.
-            using var packet = new Packet(PacketType.INVENTORY_MOVE_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.INVENTORY_MOVE_ITEM);
 
 #if (EP8_V2 || SHAIYA_US)
             packet.Write(0); // Unknown int in V2.
@@ -190,40 +189,40 @@ namespace Imgeneus.World.Packets
             bytes = new MovedItem(destinationItem).Serialize();
             packet.Write(bytes);
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SetMobInTarget(IWorldClient client, Mob target)
         {
-            using var packet = new Packet(PacketType.TARGET_SELECT_MOB);
+            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_MOB);
             packet.Write(new MobInTarget(target).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SetPlayerInTarget(IWorldClient client, Character target)
         {
-            using var packet = new Packet(PacketType.TARGET_SELECT_CHARACTER);
+            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_CHARACTER);
             packet.Write(new CharacterInTarget(target).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendVehicleRequest(IWorldClient client, int requesterId)
         {
-            using var packet = new Packet(PacketType.VEHICLE_REQUEST);
+            using var packet = new ImgeneusPacket(PacketType.VEHICLE_REQUEST);
             packet.Write(requesterId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendVehicleResponse(IWorldClient client, VehicleResponse status)
         {
-            using var packet = new Packet(PacketType.VEHICLE_RESPONSE);
+            using var packet = new ImgeneusPacket(PacketType.VEHICLE_RESPONSE);
             packet.Write((byte)status);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems)
         {
-            using var packet = new Packet(PacketType.CHARACTER_SKILL_BAR);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILL_BAR);
             packet.Write((byte)quickItems.Count());
             packet.Write(0); // Unknown int.
 
@@ -236,282 +235,282 @@ namespace Imgeneus.World.Packets
                 packet.Write(0); // Unknown int.
             }
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAddItem(IWorldClient client, Item item)
         {
-            using var packet = new Packet(PacketType.ADD_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.ADD_ITEM);
             packet.Write(new AddedInventoryItem(item).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendPortalTeleportNotAllowed(IWorldClient client, PortalTeleportNotAllowedReason reason)
         {
-            using var packet = new Packet(PacketType.CHARACTER_ENTERED_PORTAL);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ENTERED_PORTAL);
             packet.Write(false); // success
             packet.Write((byte)reason);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRemoveItem(IWorldClient client, Item item, bool fullRemove)
         {
-            using var packet = new Packet(PacketType.REMOVE_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.REMOVE_ITEM);
             packet.Write(new RemovedInventoryItem(item, fullRemove).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildMemberIsOnline(IWorldClient client, int playerId)
         {
-            using var packet = new Packet(PacketType.GUILD_USER_STATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(104);
             packet.Write(playerId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildJoinRequestAdd(IWorldClient client, DbCharacter character)
         {
-            using var packet = new Packet(PacketType.GUILD_JOIN_LIST_ADD);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_ADD);
             packet.Write(new GuildJoinUserUnit(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildJoinRequestRemove(IWorldClient client, int playerId)
         {
-            using var packet = new Packet(PacketType.GUILD_JOIN_LIST_REMOVE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_REMOVE);
             packet.Write(playerId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildMemberIsOffline(IWorldClient client, int playerId)
         {
-            using var packet = new Packet(PacketType.GUILD_USER_STATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(105);
             packet.Write(playerId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildMemberRemove(IWorldClient client, int playerId)
         {
-            using var packet = new Packet(PacketType.GUILD_USER_STATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(103);
             packet.Write(playerId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildMemberLeave(IWorldClient client, int playerId)
         {
-            using var packet = new Packet(PacketType.GUILD_USER_STATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(102);
             packet.Write(playerId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildDismantle(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.GUILD_USER_STATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(101);
             packet.Write(0);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildListAdd(IWorldClient client, DbGuild guild)
         {
-            using var packet = new Packet(PacketType.GUILD_LIST_ADD);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_LIST_ADD);
             packet.Write(new GuildUnit(guild).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGRBNotice(IWorldClient client, GRBNotice notice)
         {
-            using var packet = new Packet(PacketType.GRB_NOTICE);
+            using var packet = new ImgeneusPacket(PacketType.GRB_NOTICE);
             packet.Write((ushort)50); // GRB map is always 50. Technically this doesn't really matter, because it's not used anywhere...
             packet.Write((byte)notice);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildRanksCalculated(IWorldClient client, IEnumerable<(int GuildId, int Points, byte Rank)> results)
         {
-            using var packet = new Packet(PacketType.GUILD_RANK_UPDATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_RANK_UPDATE);
             packet.Write(new GuildRankUpdate(results).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGBRPoints(IWorldClient client, int currentPoints, int maxPoints, int topGuild)
         {
-            using var packet = new Packet(PacketType.GRB_POINTS);
+            using var packet = new ImgeneusPacket(PacketType.GRB_POINTS);
             packet.Write(currentPoints);
             packet.Write(maxPoints);
             packet.Write(topGuild);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildListRemove(IWorldClient client, int guildId)
         {
-            using var packet = new Packet(PacketType.GUILD_LIST_REMOVE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_LIST_REMOVE);
             packet.Write(guildId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildMemberLeaveResult(IWorldClient client, bool ok)
         {
-            using var packet = new Packet(PacketType.GUILD_LEAVE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_LEAVE);
             packet.Write(ok);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildUserChangeRank(IWorldClient client, int playerId, byte rank)
         {
-            using var packet = new Packet(PacketType.GUILD_USER_STATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte((byte)(rank + 200));
             packet.Write(playerId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildKickMember(IWorldClient client, bool ok, int characterId)
         {
-            using var packet = new Packet(PacketType.GUILD_KICK);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_KICK);
             packet.Write(ok);
             packet.Write(characterId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildUserListAdd(IWorldClient client, DbCharacter character, bool online)
         {
-            using var packet = new Packet(PacketType.GUILD_USER_LIST_ADD);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_LIST_ADD);
             packet.Write(online);
             packet.Write(new GuildUserUnit(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money)
         {
-            using var packet = new Packet(PacketType.CHARACTER_TELEPORT_VIA_NPC);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_TELEPORT_VIA_NPC);
             packet.Write((byte)reason);
             packet.Write(money);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendItemExpiration(IWorldClient client, Item item)
         {
-            using var packet = new Packet(PacketType.ITEM_EXPIRATION);
+            using var packet = new ImgeneusPacket(PacketType.ITEM_EXPIRATION);
             packet.Write(new InventoryItemExpiration(item).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAdditionalStats(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHARACTER_ADDITIONAL_STATS);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ADDITIONAL_STATS);
             packet.Write(new CharacterAdditionalStats(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAutoStats(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.AUTO_STATS_LIST);
+            using var packet = new ImgeneusPacket(PacketType.AUTO_STATS_LIST);
             packet.Write(character.AutoStr);
             packet.Write(character.AutoDex);
             packet.Write(character.AutoRec);
             packet.Write(character.AutoInt);
             packet.Write(character.AutoWis);
             packet.Write(character.AutoLuc);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildCreateRequest(IWorldClient client, int creatorId, string guildName, string guildMessage)
         {
-            using var packet = new Packet(PacketType.GUILD_CREATE_AGREE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE_AGREE);
             packet.Write(creatorId);
             packet.WriteString(guildName, 25);
             packet.WriteString(guildMessage, 65);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGoldUpdate(IWorldClient client, uint gold)
         {
-            using var packet = new Packet(PacketType.SET_MONEY);
+            using var packet = new ImgeneusPacket(PacketType.SET_MONEY);
             packet.Write(gold);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMaxHitpoints(IWorldClient client, Character character, HitpointType type)
         {
-            using var packet = new Packet(PacketType.CHARACTER_MAX_HITPOINTS);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MAX_HITPOINTS);
             packet.Write(new MaxHitpoint(character, type).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendPartyInfo(IWorldClient client, IEnumerable<Character> partyMembers, byte leaderIndex)
         {
-            using var packet = new Packet(PacketType.PARTY_LIST);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_LIST);
             packet.Write(new UsualParty(partyMembers, leaderIndex).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRaidInfo(IWorldClient client, Raid raid)
         {
-            using var packet = new Packet(PacketType.RAID_LIST);
+            using var packet = new ImgeneusPacket(PacketType.RAID_LIST);
             packet.Write(new RaidParty(raid).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendResetSkills(IWorldClient client, ushort skillPoint)
         {
-            using var packet = new Packet(PacketType.RESET_SKILLS);
+            using var packet = new ImgeneusPacket(PacketType.RESET_SKILLS);
             packet.Write(true); // is success?
             packet.Write(skillPoint);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAttackStart(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.ATTACK_START);
-            client.SendPacket(packet);
+            using var packet = new ImgeneusPacket(PacketType.ATTACK_START);
+            client.Send(packet);
         }
 
         internal void SendAutoAttackWrongTarget(IWorldClient client, Character sender, IKillable target)
         {
             PacketType type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new UsualAttack(sender.Id, 0, new AttackResult() { Success = AttackSuccess.WrongTarget }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAutoAttackWrongEquipment(IWorldClient client, Character sender, IKillable target)
         {
             PacketType type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new UsualAttack(sender.Id, 0, new AttackResult() { Success = AttackSuccess.WrongEquipment }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAutoAttackCanNotAttack(IWorldClient client, Character sender, IKillable target)
         {
             PacketType type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new UsualAttack(sender.Id, 0, new AttackResult() { Success = AttackSuccess.CanNotAttack }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendItemDoesNotBelong(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.ADD_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.ADD_ITEM);
             packet.WriteByte(0);
             packet.WriteByte(0); // Item doesn't belong to player.
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFullInventory(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.ADD_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.ADD_ITEM);
             packet.WriteByte(0);
             packet.WriteByte(1); // Inventory is full.
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendBoughtItem(IWorldClient client, Item boughtItem, uint gold)
         {
-            using var packet = new Packet(PacketType.NPC_BUY_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.NPC_BUY_ITEM);
             packet.WriteByte(0); // success
             packet.Write(boughtItem.Bag);
             packet.Write(boughtItem.Slot);
@@ -519,12 +518,12 @@ namespace Imgeneus.World.Packets
             packet.Write(boughtItem.TypeId);
             packet.Write(boughtItem.Count);
             packet.Write(gold);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSoldItem(IWorldClient client, Item soldItem, uint gold)
         {
-            using var packet = new Packet(PacketType.NPC_SELL_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.NPC_SELL_ITEM);
             packet.WriteByte(0); // success
             packet.Write(soldItem.Bag);
             packet.Write(soldItem.Slot);
@@ -532,20 +531,20 @@ namespace Imgeneus.World.Packets
             packet.Write(soldItem.TypeId);
             packet.Write(soldItem.Count);
             packet.Write(gold);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void VehiclePassengerChanged(IWorldClient client, int passengerId, int vehicleCharId)
         {
-            using var packet = new Packet(PacketType.USE_VEHICLE_2);
+            using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_2);
             packet.Write(passengerId);
             packet.Write(vehicleCharId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendBuyItemIssue(IWorldClient client, byte issue)
         {
-            using var packet = new Packet(PacketType.NPC_BUY_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.NPC_BUY_ITEM);
             packet.Write(issue);
             // empty fields about item, because it wasn't bought.
             packet.WriteByte(0); // bag
@@ -554,87 +553,87 @@ namespace Imgeneus.World.Packets
             packet.WriteByte(0); // type id
             packet.WriteByte(0); // count
             packet.Write(0); // gold
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSkillWrongTarget(IWorldClient client, Character sender, Skill skill, IKillable target)
         {
             PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.WrongTarget }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSkillAttackCanNotAttack(IWorldClient client, Character sender, Skill skill, IKillable target)
         {
             PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.CanNotAttack }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGmCommandSuccess(IWorldClient client)
         {
-            using var packet = new Packet(PacketType.GM_CMD_ERROR);
+            using var packet = new ImgeneusPacket(PacketType.GM_CMD_ERROR);
             packet.Write<ushort>(0); // 0 == no error
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGmCommandError(IWorldClient client, PacketType error)
         {
-            using var packet = new Packet(PacketType.GM_CMD_ERROR);
+            using var packet = new ImgeneusPacket(PacketType.GM_CMD_ERROR);
             packet.Write((ushort)error);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSkillWrongEquipment(IWorldClient client, Character sender, IKillable target, Skill skill)
         {
             PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.WrongEquipment }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendNotEnoughMPSP(IWorldClient client, Character sender, IKillable target, Skill skill)
         {
             PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.NotEnoughMPSP }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAbsorbValue(IWorldClient client, ushort absorb)
         {
-            using var packet = new Packet(PacketType.CHARACTER_ABSORPTION_DAMAGE);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ABSORPTION_DAMAGE);
             packet.Write(absorb);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCooldownNotOver(IWorldClient client, Character sender, IKillable target, Skill skill)
         {
             PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.NotEnoughMPSP }).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendUseSMMP(IWorldClient client, ushort MP, ushort SP)
         {
-            using var packet = new Packet(PacketType.USED_SP_MP);
+            using var packet = new ImgeneusPacket(PacketType.USED_SP_MP);
             packet.Write(new UseSPMP(SP, MP).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMoveAndAttackSpeed(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHARACTER_ATTACK_MOVEMENT_SPEED);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTACK_MOVEMENT_SPEED);
             packet.Write(new CharacterAttackAndMovement(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendResetStats(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.STATS_RESET);
+            using var packet = new ImgeneusPacket(PacketType.STATS_RESET);
             packet.Write(true); // success
             packet.Write(character.StatPoint);
             packet.Write(character.Strength);
@@ -643,33 +642,33 @@ namespace Imgeneus.World.Packets
             packet.Write(character.Wisdom);
             packet.Write(character.Dexterity);
             packet.Write(character.Luck);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCurrentBuffs(IWorldClient client, IKillable target)
         {
-            using var packet = new Packet(PacketType.TARGET_BUFFS);
+            using var packet = new ImgeneusPacket(PacketType.TARGET_BUFFS);
             packet.Write(new TargetBuffs(target).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterShape(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHARACTER_SHAPE);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE);
             packet.Write(new CharacterShape(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRunMode(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RUN_MODE);
+            using var packet = new ImgeneusPacket(PacketType.RUN_MODE);
             packet.Write(character.MoveMotion);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendTargetAddBuff(IWorldClient client, IKillable target, ActiveBuff buff)
         {
-            using var packet = new Packet(PacketType.TARGET_BUFF_ADD);
+            using var packet = new ImgeneusPacket(PacketType.TARGET_BUFF_ADD);
             if (target is Mob)
             {
                 packet.WriteByte(2);
@@ -682,12 +681,12 @@ namespace Imgeneus.World.Packets
             packet.Write(buff.SkillId);
             packet.Write(buff.SkillLevel);
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendTargetRemoveBuff(IWorldClient client, IKillable target, ActiveBuff buff)
         {
-            using var packet = new Packet(PacketType.TARGET_BUFF_REMOVE);
+            using var packet = new ImgeneusPacket(PacketType.TARGET_BUFF_REMOVE);
             if (target is Mob)
             {
                 packet.WriteByte(2);
@@ -700,51 +699,51 @@ namespace Imgeneus.World.Packets
             packet.Write(buff.SkillId);
             packet.Write(buff.SkillLevel);
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobPosition(IWorldClient client, Mob mob)
         {
-            using var packet = new Packet(PacketType.MOB_MOVE);
+            using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
             packet.Write(new MobMove(mob).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobState(IWorldClient client, Mob target)
         {
-            using var packet = new Packet(PacketType.TARGET_MOB_GET_STATE);
+            using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_GET_STATE);
             packet.Write(target.Id);
             packet.Write(target.CurrentHP);
             packet.Write((byte)target.AttackSpeed);
             packet.Write((byte)target.MoveSpeed);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendQuests(IWorldClient client, IEnumerable<Quest> quests)
         {
-            using var packet = new Packet(PacketType.QUEST_LIST);
+            using var packet = new ImgeneusPacket(PacketType.QUEST_LIST);
             packet.Write(new CharacterQuests(quests).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFinishedQuests(IWorldClient client, IEnumerable<Quest> quests)
         {
-            using var packet = new Packet(PacketType.QUEST_FINISHED_LIST);
+            using var packet = new ImgeneusPacket(PacketType.QUEST_FINISHED_LIST);
             packet.Write(new CharacterFinishedQuests(quests).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendQuestStarted(IWorldClient client, ushort questId, int npcId)
         {
-            using var packet = new Packet(PacketType.QUEST_START);
+            using var packet = new ImgeneusPacket(PacketType.QUEST_START);
             packet.Write(npcId);
             packet.Write(questId);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendQuestFinished(IWorldClient client, Quest quest, int npcId)
         {
-            using var packet = new Packet(PacketType.QUEST_END);
+            using var packet = new ImgeneusPacket(PacketType.QUEST_END);
             packet.Write(npcId);
             packet.Write(quest.Id);
             packet.Write(quest.IsSuccessful);
@@ -755,199 +754,199 @@ namespace Imgeneus.World.Packets
             packet.WriteByte(0); // slot
             packet.WriteByte(0); // item type
             packet.WriteByte(0); // item id
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendQuestCountUpdate(IWorldClient client, ushort questId, byte index, byte count)
         {
-            using var packet = new Packet(PacketType.QUEST_UPDATE_COUNT);
+            using var packet = new ImgeneusPacket(PacketType.QUEST_UPDATE_COUNT);
             packet.Write(questId);
             packet.Write(index);
             packet.Write(count);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFriendRequest(IWorldClient client, Character requester)
         {
-            using var packet = new Packet(PacketType.FRIEND_REQUEST);
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_REQUEST);
             packet.WriteString(requester.Name, 21);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFriendAdded(IWorldClient client, Character friend)
         {
-            using var packet = new Packet(PacketType.FRIEND_ADD);
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_ADD);
             packet.Write(friend.Id);
             packet.Write((byte)friend.Class);
             packet.WriteString(friend.Name);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFriendDelete(IWorldClient client, int id)
         {
-            using var packet = new Packet(PacketType.FRIEND_DELETE);
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_DELETE);
             packet.Write(id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFriends(IWorldClient client, IEnumerable<Friend> friends)
         {
-            using var packet = new Packet(PacketType.FRIEND_LIST);
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_LIST);
             packet.Write(new FriendsList(friends).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFriendOnline(IWorldClient client, int id, bool isOnline)
         {
-            using var packet = new Packet(PacketType.FRIEND_ONLINE);
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_ONLINE);
             packet.Write(id);
             packet.Write(isOnline);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendFriendResponse(IWorldClient client, bool accepted)
         {
-            using var packet = new Packet(PacketType.FRIEND_RESPONSE);
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_RESPONSE);
             packet.Write(accepted);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildJoinRequest(IWorldClient client, bool ok)
         {
-            using var packet = new Packet(PacketType.GUILD_JOIN_REQUEST);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_REQUEST);
             packet.Write(ok);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildJoinResult(IWorldClient client, bool ok, DbGuild guild, byte rank = 9)
         {
-            using var packet = new Packet(PacketType.GUILD_JOIN_RESULT_USER);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_RESULT_USER);
             packet.Write(ok);
             packet.Write(guild.Id);
             packet.Write(rank);
             packet.WriteString(guild.Name, 25);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendWeather(IWorldClient client, Map map)
         {
-            using var packet = new Packet(PacketType.MAP_WEATHER);
+            using var packet = new ImgeneusPacket(PacketType.MAP_WEATHER);
             packet.Write(new MapWeather(map).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendObelisks(IWorldClient client, IEnumerable<Obelisk> obelisks)
         {
-            using var packet = new Packet(PacketType.OBELISK_LIST);
+            using var packet = new ImgeneusPacket(PacketType.OBELISK_LIST);
             packet.Write(new ObeliskList(obelisks).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendObeliskBroken(IWorldClient client, Obelisk obelisk)
         {
-            using var packet = new Packet(PacketType.OBELISK_CHANGE);
+            using var packet = new ImgeneusPacket(PacketType.OBELISK_CHANGE);
             packet.Write(obelisk.Id);
             packet.Write((byte)obelisk.ObeliskCountry);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRegisteredInPartySearch(IWorldClient client, bool isSuccess)
         {
-            using var packet = new Packet(PacketType.PARTY_SEARCH_REGISTRATION);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_SEARCH_REGISTRATION);
             packet.Write(isSuccess);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendPartySearchList(IWorldClient client, IEnumerable<Character> partySearchers)
         {
-            using var packet = new Packet(PacketType.PARTY_SEARCH_LIST);
+            using var packet = new ImgeneusPacket(PacketType.PARTY_SEARCH_LIST);
             packet.Write(new PartySearchList(partySearchers).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterPosition(IWorldClient client, Character player)
         {
-            using var packet = new Packet(PacketType.GM_FIND_PLAYER);
+            using var packet = new ImgeneusPacket(PacketType.GM_FIND_PLAYER);
             packet.Write(player.MapId);
             packet.Write(player.PosX);
             packet.Write(player.PosY);
             packet.Write(player.PosZ);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGetEtin(IWorldClient client, int etin)
         {
-            using var packet = new Packet(PacketType.GUILD_GET_ETIN);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_GET_ETIN);
             packet.Write(etin);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGmSummon(IWorldClient client, Character player)
         {
-            using var packet = new Packet(PacketType.GM_SUMMON_PLAYER);
+            using var packet = new ImgeneusPacket(PacketType.GM_SUMMON_PLAYER);
             packet.Write(player.Id);
             packet.Write(player.MapId);
             packet.Write(player.PosX);
             packet.Write(player.PosY);
             packet.Write(player.PosZ);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildHouseBuy(IWorldClient client, GuildHouseBuyReason reason, uint gold)
         {
-            using var packet = new Packet(PacketType.GUILD_HOUSE_BUY);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_BUY);
             packet.Write((byte)reason);
             packet.Write(gold);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildHouseActionError(IWorldClient client, GuildHouseActionError error, byte rank)
         {
-            using var packet = new Packet(PacketType.GUILD_HOUSE_ACTION_ERR);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_ACTION_ERR);
             packet.Write((byte)error);
             packet.Write(rank);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGmTeleportToPlayer(IWorldClient client, Character player)
         {
-            using var packet = new Packet(PacketType.GM_TELEPORT_TO_PLAYER);
+            using var packet = new ImgeneusPacket(PacketType.GM_TELEPORT_TO_PLAYER);
             packet.Write(player.Id);
             packet.Write(player.MapId);
             packet.Write(player.PosX);
             packet.Write(player.PosY);
             packet.Write(player.PosZ);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendUseVehicle(IWorldClient client, bool success, bool status)
         {
-            using var packet = new Packet(PacketType.USE_VEHICLE);
+            using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE);
             packet.Write(success);
             packet.Write(status);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
         internal void SendGuildCreateFailed(IWorldClient client, GuildCreateFailedReason reason)
         {
-            using var packet = new Packet(PacketType.GUILD_CREATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE);
             packet.Write((byte)reason);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildCreateSuccess(IWorldClient client, int guildId, byte rank, string guildName, string guildMessage)
         {
-            using var packet = new Packet(PacketType.GUILD_CREATE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE);
             packet.Write((byte)GuildCreateFailedReason.Success);
             packet.Write(guildId);
             packet.WriteByte(rank);
             packet.WriteString(guildName, 25);
             packet.WriteString(guildMessage, 65);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAddGem(IWorldClient client, bool success, Item gem, Item destinationItem, byte gemSlot, uint gold, Item saveItem, Item hammer)
         {
-            using var packet = new Packet(PacketType.GEM_ADD);
+            using var packet = new ImgeneusPacket(PacketType.GEM_ADD);
             packet.Write(success);
             packet.Write(gem.Bag);
             packet.Write(gem.Slot);
@@ -971,53 +970,53 @@ namespace Imgeneus.World.Packets
                 packet.Write(hammer.Slot);
             }
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendEtinReturnResult(IWorldClient client, IList<Item> etins)
         {
-            using var packet = new Packet(PacketType.GUILD_ETIN_RETURN);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_ETIN_RETURN);
             packet.WriteByte((byte)etins.Count);
             foreach (var etin in etins)
             {
                 packet.WriteByte(etin.Bag);
                 packet.WriteByte(etin.Slot);
             }
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, byte npcType, byte npcGroup, byte npcLevel)
         {
-            using var packet = new Packet(PacketType.GUILD_NPC_UPGRADE);
+            using var packet = new ImgeneusPacket(PacketType.GUILD_NPC_UPGRADE);
             packet.Write((byte)reason);
             packet.Write(npcType);
             packet.Write(npcGroup);
             packet.Write(npcLevel);
             packet.WriteByte(0); // TODO: number? what is it?!
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGemPossibility(IWorldClient client, double rate, int gold)
         {
-            using var packet = new Packet(PacketType.GEM_ADD_POSSIBILITY);
+            using var packet = new ImgeneusPacket(PacketType.GEM_ADD_POSSIBILITY);
             packet.WriteByte(1); // TODO: unknown, maybe bool, that we can link?
             packet.Write(rate);
             packet.Write(gold);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendGemRemovePossibility(IWorldClient client, double rate, int gold)
         {
-            using var packet = new Packet(PacketType.GEM_REMOVE_POSSIBILITY);
+            using var packet = new ImgeneusPacket(PacketType.GEM_REMOVE_POSSIBILITY);
             packet.WriteByte(1); // TODO: unknown, maybe bool, that we can link?
             packet.Write(rate);
             packet.Write(gold);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRemoveGem(IWorldClient client, bool success, Item item, byte gemPosition, List<Item> savedGems, uint gold)
         {
-            using var packet = new Packet(PacketType.GEM_REMOVE);
+            using var packet = new ImgeneusPacket(PacketType.GEM_REMOVE);
             packet.Write(success);
             packet.Write(item.Bag);
             packet.Write(item.Slot);
@@ -1048,19 +1047,19 @@ namespace Imgeneus.World.Packets
                     packet.Write(savedGems[i].Count);
 
             packet.Write(gold);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSelectDyeItem(IWorldClient client, bool success)
         {
-            using var packet = new Packet(PacketType.DYE_SELECT_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.DYE_SELECT_ITEM);
             packet.Write(success);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendDyeColors(IWorldClient client, IEnumerable<DyeColor> availableColors)
         {
-            using var packet = new Packet(PacketType.DYE_REROLL);
+            using var packet = new ImgeneusPacket(PacketType.DYE_REROLL);
             foreach (var color in availableColors)
             {
                 packet.Write(color.IsEnabled);
@@ -1073,12 +1072,12 @@ namespace Imgeneus.World.Packets
                 for (var i = 0; i < 21; i++)
                     packet.WriteByte(0); // unknown bytes.
             }
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendDyeConfirm(IWorldClient client, bool success, DyeColor color)
         {
-            using var packet = new Packet(PacketType.DYE_CONFIRM);
+            using var packet = new ImgeneusPacket(PacketType.DYE_CONFIRM);
             packet.Write(success);
             if (success)
             {
@@ -1096,73 +1095,73 @@ namespace Imgeneus.World.Packets
                 packet.WriteByte(0);
                 packet.WriteByte(0);
             }
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAbsoluteComposition(IWorldClient client, bool isFailure, string craftName)
         {
-            using var packet = new Packet(PacketType.ITEM_COMPOSE_ABSOLUTE);
+            using var packet = new ImgeneusPacket(PacketType.ITEM_COMPOSE_ABSOLUTE);
             packet.Write(isFailure);
             packet.Write(new CraftName(craftName).Serialize());
             packet.Write(true); // ?
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendComposition(IWorldClient client, bool isFailure, Item item)
         {
-            using var packet = new Packet(PacketType.ITEM_COMPOSE);
+            using var packet = new ImgeneusPacket(PacketType.ITEM_COMPOSE);
             packet.Write(isFailure);
             packet.Write(item.Bag);
             packet.Write(item.Slot);
             packet.Write(new CraftName(item.GetCraftName()).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCanNotUseItem(IWorldClient client, int characterId)
         {
-            using var packet = new Packet(PacketType.USE_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.USE_ITEM);
             packet.Write(characterId);
             packet.WriteByte(0); // bag
             packet.WriteByte(0); // slot
             packet.WriteByte(0); // type
             packet.WriteByte(0); // type id
             packet.WriteByte(0); // count
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
         {
-            using var packet = new Packet(PacketType.UPDATE_STATS);
+            using var packet = new ImgeneusPacket(PacketType.UPDATE_STATS);
             packet.Write(str);
             packet.Write(dex);
             packet.Write(rec);
             packet.Write(intl);
             packet.Write(wis);
             packet.Write(luc);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterLeave(IWorldClient client, Character removedCharacter)
         {
-            using var packet = new Packet(PacketType.CHARACTER_LEFT_MAP);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_LEFT_MAP);
             packet.Write(removedCharacter.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterMoves(IWorldClient client, Character movedPlayer)
         {
-            using var packet = new Packet(PacketType.CHARACTER_MOVE);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MOVE);
             packet.Write(new CharacterMove(movedPlayer).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterMotion(IWorldClient client, int characterId, Motion motion)
         {
-            using var packet = new Packet(PacketType.CHARACTER_MOTION);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MOTION);
             packet.Write(characterId);
             packet.WriteByte((byte)motion);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterUsedSkill(IWorldClient client, Character sender, IKillable target, Skill skill, AttackResult attackResult)
@@ -1181,22 +1180,22 @@ namespace Imgeneus.World.Packets
                 skillType = PacketType.USE_CHARACTER_TARGET_SKILL;
             }
 
-            Packet packet = new Packet(skillType);
+            var packet = new ImgeneusPacket(skillType);
             var targetId = target is null ? 0 : target.Id;
             packet.Write(new SkillRange(sender.Id, targetId, skill, attackResult).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
             packet.Dispose();
         }
 
         internal void SendCharacterEnter(IWorldClient client, Character character)
         {
-            using var packet0 = new Packet(PacketType.CHARACTER_ENTERED_MAP);
+            using var packet0 = new ImgeneusPacket(PacketType.CHARACTER_ENTERED_MAP);
             packet0.Write(new CharacterEnteredMap(character).Serialize());
-            client.SendPacket(packet0);
+            client.Send(packet0);
 
-            using var packet1 = new Packet(PacketType.CHARACTER_MOVE);
+            using var packet1 = new ImgeneusPacket(PacketType.CHARACTER_MOVE);
             packet1.Write(new CharacterMove(character).Serialize());
-            client.SendPacket(packet1);
+            client.Send(packet1);
 
             SendCharacterShape(client, character); // Fix for admin in stealth + dye.
 
@@ -1205,44 +1204,44 @@ namespace Imgeneus.World.Packets
 
         internal void SendMobEnter(IWorldClient client, Mob mob, bool isNew)
         {
-            using var packet = new Packet(PacketType.MOB_ENTER);
+            using var packet = new ImgeneusPacket(PacketType.MOB_ENTER);
             packet.Write(new MobEnter(mob, isNew).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobLeave(IWorldClient client, Mob mob)
         {
-            using var packet = new Packet(PacketType.MOB_LEAVE);
+            using var packet = new ImgeneusPacket(PacketType.MOB_LEAVE);
             packet.Write(mob.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobMove(IWorldClient client, Mob mob)
         {
-            using var packet = new Packet(PacketType.MOB_MOVE);
+            using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
             packet.Write(new MobMove(mob).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobAttack(IWorldClient client, Mob mob, int targetId, AttackResult attackResult)
         {
-            using var packet = new Packet(PacketType.MOB_ATTACK);
+            using var packet = new ImgeneusPacket(PacketType.MOB_ATTACK);
             packet.Write(new MobAttack(mob, targetId, attackResult).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobUsedSkill(IWorldClient client, Mob mob, int targetId, Skill skill, AttackResult attackResult)
         {
-            using var packet = new Packet(PacketType.MOB_SKILL_USE);
+            using var packet = new ImgeneusPacket(PacketType.MOB_SKILL_USE);
             packet.Write(new MobSkillAttack(mob, targetId, skill, attackResult).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot)
         {
-            using var packet = new Packet(PacketType.SEND_EQUIPMENT);
+            using var packet = new ImgeneusPacket(PacketType.SEND_EQUIPMENT);
             packet.Write(new CharacterEquipmentChange(characterId, slot, equipmentItem).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterUsualAttack(IWorldClient client, IKiller sender, IKillable target, AttackResult attackResult)
@@ -1260,33 +1259,33 @@ namespace Imgeneus.World.Packets
             {
                 attackType = PacketType.CHARACTER_CHARACTER_AUTO_ATTACK;
             }
-            using var packet = new Packet(attackType);
+            using var packet = new ImgeneusPacket(attackType);
             packet.Write(new UsualAttack(sender.Id, target.Id, attackResult).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterPartyChanged(IWorldClient client, int characterId, PartyMemberType type)
         {
-            using var packet = new Packet(PacketType.MAP_PARTY_SET);
+            using var packet = new ImgeneusPacket(PacketType.MAP_PARTY_SET);
             packet.Write(characterId);
             packet.Write((byte)type);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAttackAndMovementSpeed(IWorldClient client, IKillable sender)
         {
-            using var packet = new Packet(PacketType.CHARACTER_ATTACK_MOVEMENT_SPEED);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTACK_MOVEMENT_SPEED);
             packet.Write(new CharacterAttackAndMovement(sender).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterKilled(IWorldClient client, Character character, IKiller killer)
         {
-            using var packet = new Packet(PacketType.CHARACTER_DEATH);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_DEATH);
             packet.Write(character.Id);
             packet.WriteByte(1); // killer type. 1 - another player.
             packet.Write(killer.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSkillCastStarted(IWorldClient client, Character sender, IKillable target, Skill skill)
@@ -1299,70 +1298,70 @@ namespace Imgeneus.World.Packets
             else
                 type = PacketType.CHARACTER_SKILL_CASTING;
 
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new SkillCasting(sender.Id, target is null ? 0 : target.Id, skill).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendUsedItem(IWorldClient client, Character sender, Item item)
         {
-            using var packet = new Packet(PacketType.USE_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.USE_ITEM);
             packet.Write(sender.Id);
             packet.Write(item.Bag);
             packet.Write(item.Slot);
             packet.Write(item.Type);
             packet.Write(item.TypeId);
             packet.Write(item.Count);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRecoverCharacter(IWorldClient client, IKillable sender, int hp, int mp, int sp)
         {
             // NB!!! In previous episodes and in china ep 8 with recover packet it's sent how much hitpoints recovered.
             // But in os ep8 this packet sends current hitpoints.
-            using var packet = new Packet(PacketType.CHARACTER_RECOVER);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_RECOVER);
             packet.Write(sender.Id);
             packet.Write(sender.CurrentHP); // old eps: packet.Write(hp);
             packet.Write(sender.CurrentMP); // old eps: packet.Write(mp);
             packet.Write(sender.CurrentSP); // old eps: packet.Write(sp);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void Send_Max_HP(IWorldClient client, int id, int value)
         {
-            using var packet = new Packet(PacketType.CHARACTER_MAX_HITPOINTS);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MAX_HITPOINTS);
             packet.Write(id);
             packet.WriteByte(0); // 0 means max hp type.
             packet.Write(value);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendSkillKeep(IWorldClient client, int id, ushort skillId, byte skillLevel, AttackResult result)
         {
-            using var packet = new Packet(PacketType.CHARACTER_SKILL_KEEP);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILL_KEEP);
             packet.Write(id);
             packet.Write(skillId);
             packet.Write(skillLevel);
             packet.Write(result.Damage.HP);
             packet.Write(result.Damage.MP);
             packet.Write(result.Damage.SP);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendShapeUpdate(IWorldClient client, Character sender)
         {
-            using var packet = new Packet(PacketType.CHARACTER_SHAPE_UPDATE);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE_UPDATE);
             packet.Write(sender.Id);
             packet.Write((byte)sender.Shape);
 
             // Only for ep 8.
-            if (sender.Mount != null)
+            if (sender.InventoryManager.Mount != null)
             {
-                packet.Write((int)sender.Mount.Type);
-                packet.Write((int)sender.Mount.TypeId);
+                packet.Write((int)sender.InventoryManager.Mount.Type);
+                packet.Write((int)sender.InventoryManager.Mount.TypeId);
             }
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendUsedRangeSkill(IWorldClient client, Character sender, IKillable target, Skill skill, AttackResult attackResult)
@@ -1375,50 +1374,50 @@ namespace Imgeneus.World.Packets
             else
                 type = PacketType.USE_CHARACTER_RANGE_SKILL;
 
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new SkillRange(sender.Id, target.Id, skill, attackResult).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendDeadRebirth(IWorldClient client, Character sender)
         {
-            using var packet = new Packet(PacketType.DEAD_REBIRTH);
+            using var packet = new ImgeneusPacket(PacketType.DEAD_REBIRTH);
             packet.Write(sender.Id);
             packet.WriteByte(4); // rebirth type.
             packet.Write(sender.Exp);
             packet.Write(sender.PosX);
             packet.Write(sender.PosY);
             packet.Write(sender.PosZ);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendCharacterRebirth(IWorldClient client, IKillable sender)
         {
-            using var packet = new Packet(PacketType.CHARACTER_LEAVE_DEAD);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_LEAVE_DEAD);
             packet.Write(sender.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobDead(IWorldClient client, IKillable sender, IKiller killer)
         {
-            using var packet = new Packet(PacketType.MOB_DEATH);
+            using var packet = new ImgeneusPacket(PacketType.MOB_DEATH);
             packet.Write(sender.Id);
             packet.WriteByte(1); // killer type. Always 1, since only player can kill the mob.
             packet.Write(killer.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMobRecover(IWorldClient client, IKillable sender)
         {
-            using var packet = new Packet(PacketType.MOB_RECOVER);
+            using var packet = new ImgeneusPacket(PacketType.MOB_RECOVER);
             packet.Write(sender.Id);
             packet.Write(sender.CurrentHP);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAddItem(IWorldClient client, MapItem mapItem)
         {
-            using var packet = new Packet(PacketType.MAP_ADD_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.MAP_ADD_ITEM);
             packet.Write(mapItem.Id);
             packet.WriteByte(1); // kind of item
             packet.Write(mapItem.Item.Type);
@@ -1431,19 +1430,19 @@ namespace Imgeneus.World.Packets
                 packet.Write(mapItem.Owner.Id);
             else
                 packet.Write(0);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendRemoveItem(IWorldClient client, MapItem mapItem)
         {
-            using var packet = new Packet(PacketType.MAP_REMOVE_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.MAP_REMOVE_ITEM);
             packet.Write(mapItem.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendNpcEnter(IWorldClient client, Npc npc)
         {
-            using var packet = new Packet(PacketType.MAP_NPC_ENTER);
+            using var packet = new ImgeneusPacket(PacketType.MAP_NPC_ENTER);
             packet.Write(npc.Id);
             packet.Write(npc.Type);
             packet.Write(npc.TypeId);
@@ -1451,95 +1450,95 @@ namespace Imgeneus.World.Packets
             packet.Write(npc.PosY);
             packet.Write(npc.PosZ);
             packet.Write(npc.Angle);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendNpcLeave(IWorldClient client, Npc npc)
         {
-            using var packet = new Packet(PacketType.MAP_NPC_LEAVE);
+            using var packet = new ImgeneusPacket(PacketType.MAP_NPC_LEAVE);
             packet.Write(npc.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAppearanceChanged(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHANGE_APPEARANCE);
+            using var packet = new ImgeneusPacket(PacketType.CHANGE_APPEARANCE);
             packet.Write(character.Id);
             packet.Write(character.Hair);
             packet.Write(character.Face);
             packet.Write(character.Height);
             packet.Write((byte)character.Gender);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendStartSummoningVehicle(IWorldClient client, Character sender)
         {
-            using var packet = new Packet(PacketType.USE_VEHICLE_READY);
+            using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_READY);
             packet.Write(sender.Id);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue)
         {
 #if SHAIYA_US
-            using var packet = new Packet(PacketType.GM_SHAIYA_US_ATTRIBUTE_SET);
+            using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_ATTRIBUTE_SET);
 #else
-            using var packet = new Packet(PacketType.CHARACTER_ATTRIBUTE_SET);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTRIBUTE_SET);
 #endif
 
             packet.Write(new CharacterAttribute(attribute, attributeValue).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendExperienceGain(IWorldClient client, uint exp)
         {
-            using var packet = new Packet(PacketType.EXPERIENCE_GAIN);
+            using var packet = new ImgeneusPacket(PacketType.EXPERIENCE_GAIN);
             packet.Write(new CharacterExperienceGain(exp).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendMax_HP_MP_SP(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.CHARACTER_MAX_HP_MP_SP);
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MAX_HP_MP_SP);
             packet.Write(new CharacterMax_HP_MP_SP(character));
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendLevelUp(IWorldClient client, Character character, bool isAdminLevelUp = false)
         {
             var type = isAdminLevelUp ? PacketType.GM_CHARACTER_LEVEL_UP : PacketType.CHARACTER_LEVEL_UP;
-            using var packet = new Packet(type);
+            using var packet = new ImgeneusPacket(type);
             packet.Write(new CharacterLevelUp(character).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendWarning(IWorldClient client, string message)
         {
-            using var packet = new Packet(PacketType.GM_WARNING_PLAYER);
+            using var packet = new ImgeneusPacket(PacketType.GM_WARNING_PLAYER);
             packet.WriteByte((byte)(message.Length + 1));
             packet.Write(message);
             packet.WriteByte(0);
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendBankItems(IWorldClient client, ICollection<BankItem> bankItems)
         {
-            using var packet = new Packet(PacketType.BANK_ITEM_LIST);
+            using var packet = new ImgeneusPacket(PacketType.BANK_ITEM_LIST);
             packet.Write(new BankItemList(bankItems).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
         internal void SendBankItemClaim(IWorldClient client, byte bankSlot, Item item)
         {
-            using var packet = new Packet(PacketType.BANK_CLAIM_ITEM);
+            using var packet = new ImgeneusPacket(PacketType.BANK_CLAIM_ITEM);
             packet.Write(new BankItemClaim(bankSlot, item).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
         internal void SendAccountPoints(IWorldClient client, uint points)
         {
-            using var packet = new Packet(PacketType.ACCOUNT_POINTS);
+            using var packet = new ImgeneusPacket(PacketType.ACCOUNT_POINTS);
             packet.Write(new AccountPoints(points).Serialize());
-            client.SendPacket(packet);
+            client.Send(packet);
         }
     }
 }

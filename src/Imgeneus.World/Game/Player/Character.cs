@@ -23,6 +23,8 @@ using Imgeneus.World.Game.Zone.MapConfig;
 using System.Collections.Concurrent;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Player.Config;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Stats;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -42,6 +44,9 @@ namespace Imgeneus.World.Game.Player
         private readonly INoticeManager _noticeManager;
         private readonly IGuildManager _guildManager;
 
+        public readonly IStatsManager StatsManager;
+        public readonly IInventoryManager InventoryManager;
+
         public Character(ILogger<Character> logger,
                          IGameWorld gameWorld,
                          ICharacterConfiguration characterConfig,
@@ -54,7 +59,9 @@ namespace Imgeneus.World.Game.Player
                          IMobFactory mobFactory,
                          INpcFactory npcFactory,
                          INoticeManager noticeManager,
-                         IGuildManager guildManager) : base(databasePreloader)
+                         IGuildManager guildManager,
+                         IStatsManager statsManager,
+                         IInventoryManager inventoryManager) : base(databasePreloader, statsManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -68,6 +75,9 @@ namespace Imgeneus.World.Game.Player
             _npcFactory = npcFactory;
             _noticeManager = noticeManager;
             _guildManager = guildManager;
+
+            StatsManager = statsManager;
+            InventoryManager = inventoryManager;
             _packetsHelper = new PacketsHelper();
 
             _castTimer.Elapsed += CastTimer_Elapsed;
@@ -85,7 +95,6 @@ namespace Imgeneus.World.Game.Player
 
         private void Init()
         {
-            InitEquipment();
             InitPassiveSkills();
             InitQuests();
 
@@ -227,7 +236,22 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Motion, like sit.
         /// </summary>
-        public Motion Motion;
+        private Motion _motion;
+        public Motion Motion
+        {
+            get => _motion;
+            set
+            {
+                _logger.LogDebug($"Character {Id} sends motion {value}");
+
+                if (value == Motion.None || value == Motion.Sit)
+                {
+                    _motion = value;
+                }
+                
+                OnMotion?.Invoke(this, value);
+            }
+        }
 
         #endregion
 
@@ -365,9 +389,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, inventoryManager)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -421,9 +445,6 @@ namespace Imgeneus.World.Game.Player
             character.Quests.AddRange(quests);
 
             character.QuickItems = dbCharacter.QuickItems;
-
-            foreach (var item in dbCharacter.Items.Select(i => new Item(databasePreloader, i)))
-                character.InventoryItems.TryAdd((item.Bag, item.Slot), item);
 
             foreach (var friend in dbCharacter.Friends.Select(f => f.Friend))
                 character.Friends.TryAdd(friend.Id, new Friend(friend.Id, friend.Name, friend.Class, gameWorld.Players.ContainsKey(friend.Id)));

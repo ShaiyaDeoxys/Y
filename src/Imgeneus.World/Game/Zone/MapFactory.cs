@@ -6,6 +6,7 @@ using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
+using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 
 namespace Imgeneus.World.Game.Zone
@@ -13,6 +14,7 @@ namespace Imgeneus.World.Game.Zone
     public class MapFactory : IMapFactory
     {
         private readonly ILogger<Map> _logger;
+        private readonly IGamePacketFactory _packetFactory;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IMobFactory _mobFactory;
         private readonly INpcFactory _npcFactory;
@@ -20,9 +22,10 @@ namespace Imgeneus.World.Game.Zone
         private readonly ITimeService _timeService;
         private readonly IGuildRankingManager _guildRankingManager;
 
-        public MapFactory(ILogger<Map> logger, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService, IGuildRankingManager guildRankingManger)
+        public MapFactory(ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService, IGuildRankingManager guildRankingManger)
         {
             _logger = logger;
+            _packetFactory = packetFactory;
             _databasePreloader = databasePreloader;
             _mobFactory = mobFactory;
             _npcFactory = npcFactory;
@@ -34,22 +37,22 @@ namespace Imgeneus.World.Game.Zone
         /// <inheritdoc/>
         public IMap CreateMap(ushort id, MapDefinition definition, MapConfiguration config)
         {
-            return new Map(id, definition, config, _logger, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new Map(id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
 
         /// <inheritdoc/>
         public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, MapConfiguration config, IParty party)
         {
-            return new PartyMap(party, id, definition, config, _logger, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new PartyMap(party, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
 
         /// <inheritdoc/>
         public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, MapConfiguration config, int guildId)
         {
             if (definition.CreateType == CreateType.GRB)
-                return new GRBMap(guildId, _guildRankingManager, id, definition, config, _logger, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+                return new GRBMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
 
-            return new GuildHouseMap(guildId, _guildRankingManager, id, definition, config, _logger, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new GuildHouseMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
     }
 }

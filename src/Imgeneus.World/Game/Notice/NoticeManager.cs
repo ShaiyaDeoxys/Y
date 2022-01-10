@@ -2,6 +2,7 @@
 using System.Text;
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Player;
 using Microsoft.Extensions.Logging;
@@ -96,17 +97,17 @@ namespace Imgeneus.World.Game.Notice
         /// <param name="message">Notice's message text</param>
         private void SendNoticeToPlayer(Character character, PacketType noticeType, string message)
         {
-            using var packet = new Packet(noticeType);
+            using var packet = new ImgeneusPacket(noticeType);
 
             packet.WriteByte((byte)message.Length);
 
 #if (EP8_V2 || SHAIYA_US)
-            packet.WriteString(message, Encoding.Unicode);
+            packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);
 #endif
 
-            character.Client.SendPacket(packet);
+            character.Client.Send(packet);
         }
 
         #endregion

@@ -9,12 +9,15 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Notice;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
+using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
@@ -63,7 +66,6 @@ namespace Imgeneus.World
             services.AddSingleton<IMobFactory, MobFactory>();
             services.AddSingleton<INpcFactory, NpcFactory>();
             services.AddSingleton<IObeliskFactory, ObeliskFactory>();
-            services.AddSingleton<ICharacterFactory, CharacterFactory>();
             services.AddSingleton<ICharacterConfiguration, CharacterConfiguration>((x) => CharacterConfiguration.LoadFromConfigFile());
             services.AddSingleton<IGuildConfiguration, GuildConfiguration>((x) => GuildConfiguration.LoadFromConfigFile());
             services.AddSingleton<IGuildHouseConfiguration, GuildHouseConfiguration>((x => GuildHouseConfiguration.LoadFromConfigFile()));
@@ -80,7 +82,11 @@ namespace Imgeneus.World
             services.AddSingleton<INoticeManager, NoticeManager>();
             services.AddSingleton<IGuildRankingManager, GuildRankingManager>();
 
+            services.AddScoped<ICharacterFactory, CharacterFactory>();
             services.AddScoped<ISelectionScreenManager, SelectionScreenManager>();
+            services.AddScoped<IGameSession, GameSession>();
+            services.AddScoped<IStatsManager, StatsManager>();
+            services.AddScoped<IInventoryManager, InventoryManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

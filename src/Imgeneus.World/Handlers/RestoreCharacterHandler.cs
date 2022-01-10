@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Imgeneus.World.SelectionScreen;
 using Sylver.HandlerInvoker.Attributes;
@@ -12,7 +13,7 @@ namespace Imgeneus.World.Handlers
     {
         private readonly ISelectionScreenManager _selectionScreenManager;
 
-        public RestoreCharacterHandler(IGamePacketFactory packetFactory, ISelectionScreenManager selectionScreenManager) : base(packetFactory)
+        public RestoreCharacterHandler(IGamePacketFactory packetFactory, IGameSession gameSession, ISelectionScreenManager selectionScreenManager) : base(packetFactory, gameSession)
         {
             _selectionScreenManager = selectionScreenManager;
         }

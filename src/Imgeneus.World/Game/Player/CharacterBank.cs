@@ -28,7 +28,7 @@ namespace Imgeneus.World.Game.Player
 
             BankItems.TryAdd(bankItem.Slot, bankItem);
 
-            _taskQueue.Enqueue(ActionType.SAVE_BANK_ITEM, Client.UserID, DateTime.UtcNow, null, false, bankItem.Type, bankItem.TypeId, bankItem.Count, bankItem.Slot, false);
+            _taskQueue.Enqueue(ActionType.SAVE_BANK_ITEM, Client.UserId, DateTime.UtcNow, null, false, bankItem.Type, bankItem.TypeId, bankItem.Count, bankItem.Slot, false);
 
             return bankItem;
         }
@@ -59,7 +59,7 @@ namespace Imgeneus.World.Game.Player
             if (item.IsExpirable)
                 SendItemExpiration(item);
 
-            _taskQueue.Enqueue(ActionType.CLAIM_BANK_ITEM, Client.UserID, bankItem.Slot, DateTime.UtcNow, true);
+            _taskQueue.Enqueue(ActionType.CLAIM_BANK_ITEM, Client.UserId, bankItem.Slot, DateTime.UtcNow, true);
 
             return true;
         }

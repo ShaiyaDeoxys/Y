@@ -44,12 +44,12 @@ namespace Imgeneus.World.Serialization
 
         public CharacterAdditionalStats(Character character)
         {
-            Strength = character.ExtraStr;
-            Rec = character.ExtraRec;
-            Intelligence = character.ExtraInt;
-            Wisdom = character.ExtraWis;
-            Dexterity = character.ExtraDex;
-            Luck = character.ExtraLuc;
+            Strength = character.StatsManager.ExtraStr;
+            Rec = character.StatsManager.ExtraRec;
+            Intelligence = character.StatsManager.ExtraInt;
+            Wisdom = character.StatsManager.ExtraWis;
+            Dexterity = character.StatsManager.ExtraDex;
+            Luck = character.StatsManager.ExtraLuc;
             Defense = character.Defense;
             Resistance = character.Resistance;
             MinAttack = character.MinAttack;

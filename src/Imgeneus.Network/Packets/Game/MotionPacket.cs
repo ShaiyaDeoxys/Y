@@ -1,15 +1,15 @@
 ﻿using Imgeneus.Database.Constants;
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct MotionPacket : IDeserializedPacket
+    public record MotionPacket : IPacketDeserializer
     {
-        public Motion Motion { get; }
+        public Motion Motion { get; private set; }
 
-        public MotionPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Motion = (Motion)packet.Read<byte>();
+            Motion = (Motion)packetStream.Read<byte>();
         }
     }
 }

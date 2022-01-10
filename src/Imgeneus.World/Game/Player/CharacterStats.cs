@@ -65,12 +65,12 @@ namespace Imgeneus.World.Game.Player
 
         #region Total stats
 
-        public int TotalStr => Strength + ExtraStr;
-        public override int TotalDex => Dexterity + ExtraDex;
-        public int TotalRec => Reaction + ExtraRec;
-        public int TotalInt => Intelligence + ExtraInt;
-        public override int TotalWis => Wisdom + ExtraWis;
-        public override int TotalLuc => Luck + ExtraLuc;
+        public int TotalStr => Strength + StatsManager.ExtraStr;
+        public override int TotalDex => Dexterity + StatsManager.ExtraDex;
+        public int TotalRec => Reaction + StatsManager.ExtraRec;
+        public int TotalInt => Intelligence + StatsManager.ExtraInt;
+        public override int TotalWis => Wisdom + StatsManager.ExtraWis;
+        public override int TotalLuc => Luck + StatsManager.ExtraLuc;
 
         #endregion
 
@@ -113,7 +113,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                return ConstHP + ExtraHP + ReactionExtraHP;
+                return ConstHP + StatsManager.ExtraHP + ReactionExtraHP;
             }
         }
 
@@ -136,7 +136,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                return ConstMP + ExtraMP + WisdomExtraMP;
+                return ConstMP + StatsManager.ExtraMP + WisdomExtraMP;
             }
         }
 
@@ -159,7 +159,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                return ConstSP + ExtraSP + DexterityExtraSP;
+                return ConstSP + StatsManager.ExtraSP + DexterityExtraSP;
             }
         }
 
@@ -327,7 +327,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                return TotalRec + ExtraDefense;
+                return TotalRec + StatsManager.ExtraDefense;
             }
         }
 
@@ -338,7 +338,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                return TotalWis + ExtraResistance;
+                return TotalWis + StatsManager.ExtraResistance;
             }
         }
 
@@ -409,7 +409,7 @@ namespace Imgeneus.World.Game.Player
                 if (_weaponSpeed == 0)
                     return AttackSpeed.None;
 
-                var weaponType = Weapon.ToPassiveSkillType();
+                var weaponType = InventoryManager.Weapon.ToPassiveSkillType();
                 _weaponSpeedPassiveSkillModificator.TryGetValue(weaponType, out var passiveSkillModifier);
 
                 var finalSpeed = _weaponSpeed + _attackSpeedModifier + passiveSkillModifier;
@@ -497,7 +497,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                var weaponAttack = Weapon != null ? Weapon.MinAttack : 0;
+                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MinAttack : 0;
                 int characterAttack = 0;
 
                 if (Class == CharacterProfession.Fighter ||
@@ -519,7 +519,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                var weaponAttack = Weapon != null ? Weapon.MaxAttack : 0;
+                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MaxAttack : 0;
                 int characterAttack = 0;
 
                 if (Class == CharacterProfession.Fighter ||
@@ -541,7 +541,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                var weaponAttack = Weapon != null ? Weapon.MinAttack : 0;
+                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MinAttack : 0;
                 int characterAttack = 0;
 
                 if (Class == CharacterProfession.Mage ||
@@ -561,7 +561,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                var weaponAttack = Weapon != null ? Weapon.MaxAttack : 0;
+                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MaxAttack : 0;
                 int characterAttack = 0;
 
                 if (Class == CharacterProfession.Mage ||
@@ -589,10 +589,10 @@ namespace Imgeneus.World.Game.Player
                 if (DefenceSkillElement != Element.None)
                     return DefenceSkillElement;
 
-                if (Armor is null)
+                if (InventoryManager.Armor is null)
                     return Element.None;
 
-                return Armor.Element;
+                return InventoryManager.Armor.Element;
             }
         }
 
@@ -604,10 +604,10 @@ namespace Imgeneus.World.Game.Player
                 if (AttackSkillElement != Element.None)
                     return AttackSkillElement;
 
-                if (Weapon is null)
+                if (InventoryManager.Weapon is null)
                     return Element.None;
 
-                return Weapon.Element;
+                return InventoryManager.Weapon.Element;
             }
         }
 
@@ -911,7 +911,7 @@ namespace Imgeneus.World.Game.Player
         {
             Points = points;
 
-            _taskQueue.Enqueue(ActionType.SAVE_ACCOUNT_POINTS, Client.UserID, Points);
+            _taskQueue.Enqueue(ActionType.SAVE_ACCOUNT_POINTS, Client.UserId, Points);
             SendAccountPoints();
         }
 

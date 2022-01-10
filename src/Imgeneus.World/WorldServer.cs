@@ -14,16 +14,16 @@ namespace Imgeneus.World
     {
         private readonly ILogger<WorldServer> _logger;
         private readonly WorldConfiguration _worldConfiguration;
-        private readonly IGameWorld _gameWorld;
         private readonly IInterServerClient _interClient;
+        private readonly IGameWorld _gameWorld;
 
-        public WorldServer(ILogger<WorldServer> logger, IOptions<ImgeneusServerOptions> tcpConfiguration, IServiceProvider serviceProvider, IOptions<WorldConfiguration> worldConfiguration, IGameWorld gameWorld, IInterServerClient interClient)
+        public WorldServer(ILogger<WorldServer> logger, IOptions<ImgeneusServerOptions> tcpConfiguration, IServiceProvider serviceProvider, IOptions<WorldConfiguration> worldConfiguration, IInterServerClient interClient, IGameWorld gameWorld)
             : base(tcpConfiguration.Value, serviceProvider)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
-            _gameWorld = gameWorld;
             _interClient = interClient;
+            _gameWorld = gameWorld;
         }
 
         protected override void OnAfterStart()
@@ -66,20 +66,6 @@ namespace Imgeneus.World
             base.OnClientConnected(client);
 
             client.OnPacketArrived += Client_OnPacketArrived;
-        }
-
-        private void LoadSelectionScreen(SessionResponse sessionInfo)
-        {
-            clients.TryGetValue(sessionInfo.SessionId, out var worldClient);
-            worldClient.CryptoManager.GenerateAES(sessionInfo.KeyPair.Key, sessionInfo.KeyPair.IV);
-
-            using var sendPacket = new Packet(PacketType.GAME_HANDSHAKE);
-            sendPacket.WriteByte(0); // 0 means there was no error.
-            sendPacket.WriteByte(2); // no idea what is it, it just works.
-            sendPacket.Write(CryptoManager.XorKey);
-            worldClient.SendPacket(sendPacket);
-
-            SelectionScreenManagers[worldClient.Id].SendSelectionScrenInformation(worldClient.UserID);
         }
 
         private async void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
@@ -159,15 +145,6 @@ namespace Imgeneus.World
                 sender.SendPacket(logoutPacket);
             }
         }
-
-        #region Screen selection
-
-        /// <summary>
-        /// Screen selection manager helps with packets, that must be sent right after gameshake.
-        /// </summary>
-        private readonly Dictionary<Guid, ISelectionScreenManager> SelectionScreenManagers = new Dictionary<Guid, ISelectionScreenManager>();
-
-        #endregion
         */
     }
 }

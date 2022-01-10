@@ -17,10 +17,12 @@ namespace Imgeneus.Network.Client
     public abstract class ImgeneusClient : LiteServerUser
     {
         protected readonly ILogger<ImgeneusClient> _logger;
-        protected readonly IServiceScope _scope;
+        protected IServiceScope _scope;
 
         private readonly ICryptoManager _cryptoManager;
         public ICryptoManager CryptoManager { get => _cryptoManager; }
+
+        public bool IsDisposed { get; private set; }
 
         public ImgeneusClient(ILogger<ImgeneusClient> logger, ICryptoManager cryptoManager, IServiceProvider serviceProvider)
         {
@@ -44,7 +46,7 @@ namespace Imgeneus.Network.Client
             {
                 packetType = (PacketType)packet.Read<ushort>();
 
-                if (ExcludedPackets.Any(x => x == packetType))
+                if (ExcludedPackets.Any(x => x == packetType) && CryptoManager.Key is null)
                 {
                     decryptedPacket = packet;
                 }
@@ -77,6 +79,10 @@ namespace Imgeneus.Network.Client
                         ((ushort)packetType).ToString("X2"),
                         Socket.RemoteEndPoint);
                 }
+            }
+            catch (ObjectDisposedException)
+            {
+                // Packet handler is called after connection is closed. Nothing to do
             }
             catch (Exception exception)
             {
@@ -173,6 +179,22 @@ namespace Imgeneus.Network.Client
         {
             base.OnDisconnected();
             _scope.Dispose();
+            _scope = null;
+            IsDisposed = true;
+
+#if DEBUG
+            // ONLY for debug! Don't uncomment it in prod.
+            // It's for checking if every scoped service is finalized, when connection is closed.
+
+            // Wait 0.5 sec after client disconnected.
+            Task.Delay(500).ContinueWith((x) =>
+            {
+                // Collect everything.
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.WaitForFullGCComplete();
+            });   
+#endif
         }
     }
 }

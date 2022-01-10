@@ -104,7 +104,11 @@ namespace Imgeneus.World.Serialization.EP_8_V2
                     EquipmentItemHasColor[i] = item.DyeColor.IsEnabled;
                     if (item.DyeColor.IsEnabled)
                         EquipmentItemColor[i] = new DyeColorSerialized(item.DyeColor.Saturation, item.DyeColor.R, item.DyeColor.G, item.DyeColor.B);
+                    else
+                        EquipmentItemColor[i] = new DyeColorSerialized();
                 }
+                else
+                    EquipmentItemColor[i] = new DyeColorSerialized();
             }
 
             if (character.HasParty)

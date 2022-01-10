@@ -5,6 +5,7 @@ using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
+using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 
@@ -12,8 +13,8 @@ namespace Imgeneus.World.Game.Zone
 {
     public class GRBMap : GuildMap, IGRBMap
     {
-        public GRBMap(int guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
-            : base(guildId, guildRankingManager, id, definition, config, logger, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
+        public GRBMap(int guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+            : base(guildId, guildRankingManager, id, definition, config, logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
         {
             _guildRankingManager.OnPointsChanged += GuildRankingManager_OnPointsChanged;
         }

@@ -23,7 +23,7 @@ namespace Imgeneus.World.Game.Player
                 _isSummmoningVehicle = value;
                 if (_isSummmoningVehicle)
                 {
-                    _summonVehicleTimer.Interval = Mount.AttackSpeed > 0 ? Mount.AttackSpeed * 1000 : Mount.AttackSpeed + 1000;
+                    _summonVehicleTimer.Interval = InventoryManager.Mount.AttackSpeed > 0 ? InventoryManager.Mount.AttackSpeed * 1000 : InventoryManager.Mount.AttackSpeed + 1000;
                     _summonVehicleTimer.Start();
                     OnStartSummonVehicle?.Invoke(this);
                 }
@@ -64,7 +64,7 @@ namespace Imgeneus.World.Game.Player
         /// <param name="skipSummoning">Indicates whether the summon casting time should be skipped or not.</param>
         public void CallVehicle(bool skipSummoning = false)
         {
-            if (Mount is null || IsStealth)
+            if (InventoryManager.Mount is null || IsStealth)
                 return;
 
             if (skipSummoning)
