@@ -352,9 +352,9 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void UsePercentHealingPotion(Item potion)
         {
-            var hp = Convert.ToInt32(MaxHP * potion.HP / 100);
-            var mp = Convert.ToInt32(MaxMP * potion.MP / 100);
-            var sp = Convert.ToInt32(MaxSP * potion.SP / 100);
+            var hp = Convert.ToInt32(HealthManager.MaxHP * potion.HP / 100);
+            var mp = Convert.ToInt32(HealthManager.MaxMP * potion.MP / 100);
+            var sp = Convert.ToInt32(HealthManager.MaxSP * potion.SP / 100);
 
             Recover(hp, mp, sp);
         }
@@ -404,7 +404,7 @@ namespace Imgeneus.World.Game.Player
                 }
             }
 
-            if (item.Reqlevel > Level)
+            if (item.Reqlevel > LevelingManager.Level)
                 return false;
 
             if (Mode < item.Grow)

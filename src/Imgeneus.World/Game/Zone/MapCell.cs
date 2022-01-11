@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
@@ -207,8 +208,10 @@ namespace Imgeneus.World.Game.Zone
             character.OnDead += Character_OnDead;
             character.OnSkillCastStarted += Character_OnSkillCastStarted;
             character.OnUsedItem += Character_OnUsedItem;
-            character.OnMaxHPChanged += Character_OnMaxHPChanged;
-            character.OnMax_HP_MP_SP_Changed += Character_OnMax_HP_MP_SP_Changed;
+            character.HealthManager.OnMaxHPChanged += Character_OnMaxHPChanged;
+            character.HealthManager.OnMaxSPChanged += Character_OnMaxSPChanged;
+            character.HealthManager.OnMaxMPChanged += Character_OnMaxMPChanged;
+            //character.OnMax_HP_MP_SP_Changed += Character_OnMax_HP_MP_SP_Changed;
             character.OnRecover += Character_OnRecover;
             character.OnFullRecover += Character_OnFullRecover;
             character.OnSkillKeep += Character_OnSkillKeep;
@@ -238,8 +241,10 @@ namespace Imgeneus.World.Game.Zone
             character.OnDead -= Character_OnDead;
             character.OnSkillCastStarted -= Character_OnSkillCastStarted;
             character.OnUsedItem -= Character_OnUsedItem;
-            character.OnMaxHPChanged -= Character_OnMaxHPChanged;
-            character.OnMax_HP_MP_SP_Changed -= Character_OnMax_HP_MP_SP_Changed;
+            character.HealthManager.OnMaxHPChanged -= Character_OnMaxHPChanged;
+            character.HealthManager.OnMaxSPChanged -= Character_OnMaxSPChanged;
+            character.HealthManager.OnMaxMPChanged -= Character_OnMaxMPChanged;
+            //character.OnMax_HP_MP_SP_Changed -= Character_OnMax_HP_MP_SP_Changed;
             character.OnRecover -= Character_OnRecover;
             character.OnFullRecover -= Character_OnFullRecover;
             character.OnSkillKeep -= Character_OnSkillKeep;
@@ -378,13 +383,25 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnFullRecover(IKillable sender)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendRecoverCharacter(player.Client, sender, sender.CurrentHP, sender.CurrentMP, sender.CurrentSP);
+                _packetsHelper.SendRecoverCharacter(player.Client, sender, sender.HealthManager.CurrentHP, sender.HealthManager.CurrentMP, sender.HealthManager.CurrentSP);
         }
 
-        private void Character_OnMaxHPChanged(IKillable sender, int maxHP)
+        private void Character_OnMaxHPChanged(int senderId, int value)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.Send_Max_HP(player.Client, sender.Id, maxHP);
+                Map.PacketFactory.SendMaxHitpoints(player.Client, senderId, HitpointType.HP, value);
+        }
+
+        private void Character_OnMaxSPChanged(int senderId, int value)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMaxHitpoints(player.Client, senderId, HitpointType.SP, value);
+        }
+
+        private void Character_OnMaxMPChanged(int senderId, int value)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMaxHitpoints(player.Client, senderId, HitpointType.MP, value);
         }
 
         /// <summary>
@@ -432,7 +449,7 @@ namespace Imgeneus.World.Game.Zone
             {
                 _packetsHelper.SendCharacterRebirth(player.Client, sender);
                 _packetsHelper.SendDeadRebirth(player.Client, (Character)sender);
-                _packetsHelper.SendRecoverCharacter(player.Client, sender, sender.CurrentHP, sender.CurrentMP, sender.CurrentSP);
+                _packetsHelper.SendRecoverCharacter(player.Client, sender, sender.HealthManager.CurrentHP, sender.HealthManager.CurrentMP, sender.HealthManager.CurrentSP);
             }
         }
 
@@ -584,9 +601,9 @@ namespace Imgeneus.World.Game.Zone
             // Add experience to killer character/party
             if (killer is Character killerCharacter)
                 if (killerCharacter.HasParty)
-                    killerCharacter.AddPartyMobExperience(mob.Level, (ushort)mob.Exp);
+                    killerCharacter.AddPartyMobExperience(mob.LevelingManager.Level, (ushort)mob.Exp);
                 else
-                    killerCharacter.AddMobExperience(mob.Level, (ushort)mob.Exp);
+                    killerCharacter.AddMobExperience(mob.LevelingManager.Level, (ushort)mob.Exp);
 
         }
 

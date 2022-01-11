@@ -21,9 +21,9 @@ namespace Imgeneus.World.Serialization
         public PartyMember_HP_SP_MP(Character partyMember)
         {
             CharacterId = partyMember.Id;
-            CurrentHP = partyMember.CurrentHP;
-            CurrentSP = partyMember.CurrentSP;
-            CurrentMP = partyMember.CurrentMP;
+            CurrentHP = partyMember.HealthManager.CurrentHP;
+            CurrentSP = partyMember.HealthManager.CurrentSP;
+            CurrentMP = partyMember.HealthManager.CurrentMP;
         }
     }
 }

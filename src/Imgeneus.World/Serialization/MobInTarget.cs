@@ -15,7 +15,7 @@ namespace Imgeneus.World.Serialization
         public MobInTarget(Mob mob)
         {
             TargetId = mob.Id;
-            CurrentHP = mob.CurrentHP;
+            CurrentHP = mob.HealthManager.CurrentHP;
         }
     }
 }

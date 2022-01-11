@@ -18,13 +18,13 @@ namespace Imgeneus.World.Tests.CharacterTests
             ushort maxLevel = 80;
 
             Assert.False(character.TryChangeLevel(0));
-            Assert.NotEqual(0, character.Level);
+            Assert.NotEqual(0, character.LevelingManager.Level);
 
             Assert.False(character.TryChangeLevel((ushort)(maxLevel + 1)));
-            Assert.NotEqual(maxLevel + 1, character.Level);
+            Assert.NotEqual(maxLevel + 1, character.LevelingManager.Level);
 
             Assert.False(character.TryChangeLevel(1000));
-            Assert.NotEqual(1000, character.Level);
+            Assert.NotEqual(1000, character.LevelingManager.Level);
         }
 
         [Fact]
@@ -39,11 +39,11 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.True(character.TryChangeLevel(2));
             Assert.False(character.TryChangeLevel(2));
-            Assert.Equal(2, character.Level);
+            Assert.Equal(2, character.LevelingManager.Level);
 
             Assert.True(character.TryChangeLevel(maxLevel));
             Assert.False(character.TryChangeLevel(maxLevel));
-            Assert.Equal(maxLevel, character.Level);
+            Assert.Equal(maxLevel, character.LevelingManager.Level);
         }
     }
 }

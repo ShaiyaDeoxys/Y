@@ -13,6 +13,7 @@ using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
@@ -433,13 +434,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendMaxHitpoints(IWorldClient client, Character character, HitpointType type)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MAX_HITPOINTS);
-            packet.Write(new MaxHitpoint(character, type).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendPartyInfo(IWorldClient client, IEnumerable<Character> partyMembers, byte leaderIndex)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_LIST);
@@ -713,7 +707,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_GET_STATE);
             packet.Write(target.Id);
-            packet.Write(target.CurrentHP);
+            packet.Write(target.HealthManager.CurrentHP);
             packet.Write((byte)target.AttackSpeed);
             packet.Write((byte)target.MoveSpeed);
             client.Send(packet);
@@ -1321,18 +1315,9 @@ namespace Imgeneus.World.Packets
             // But in os ep8 this packet sends current hitpoints.
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_RECOVER);
             packet.Write(sender.Id);
-            packet.Write(sender.CurrentHP); // old eps: packet.Write(hp);
-            packet.Write(sender.CurrentMP); // old eps: packet.Write(mp);
-            packet.Write(sender.CurrentSP); // old eps: packet.Write(sp);
-            client.Send(packet);
-        }
-
-        internal void Send_Max_HP(IWorldClient client, int id, int value)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MAX_HITPOINTS);
-            packet.Write(id);
-            packet.WriteByte(0); // 0 means max hp type.
-            packet.Write(value);
+            packet.Write(sender.HealthManager.CurrentHP); // old eps: packet.Write(hp);
+            packet.Write(sender.HealthManager.CurrentMP); // old eps: packet.Write(mp);
+            packet.Write(sender.HealthManager.CurrentSP); // old eps: packet.Write(sp);
             client.Send(packet);
         }
 
@@ -1411,7 +1396,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_RECOVER);
             packet.Write(sender.Id);
-            packet.Write(sender.CurrentHP);
+            packet.Write(sender.HealthManager.CurrentHP);
             client.Send(packet);
         }
 

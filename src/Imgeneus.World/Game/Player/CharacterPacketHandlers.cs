@@ -363,9 +363,9 @@ namespace Imgeneus.World.Game.Player
                 StatsManager.ExtraInt -= item.ComposedInt;
                 StatsManager.ExtraWis -= item.ComposedWis;
                 StatsManager.ExtraLuc -= item.ComposedLuc;
-                StatsManager.ExtraHP -= item.ComposedHP;
-                StatsManager.ExtraMP -= item.ComposedMP;
-                StatsManager.ExtraSP -= item.ComposedSP;
+                HealthManager.ExtraHP -= item.ComposedHP;
+                HealthManager.ExtraMP -= item.ComposedMP;
+                HealthManager.ExtraSP -= item.ComposedSP;
             }
 
             _linkingManager.Item = item;
@@ -381,9 +381,9 @@ namespace Imgeneus.World.Game.Player
                 StatsManager.ExtraInt += item.ComposedInt;
                 StatsManager.ExtraWis += item.ComposedWis;
                 StatsManager.ExtraLuc += item.ComposedLuc;
-                StatsManager.ExtraHP += item.ComposedHP;
-                StatsManager.ExtraMP += item.ComposedMP;
-                StatsManager.ExtraSP += item.ComposedSP;
+                HealthManager.ExtraHP += item.ComposedHP;
+                HealthManager.ExtraMP += item.ComposedMP;
+                HealthManager.ExtraSP += item.ComposedSP;
 
                 SendAdditionalStats();
             }

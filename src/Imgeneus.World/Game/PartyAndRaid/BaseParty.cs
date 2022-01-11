@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Player;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -128,12 +129,12 @@ namespace Imgeneus.World.Game.PartyAndRaid
         {
             character.OnBuffAdded += Member_OnAddedBuff;
             character.OnBuffRemoved += Member_OnRemovedBuff;
-            character.HP_Changed += Member_HP_Changed;
-            character.MP_Changed += Member_MP_Changed;
-            character.SP_Changed += Member_SP_Changed;
-            character.OnMaxHPChanged += Member_MaxHP_Changed;
-            character.OnMaxMPChanged += Member_MaxMP_Changed;
-            character.OnMaxSPChanged += Member_MaxSP_Changed;
+            //character.HP_Changed += Member_HP_Changed;
+            //character.MP_Changed += Member_MP_Changed;
+            //character.SP_Changed += Member_SP_Changed;
+            //character.OnMaxHPChanged += Member_MaxHP_Changed;
+            //character.OnMaxMPChanged += Member_MaxMP_Changed;
+            //character.OnMaxSPChanged += Member_MaxSP_Changed;
             character.OnLevelUp += Member_OnLevelChange;
             character.OnLevelUp += Member_Max_HP_SP_MP_Changed;
             character.OnLevelUp += Member_HP_SP_MP_Changed;
@@ -149,12 +150,12 @@ namespace Imgeneus.World.Game.PartyAndRaid
         {
             character.OnBuffAdded -= Member_OnAddedBuff;
             character.OnBuffRemoved -= Member_OnRemovedBuff;
-            character.HP_Changed -= Member_HP_Changed;
-            character.MP_Changed -= Member_MP_Changed;
-            character.SP_Changed -= Member_SP_Changed;
-            character.OnMaxHPChanged -= Member_MaxHP_Changed;
-            character.OnMaxMPChanged -= Member_MaxMP_Changed;
-            character.OnMaxSPChanged -= Member_MaxSP_Changed;
+            //character.HP_Changed -= Member_HP_Changed;
+            //character.MP_Changed -= Member_MP_Changed;
+            //character.SP_Changed -= Member_SP_Changed;
+            //character.OnMaxHPChanged -= Member_MaxHP_Changed;
+            //character.OnMaxMPChanged -= Member_MaxMP_Changed;
+            //character.OnMaxSPChanged -= Member_MaxSP_Changed;
             character.OnLevelUp -= Member_OnLevelChange;
             character.OnLevelUp -= Member_Max_HP_SP_MP_Changed;
             character.OnLevelUp -= Member_HP_SP_MP_Changed;

@@ -108,9 +108,9 @@ namespace Imgeneus.World.Game.Player
             var healMP = skill.HealMP;
             AttackResult result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)healHP, healSP, healMP));
 
-            target.IncreaseHP(healHP);
-            target.CurrentMP += healMP;
-            target.CurrentSP += healSP;
+            target.HealthManager.IncreaseHP(healHP);
+            target.HealthManager.CurrentMP += healMP;
+            target.HealthManager.CurrentSP += healSP;
 
             return result;
         }
@@ -156,7 +156,7 @@ namespace Imgeneus.World.Game.Player
         {
             ushort skillFactor = _characterConfig.GetLevelStatSkillPoints(Mode).SkillPoint;
 
-            SkillPoint = (ushort)(skillFactor * (Level - 1));
+            SkillPoint = (ushort)(skillFactor * (LevelingManager.Level - 1));
 
             _taskQueue.Enqueue(ActionType.REMOVE_ALL_SKILLS, Id);
             _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);

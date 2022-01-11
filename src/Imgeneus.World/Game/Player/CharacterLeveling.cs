@@ -12,12 +12,12 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Minimum experience needed for current player's level
         /// </summary>
-        public uint MinLevelExp => Level > 1 ? _databasePreloader.Levels[(Mode, (ushort)(Level - 1))].Exp : 0;
+        public uint MinLevelExp => LevelingManager.Level > 1 ? _databasePreloader.Levels[(Mode, (ushort)(LevelingManager.Level - 1))].Exp : 0;
 
         /// <summary>
         /// Experience needed to level up to next level
         /// </summary>
-        public uint NextLevelExp => _databasePreloader.Levels[(Mode, Level)].Exp;
+        public uint NextLevelExp => _databasePreloader.Levels[(Mode, LevelingManager.Level)].Exp;
 
         /// <summary>
         /// Event that's fired when a player level's up
@@ -32,9 +32,9 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void SetLevel(ushort newLevel)
         {
-            Level = newLevel;
+            LevelingManager.Level = newLevel;
 
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_LEVEL, Id, Level);
+            //_taskQueue.Enqueue(ActionType.SAVE_CHARACTER_LEVEL, Id, Level);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Imgeneus.World.Game.Player
         /// <returns>Success status indicating whether it's possible to set the new level or not.</returns>
         private bool TrySetLevel(ushort newLevel)
         {
-            if (Level == newLevel)
+            if (LevelingManager.Level == newLevel)
                 return false;
 
             // Check minimum level boundary
@@ -69,7 +69,7 @@ namespace Imgeneus.World.Game.Player
         /// <returns>Success status indicating whether it's possible to set the new level or not.</returns>
         public bool TryChangeLevel(ushort newLevel, bool changedByAdmin = false)
         {
-            var previousLevel = Level;
+            var previousLevel = LevelingManager.Level;
 
             // Set character's new level
             if (!TrySetLevel(newLevel))
@@ -108,7 +108,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             // Send max hp mp and sp
-            InvokeMax_HP_MP_SP_Changed();
+            //InvokeMax_HP_MP_SP_Changed();
 
             // Recover
             FullRecover();
@@ -295,7 +295,7 @@ namespace Imgeneus.World.Game.Player
         /// <returns>Experience value</returns>
         private ushort CalculateExperienceFromMob(ushort mobLevel, ushort mobExp)
         {
-            var levelDifference = Level - mobLevel;
+            var levelDifference = LevelingManager.Level - mobLevel;
 
             // Character can't get experience from mob that's more than 8 levels above him or more than 6 levels below him
             if (levelDifference < -8 || levelDifference > 6)

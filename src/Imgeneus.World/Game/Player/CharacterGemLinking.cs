@@ -68,9 +68,9 @@ namespace Imgeneus.World.Game.Player
                 StatsManager.ExtraInt += gem.Int;
                 StatsManager.ExtraLuc += gem.Luc;
                 StatsManager.ExtraWis += gem.Wis;
-                StatsManager.ExtraHP += gem.HP;
-                StatsManager.ExtraSP += gem.SP;
-                StatsManager.ExtraMP += gem.MP;
+                HealthManager.ExtraHP += gem.HP;
+                HealthManager.ExtraSP += gem.SP;
+                HealthManager.ExtraMP += gem.MP;
                 StatsManager.ExtraDefense += gem.Defense;
                 StatsManager.ExtraResistance += gem.Resistance;
                 StatsManager.Absorption += gem.Absorb;
@@ -318,9 +318,9 @@ namespace Imgeneus.World.Game.Player
                         StatsManager.ExtraInt -= gem.Int;
                         StatsManager.ExtraLuc -= gem.Luc;
                         StatsManager.ExtraWis -= gem.Wis;
-                        StatsManager.ExtraHP -= gem.HP;
-                        StatsManager.ExtraSP -= gem.SP;
-                        StatsManager.ExtraMP -= gem.MP;
+                        HealthManager.ExtraHP -= gem.HP;
+                        HealthManager.ExtraSP -= gem.SP;
+                        HealthManager.ExtraMP -= gem.MP;
                         StatsManager.ExtraDefense -= gem.Defense;
                         StatsManager.ExtraResistance -= gem.Resistance;
                         StatsManager.Absorption -= gem.Absorb;

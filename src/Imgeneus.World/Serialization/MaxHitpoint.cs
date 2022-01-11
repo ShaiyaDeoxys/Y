@@ -1,5 +1,6 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Player;
 
 namespace Imgeneus.World.Serialization
@@ -15,25 +16,11 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(2)]
         public int Value;
 
-        public MaxHitpoint(Character character, HitpointType hitpointType)
+        public MaxHitpoint(int characterId, HitpointType hitpointType, int value)
         {
-            CharacterId = character.Id;
+            CharacterId = characterId;
             HitpointType = hitpointType;
-
-            switch (hitpointType)
-            {
-                case HitpointType.HP:
-                    Value = character.MaxHP;
-                    break;
-
-                case HitpointType.MP:
-                    Value = character.MaxMP;
-                    break;
-
-                case HitpointType.SP:
-                    Value = character.MaxSP;
-                    break;
-            }
+            Value = value;
         }
     }
 }

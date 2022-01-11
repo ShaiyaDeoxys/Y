@@ -13,9 +13,9 @@ namespace Imgeneus.World.Serialization
         public CharacterMax_HP_MP_SP(Character character)
         {
             CharacterId = character.Id;
-            MaxHP = character.MaxHP;
-            MaxMP = character.MaxSP;
-            MaxSP = character.MaxSP;
+            MaxHP = character.HealthManager.MaxHP;
+            MaxMP = character.HealthManager.MaxSP;
+            MaxSP = character.HealthManager.MaxSP;
         }
     }
 }

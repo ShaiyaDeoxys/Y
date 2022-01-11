@@ -26,6 +26,8 @@ using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -62,8 +64,10 @@ namespace Imgeneus.World.Game.Player
                          INoticeManager noticeManager,
                          IGuildManager guildManager,
                          IStatsManager statsManager,
+                         IHealthManager healthManager,
+                         ILevelingManager levelingManager,
                          IInventoryManager inventoryManager,
-                         IStealthManager stealthManager) : base(databasePreloader, statsManager)
+                         IStealthManager stealthManager) : base(databasePreloader, statsManager, healthManager, levelingManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -85,10 +89,6 @@ namespace Imgeneus.World.Game.Player
 
             _castTimer.Elapsed += CastTimer_Elapsed;
             _summonVehicleTimer.Elapsed += SummonVehicleTimer_Elapsed;
-
-            OnMaxHPChanged += Character_OnMaxHPChanged;
-            OnMaxMPChanged += Character_OnMaxMPChanged;
-            OnMaxSPChanged += Character_OnMaxSPChanged;
 
             OnDead += Character_OnDead;
 
@@ -118,10 +118,6 @@ namespace Imgeneus.World.Game.Player
 
             _castTimer.Elapsed -= CastTimer_Elapsed;
             _summonVehicleTimer.Elapsed -= SummonVehicleTimer_Elapsed;
-
-            OnMaxHPChanged -= Character_OnMaxHPChanged;
-            OnMaxMPChanged -= Character_OnMaxMPChanged;
-            OnMaxSPChanged -= Character_OnMaxSPChanged;
 
             OnDead -= Character_OnDead;
 
@@ -154,7 +150,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             // Save current HP, MP, SP to database.
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_HP_MP_SP, Id, CurrentHP, CurrentMP, CurrentSP);
+            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_HP_MP_SP, Id, HealthManager.CurrentHP, HealthManager.CurrentMP, HealthManager.CurrentSP);
 
             Map = null;
 
@@ -338,24 +334,23 @@ namespace Imgeneus.World.Game.Player
 
         #region Overrides
 
-        protected override void DecreaseHP(IKiller damageMaker)
+        /*protected override void DecreaseHP(IKiller damageMaker)
         {
             StealthManager.IsStealth = false;
             IsOnVehicle = false;
-        }
+        }*/
 
         #endregion
 
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, inventoryManager, stealthManager)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelingManager, inventoryManager, stealthManager)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
-                Level = dbCharacter.Level,
                 MapId = dbCharacter.Map,
                 Race = dbCharacter.Race,
                 Class = dbCharacter.Class,
@@ -413,10 +408,6 @@ namespace Imgeneus.World.Game.Player
             }
 
             character.Init();
-
-            character.CurrentHP = dbCharacter.HealthPoints;
-            character.CurrentMP = dbCharacter.ManaPoints;
-            character.CurrentSP = dbCharacter.StaminaPoints;
 
             return character;
         }

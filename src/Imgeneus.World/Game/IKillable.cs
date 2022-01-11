@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Player;
 using MvvmHelpers;
 using System;
@@ -12,33 +13,7 @@ namespace Imgeneus.World.Game
     /// </summary>
     public interface IKillable : IWorldMember, IStatsHolder
     {
-        /// <summary>
-        /// Current health.
-        /// </summary>
-        public int CurrentHP { get; }
-
-        /// <summary>
-        /// Decreases health and calculates how much damage was done in order to get who was killer later on.
-        /// </summary>
-        /// <param name="hp">damage hp</param>
-        /// <param name="damageMaker">who has made damage</param>
-        public void DecreaseHP(int hp, IKiller damageMaker);
-
-        /// <summary>
-        /// Heals target hp.
-        /// </summary>
-        /// <param name="hp">hp healed</param>
-        public void IncreaseHP(int hp);
-
-        /// <summary>
-        /// Current stamina.
-        /// </summary>
-        public int CurrentSP { get; set; }
-
-        /// <summary>
-        /// Current mana.
-        /// </summary>
-        public int CurrentMP { get; set; }
+        public IHealthManager HealthManager { get; }
 
         /// <summary>
         /// Element used in armor.

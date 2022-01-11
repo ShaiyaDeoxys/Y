@@ -65,14 +65,14 @@ namespace Imgeneus.World.Serialization
         {
             IndexPositionInRaid = position;
             CharacterId = character.Id;
-            Level = character.Level;
+            Level = character.LevelingManager.Level;
             Class = character.Class;
-            MaxHP = character.MaxHP;
-            HP = character.CurrentHP;
-            MaxSP = character.MaxSP;
-            SP = character.CurrentSP;
-            MaxMP = character.MaxMP;
-            MP = character.CurrentMP;
+            MaxHP = character.HealthManager.MaxHP;
+            HP = character.HealthManager.CurrentHP;
+            MaxSP = character.HealthManager.MaxSP;
+            SP = character.HealthManager.CurrentSP;
+            MaxMP = character.HealthManager.MaxMP;
+            MP = character.HealthManager.CurrentMP;
             Map = character.MapId;
             X = character.PosX;
             Y = character.PosY;

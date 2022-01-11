@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stats;
@@ -20,13 +21,16 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IDatabase _database;
         private readonly IGameSession _gameSession;
         private readonly IStatsManager _statsManager;
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager)
+        private readonly IHealthManager _healthManager;
+
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
             _database = database;
             _gameSession = gameSession;
             _statsManager = statsManager;
+            _healthManager = healthManager;
 
 #if DEBUG
             _logger.LogDebug($"InventoryManager {GetHashCode()} created");
@@ -427,9 +431,9 @@ namespace Imgeneus.World.Game.Inventory
             _statsManager.ExtraInt -= item.Int;
             _statsManager.ExtraLuc -= item.Luc;
             _statsManager.ExtraWis -= item.Wis;
-            _statsManager.ExtraHP -= item.HP;
-            _statsManager.ExtraSP -= item.SP;
-            _statsManager.ExtraMP -= item.MP;
+            _healthManager.ExtraHP -= item.HP;
+            _healthManager.ExtraSP -= item.SP;
+            _healthManager.ExtraMP -= item.MP;
             _statsManager.ExtraDefense -= item.Defense;
             _statsManager.ExtraResistance -= item.Resistance;
             _statsManager.Absorption -= item.Absorb;
@@ -455,9 +459,9 @@ namespace Imgeneus.World.Game.Inventory
             _statsManager.ExtraInt += item.Int;
             _statsManager.ExtraLuc += item.Luc;
             _statsManager.ExtraWis += item.Wis;
-            _statsManager.ExtraHP += item.HP;
-            _statsManager.ExtraSP += item.SP;
-            _statsManager.ExtraMP += item.MP;
+            _healthManager.ExtraHP += item.HP;
+            _healthManager.ExtraSP += item.SP;
+            _healthManager.ExtraMP += item.MP;
             _statsManager.ExtraDefense += item.Defense;
             _statsManager.ExtraResistance += item.Resistance;
             _statsManager.Absorption += item.Absorb;

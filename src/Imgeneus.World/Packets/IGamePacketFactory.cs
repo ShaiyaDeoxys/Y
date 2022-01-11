@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Packets;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Player;
 using System.Collections.Generic;
 
@@ -46,6 +47,7 @@ namespace Imgeneus.World.Packets
         void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot);
         void SendCharacterShape(IWorldClient client, Character character);
         void SendShapeUpdate(IWorldClient client, Character character);
+        void SendMaxHitpoints(IWorldClient client, int characterId, HitpointType type, int value);
         #endregion
 
         #region GM

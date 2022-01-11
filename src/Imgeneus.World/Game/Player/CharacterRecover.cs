@@ -11,9 +11,9 @@ namespace Imgeneus.World.Game.Player
 
         protected void Recover(int hp, int mp, int sp)
         {
-            CurrentHP += hp;
-            CurrentMP += mp;
-            CurrentSP += sp;
+            HealthManager.IncreaseHP(hp);
+            HealthManager.CurrentMP += mp;
+            HealthManager.CurrentSP += sp;
             OnRecover?.Invoke(this, hp, mp, sp);
         }
 

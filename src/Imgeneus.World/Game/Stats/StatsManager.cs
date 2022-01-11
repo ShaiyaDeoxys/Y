@@ -39,9 +39,6 @@ namespace Imgeneus.World.Game.Stats
             ExtraWis = 0;
             ExtraDefense = 0;
             ExtraResistance = 0;
-            ExtraHP = 0;
-            ExtraSP = 0;
-            ExtraMP = 0;
         }
 
         #region Constants
@@ -70,11 +67,6 @@ namespace Imgeneus.World.Game.Stats
 
         public int ExtraResistance { get; set; }
 
-        public int ExtraHP { get; set; }
-
-        public int ExtraSP { get; set; }
-
-        public int ExtraMP { get; set; }
         #endregion
 
         #region Total

@@ -17,9 +17,9 @@ namespace Imgeneus.World.Serialization
 
         public CharacterHitpoints(Character character)
         {
-            HP = character.CurrentHP;
-            MP = character.CurrentMP;
-            SP = character.CurrentSP;
+            HP = character.HealthManager.CurrentHP;
+            MP = character.HealthManager.CurrentMP;
+            SP = character.HealthManager.CurrentSP;
         }
     }
 }

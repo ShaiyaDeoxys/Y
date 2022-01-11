@@ -62,89 +62,20 @@ namespace Imgeneus.World.Game.Player
 
         private void Character_OnMaxHPChanged(IKillable sender, int maxHP)
         {
-            if (Client != null)
-                SendMaxHP();
+            //if (Client != null)
+                //SendMaxHP();
         }
 
         private void Character_OnMaxMPChanged(IKillable sender, int maxMP)
         {
-            if (Client != null)
-                SendMaxMP();
+            //if (Client != null)
+                //SendMaxMP();
         }
 
         private void Character_OnMaxSPChanged(IKillable sender, int maxSP)
         {
-            if (Client != null)
-                SendMaxSP();
-        }
-
-        /// <summary>
-        /// HP based on level.
-        /// </summary>
-        private int ConstHP
-        {
-            get
-            {
-                var level = Level <= 60 ? Level : 60;
-                var index = (level - 1) * 6 + (byte)Class;
-                var constHP = _characterConfig.GetConfig(index).HP;
-
-                return constHP;
-            }
-        }
-
-        public override int MaxHP
-        {
-            get
-            {
-                return ConstHP + StatsManager.ExtraHP + ReactionExtraHP;
-            }
-        }
-
-        /// <summary>
-        /// MP based on level.
-        /// </summary>
-        private int ConstMP
-        {
-            get
-            {
-                var level = Level <= 60 ? Level : 60;
-                var index = (level - 1) * 6 + (byte)Class;
-                var constMP = _characterConfig.GetConfig(index).MP;
-
-                return constMP;
-            }
-        }
-
-        public override int MaxMP
-        {
-            get
-            {
-                return ConstMP + StatsManager.ExtraMP + WisdomExtraMP;
-            }
-        }
-
-        /// <summary>
-        /// SP based on level.
-        /// </summary>
-        private int ConstSP
-        {
-            get
-            {
-                var level = Level <= 60 ? Level : 60;
-                var index = (level - 1) * 6 + (byte)Class;
-                var constSP = _characterConfig.GetConfig(index).SP;
-
-                return constSP;
-            }
-        }
-
-        public override int MaxSP
-        {
-            get
-            {
-                return ConstSP + StatsManager.ExtraSP + DexterityExtraSP;
-            }
+            //if (Client != null)
+                //SendMaxSP();
         }
 
         /// <summary>
@@ -286,20 +217,7 @@ namespace Imgeneus.World.Game.Player
                     break;
             }
         }
-        /// Extra HP given by Reaction formula
-        /// </summary>
-        public int ReactionExtraHP => StatsManager.Reaction * 5;
-
-        /// <summary>
-        /// Extra MP given by Wisdom formula
-        /// </summary>
-        public int WisdomExtraMP => StatsManager.Wisdom * 5;
-
-        /// <summary>
-        /// Extra SP given by Dexterity formula
-        /// </summary>
-        public int DexterityExtraSP => StatsManager.Dexterity * 5;
-
+ 
         #endregion
 
         #region Defense & Resistance
@@ -611,9 +529,9 @@ namespace Imgeneus.World.Game.Player
 
             var statPerLevel = _characterConfig.GetLevelStatSkillPoints(Mode).StatPoint;
 
-            SetStatPoint((ushort)((Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
+            SetStatPoint((ushort)((LevelingManager.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
 
-            IncreasePrimaryStat((ushort)(Level - 1));
+            IncreasePrimaryStat((ushort)(LevelingManager.Level - 1));
 
             _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatPoint);
             _packetsHelper.SendResetStats(Client, this);
@@ -635,7 +553,7 @@ namespace Imgeneus.World.Game.Player
                     return (uint)Mode;
 
                 case CharacterAttributeEnum.Level:
-                    return Level;
+                    return LevelingManager.Level;
 
                 case CharacterAttributeEnum.Money:
                     return Gold;
@@ -739,12 +657,12 @@ namespace Imgeneus.World.Game.Player
 
                 case CharacterStatEnum.Dexterity:
                     StatsManager.Dexterity = value;
-                    InvokeMaxSPChanged();
+                    //InvokeMaxSPChanged();
                     break;
 
                 case CharacterStatEnum.Reaction:
                     StatsManager.Reaction = value;
-                    InvokeMaxHPChanged();
+                    //InvokeMaxHPChanged();
                     break;
 
                 case CharacterStatEnum.Intelligence:
@@ -757,7 +675,7 @@ namespace Imgeneus.World.Game.Player
 
                 case CharacterStatEnum.Wisdom:
                     StatsManager.Wisdom = value;
-                    InvokeMaxMPChanged();
+                    //InvokeMaxMPChanged();
                     break;
 
                 default:

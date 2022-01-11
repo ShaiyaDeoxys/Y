@@ -1,4 +1,6 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +32,9 @@ namespace Imgeneus.World.Game.Monster
                               map,
                               scope.ServiceProvider.GetRequiredService<ILogger<Mob>>(),
                               scope.ServiceProvider.GetRequiredService<IDatabasePreloader>(),
-                              scope.ServiceProvider.GetRequiredService<IStatsManager>());
+                              scope.ServiceProvider.GetRequiredService<IStatsManager>(),
+                              scope.ServiceProvider.GetRequiredService<IHealthManager>(),
+                              scope.ServiceProvider.GetRequiredService<ILevelingManager>());
             mob.OnDead += Mob_OnDead;
 
             _mobScopes.Add(mob, scope);

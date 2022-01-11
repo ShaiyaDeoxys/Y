@@ -18,6 +18,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Serialization;
 using Imgeneus.Database.Constants;
+using Imgeneus.World.Game.Health;
 
 namespace Imgeneus.World.Packets
 {
@@ -268,6 +269,13 @@ namespace Imgeneus.World.Packets
                 packet.Write((int)character.InventoryManager.Mount.TypeId);
             }
 
+            client.Send(packet);
+        }
+
+        public void SendMaxHitpoints(IWorldClient client, int characterId, HitpointType type, int value)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_MAX_HITPOINTS);
+            packet.Write(new MaxHitpoint(characterId, type, value).Serialize());
             client.Send(packet);
         }
         #endregion

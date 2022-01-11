@@ -22,7 +22,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.TryAddExperience(200);
 
             Assert.Equal((uint)200, character.Exp);
-            Assert.Equal(2, character.Level);
+            Assert.Equal(2, character.LevelingManager.Level);
         }
 
         [Fact]
@@ -36,9 +36,9 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.TrySetMode(Mode.Ultimate);
             character.TryChangeLevel(maxLevel, true);
 
-            Assert.Equal(maxLevel, character.Level);
+            Assert.Equal(maxLevel, character.LevelingManager.Level);
 
-            var maxLevelExp = databasePreloader.Object.Levels[(character.Mode, character.Level)].Exp;
+            var maxLevelExp = databasePreloader.Object.Levels[(character.Mode, character.LevelingManager.Level)].Exp;
 
             Assert.Equal(maxLevelExp, character.Exp);
             Assert.False(character.TryAddExperience(10));

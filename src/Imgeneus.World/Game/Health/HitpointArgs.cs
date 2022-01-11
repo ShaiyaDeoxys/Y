@@ -1,4 +1,4 @@
-﻿namespace Imgeneus.World.Game.Player
+﻿namespace Imgeneus.World.Game.Health
 {
     /// <summary>
     /// Hitpoint args is used, when sending event about change of HP, SP or MP.

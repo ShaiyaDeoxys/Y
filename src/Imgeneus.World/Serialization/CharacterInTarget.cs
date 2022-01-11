@@ -18,8 +18,8 @@ namespace Imgeneus.World.Serialization
         public CharacterInTarget(Character character)
         {
             TargetId = (uint)character.Id;
-            MaxHP = character.MaxHP;
-            CurrentHP = character.CurrentHP;
+            MaxHP = character.HealthManager.MaxHP;
+            CurrentHP = character.HealthManager.CurrentHP;
         }
     }
 }

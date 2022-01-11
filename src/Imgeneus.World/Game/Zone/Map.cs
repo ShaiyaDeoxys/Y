@@ -82,12 +82,14 @@ namespace Imgeneus.World.Game.Zone
         {
             CalculateCells(_config.Size, _config.CellSize);
 
+#if !DEBUG
             InitWeather();
             InitNPCs();
             InitMobs();
             InitObelisks();
             InitPortals();
             InitOpenCloseTimers();
+#endif
         }
 
         #endregion

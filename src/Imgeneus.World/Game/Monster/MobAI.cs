@@ -209,7 +209,7 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// When user hits mob, it automatically turns on ai.
         /// </summary>
-        protected override void DecreaseHP(IKiller damageMaker)
+        /*protected override void DecreaseHP(IKiller damageMaker)
         {
             if (!IsDead)
             {
@@ -219,7 +219,7 @@ namespace Imgeneus.World.Game.Monster
                 if (MaxDamageMaker is IKillable)
                     Target = (MaxDamageMaker as IKillable);
             }
-        }
+        }*/
 
         #endregion
 
@@ -814,11 +814,11 @@ namespace Imgeneus.World.Game.Monster
                     var attackResult = new AttackResult(AttackSuccess.Normal, new Damage(1, 0, 0));
 
                     if (attackResult.Damage.HP > 0)
-                        t.DecreaseHP(attackResult.Damage.HP, this);
+                        t.HealthManager.DecreaseHP(attackResult.Damage.HP, this);
                     if (attackResult.Damage.SP > 0)
-                        t.CurrentSP -= attackResult.Damage.SP;
+                        t.HealthManager.CurrentSP -= attackResult.Damage.SP;
                     if (attackResult.Damage.MP > 0)
-                        t.CurrentMP -= attackResult.Damage.MP;
+                        t.HealthManager.CurrentMP -= attackResult.Damage.MP;
 
                     try
                     {
@@ -852,9 +852,9 @@ namespace Imgeneus.World.Game.Monster
                                                       minAttack + additionalDamage);
             _logger.LogDebug($"Mob {Id} deals damage to player {target.Id}: {res.Damage.HP} HP; {res.Damage.MP} MP; {res.Damage.SP} SP ");
 
-            target.CurrentMP -= res.Damage.MP;
-            target.CurrentSP -= res.Damage.SP;
-            target.DecreaseHP(res.Damage.HP, this);
+            target.HealthManager.CurrentMP -= res.Damage.MP;
+            target.HealthManager.CurrentSP -= res.Damage.SP;
+            target.HealthManager.DecreaseHP(res.Damage.HP, this);
 
             OnAttack?.Invoke(this, target, res);
         }

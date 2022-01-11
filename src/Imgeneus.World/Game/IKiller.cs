@@ -185,7 +185,7 @@ namespace Imgeneus.World.Game
             {
                 case TypeAttack.PhysicalAttack:
                 case TypeAttack.ShootingAttack:
-                    levelDifference = Level * 1.0 / (target.Level + Level);
+                    levelDifference = LevelingManager.Level * 1.0 / (target.LevelingManager.Level + LevelingManager.Level);
                     var targetAttackPercent = target.PhysicalHittingChance / (target.PhysicalHittingChance + PhysicalEvasionChance);
                     var myAttackPercent = PhysicalHittingChance / (PhysicalHittingChance + target.PhysicalEvasionChance);
                     var attackPercent = targetAttackPercent * 100 - myAttackPercent * 100;
@@ -206,7 +206,7 @@ namespace Imgeneus.World.Game
                     return new Random().Next(1, 101) < result;
 
                 case TypeAttack.MagicAttack:
-                    levelDifference = ((target.Level - Level - 2) * 100 + target.Level) / (target.Level + Level) * 1.1;
+                    levelDifference = ((target.LevelingManager.Level - LevelingManager.Level - 2) * 100 + target.LevelingManager.Level) / (target.LevelingManager.Level + LevelingManager.Level) * 1.1;
                     var fxDef = levelDifference + target.MagicEvasionChance;
                     if (fxDef >= 1)
                     {

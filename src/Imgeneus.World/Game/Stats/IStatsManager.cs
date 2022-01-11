@@ -108,21 +108,6 @@
         int ExtraResistance { get; set; }
 
         /// <summary>
-        /// Health points, that are provided by equipment and buffs.
-        /// </summary>
-        int ExtraHP { get; set; }
-
-        /// <summary>
-        /// Stamina points, that are provided by equipment and buffs.
-        /// </summary>
-        int ExtraSP { get; set; }
-
-        /// <summary>
-        /// Mana points, that are provided by equipment and buffs.
-        /// </summary>
-        int ExtraMP { get; set; }
-
-        /// <summary>
         /// Absorbs damage regardless of REC value.
         /// </summary>
         ushort Absorption { get; set; }

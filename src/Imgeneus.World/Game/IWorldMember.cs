@@ -1,4 +1,6 @@
-﻿namespace Imgeneus.World.Game
+﻿using Imgeneus.World.Game.Levelling;
+
+namespace Imgeneus.World.Game
 {
     /// <summary>
     /// The interface describes the game world member properties.
@@ -10,9 +12,6 @@
         /// </summary>
         public int Id { get; }
 
-        /// <summary>
-        /// Level.
-        /// </summary>
-        public ushort Level { get; }
+        public ILevelingManager LevelingManager { get; }
     }
 }

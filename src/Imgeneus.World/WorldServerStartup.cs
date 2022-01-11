@@ -9,7 +9,9 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Notice;
@@ -87,6 +89,8 @@ namespace Imgeneus.World
             services.AddScoped<ISelectionScreenManager, SelectionScreenManager>();
             services.AddScoped<IGameSession, GameSession>();
             services.AddScoped<IStatsManager, StatsManager>();
+            services.AddScoped<ILevelingManager, LevelingManager>();
+            services.AddScoped<IHealthManager, HealthManager>();
             services.AddScoped<IInventoryManager, InventoryManager>();
             services.AddScoped<IStealthManager, StealthManager>();
 

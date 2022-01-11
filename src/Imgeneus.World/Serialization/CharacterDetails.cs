@@ -101,9 +101,9 @@ namespace Imgeneus.Network.Serialization
             Deaths = character.Deaths;
             Victories = character.Victories;
             Defeats = character.Defeats;
-            MaxHP = character.MaxHP;
-            MaxMP = character.MaxMP;
-            MaxSP = character.MaxSP;
+            MaxHP = character.HealthManager.MaxHP;
+            MaxMP = character.HealthManager.MaxMP;
+            MaxSP = character.HealthManager.MaxSP;
             GuildName = character.GuildName;
         }
     }

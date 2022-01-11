@@ -83,7 +83,7 @@ namespace Imgeneus.World.Game.Player
                 return false;
             }
 
-            if (!portal.IsRightLevel(Level))
+            if (!portal.IsRightLevel(LevelingManager.Level))
             {
                 return false;
             }

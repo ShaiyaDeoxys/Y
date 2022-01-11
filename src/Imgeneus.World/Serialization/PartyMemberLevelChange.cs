@@ -15,7 +15,7 @@ namespace Imgeneus.World.Serialization
         public PartyMemberLevelChange(Character character)
         {
             CharacterId = character.Id;
-            Level = character.Level;
+            Level = character.LevelingManager.Level;
         }
     }
 }

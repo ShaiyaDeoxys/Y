@@ -22,7 +22,7 @@ namespace Imgeneus.World.Serialization
         public CharacterLevelUp(Character character)
         {
             CharacterId = character.Id;
-            Level = character.Level;
+            Level = character.LevelingManager.Level;
             StatPoint = character.StatPoint;
             SkillPoint = character.SkillPoint;
             MinLevelExp = character.MinLevelExp / 10; // Normalize experience for ep8 game

@@ -17,6 +17,8 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -31,6 +33,8 @@ namespace Imgeneus.World.Game.Player
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IMapsLoader _mapsLoader;
         private readonly IStatsManager _statsManager;
+        private readonly IHealthManager _healthManager;
+        private readonly ILevelingManager _levelingManager;
         private readonly IInventoryManager _inventoryManager;
         private readonly IChatManager _chatManager;
         private readonly ILinkingManager _linkingManager;
@@ -51,6 +55,8 @@ namespace Imgeneus.World.Game.Player
                                 IDatabasePreloader databasePreloader,
                                 IMapsLoader mapsLoader,
                                 IStatsManager statsManager,
+                                IHealthManager healthManager,
+                                ILevelingManager levelingManager,
                                 IInventoryManager inventoryManager,
                                 IChatManager chatManager,
                                 ILinkingManager linkingManager,
@@ -71,6 +77,8 @@ namespace Imgeneus.World.Game.Player
             _databasePreloader = databasePreloader;
             _mapsLoader = mapsLoader;
             _statsManager = statsManager;
+            _healthManager = healthManager;
+            _levelingManager = levelingManager;
             _inventoryManager = inventoryManager;
             _chatManager = chatManager;
             _linkingManager = linkingManager;
@@ -104,10 +112,17 @@ namespace Imgeneus.World.Game.Player
 
             Character.ClearOutdatedValues(_database, dbCharacter);
 
-            _sessionManager.CharId = characterId;
+            _sessionManager.CharId = dbCharacter.Id;
             _sessionManager.IsAdmin = dbCharacter.User.Authority == 0;
+
             _statsManager.Init(dbCharacter.Strength, dbCharacter.Dexterity, dbCharacter.Rec, dbCharacter.Intelligence, dbCharacter.Wisdom, dbCharacter.Luck);
+
+            _levelingManager.Init(dbCharacter.Level, dbCharacter.Class);
+
+            _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints);
+
             _inventoryManager.Init(dbCharacter.Items);
+
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
             var player = Character.FromDbCharacter(dbCharacter,
@@ -118,6 +133,8 @@ namespace Imgeneus.World.Game.Player
                                         _databasePreloader,
                                         _mapsLoader,
                                         _statsManager,
+                                        _healthManager,
+                                        _levelingManager,
                                         _inventoryManager,
                                         _chatManager,
                                         _linkingManager,

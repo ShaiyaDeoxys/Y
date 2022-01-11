@@ -2,6 +2,8 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
@@ -20,18 +22,21 @@ namespace Imgeneus.World.Game.Monster
                    Map map,
                    ILogger<Mob> logger,
                    IDatabasePreloader databasePreloader,
-                   IStatsManager statsManager) : base(databasePreloader, statsManager)
+                   IStatsManager statsManager,
+                   IHealthManager healthManager,
+                   ILevelingManager levelingManager) : base(databasePreloader, statsManager, healthManager, levelingManager)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
 
             Id = map.GenerateId();
-            CurrentHP = _dbMob.HP;
-            Level = _dbMob.Level;
             Exp = _dbMob.Exp;
             AI = _dbMob.AI;
             ShouldRebirth = shouldRebirth;
+
             StatsManager.Init(0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc);
+            LevelingManager.Init(_dbMob.Level, constHP: _dbMob.HP, constMP: _dbMob.SP, constSP: _dbMob.MP);
+            HealthManager.Init(Id, _dbMob.HP, 0, 0);
 
             MoveArea = moveArea;
             Map = map;
@@ -74,19 +79,6 @@ namespace Imgeneus.World.Game.Monster
         /// During GBR how many points added to guild.
         /// </summary>
         public short GuildPoints => _dbMob.MoneyMax;
-
-        #region Max HP&SP&MP
-
-        /// <inheritdoc />
-        public override int MaxHP => _dbMob.HP;
-
-        /// <inheritdoc />
-        public override int MaxSP => _dbMob.SP;
-
-        /// <inheritdoc />
-        public override int MaxMP => _dbMob.MP;
-
-        #endregion
 
         #region Defense & Resistance
 
@@ -133,7 +125,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelingManager);
         }
 
         public override void Dispose()

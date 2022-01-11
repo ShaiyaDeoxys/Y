@@ -35,15 +35,15 @@ namespace Imgeneus.World.Game.Player
         {
             if (args.OldValue >= Bless.MAX_HP_SP_MP && args.NewValue < Bless.MAX_HP_SP_MP)
             {
-                StatsManager.ExtraHP -= ConstHP / 5;
-                StatsManager.ExtraMP -= ConstMP / 5;
-                StatsManager.ExtraSP -= ConstSP / 5;
+                HealthManager.ExtraHP -= LevelingManager.ConstHP / 5;
+                HealthManager.ExtraMP -= LevelingManager.ConstMP / 5;
+                HealthManager.ExtraSP -= LevelingManager.ConstSP / 5;
             }
             if (args.OldValue < Bless.MAX_HP_SP_MP && args.NewValue >= Bless.MAX_HP_SP_MP)
             {
-                StatsManager.ExtraHP += ConstHP / 5;
-                StatsManager.ExtraMP += ConstMP / 5;
-                StatsManager.ExtraSP += ConstSP / 5;
+                HealthManager.ExtraHP += LevelingManager.ConstHP / 5;
+                HealthManager.ExtraMP += LevelingManager.ConstMP / 5;
+                HealthManager.ExtraSP += LevelingManager.ConstSP / 5;
             }
         }
 

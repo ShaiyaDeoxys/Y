@@ -5,6 +5,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Stats;
@@ -20,11 +22,15 @@ namespace Imgeneus.World.Game
     {
         protected readonly IDatabasePreloader _databasePreloader;
         public IStatsManager StatsManager { get; private set; }
+        public IHealthManager HealthManager { get; private set; }
+        public ILevelingManager LevelingManager { get; private set; }
 
-        public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager)
+        public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ILevelingManager levelingManager)
         {
             _databasePreloader = databasePreloader;
             StatsManager = statsManager;
+            HealthManager = healthManager;
+            LevelingManager = levelingManager;
 
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
@@ -55,9 +61,6 @@ namespace Imgeneus.World.Game
             }
         }
 
-        /// <inheritdoc />
-        public ushort Level { get; protected set; } = 1;
-
         #region Map
 
         private Map _map;
@@ -84,170 +87,6 @@ namespace Imgeneus.World.Game
         public int CellId { get; set; } = -1;
 
         public int OldCellId { get; set; } = -1;
-
-        #endregion
-
-        #region Current hitpoints
-
-        public abstract int MaxHP { get; }
-
-        /// <summary>
-        /// Event, that is fired, when max hp changes.
-        /// </summary>
-        public event Action<IKillable, int> OnMaxHPChanged;
-
-        public void InvokeMaxHPChanged()
-        {
-            OnMaxHPChanged?.Invoke(this, MaxHP);
-        }
-
-        public abstract int MaxSP { get; }
-
-        /// <summary>
-        /// Event, that is fired, when max sp changes.
-        /// </summary>
-        public event Action<IKillable, int> OnMaxSPChanged;
-
-        public void InvokeMaxSPChanged()
-        {
-            OnMaxSPChanged?.Invoke(this, MaxSP);
-        }
-
-        public abstract int MaxMP { get; }
-
-        /// <summary>
-        /// Event, that is fired, when max mp changes.
-        /// </summary>
-        public event Action<IKillable, int> OnMaxMPChanged;
-
-        public void InvokeMaxMPChanged()
-        {
-            OnMaxMPChanged?.Invoke(this, MaxMP);
-        }
-
-        /// <summary>
-        /// Event, that is fired, when hp changes.
-        /// </summary>
-        public event Action<IKillable, HitpointArgs> HP_Changed;
-
-        private int _currentHP;
-        public int CurrentHP
-        {
-            get => _currentHP;
-            protected set
-            {
-                if (_currentHP == value)
-                    return;
-
-                if (value > MaxHP)
-                    value = MaxHP;
-
-                var oldHP = _currentHP;
-                _currentHP = value;
-                if (_currentHP <= 0)
-                {
-                    _currentHP = 0;
-                    IsDead = true;
-                }
-
-                if (_currentHP == MaxHP)
-                    DamageMakers.Clear();
-
-                HP_Changed?.Invoke(this, new HitpointArgs(oldHP, _currentHP));
-            }
-        }
-
-        /// <summary>
-        /// Event, that is fired, when mp changes.
-        /// </summary>
-        public event Action<IKillable, HitpointArgs> MP_Changed;
-
-        private int _currentMP;
-        public int CurrentMP
-        {
-            get => _currentMP;
-            set
-            {
-                if (_currentMP == value)
-                    return;
-
-                if (value > MaxMP)
-                    value = MaxMP;
-
-                var args = new HitpointArgs(_currentMP, value);
-                _currentMP = value;
-                MP_Changed?.Invoke(this, args);
-            }
-        }
-
-        /// <summary>
-        /// Event, that is fired, when sp changes.
-        /// </summary>
-        public event Action<IKillable, HitpointArgs> SP_Changed;
-
-        private int _currentSP;
-        public int CurrentSP
-        {
-            get => _currentSP;
-            set
-            {
-                if (_currentSP == value)
-                    return;
-
-                if (value > MaxSP)
-                    value = MaxSP;
-
-                var args = new HitpointArgs(_currentSP, value);
-                _currentSP = value;
-                SP_Changed?.Invoke(this, args);
-            }
-        }
-
-        /// <summary>
-        /// Event that's fired when hp, mp and sp change.
-        /// </summary>
-        public event Action<IKillable> On_HP_MP_SP_Changed;
-
-        public void Invoke_HP_MP_SP_Changed()
-        {
-            On_HP_MP_SP_Changed?.Invoke(this);
-        }
-
-        /// <summary>
-        /// Event that's fired when max hp, mp and sp change.
-        /// </summary>
-        public event Action<IKillable> OnMax_HP_MP_SP_Changed;
-
-        public void InvokeMax_HP_MP_SP_Changed()
-        {
-            OnMax_HP_MP_SP_Changed?.Invoke(this);
-        }
-
-        /// <inheritdoc />
-        public void DecreaseHP(int hp, IKiller damageMaker)
-        {
-            if (hp == 0)
-                return;
-
-            if (DamageMakers.ContainsKey(damageMaker))
-                DamageMakers[damageMaker] += hp;
-            else
-                DamageMakers.TryAdd(damageMaker, hp);
-
-            CurrentHP -= hp;
-            DecreaseHP(damageMaker);
-        }
-
-        protected virtual void DecreaseHP(IKiller damageMaker) { }
-
-        /// <inheritdoc />
-        public void IncreaseHP(int hp)
-        {
-            if (hp == 0)
-                return;
-
-            CurrentHP += hp;
-        }
 
         #endregion
 
@@ -721,23 +560,23 @@ namespace Imgeneus.World.Game
 
                 case AbilityType.HP:
                     if (addAbility)
-                        StatsManager.ExtraHP += abilityValue;
+                        HealthManager.ExtraHP += abilityValue;
                     else
-                        StatsManager.ExtraHP -= abilityValue;
+                        HealthManager.ExtraHP -= abilityValue;
                     break;
 
                 case AbilityType.MP:
                     if (addAbility)
-                        StatsManager.ExtraMP += abilityValue;
+                        HealthManager.ExtraMP += abilityValue;
                     else
-                        StatsManager.ExtraMP -= abilityValue;
+                        HealthManager.ExtraMP -= abilityValue;
                     break;
 
                 case AbilityType.SP:
                     if (addAbility)
-                        StatsManager.ExtraSP += abilityValue;
+                        HealthManager.ExtraSP += abilityValue;
                     else
-                        StatsManager.ExtraSP -= abilityValue;
+                        HealthManager.ExtraSP -= abilityValue;
                     break;
 
                 case AbilityType.PhysicalDefense:
@@ -787,9 +626,9 @@ namespace Imgeneus.World.Game
 
         private void Buff_OnPeriodicalHeal(ActiveBuff buff, AttackResult healResult)
         {
-            IncreaseHP(healResult.Damage.HP);
-            CurrentMP += healResult.Damage.MP;
-            CurrentSP += healResult.Damage.SP;
+            HealthManager.IncreaseHP(healResult.Damage.HP);
+            HealthManager.CurrentMP += healResult.Damage.MP;
+            HealthManager.CurrentSP += healResult.Damage.SP;
 
             OnSkillKeep?.Invoke(this, buff, healResult);
         }
@@ -801,14 +640,14 @@ namespace Imgeneus.World.Game
             if (buff.TimeDamageType == TimeDamageType.Percent)
             {
                 damage = new Damage(
-                    Convert.ToUInt16(CurrentHP * debuffResult.Damage.HP * 1.0 / 100),
-                    Convert.ToUInt16(CurrentSP * debuffResult.Damage.SP * 1.0 / 100),
-                    Convert.ToUInt16(CurrentMP * debuffResult.Damage.MP * 1.0 / 100));
+                    Convert.ToUInt16(HealthManager.CurrentHP * debuffResult.Damage.HP * 1.0 / 100),
+                    Convert.ToUInt16(HealthManager.CurrentSP * debuffResult.Damage.SP * 1.0 / 100),
+                    Convert.ToUInt16(HealthManager.CurrentMP * debuffResult.Damage.MP * 1.0 / 100));
             }
 
-            DecreaseHP(damage.HP, buff.BuffCreator);
-            CurrentMP -= damage.MP;
-            CurrentSP -= damage.SP;
+            HealthManager.DecreaseHP(damage.HP, buff.BuffCreator);
+            HealthManager.CurrentMP -= damage.MP;
+            HealthManager.CurrentSP -= damage.SP;
 
             OnSkillKeep?.Invoke(this, buff, new AttackResult(AttackSuccess.Normal, damage));
         }
@@ -1174,9 +1013,9 @@ namespace Imgeneus.World.Game
         /// <inheritdoc />
         public void Rebirth(ushort mapId, float x, float y, float z)
         {
-            CurrentHP = MaxHP;
-            CurrentMP = MaxMP;
-            CurrentSP = MaxSP;
+            HealthManager.IncreaseHP(HealthManager.MaxHP);
+            HealthManager.CurrentMP = HealthManager.MaxMP;
+            HealthManager.CurrentSP = HealthManager.MaxSP;
             IsDead = false;
 
             PosX = x;
@@ -1205,9 +1044,9 @@ namespace Imgeneus.World.Game
         /// </summary>
         public void FullRecover()
         {
-            CurrentHP = MaxHP;
-            CurrentMP = MaxMP;
-            CurrentSP = MaxSP;
+            HealthManager.IncreaseHP(HealthManager.MaxHP);
+            HealthManager.CurrentMP = HealthManager.MaxMP;
+            HealthManager.CurrentSP = HealthManager.MaxSP;
             OnFullRecover?.Invoke(this);
         }
 

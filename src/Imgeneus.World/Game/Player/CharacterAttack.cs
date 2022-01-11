@@ -180,8 +180,8 @@ namespace Imgeneus.World.Game.Player
 
             if (skill.NeedMP > 0 || skill.NeedSP > 0)
             {
-                CurrentMP -= skill.NeedMP;
-                CurrentSP -= skill.NeedSP;
+                HealthManager.CurrentMP -= skill.NeedMP;
+                HealthManager.CurrentSP -= skill.NeedSP;
                 SendUseSMMP(skill.NeedMP, skill.NeedSP);
             }
 
@@ -246,11 +246,11 @@ namespace Imgeneus.World.Game.Player
 
                         // Second decrease hp.
                         if (attackResult.Damage.HP > 0)
-                            t.DecreaseHP(attackResult.Damage.HP, this);
+                            t.HealthManager.DecreaseHP(attackResult.Damage.HP, this);
                         if (attackResult.Damage.SP > 0)
-                            t.CurrentSP -= attackResult.Damage.SP;
+                            t.HealthManager.CurrentSP -= attackResult.Damage.SP;
                         if (attackResult.Damage.MP > 0)
-                            t.CurrentMP -= attackResult.Damage.MP;
+                            t.HealthManager.CurrentMP -= attackResult.Damage.MP;
                     }
                     catch (NotImplementedException)
                     {
@@ -295,9 +295,9 @@ namespace Imgeneus.World.Game.Player
                                                      MaxAttack,
                                                      MinMagicAttack,
                                                      MaxMagicAttack);
-            Target.DecreaseHP(result.Damage.HP, this);
-            Target.CurrentSP -= result.Damage.SP;
-            Target.CurrentMP -= result.Damage.MP;
+            Target.HealthManager.DecreaseHP(result.Damage.HP, this);
+            Target.HealthManager.CurrentSP -= result.Damage.SP;
+            Target.HealthManager.CurrentMP -= result.Damage.MP;
 
             OnAttack?.Invoke(this, Target, result);
         }
@@ -386,7 +386,7 @@ namespace Imgeneus.World.Game.Player
                 return false;
             }
 
-            if (CurrentMP < skill.NeedMP || CurrentSP < skill.NeedSP)
+            if (HealthManager.CurrentMP < skill.NeedMP || HealthManager.CurrentSP < skill.NeedSP)
             {
                 SendNotEnoughMPSP(Target, skill);
                 return false;
