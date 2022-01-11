@@ -218,7 +218,7 @@ namespace Imgeneus.World.Game
                         fxDef = 1;
                     }
 
-                    var wisDifference = (11 * target.TotalWis - 10 * TotalWis) / (target.TotalWis + TotalWis) * 3.9000001;
+                    var wisDifference = (11 * target.StatsManager.TotalWis - 10 * StatsManager.TotalWis) / (target.StatsManager.TotalWis + StatsManager.TotalWis) * 3.9000001;
                     var nAttackTypea = wisDifference + MagicHittingChance;
                     if (nAttackTypea >= 1)
                     {
@@ -311,7 +311,7 @@ namespace Imgeneus.World.Game
             if (new Random().Next(1, 101) < CriticalSuccessRate(target))
             {
                 criticalDamage = true;
-                damage += Convert.ToInt32(TotalLuc * new Random().NextDouble() * 1.5);
+                damage += Convert.ToInt32(StatsManager.TotalLuc * new Random().NextDouble() * 1.5);
             }
 
             if (damage > 30000)
@@ -342,7 +342,7 @@ namespace Imgeneus.World.Game
         /// </summary>
         private int CriticalSuccessRate(IKillable target)
         {
-            var result = Convert.ToInt32(CriticalHittingChance - (target.TotalLuc * 0.034000002));
+            var result = Convert.ToInt32(CriticalHittingChance - (target.StatsManager.TotalLuc * 0.034000002));
 
             if (result < 5)
                 result = 5;

@@ -158,9 +158,6 @@ namespace Imgeneus.World.Game.Inventory
                 _helmet = value;
                 TakeOnItem(_helmet);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _helmet, 0);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 0");
             }
@@ -175,9 +172,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_armor);
                 _armor = value;
                 TakeOnItem(_armor);
-
-                //if (Client != null)
-                //    SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _armor, 1);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 1");
@@ -194,9 +188,6 @@ namespace Imgeneus.World.Game.Inventory
                 _pants = value;
                 TakeOnItem(_pants);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _pants, 2);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 2");
             }
@@ -212,9 +203,6 @@ namespace Imgeneus.World.Game.Inventory
                 _gauntlet = value;
                 TakeOnItem(_gauntlet);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _gauntlet, 3);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 3");
             }
@@ -229,9 +217,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_boots);
                 _boots = value;
                 TakeOnItem(_boots);
-
-                //if (Client != null)
-                //    SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _boots, 4);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 4");
@@ -254,9 +239,6 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_weapon);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _weapon, 5);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 5");
             }
@@ -271,9 +253,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_shield);
                 _shield = value;
                 TakeOnItem(_shield);
-
-                //if (Client != null)
-                //    SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _shield, 6);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 6");
@@ -290,9 +269,6 @@ namespace Imgeneus.World.Game.Inventory
                 _cape = value;
                 TakeOnItem(_cape);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _cape, 7);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 7");
             }
@@ -307,9 +283,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_amulet);
                 _amulet = value;
                 TakeOnItem(_amulet);
-
-                //if (Client != null)
-                //    SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _amulet, 8);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 8");
@@ -326,9 +299,6 @@ namespace Imgeneus.World.Game.Inventory
                 _ring1 = value;
                 TakeOnItem(_ring1);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _ring1, 9);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 9");
             }
@@ -343,9 +313,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_ring2);
                 _ring2 = value;
                 TakeOnItem(_ring2);
-
-                //if (Client != null)
-                //    SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _ring2, 10);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 10");
@@ -362,9 +329,6 @@ namespace Imgeneus.World.Game.Inventory
                 _bracelet1 = value;
                 TakeOnItem(_bracelet1);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _bracelet1, 11);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 11");
             }
@@ -379,9 +343,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_bracelet2);
                 _bracelet2 = value;
                 TakeOnItem(_bracelet2);
-
-                //if (Client != null)
-                //    SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _bracelet2, 12);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 12");
@@ -402,9 +363,6 @@ namespace Imgeneus.World.Game.Inventory
                 _mount = value;
                 TakeOnItem(_mount);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _mount, 13);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 13");
             }
@@ -419,9 +377,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_pet);
                 _pet = value;
                 TakeOnItem(_pet);
-
-                //if (Client != null)
-                //    SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _pet, 14);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 14");
@@ -438,9 +393,6 @@ namespace Imgeneus.World.Game.Inventory
                 _costume = value;
                 TakeOnItem(_costume);
 
-                //if (Client != null)
-                //    SendAdditionalStats();
-
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _costume, 15);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 15");
             }
@@ -455,9 +407,6 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_wings);
                 _wings = value;
                 TakeOnItem(_wings);
-
-                //if (Client != null)
-                //SendAdditionalStats();
 
                 OnEquipmentChanged?.Invoke(_gameSession.CharId, _wings, 16);
                 _logger.LogDebug($"Character {_gameSession.CharId} changed equipment on slot 16");

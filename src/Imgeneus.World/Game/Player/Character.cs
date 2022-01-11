@@ -45,7 +45,6 @@ namespace Imgeneus.World.Game.Player
         private readonly INoticeManager _noticeManager;
         private readonly IGuildManager _guildManager;
 
-        public readonly IStatsManager StatsManager;
         public readonly IInventoryManager InventoryManager;
         public readonly IStealthManager StealthManager;
 
@@ -79,7 +78,6 @@ namespace Imgeneus.World.Game.Player
             _noticeManager = noticeManager;
             _guildManager = guildManager;
 
-            StatsManager = statsManager;
             InventoryManager = inventoryManager;
             StealthManager = stealthManager;
 
@@ -372,12 +370,6 @@ namespace Imgeneus.World.Game.Player
                 Angle = dbCharacter.Angle,
                 StatPoint = dbCharacter.StatPoint,
                 SkillPoint = dbCharacter.SkillPoint,
-                Strength = dbCharacter.Strength,
-                Dexterity = dbCharacter.Dexterity,
-                Reaction = dbCharacter.Rec,
-                Intelligence = dbCharacter.Intelligence,
-                Luck = dbCharacter.Luck,
-                Wisdom = dbCharacter.Wisdom,
                 AutoStr = dbCharacter.AutoStr,
                 AutoDex = dbCharacter.AutoDex,
                 AutoInt = dbCharacter.AutoInt,

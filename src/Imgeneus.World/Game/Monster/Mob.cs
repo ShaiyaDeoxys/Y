@@ -31,6 +31,7 @@ namespace Imgeneus.World.Game.Monster
             Exp = _dbMob.Exp;
             AI = _dbMob.AI;
             ShouldRebirth = shouldRebirth;
+            StatsManager.Init(0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc);
 
             MoveArea = moveArea;
             Map = map;
@@ -73,19 +74,6 @@ namespace Imgeneus.World.Game.Monster
         /// During GBR how many points added to guild.
         /// </summary>
         public short GuildPoints => _dbMob.MoneyMax;
-
-        #region Totel stats
-
-        /// <inheritdoc />
-        public override int TotalLuc => _dbMob.Luc;
-
-        /// <inheritdoc />
-        public override int TotalWis => _dbMob.Wis;
-
-        /// <inheritdoc />
-        public override int TotalDex => _dbMob.Dex;
-
-        #endregion
 
         #region Max HP&SP&MP
 
@@ -145,7 +133,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, _statsManager);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager);
         }
 
         public override void Dispose()

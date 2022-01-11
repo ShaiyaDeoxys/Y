@@ -106,6 +106,7 @@ namespace Imgeneus.World.Game.Player
 
             _sessionManager.CharId = characterId;
             _sessionManager.IsAdmin = dbCharacter.User.Authority == 0;
+            _statsManager.Init(dbCharacter.Strength, dbCharacter.Dexterity, dbCharacter.Rec, dbCharacter.Intelligence, dbCharacter.Wisdom, dbCharacter.Luck);
             _inventoryManager.Init(dbCharacter.Items);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 

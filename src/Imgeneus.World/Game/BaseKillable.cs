@@ -8,7 +8,6 @@ using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Stats;
-using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Zone;
 using MvvmHelpers;
 
@@ -20,12 +19,13 @@ namespace Imgeneus.World.Game
     public abstract class BaseKillable : IKillable, IMapMember, IDisposable
     {
         protected readonly IDatabasePreloader _databasePreloader;
-        protected readonly IStatsManager _statsManager;
+        public IStatsManager StatsManager { get; private set; }
 
         public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager)
         {
             _databasePreloader = databasePreloader;
-            _statsManager = statsManager;
+            StatsManager = statsManager;
+
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
         }
@@ -667,94 +667,94 @@ namespace Imgeneus.World.Game
 
                 case AbilityType.Str:
                     if (addAbility)
-                        _statsManager.ExtraStr += abilityValue;
+                       StatsManager.ExtraStr += abilityValue;
                     else
-                        _statsManager.ExtraStr -= abilityValue;
+                        StatsManager.ExtraStr -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Rec:
                     if (addAbility)
-                        _statsManager.ExtraRec += abilityValue;
+                        StatsManager.ExtraRec += abilityValue;
                     else
-                        _statsManager.ExtraRec -= abilityValue;
+                        StatsManager.ExtraRec -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Int:
                     if (addAbility)
-                        _statsManager.ExtraInt += abilityValue;
+                        StatsManager.ExtraInt += abilityValue;
                     else
-                        _statsManager.ExtraInt -= abilityValue;
+                        StatsManager.ExtraInt -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Wis:
                     if (addAbility)
-                        _statsManager.ExtraWis += abilityValue;
+                        StatsManager.ExtraWis += abilityValue;
                     else
-                        _statsManager.ExtraWis -= abilityValue;
+                        StatsManager.ExtraWis -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Dex:
                     if (addAbility)
-                        _statsManager.ExtraDex += abilityValue;
+                        StatsManager.ExtraDex += abilityValue;
                     else
-                        _statsManager.ExtraDex -= abilityValue;
+                        StatsManager.ExtraDex -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.Luc:
                     if (addAbility)
-                        _statsManager.ExtraLuc += abilityValue;
+                        StatsManager.ExtraLuc += abilityValue;
                     else
-                        _statsManager.ExtraLuc -= abilityValue;
+                        StatsManager.ExtraLuc -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.HP:
                     if (addAbility)
-                        _statsManager.ExtraHP += abilityValue;
+                        StatsManager.ExtraHP += abilityValue;
                     else
-                        _statsManager.ExtraHP -= abilityValue;
+                        StatsManager.ExtraHP -= abilityValue;
                     break;
 
                 case AbilityType.MP:
                     if (addAbility)
-                        _statsManager.ExtraMP += abilityValue;
+                        StatsManager.ExtraMP += abilityValue;
                     else
-                        _statsManager.ExtraMP -= abilityValue;
+                        StatsManager.ExtraMP -= abilityValue;
                     break;
 
                 case AbilityType.SP:
                     if (addAbility)
-                        _statsManager.ExtraSP += abilityValue;
+                        StatsManager.ExtraSP += abilityValue;
                     else
-                        _statsManager.ExtraSP -= abilityValue;
+                        StatsManager.ExtraSP -= abilityValue;
                     break;
 
                 case AbilityType.PhysicalDefense:
                 case AbilityType.ShootingDefense:
                     if (addAbility)
-                        _statsManager.ExtraDefense += abilityValue;
+                        StatsManager.ExtraDefense += abilityValue;
                     else
-                        _statsManager.ExtraDefense -= abilityValue;
+                        StatsManager.ExtraDefense -= abilityValue;
 
                     SendAdditionalStats();
                     return;
 
                 case AbilityType.MagicResistance:
                     if (addAbility)
-                        _statsManager.ExtraResistance += abilityValue;
+                        StatsManager.ExtraResistance += abilityValue;
                     else
-                        _statsManager.ExtraResistance -= abilityValue;
+                        StatsManager.ExtraResistance -= abilityValue;
 
                     SendAdditionalStats();
                     return;
@@ -775,9 +775,9 @@ namespace Imgeneus.World.Game
 
                 case AbilityType.AbsorptionAura:
                     if (addAbility)
-                        _statsManager.Absorption += abilityValue;
+                        StatsManager.Absorption += abilityValue;
                     else
-                        _statsManager.Absorption -= abilityValue;
+                        StatsManager.Absorption -= abilityValue;
                     return;
 
                 default:
@@ -1002,16 +1002,6 @@ namespace Imgeneus.World.Game
 
         #endregion
 
-        #region Total stats
-
-        public abstract int TotalLuc { get; }
-
-        public abstract int TotalWis { get; }
-
-        public abstract int TotalDex { get; }
-
-        #endregion
-
         #region Defense & Resistance
 
         public abstract int Defense { get; }
@@ -1029,7 +1019,7 @@ namespace Imgeneus.World.Game
         {
             get
             {
-                var calculated = 1.0 * TotalDex / 2 + _skillPhysicalHittingChance;
+                var calculated = 1.0 * StatsManager.TotalDex / 2 + _skillPhysicalHittingChance;
                 return calculated > 0 ? calculated : 1;
             }
         }
@@ -1041,7 +1031,7 @@ namespace Imgeneus.World.Game
         {
             get
             {
-                var calculated = 1.0 * TotalDex / 2 + _skillPhysicalEvasionChance;
+                var calculated = 1.0 * StatsManager.TotalDex / 2 + _skillPhysicalEvasionChance;
                 return calculated > 0 ? calculated : 1;
             }
         }
@@ -1054,7 +1044,7 @@ namespace Imgeneus.World.Game
             get
             {
                 // each 5 luck is 1% of critical.
-                var calculated = 0.2 * TotalLuc + _skillCriticalHittingChance;
+                var calculated = 0.2 * StatsManager.TotalLuc + _skillCriticalHittingChance;
                 return calculated > 0 ? calculated : 1;
             }
         }
@@ -1066,7 +1056,7 @@ namespace Imgeneus.World.Game
         {
             get
             {
-                var calculated = 1.0 * TotalWis / 2 + _skillMagicHittingChance;
+                var calculated = 1.0 * StatsManager.TotalWis / 2 + _skillMagicHittingChance;
                 return calculated > 0 ? calculated : 1;
             }
         }
@@ -1078,7 +1068,7 @@ namespace Imgeneus.World.Game
         {
             get
             {
-                var calculated = 1.0 * TotalWis / 2 + _skillMagicEvasionChance;
+                var calculated = 1.0 * StatsManager.TotalWis / 2 + _skillMagicEvasionChance;
                 return calculated > 0 ? calculated : 1;
             }
         }
@@ -1172,7 +1162,7 @@ namespace Imgeneus.World.Game
 
         #region Absorption
 
-        public ushort Absorption { get => _statsManager.Absorption; }
+        public ushort Absorption { get => StatsManager.Absorption; }
 
         #endregion
 

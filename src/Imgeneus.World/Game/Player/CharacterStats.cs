@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Stats;
 using System;
 using System.Linq;
 
@@ -23,12 +24,6 @@ namespace Imgeneus.World.Game.Player
         public Gender Gender { get; set; }
         public ushort StatPoint { get; private set; }
         public ushort SkillPoint { get; private set; }
-        public ushort Strength { get; private set; }
-        public ushort Dexterity { get; private set; }
-        public ushort Reaction { get; private set; }
-        public ushort Intelligence { get; private set; }
-        public ushort Luck { get; private set; }
-        public ushort Wisdom { get; private set; }
         public uint Exp { get; private set; }
         public ushort Kills { get; private set; }
         public ushort Deaths { get; private set; }
@@ -60,17 +55,6 @@ namespace Imgeneus.World.Game.Player
                 return _nameAsByteArray;
             }
         }
-
-        #endregion
-
-        #region Total stats
-
-        public int TotalStr => Strength + StatsManager.ExtraStr;
-        public override int TotalDex => Dexterity + StatsManager.ExtraDex;
-        public int TotalRec => Reaction + StatsManager.ExtraRec;
-        public int TotalInt => Intelligence + StatsManager.ExtraInt;
-        public override int TotalWis => Wisdom + StatsManager.ExtraWis;
-        public override int TotalLuc => Luck + StatsManager.ExtraLuc;
 
         #endregion
 
@@ -236,27 +220,27 @@ namespace Imgeneus.World.Game.Player
             switch (primaryAttribute)
             {
                 case CharacterStatEnum.Strength:
-                    Strength += amount;
+                    StatsManager.Strength += amount;
                     break;
 
                 case CharacterStatEnum.Dexterity:
-                    Dexterity += amount;
+                    StatsManager.Dexterity += amount;
                     break;
 
                 case CharacterStatEnum.Reaction:
-                    Reaction += amount;
+                    StatsManager.Reaction += amount;
                     break;
 
                 case CharacterStatEnum.Intelligence:
-                    Intelligence += amount;
+                    StatsManager.Intelligence += amount;
                     break;
 
                 case CharacterStatEnum.Wisdom:
-                    Wisdom += amount;
+                    StatsManager.Wisdom += amount;
                     break;
 
                 case CharacterStatEnum.Luck:
-                    Luck += amount;
+                    StatsManager.Luck += amount;
                     break;
 
                 default:
@@ -275,27 +259,27 @@ namespace Imgeneus.World.Game.Player
             switch (primaryAttribute)
             {
                 case CharacterStatEnum.Strength:
-                    Strength -= amount;
+                    StatsManager.Strength -= amount;
                     break;
 
                 case CharacterStatEnum.Dexterity:
-                    Dexterity -= amount;
+                    StatsManager.Dexterity -= amount;
                     break;
 
                 case CharacterStatEnum.Reaction:
-                    Reaction -= amount;
+                    StatsManager.Reaction -= amount;
                     break;
 
                 case CharacterStatEnum.Intelligence:
-                    Intelligence -= amount;
+                    StatsManager.Intelligence -= amount;
                     break;
 
                 case CharacterStatEnum.Wisdom:
-                    Wisdom -= amount;
+                    StatsManager.Wisdom -= amount;
                     break;
 
                 case CharacterStatEnum.Luck:
-                    Luck -= amount;
+                    StatsManager.Luck -= amount;
                     break;
 
                 default:
@@ -304,17 +288,17 @@ namespace Imgeneus.World.Game.Player
         }
         /// Extra HP given by Reaction formula
         /// </summary>
-        public int ReactionExtraHP => Reaction * 5;
+        public int ReactionExtraHP => StatsManager.Reaction * 5;
 
         /// <summary>
         /// Extra MP given by Wisdom formula
         /// </summary>
-        public int WisdomExtraMP => Wisdom * 5;
+        public int WisdomExtraMP => StatsManager.Wisdom * 5;
 
         /// <summary>
         /// Extra SP given by Dexterity formula
         /// </summary>
-        public int DexterityExtraSP => Dexterity * 5;
+        public int DexterityExtraSP => StatsManager.Dexterity * 5;
 
         #endregion
 
@@ -327,7 +311,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                return TotalRec + StatsManager.ExtraDefense;
+                return StatsManager.TotalRec + StatsManager.ExtraDefense;
             }
         }
 
@@ -338,7 +322,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                return TotalWis + StatsManager.ExtraResistance;
+                return StatsManager.TotalWis + StatsManager.ExtraResistance;
             }
         }
 
@@ -471,16 +455,16 @@ namespace Imgeneus.World.Game.Player
                 case CharacterProfession.Fighter:
                 case CharacterProfession.Defender:
                 case CharacterProfession.Ranger:
-                    characterAttack = (int)(Math.Floor(1.3 * TotalStr) + Math.Floor(0.25 * TotalDex));
+                    characterAttack = (int)(Math.Floor(1.3 * StatsManager.TotalStr) + Math.Floor(0.25 * StatsManager.TotalDex));
                     break;
 
                 case CharacterProfession.Mage:
                 case CharacterProfession.Priest:
-                    characterAttack = (int)(Math.Floor(1.3 * TotalInt) + Math.Floor(0.2 * TotalWis));
+                    characterAttack = (int)(Math.Floor(1.3 * StatsManager.TotalInt) + Math.Floor(0.2 * StatsManager.TotalWis));
                     break;
 
                 case CharacterProfession.Archer:
-                    characterAttack = (int)(TotalStr + Math.Floor(0.3 * TotalLuc) + Math.Floor(0.2 * TotalDex));
+                    characterAttack = (int)(StatsManager.TotalStr + Math.Floor(0.3 * StatsManager.TotalLuc) + Math.Floor(0.2 * StatsManager.TotalDex));
                     break;
 
                 default:
@@ -618,12 +602,12 @@ namespace Imgeneus.World.Game.Player
         public void ResetStats()
         {
             var defaultStat = _characterConfig.DefaultStats.First(s => s.Job == Class);
-            Strength = defaultStat.Str;
-            Dexterity = defaultStat.Dex;
-            Reaction = defaultStat.Rec;
-            Intelligence = defaultStat.Int;
-            Wisdom = defaultStat.Wis;
-            Luck = defaultStat.Luc;
+            StatsManager.Strength = defaultStat.Str;
+            StatsManager.Dexterity = defaultStat.Dex;
+            StatsManager.Reaction = defaultStat.Rec;
+            StatsManager.Intelligence = defaultStat.Int;
+            StatsManager.Wisdom = defaultStat.Wis;
+            StatsManager.Luck = defaultStat.Luc;
 
             var statPerLevel = _characterConfig.GetLevelStatSkillPoints(Mode).StatPoint;
 
@@ -631,7 +615,7 @@ namespace Imgeneus.World.Game.Player
 
             IncreasePrimaryStat((ushort)(Level - 1));
 
-            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, Strength, Dexterity, Reaction, Intelligence, Wisdom, Luck, StatPoint);
+            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatPoint);
             _packetsHelper.SendResetStats(Client, this);
             SendAdditionalStats();
         }
@@ -663,22 +647,22 @@ namespace Imgeneus.World.Game.Player
                     return SkillPoint;
 
                 case CharacterAttributeEnum.Strength:
-                    return Strength;
+                    return StatsManager.Strength;
 
                 case CharacterAttributeEnum.Dexterity:
-                    return Dexterity;
+                    return StatsManager.Dexterity;
 
                 case CharacterAttributeEnum.Reaction:
-                    return Reaction;
+                    return StatsManager.Reaction;
 
                 case CharacterAttributeEnum.Intelligence:
-                    return Intelligence;
+                    return StatsManager.Intelligence;
 
                 case CharacterAttributeEnum.Luck:
-                    return Luck;
+                    return StatsManager.Luck;
 
                 case CharacterAttributeEnum.Wisdom:
-                    return Wisdom;
+                    return StatsManager.Wisdom;
 
                 // TODO: Investigate what these attributes represent
                 case CharacterAttributeEnum.Hg:
@@ -750,29 +734,29 @@ namespace Imgeneus.World.Game.Player
             switch (stat)
             {
                 case CharacterStatEnum.Strength:
-                    Strength = value;
+                    StatsManager.Strength = value;
                     break;
 
                 case CharacterStatEnum.Dexterity:
-                    Dexterity = value;
+                    StatsManager.Dexterity = value;
                     InvokeMaxSPChanged();
                     break;
 
                 case CharacterStatEnum.Reaction:
-                    Reaction = value;
+                    StatsManager.Reaction = value;
                     InvokeMaxHPChanged();
                     break;
 
                 case CharacterStatEnum.Intelligence:
-                    Intelligence = value;
+                    StatsManager.Intelligence = value;
                     break;
 
                 case CharacterStatEnum.Luck:
-                    Luck = value;
+                    StatsManager.Luck = value;
                     break;
 
                 case CharacterStatEnum.Wisdom:
-                    Wisdom = value;
+                    StatsManager.Wisdom = value;
                     InvokeMaxMPChanged();
                     break;
 
@@ -782,7 +766,7 @@ namespace Imgeneus.World.Game.Player
 
             SendAdditionalStats();
 
-            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, Strength, Dexterity, Reaction, Intelligence, Wisdom, Luck, StatPoint);
+            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatPoint);
         }
 
         #endregion

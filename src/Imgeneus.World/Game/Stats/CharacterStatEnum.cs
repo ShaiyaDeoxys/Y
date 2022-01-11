@@ -1,4 +1,4 @@
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Stats
 {
     public enum CharacterStatEnum
     {

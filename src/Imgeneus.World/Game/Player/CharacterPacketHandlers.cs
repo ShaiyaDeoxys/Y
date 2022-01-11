@@ -400,15 +400,15 @@ namespace Imgeneus.World.Game.Player
             if (fullStat > StatPoint || fullStat > ushort.MaxValue)
                 return;
 
-            Strength += str;
-            Dexterity += dex;
-            Reaction += rec;
-            Intelligence += intl;
-            Wisdom += wis;
-            Luck += luc;
+            StatsManager.Strength += str;
+            StatsManager.Dexterity += dex;
+            StatsManager.Reaction += rec;
+            StatsManager.Intelligence += intl;
+            StatsManager.Wisdom += wis;
+            StatsManager.Luck += luc;
             StatPoint -= (ushort)fullStat;
 
-            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, Strength, Dexterity, Reaction, Intelligence, Wisdom, Luck, StatPoint);
+            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatPoint);
 
             _packetsHelper.SendStatsUpdate(Client, str, dex, rec, intl, wis, luc);
             SendAdditionalStats();

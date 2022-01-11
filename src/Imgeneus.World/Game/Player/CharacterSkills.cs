@@ -103,7 +103,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public AttackResult UsedHealingSkill(Skill skill, IKillable target)
         {
-            var healHP = TotalWis * 4 + skill.HealHP;
+            var healHP = StatsManager.TotalWis * 4 + skill.HealHP;
             var healSP = skill.HealSP;
             var healMP = skill.HealMP;
             AttackResult result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)healHP, healSP, healMP));

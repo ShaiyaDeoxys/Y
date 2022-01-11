@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Stats;
 using Xunit;
 
 namespace Imgeneus.World.Tests.CharacterTests
