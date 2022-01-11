@@ -13,7 +13,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                if (IsStealth)
+                if (StealthManager.IsStealth)
                     return CharacterShapeEnum.Stealth;
 
                 if (IsOnVehicle)

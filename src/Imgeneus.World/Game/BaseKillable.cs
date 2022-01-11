@@ -8,6 +8,7 @@ using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Zone;
 using MvvmHelpers;
 
@@ -475,7 +476,7 @@ namespace Imgeneus.World.Game
                     break;
 
                 case TypeDetail.Stealth:
-                    IsStealth = true;
+                    //_stealthManager.IsStealth = true;
 
                     var sprinterBuff = ActiveBuffs.FirstOrDefault(b => b.SkillId == 681 || b.SkillId == 114); // 114 (old ep) 681 (new ep) are unique numbers for sprinter buff.
                     if (sprinterBuff != null)
@@ -574,7 +575,7 @@ namespace Imgeneus.World.Game
                     break;
 
                 case TypeDetail.Stealth:
-                    IsStealth = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
+                    //_stealthManager.IsStealth = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
                     break;
 
                 case TypeDetail.WeaponMastery:
@@ -1166,12 +1167,6 @@ namespace Imgeneus.World.Game
 
         ///  <inheritdoc/>
         public virtual bool IsUntouchable { get; private set; }
-
-        #endregion
-
-        #region Stealth
-
-        public abstract bool IsStealth { get; protected set; }
 
         #endregion
 

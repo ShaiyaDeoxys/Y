@@ -24,6 +24,8 @@ namespace Imgeneus.World.Game.Session
         public IWorldClient Client { get; set; }
 
         public bool IsLoggingOff { get; private set; }
+        public bool IsAdmin { get; set; }
+
         private bool _quitGame;
 
         public GameSession(ILogger<GameSession> logger, IGamePacketFactory packetFactory, IGameWorld gameWorld, ISelectionScreenManager selectionScreenManager)

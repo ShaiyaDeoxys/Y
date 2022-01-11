@@ -11,6 +11,11 @@
         int CharId { get; set; }
 
         /// <summary>
+        /// Indicator if it's gm game session.
+        /// </summary>
+        bool IsAdmin { get; set; }
+
+        /// <summary>
         /// Current TCP connection.
         /// </summary>
         public IWorldClient Client { get; set; }

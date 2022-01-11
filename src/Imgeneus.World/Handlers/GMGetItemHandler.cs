@@ -14,13 +14,11 @@ namespace Imgeneus.World.Handlers
     [Handler]
     public class GMGetItemHandler : BaseHandler
     {
-        private readonly IGameWorld _gameWorld;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IInventoryManager _inventoryManager;
 
-        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
+        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
         {
-            _gameWorld = gameWorld;
             _databasePreloader = databasePreloader;
             _inventoryManager = inventoryManager;
         }
@@ -28,7 +26,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GM_COMMAND_GET_ITEM)]
         public async Task Handle(WorldClient client, GMGetItemPacket packet)
         {
-            if (!IsAdmin())
+            if (!_gameSession.IsAdmin)
                 return;
 
             var itemCount = packet.Count;
@@ -55,11 +53,6 @@ namespace Imgeneus.World.Handlers
                 _packetFactory.SendGmCommandSuccess(client);
             else
                 _packetFactory.SendGmCommandError(client, PacketType.GM_COMMAND_GET_ITEM);
-        }
-
-        public bool IsAdmin()
-        {
-            return _gameWorld.Players[_gameSession.CharId].IsAdmin;
         }
     }
 }

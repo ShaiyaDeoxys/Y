@@ -254,6 +254,22 @@ namespace Imgeneus.World.Packets
             packet.Write(new CharacterShape(character).Serialize());
             client.Send(packet);
         }
+
+        public void SendShapeUpdate(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE_UPDATE);
+            packet.Write(character.Id);
+            packet.Write((byte)character.Shape);
+
+            // Only for ep 8.
+            if (character.InventoryManager.Mount != null)
+            {
+                packet.Write((int)character.InventoryManager.Mount.Type);
+                packet.Write((int)character.InventoryManager.Mount.TypeId);
+            }
+
+            client.Send(packet);
+        }
         #endregion
 
         #region GM

@@ -1,10 +1,10 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMCharacterOffPacket : IDeserializedPacket
+    public record GMCharacterOffPacket : IPacketDeserializer
     {
-        public GMCharacterOffPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
         }
     }

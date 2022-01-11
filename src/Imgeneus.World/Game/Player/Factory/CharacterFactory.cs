@@ -16,6 +16,7 @@ using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Stealth;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -39,6 +40,7 @@ namespace Imgeneus.World.Game.Player
         private readonly INoticeManager _noticeManager;
         private readonly IGuildManager _guildManager;
         private readonly IGameSession _sessionManager;
+        private readonly IStealthManager _stealthManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -57,7 +59,8 @@ namespace Imgeneus.World.Game.Player
                                 INpcFactory npcFactory,
                                 INoticeManager noticeManager,
                                 IGuildManager guildManager,
-                                IGameSession sessionManager)
+                                IGameSession sessionManager,
+                                IStealthManager stealthManager)
         {
             _logger = logger;
             _database = database;
@@ -77,6 +80,7 @@ namespace Imgeneus.World.Game.Player
             _noticeManager = noticeManager;
             _guildManager = guildManager;
             _sessionManager = sessionManager;
+            _stealthManager = stealthManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -101,7 +105,9 @@ namespace Imgeneus.World.Game.Player
             Character.ClearOutdatedValues(_database, dbCharacter);
 
             _sessionManager.CharId = characterId;
+            _sessionManager.IsAdmin = dbCharacter.User.Authority == 0;
             _inventoryManager.Init(dbCharacter.Items);
+            _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
             var player = Character.FromDbCharacter(dbCharacter,
                                         _characterLogger,
@@ -118,7 +124,8 @@ namespace Imgeneus.World.Game.Player
                                         _mobFactory,
                                         _npcFactory,
                                         _noticeManager,
-                                        _guildManager);
+                                        _guildManager,
+                                        _stealthManager);
 
             player.Client = _sessionManager.Client; // TODO: remove it.
 

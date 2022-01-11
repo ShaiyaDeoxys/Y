@@ -25,6 +25,7 @@ using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Stealth;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -46,6 +47,7 @@ namespace Imgeneus.World.Game.Player
 
         public readonly IStatsManager StatsManager;
         public readonly IInventoryManager InventoryManager;
+        public readonly IStealthManager StealthManager;
 
         public Character(ILogger<Character> logger,
                          IGameWorld gameWorld,
@@ -61,7 +63,8 @@ namespace Imgeneus.World.Game.Player
                          INoticeManager noticeManager,
                          IGuildManager guildManager,
                          IStatsManager statsManager,
-                         IInventoryManager inventoryManager) : base(databasePreloader, statsManager)
+                         IInventoryManager inventoryManager,
+                         IStealthManager stealthManager) : base(databasePreloader, statsManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -78,6 +81,8 @@ namespace Imgeneus.World.Game.Player
 
             StatsManager = statsManager;
             InventoryManager = inventoryManager;
+            StealthManager = stealthManager;
+
             _packetsHelper = new PacketsHelper();
 
             _castTimer.Elapsed += CastTimer_Elapsed;
@@ -174,54 +179,11 @@ namespace Imgeneus.World.Game.Player
                     return 193; // Can not move motion.
                 }
 
-                if (IsStealth)
+                if (StealthManager.IsStealth)
                     return 0;
 
                 return 1;
             }
-        }
-
-        #endregion
-
-        #region Stealth
-
-        private bool _isStealth = false;
-
-        /// <summary>
-        /// Is player visible or not.
-        /// </summary>
-        public override bool IsStealth
-        {
-            protected set
-            {
-                if (_isStealth == value)
-                    return;
-
-                _isStealth = value;
-
-                OnShapeChange?.Invoke(this);
-                SendRunMode(); // Do we need this in new eps?
-                InvokeAttackOrMoveChanged();
-            }
-            get => _isStealth || _isAdminStealth;
-        }
-
-        private bool _isAdminStealth = false;
-
-        public bool IsAdminStealth
-        {
-            protected set
-            {
-                if (!IsAdmin || _isAdminStealth == value)
-                    return;
-
-                _isAdminStealth = value;
-
-                OnShapeChange?.Invoke(this);
-                InvokeAttackOrMoveChanged();
-            }
-
-            get => _isAdminStealth;
         }
 
         #endregion
@@ -380,7 +342,7 @@ namespace Imgeneus.World.Game.Player
 
         protected override void DecreaseHP(IKiller damageMaker)
         {
-            IsStealth = false;
+            StealthManager.IsStealth = false;
             IsOnVehicle = false;
         }
 
@@ -389,9 +351,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, inventoryManager)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, inventoryManager, stealthManager)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -429,7 +391,6 @@ namespace Imgeneus.World.Game.Player
                 Victories = dbCharacter.Victories,
                 Defeats = dbCharacter.Defeats,
                 IsAdmin = dbCharacter.User.Authority == 0,
-                IsAdminStealth = dbCharacter.User.Authority == 0,
                 Country = dbCharacter.User.Faction,
                 Points = dbCharacter.User.Points,
                 GuildId = dbCharacter.GuildId

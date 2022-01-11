@@ -213,6 +213,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnFullRecover += Character_OnFullRecover;
             character.OnSkillKeep += Character_OnSkillKeep;
             character.OnShapeChange += Character_OnShapeChange;
+            character.StealthManager.OnStealthChange += Character_OnStealthChange;
             character.OnUsedRangeSkill += Character_OnUsedRangeSkill;
             character.OnRebirthed += Character_OnRebirthed;
             character.OnAppearanceChanged += Character_OnAppearanceChanged;
@@ -243,6 +244,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnFullRecover -= Character_OnFullRecover;
             character.OnSkillKeep -= Character_OnSkillKeep;
             character.OnShapeChange -= Character_OnShapeChange;
+            character.StealthManager.OnStealthChange -= Character_OnStealthChange;
             character.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
             character.OnRebirthed -= Character_OnRebirthed;
             character.OnAppearanceChanged -= Character_OnAppearanceChanged;
@@ -404,6 +406,13 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 _packetsHelper.SendShapeUpdate(player.Client, sender);
+        }
+
+        private void Character_OnStealthChange(int senderId)
+        {
+            var sender = Players[senderId];
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendShapeUpdate(player.Client, sender);
         }
 
         private void Character_OnUsedRangeSkill(IKiller sender, IKillable target, Skill skill, AttackResult attackResult)

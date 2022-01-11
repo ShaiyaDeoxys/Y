@@ -64,7 +64,7 @@ namespace Imgeneus.World.Game.Player
         /// <param name="skipSummoning">Indicates whether the summon casting time should be skipped or not.</param>
         public void CallVehicle(bool skipSummoning = false)
         {
-            if (InventoryManager.Mount is null || IsStealth)
+            if (InventoryManager.Mount is null || StealthManager.IsStealth)
                 return;
 
             if (skipSummoning)

@@ -18,6 +18,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
@@ -87,6 +88,7 @@ namespace Imgeneus.World
             services.AddScoped<IGameSession, GameSession>();
             services.AddScoped<IStatsManager, StatsManager>();
             services.AddScoped<IInventoryManager, InventoryManager>();
+            services.AddScoped<IStealthManager, StealthManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

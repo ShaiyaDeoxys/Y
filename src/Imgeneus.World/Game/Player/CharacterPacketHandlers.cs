@@ -17,31 +17,6 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {
-        private void HandleGMGetItemPacket(GMGetItemPacket gMGetItemPacket)
-        {
-            if (!IsAdmin)
-                return;
-
-            var itemCount = gMGetItemPacket.Count;
-
-            while (itemCount > 0)
-            {
-                var newItem = new Item(_databasePreloader, gMGetItemPacket.Type, gMGetItemPacket.TypeId,
-                    itemCount);
-
-                var item = AddItemToInventory(newItem);
-                if (item != null)
-                {
-                    SendAddItemToInventory(item);
-                    _packetsHelper.SendGmCommandSuccess(Client);
-                }
-                else
-                    _packetsHelper.SendGmCommandError(Client, PacketType.GM_COMMAND_GET_ITEM);
-
-                itemCount -= newItem.Count;
-            }
-        }
-
         private void HandlePlayerInTarget(PlayerInTargetPacket packet)
         {
             Target = Map.GetPlayer(packet.TargetId);

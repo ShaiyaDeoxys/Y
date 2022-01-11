@@ -446,7 +446,7 @@ namespace Imgeneus.World.Game.Player
                 if (ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Immobilize))
                     return (int)MoveSpeedEnum.CanNotMove;
 
-                if (IsStealth)
+                if (StealthManager.IsStealth)
                     return (int)MoveSpeedEnum.Normal;
 
                 if (IsOnVehicle)

@@ -45,6 +45,7 @@ namespace Imgeneus.World.Packets
         void SendCharacterMotion(IWorldClient client, int characterId, Motion motion);
         void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot);
         void SendCharacterShape(IWorldClient client, Character character);
+        void SendShapeUpdate(IWorldClient client, Character character);
         #endregion
 
         #region GM

@@ -384,7 +384,7 @@ namespace Imgeneus.World.Game.Monster
             var players = Map.Cells[CellId].GetPlayers(PosX, PosZ, _dbMob.ChaseRange, EnemyPlayersFraction);
 
             // No players, keep watching.
-            if (!players.Any(x => !(x as Character).IsStealth))
+            if (!players.Any(x => !(x as Character).StealthManager.IsStealth))
             {
                 _watchTimer.Start();
                 return false;
@@ -533,14 +533,14 @@ namespace Imgeneus.World.Game.Monster
                 if (_target != null)
                 {
                     _target.OnDead -= Target_OnDead;
-                    (_target as Character).OnShapeChange -= Target_OnShapeChange;
+                    (_target as Character).StealthManager.OnStealthChange -= Target_OnStealth;
                 }
                 _target = value;
 
                 if (_target != null)
                 {
                     _target.OnDead += Target_OnDead;
-                    (_target as Character).OnShapeChange += Target_OnShapeChange;
+                    (_target as Character).StealthManager.OnStealthChange += Target_OnStealth;
                 }
             }
         }
@@ -548,9 +548,9 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// When target (player) goes into stealth or turns into a mob, mob returns to its' original place.
         /// </summary>
-        private void Target_OnShapeChange(Character sender)
+        private void Target_OnStealth(int sender)
         {
-            if (sender.IsStealth)
+            if ((_target as Character).StealthManager.IsStealth)
                 ClearTarget();
         }
 
@@ -904,9 +904,6 @@ namespace Imgeneus.World.Game.Monster
         #endregion
 
         #region Stealth
-
-        /// <inheritdoc />
-        public override bool IsStealth { get; protected set; } = false;
 
         public AttackResult UsedStealthSkill(Skill skill, IKillable target)
         {
