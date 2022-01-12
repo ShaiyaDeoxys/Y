@@ -35,7 +35,7 @@ namespace Imgeneus.Login
 
         protected override void OnConnected()
         {
-            _logger.LogTrace($"Got connection from {Socket.RemoteEndPoint}. Sending handshake...");
+            _logger.LogTrace("Got connection from {ip}. Sending handshake...", Socket.RemoteEndPoint);
             _loginPacketFactory.SendLoginHandshake(this);
         }
     }

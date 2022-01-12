@@ -55,8 +55,6 @@ namespace Imgeneus.Login.Handlers
                 return;
             }
 
-            Debug.WriteLine("Database instance: " + _database.GetHashCode());
-
             await HandleAuthentication(sender, username, password);
         }
 

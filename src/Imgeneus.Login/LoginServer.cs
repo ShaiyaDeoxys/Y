@@ -29,7 +29,7 @@ namespace Imgeneus.Login
 
         protected override void OnAfterStart()
         {
-            _logger.LogInformation($"Login server is listening on {Options.Port}...");
+            _logger.LogInformation("Login server is listening on {port}...", Options.Port);
         }
 
         /// <inheritdoc />
