@@ -37,7 +37,7 @@ namespace Imgeneus.World.Game.Session
 
             _logoutTimer.Elapsed += LogoutTimer_Elapsed;
 #if DEBUG
-            _logger.LogDebug($"GameSession {GetHashCode()} created");
+            _logger.LogDebug("GameSession {hashcode} created", GetHashCode());
 #endif
         }
 
@@ -49,7 +49,7 @@ namespace Imgeneus.World.Game.Session
 #if DEBUG
         ~GameSession()
         {
-            _logger.LogDebug($"GameSession {GetHashCode()} collected by GC");
+            _logger.LogDebug("GameSession {hashcode} collected by GC", GetHashCode());
         }
 #endif
 

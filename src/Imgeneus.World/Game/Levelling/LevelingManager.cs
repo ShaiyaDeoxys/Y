@@ -15,14 +15,14 @@ namespace Imgeneus.World.Game.Levelling
             _characterConfiguration = characterConfiguration;
 
 #if DEBUG
-            _logger.LogDebug($"LevelingManager {GetHashCode()} created");
+            _logger.LogDebug("LevelingManager {hashcode} created", GetHashCode());
 #endif
         }
 
 #if DEBUG
         ~LevelingManager()
         {
-            _logger.LogDebug($"LevelingManager {GetHashCode()} collected by GC");
+            _logger.LogDebug("LevelingManager {hashcode} collected by GC", GetHashCode());
         }
 #endif
 

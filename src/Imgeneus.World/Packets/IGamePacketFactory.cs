@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Packets;
+using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Player;
 using System.Collections.Generic;
@@ -30,6 +31,8 @@ namespace Imgeneus.World.Packets
         void SendDetails(IWorldClient client, Character character);
         void SendAdditionalStats(IWorldClient client, Character character);
         void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems);
+        void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue);
+        void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc);
         #endregion
 
         #region Inventory

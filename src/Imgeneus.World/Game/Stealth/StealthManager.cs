@@ -17,14 +17,14 @@ namespace Imgeneus.World.Game.Stealth
             _gameSession = gameSession;
 
 #if DEBUG
-            _logger.LogDebug($"StealthManager {GetHashCode()} created");
+            _logger.LogDebug("StealthManager {hashcode} created", GetHashCode());
 #endif
         }
 
 #if DEBUG
         ~StealthManager()
         {
-            _logger.LogDebug($"StealthManager {GetHashCode()} collected by GC");
+            _logger.LogDebug("StealthManager {hashcode} collected by GC", GetHashCode());
         }
 #endif
 

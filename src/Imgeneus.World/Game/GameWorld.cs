@@ -1,7 +1,4 @@
-﻿using Imgeneus.Database;
-using Imgeneus.Database.Entities;
-using Imgeneus.Network.Packets.Game;
-using Imgeneus.Network.Server;
+﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Guild;
@@ -70,7 +67,7 @@ namespace Imgeneus.World.Game
 
                     var map = _mapFactory.CreateMap(mapDefinition.Id, mapDefinition, config);
                     if (Maps.TryAdd(mapDefinition.Id, map))
-                        _logger.LogInformation($"Map {map.Id} was successfully loaded.");
+                        _logger.LogInformation("Map {id} was successfully loaded.", map.Id);
                 }
 
                 AvailableMapIds.Add(mapDefinition.Id);
@@ -92,7 +89,7 @@ namespace Imgeneus.World.Game
 
                 if (destinationMapDef is null)
                 {
-                    _logger.LogWarning($"Map {destinationMapId} is not found in map definitions.");
+                    _logger.LogWarning("Map {id} is not found in map definitions.", destinationMapId);
                     return false;
                 }
 
@@ -221,7 +218,7 @@ namespace Imgeneus.World.Game
                 }
             }
 
-            _logger.LogError($"Couldn't ensure map {dbCharacter.Map} for player {dbCharacter.Id}! Check it manually!");
+            _logger.LogError("Couldn't ensure map {id} for player {characterId}! Check it manually!", dbCharacter.Map, dbCharacter.Id);
         }
 
 
@@ -322,9 +319,9 @@ namespace Imgeneus.World.Game
             //DuelManagers.TryAdd(newPlayer.Id, new DuelManager(this, newPlayer));
 
             if(result)
-                _logger.LogDebug($"Player {newPlayer.Id} connected to game world");
+                _logger.LogDebug("Player {id} connected to game world", newPlayer.Id);
             else
-                _logger.LogError($"Could not load player {newPlayer.Id} to game world");
+                _logger.LogError("Could not load player {id} to game world", newPlayer.Id);
 
             return result;
         }
@@ -344,7 +341,7 @@ namespace Imgeneus.World.Game
                 // Map is not found.
                 if (mapDef is null)
                 {
-                    _logger.LogWarning($"Unknown map {player.MapId} for character {player.Id}. Fallback to 0 map.");
+                    _logger.LogWarning("Unknown map {id} for character {characterId}. Fallback to 0 map.", player.MapId, player.Id);
                     var town = Maps[0].GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.Country);
                     player.Teleport(0, town.X, town.Y, town.Z);
                     return;
@@ -383,7 +380,7 @@ namespace Imgeneus.World.Game
                     int guildId = 0;
                     if (player.GuildId is null) // probably guild id has changed during loading in portal? Or it's admin without guild tries to load into GBR map.
                     {
-                        _logger.LogWarning($"Trying to load character {player.Id} without guild id to guild specific map. Fallback to 0.");
+                        _logger.LogWarning("Trying to load character {id} without guild id to guild specific map. Fallback to 0.", player.Id);
                     }
                     else
                     {
@@ -427,7 +424,7 @@ namespace Imgeneus.World.Game
             Character player;
             if (Players.TryRemove(characterId, out player))
             {
-                _logger.LogDebug($"Player {characterId} left game world");
+                _logger.LogDebug("Player {characterId} left game world", characterId);
 
                 /*TradeManagers.TryRemove(characterId, out var tradeManager);
                 tradeManager.Dispose();
@@ -453,7 +450,7 @@ namespace Imgeneus.World.Game
                     map = GRBMaps[(int)player.GuildId];
 
                 if (map is null)
-                    _logger.LogError($"Couldn't find character's {characterId} map {player.MapId}.");
+                    _logger.LogError("Couldn't find character's {characterId} map {mapId}.", characterId, player.MapId);
                 else
                     map.UnloadPlayer(player);
 
@@ -464,7 +461,7 @@ namespace Imgeneus.World.Game
                 // 0 means, that connection with client was lost, when he was in character selection screen.
                 if (characterId != 0)
                 {
-                    _logger.LogError($"Couldn't remove player {characterId} from game world");
+                    _logger.LogError("Couldn't remove player {characterId} from game world", characterId);
                 }
             }
 

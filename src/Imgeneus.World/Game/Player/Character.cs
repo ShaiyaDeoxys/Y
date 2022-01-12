@@ -28,6 +28,7 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Session;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -49,6 +50,7 @@ namespace Imgeneus.World.Game.Player
 
         public readonly IInventoryManager InventoryManager;
         public readonly IStealthManager StealthManager;
+        public readonly IGameSession GameSession;
 
         public Character(ILogger<Character> logger,
                          IGameWorld gameWorld,
@@ -67,7 +69,8 @@ namespace Imgeneus.World.Game.Player
                          IHealthManager healthManager,
                          ILevelingManager levelingManager,
                          IInventoryManager inventoryManager,
-                         IStealthManager stealthManager) : base(databasePreloader, statsManager, healthManager, levelingManager)
+                         IStealthManager stealthManager,
+                         IGameSession gameSession) : base(databasePreloader, statsManager, healthManager, levelingManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -84,6 +87,7 @@ namespace Imgeneus.World.Game.Player
 
             InventoryManager = inventoryManager;
             StealthManager = stealthManager;
+            GameSession = gameSession;
 
             _packetsHelper = new PacketsHelper();
 
@@ -345,9 +349,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelingManager, inventoryManager, stealthManager)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelingManager, inventoryManager, stealthManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -363,7 +367,6 @@ namespace Imgeneus.World.Game.Player
                 PosY = dbCharacter.PosY,
                 PosZ = dbCharacter.PosZ,
                 Angle = dbCharacter.Angle,
-                StatPoint = dbCharacter.StatPoint,
                 SkillPoint = dbCharacter.SkillPoint,
                 AutoStr = dbCharacter.AutoStr,
                 AutoDex = dbCharacter.AutoDex,

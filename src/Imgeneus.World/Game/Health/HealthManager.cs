@@ -20,14 +20,14 @@ namespace Imgeneus.World.Game.Health
             _levelingManager = levelingManager;
 
 #if DEBUG
-            _logger.LogDebug($"HealthManager {GetHashCode()} created");
+            _logger.LogDebug("HealthManager {hashcode} created", GetHashCode());
 #endif
         }
 
 #if DEBUG
         ~HealthManager()
         {
-            _logger.LogDebug($"HealthManager {GetHashCode()} collected by GC");
+            _logger.LogDebug("HealthManager {hashcode} collected by GC", GetHashCode());
         }
 #endif
 

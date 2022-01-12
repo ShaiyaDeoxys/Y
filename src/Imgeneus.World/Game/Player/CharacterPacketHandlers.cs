@@ -394,25 +394,26 @@ namespace Imgeneus.World.Game.Player
             _linkingManager.Item = null;
         }
 
-        private void HandleUpdateStats(ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
+        /*private void HandleUpdateStats(ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
         {
             var fullStat = str + dex + rec + intl + wis + luc;
-            if (fullStat > StatPoint || fullStat > ushort.MaxValue)
+            if (fullStat > StatsManager.StatPoint || fullStat > ushort.MaxValue)
                 return;
 
-            StatsManager.Strength += str;
-            StatsManager.Dexterity += dex;
-            StatsManager.Reaction += rec;
-            StatsManager.Intelligence += intl;
-            StatsManager.Wisdom += wis;
-            StatsManager.Luck += luc;
-            StatPoint -= (ushort)fullStat;
+            StatsManager.TrySetStats((ushort)(StatsManager.Strength + str),
+                                     (ushort)(StatsManager.Dexterity + dex),
+                                     (ushort)(StatsManager.Reaction + rec),
+                                     (ushort)(StatsManager.Intelligence + intl),
+                                     (ushort)(StatsManager.Wisdom + wis),
+                                     (ushort)(StatsManager.Luck + luc),
+                                     (ushort)(StatsManager.StatPoint - fullStat));
 
-            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatPoint);
+
+            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatsManager.StatPoint);
 
             _packetsHelper.SendStatsUpdate(Client, str, dex, rec, intl, wis, luc);
             SendAdditionalStats();
-        }
+        }*/
 
         private void HandleAutoStatsSettings(byte str, byte dex, byte rec, byte @int, byte wis, byte luc)
         {
@@ -479,7 +480,7 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 case CharacterAttributeEnum.StatPoint:
-                    targetPlayer.SetStatPoint((ushort)attributeValue);
+                    //targetPlayer.StatsManager.TrySetStatPoint((ushort)attributeValue);
                     SetAttributeAndSendCommandSuccess();
                     break;
 
@@ -494,7 +495,7 @@ namespace Imgeneus.World.Game.Player
                 case CharacterAttributeEnum.Intelligence:
                 case CharacterAttributeEnum.Luck:
                 case CharacterAttributeEnum.Wisdom:
-                    targetPlayer.SetStat(attribute, (ushort)attributeValue);
+                    //targetPlayer.SetStat(attribute, (ushort)attributeValue);
                     SetAttributeAndSendCommandSuccess();
                     break;
 

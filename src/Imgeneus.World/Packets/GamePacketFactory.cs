@@ -19,6 +19,7 @@ using Imgeneus.Network.Serialization;
 using Imgeneus.World.Serialization;
 using Imgeneus.Database.Constants;
 using Imgeneus.World.Game.Health;
+using Imgeneus.Network.Packets.Game;
 
 namespace Imgeneus.World.Packets
 {
@@ -161,6 +162,31 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_ADDITIONAL_STATS);
             packet.Write(new CharacterAdditionalStats(character).Serialize());
+            client.Send(packet);
+        }
+
+
+        public void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue)
+        {
+#if SHAIYA_US || DEBUG
+            using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_ATTRIBUTE_SET);
+#else
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTRIBUTE_SET);
+#endif
+
+            packet.Write(new CharacterAttribute(attribute, attributeValue).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
+        {
+            using var packet = new ImgeneusPacket(PacketType.UPDATE_STATS);
+            packet.Write(str);
+            packet.Write(dex);
+            packet.Write(rec);
+            packet.Write(intl);
+            packet.Write(wis);
+            packet.Write(luc);
             client.Send(packet);
         }
         #endregion

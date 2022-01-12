@@ -1,11 +1,14 @@
-﻿namespace Imgeneus.World.Game.Stats
+﻿using Imgeneus.Network.Packets.Game;
+using System.Threading.Tasks;
+
+namespace Imgeneus.World.Game.Stats
 {
     public interface IStatsManager
     {
         /// <summary>
         /// Inits constant stats.
         /// </summary>
-        void Init(ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc);
+        void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints);
 
         /// <summary>
         /// Str value, needed for attack calculation.
@@ -40,32 +43,32 @@
         /// <summary>
         /// Constant str.
         /// </summary>
-        ushort Strength { get; set; }
+        ushort Strength { get; }
 
         /// <summary>
         /// Constant dex.
         /// </summary>
-        ushort Dexterity { get; set; }
+        ushort Dexterity { get; }
 
         /// <summary>
         /// Constant rec.
         /// </summary>
-        ushort Reaction { get; set; }
+        ushort Reaction { get; }
 
         /// <summary>
         /// Constant int.
         /// </summary>
-        ushort Intelligence { get; set; }
+        ushort Intelligence { get; }
 
         /// <summary>
         /// Constant luc.
         /// </summary>
-        ushort Luck { get; set; }
+        ushort Luck { get; }
 
         /// <summary>
         /// Constant wis.
         /// </summary>
-        ushort Wisdom { get; set; }
+        ushort Wisdom { get; }
 
         /// <summary>
         /// Yellow strength stat, that is calculated based on worn items, orange stats and active buffs.
@@ -112,5 +115,14 @@
         /// </summary>
         ushort Absorption { get; set; }
 
+        /// <summary>
+        /// Free stat points, that player can set.
+        /// </summary>
+        ushort StatPoint { get; }
+
+        /// <summary>
+        /// Tries to set const stats.
+        /// </summary>
+        Task<bool> TrySetStats(ushort? str = null, ushort? dex = null, ushort? rec = null, ushort? intl = null, ushort? wis = null, ushort? luc = null, ushort? statPoints = null);
     }
 }

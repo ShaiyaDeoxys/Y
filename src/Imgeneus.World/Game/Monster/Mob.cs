@@ -34,7 +34,7 @@ namespace Imgeneus.World.Game.Monster
             AI = _dbMob.AI;
             ShouldRebirth = shouldRebirth;
 
-            StatsManager.Init(0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc);
+            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, 0);
             LevelingManager.Init(_dbMob.Level, constHP: _dbMob.HP, constMP: _dbMob.SP, constSP: _dbMob.MP);
             HealthManager.Init(Id, _dbMob.HP, 0, 0);
 

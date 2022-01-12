@@ -629,7 +629,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.STATS_RESET);
             packet.Write(true); // success
-            packet.Write(character.StatPoint);
+            packet.Write(character.StatsManager.StatPoint);
             packet.Write(character.StatsManager.Strength);
             packet.Write(character.StatsManager.Reaction);
             packet.Write(character.StatsManager.Intelligence);

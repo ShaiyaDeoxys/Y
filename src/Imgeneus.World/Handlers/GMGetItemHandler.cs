@@ -1,7 +1,6 @@
 ﻿using Imgeneus.Database.Preload;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
-using Imgeneus.World.Game;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;

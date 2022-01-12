@@ -43,7 +43,7 @@ namespace Imgeneus.World.Game.Player
         private readonly INpcFactory _npcFactory;
         private readonly INoticeManager _noticeManager;
         private readonly IGuildManager _guildManager;
-        private readonly IGameSession _sessionManager;
+        private readonly IGameSession _gameSession;
         private readonly IStealthManager _stealthManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
@@ -65,7 +65,7 @@ namespace Imgeneus.World.Game.Player
                                 INpcFactory npcFactory,
                                 INoticeManager noticeManager,
                                 IGuildManager guildManager,
-                                IGameSession sessionManager,
+                                IGameSession gameSession,
                                 IStealthManager stealthManager)
         {
             _logger = logger;
@@ -87,7 +87,7 @@ namespace Imgeneus.World.Game.Player
             _npcFactory = npcFactory;
             _noticeManager = noticeManager;
             _guildManager = guildManager;
-            _sessionManager = sessionManager;
+            _gameSession = gameSession;
             _stealthManager = stealthManager;
         }
 
@@ -112,10 +112,10 @@ namespace Imgeneus.World.Game.Player
 
             Character.ClearOutdatedValues(_database, dbCharacter);
 
-            _sessionManager.CharId = dbCharacter.Id;
-            _sessionManager.IsAdmin = dbCharacter.User.Authority == 0;
+            _gameSession.CharId = dbCharacter.Id;
+            _gameSession.IsAdmin = dbCharacter.User.Authority == 0;
 
-            _statsManager.Init(dbCharacter.Strength, dbCharacter.Dexterity, dbCharacter.Rec, dbCharacter.Intelligence, dbCharacter.Wisdom, dbCharacter.Luck);
+            _statsManager.Init(dbCharacter.Id, dbCharacter.Strength, dbCharacter.Dexterity, dbCharacter.Rec, dbCharacter.Intelligence, dbCharacter.Wisdom, dbCharacter.Luck, dbCharacter.StatPoint);
 
             _levelingManager.Init(dbCharacter.Level, dbCharacter.Class);
 
@@ -143,9 +143,10 @@ namespace Imgeneus.World.Game.Player
                                         _npcFactory,
                                         _noticeManager,
                                         _guildManager,
-                                        _stealthManager);
+                                        _stealthManager,
+                                        _gameSession);
 
-            player.Client = _sessionManager.Client; // TODO: remove it.
+            player.Client = _gameSession.Client; // TODO: remove it.
 
             return player;
         }

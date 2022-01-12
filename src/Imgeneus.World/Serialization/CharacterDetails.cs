@@ -87,7 +87,7 @@ namespace Imgeneus.Network.Serialization
             Wisdom = character.StatsManager.Wisdom;
             Luck = character.StatsManager.Luck;
 #endif
-            StatPoint = character.StatPoint;
+            StatPoint = character.StatsManager.StatPoint;
             SkillPoint = character.SkillPoint;
             Angle = character.Angle;
             StartLvlExp = character.MinLevelExp / 10; // Normalize experience for ep8 game
