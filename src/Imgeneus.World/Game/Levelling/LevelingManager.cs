@@ -13,6 +13,8 @@ namespace Imgeneus.World.Game.Levelling
         private readonly IGameSession _gameSession;
         private readonly ILevelProvider _levelProvider;
 
+        private int _owner;
+
         public LevelingManager(ILogger<LevelingManager> logger, IDatabase database, IGameSession gameSession, ILevelProvider levelProvider)
         {
             _logger = logger;
@@ -32,19 +34,19 @@ namespace Imgeneus.World.Game.Levelling
         }
 #endif
 
-        public void Init(Mode grow)
+        public void Init(int owner, Mode grow)
         {
-            _grow = grow;
+            _owner = owner;
+            Grow = grow;
         }
 
         #region Grow
 
-        private Mode _grow;
-        public Mode Grow { get => _grow; private set => _grow = value; }
+        public Mode Grow { get; private set; }
 
         public async Task<bool> TrySetGrow(Mode grow)
         {
-            if (_grow == grow)
+            if (Grow == grow)
                 return true;
 
             if (grow > Mode.Ultimate)
@@ -58,7 +60,7 @@ namespace Imgeneus.World.Game.Levelling
 
             var ok = (await _database.SaveChangesAsync()) > 0;
             if (ok)
-                _grow = grow;
+                Grow = grow;
 
             return ok;
         }

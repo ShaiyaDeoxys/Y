@@ -47,7 +47,7 @@ namespace Imgeneus.World.Game.Guild
                 if (string.IsNullOrWhiteSpace(guildName))
                     return GuildCreateFailedReason.WrongName;
 
-                if (guildCreator.Gold < _config.MinGold)
+                if (guildCreator.InventoryManager.Gold < _config.MinGold)
                     return GuildCreateFailedReason.NotEnoughGold;
 
                 if (!guildCreator.HasParty || !(guildCreator.Party is Party) || guildCreator.Party.Members.Count != _config.MinMembers)
@@ -201,7 +201,7 @@ namespace Imgeneus.World.Game.Guild
                 m.SendGuildCreateSuccess(guild.Id, m.GuildRank, guild.Name, request.Message);
             }
 
-            request.GuildCreator.ChangeGold(request.GuildCreator.Gold - _config.MinGold);
+            request.GuildCreator.InventoryManager.Gold = request.GuildCreator.InventoryManager.Gold - _config.MinGold;
             request.GuildCreator.SendGoldUpdate();
 
             foreach (var player in _gameWorld.Players.Values.ToList())
@@ -518,7 +518,7 @@ namespace Imgeneus.World.Game.Guild
                 return GuildHouseBuyReason.NotAuthorized;
             }
 
-            if (character.Gold < _houseConfig.HouseBuyMoney)
+            if (character.InventoryManager.Gold < _houseConfig.HouseBuyMoney)
             {
                 return GuildHouseBuyReason.NoGold;
             }
@@ -534,7 +534,7 @@ namespace Imgeneus.World.Game.Guild
                 return GuildHouseBuyReason.AlreadyBought;
             }
 
-            character.ChangeGold((uint)(character.Gold - _houseConfig.HouseBuyMoney));
+            character.InventoryManager.Gold = (uint)(character.InventoryManager.Gold - _houseConfig.HouseBuyMoney);
 
             guild.HasHouse = true;
             await _database.SaveChangesAsync();

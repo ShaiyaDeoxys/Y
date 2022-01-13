@@ -4,7 +4,6 @@ using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.NPCs;
 using Microsoft.Extensions.Logging;
-using MvvmHelpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -536,7 +535,7 @@ namespace Imgeneus.World.Game.Player
                 return null;
             }
 
-            if (dbItem.Buy * count > Gold) // Not enough money.
+            if (dbItem.Buy * count > InventoryManager.Gold) // Not enough money.
             {
                 _packetsHelper.SendBuyItemIssue(Client, 1);
                 return null;
@@ -549,7 +548,7 @@ namespace Imgeneus.World.Game.Player
                 return null;
             }
 
-            ChangeGold((uint)(Gold - dbItem.Buy * count));
+            InventoryManager.Gold = (uint)(InventoryManager.Gold - dbItem.Buy * count);
             var item = new Item(_databasePreloader, dbItem.Type, dbItem.TypeId);
             item.Count = count;
 
@@ -569,7 +568,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             item.TradeQuantity = count > item.Count ? item.Count : count;
-            ChangeGold((uint)(Gold + item.Sell * item.TradeQuantity));
+            InventoryManager.Gold = (uint)(InventoryManager.Gold + item.Sell * item.TradeQuantity);
             return RemoveItemFromInventory(item);
         }
 

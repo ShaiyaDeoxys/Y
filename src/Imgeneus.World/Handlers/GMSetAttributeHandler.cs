@@ -55,6 +55,15 @@ namespace Imgeneus.World.Handlers
             var ok = false;
             switch (attribute)
             {
+                case CharacterAttributeEnum.Grow:
+                    ok = await targetPlayer.LevelingManager.TrySetGrow((Mode)attributeValue);
+                    break;
+
+                case CharacterAttributeEnum.Money:
+                    targetPlayer.InventoryManager.Gold = attributeValue;
+                    ok = true;
+                    break;
+
                 case CharacterAttributeEnum.StatPoint:
                     ok = await targetPlayer.StatsManager.TrySetStats(statPoints: (ushort)attributeValue);
                     break;
@@ -81,10 +90,6 @@ namespace Imgeneus.World.Handlers
 
                 case CharacterAttributeEnum.Wisdom:
                     ok = await targetPlayer.StatsManager.TrySetStats(wis: (ushort)attributeValue);
-                    break;
-
-                case CharacterAttributeEnum.Grow:
-                    ok = await targetPlayer.LevelingManager.TrySetGrow((Mode)attributeValue);
                     break;
 
                 default:

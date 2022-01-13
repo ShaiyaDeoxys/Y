@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Session;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Inventory
 {
-    public interface IInventoryManager : IDisposable
+    public interface IInventoryManager : ISessionedService
     {
         /// <summary>
         /// Collection of inventory items.
@@ -107,13 +108,10 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Inits character inventory with items from db.
         /// </summary>
+        /// <param name="owner">character db id</param>
         /// <param name="items">items loaded from database</param>
-        void Init(IEnumerable<DbCharacterItems> items);
-
-        /// <summary>
-        /// Clears items after character leaves the game world.
-        /// </summary>
-        void Clear();
+        /// <param name="gold">gold amount from database</param>
+        void Init(int owner, IEnumerable<DbCharacterItems> items, uint gold);
 
         /// <summary>
         /// Adds item to player's inventory.
@@ -135,5 +133,10 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="destinationBag">bag id, where item should be moved</param>
         /// <param name="destinationSlot">slot id, where item should be moved</param>
         public Task<(Item sourceItem, Item destinationItem)> MoveItem(byte currentBag, byte currentSlot, byte destinationBag, byte destinationSlot);
+
+        /// <summary>
+        /// Money, that belongs to player.
+        /// </summary>
+        uint Gold { get; set; }
     }
 }

@@ -276,7 +276,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             item.Gem1.SetTypeId(money);
             foreach (var member in Members)
             {
-                member.ChangeGold((uint)(member.Gold + money));
+                member.InventoryManager.Gold = (uint)(member.InventoryManager.Gold + money);
                 member.SendAddItemToInventory(item);
             }
         }

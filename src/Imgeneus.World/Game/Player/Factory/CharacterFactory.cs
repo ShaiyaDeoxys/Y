@@ -96,20 +96,22 @@ namespace Imgeneus.World.Game.Player
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
         {
-            var dbCharacter = await _database.Characters.Include(c => c.Skills).ThenInclude(cs => cs.Skill)
-                                                        .Include(c => c.Items).ThenInclude(ci => ci.Item)
-                                                        .Include(c => c.ActiveBuffs).ThenInclude(cb => cb.Skill)
-                                                        .Include(c => c.Friends).ThenInclude(cf => cf.Friend)
-                                                        .Include(c => c.Guild).ThenInclude(g => g.Members)
-                                                        .Include(c => c.Quests)
-                                                        .Include(c => c.QuickItems)
-                                                        .Include(c => c.User)
-                                                        .ThenInclude(c => c.BankItems)
-                                                        .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId);
+            var dbCharacter = await _database.Characters
+                                             .AsNoTracking()
+                                             .Include(c => c.Skills).ThenInclude(cs => cs.Skill)
+                                             .Include(c => c.Items).ThenInclude(ci => ci.Item)
+                                             .Include(c => c.ActiveBuffs).ThenInclude(cb => cb.Skill)
+                                             //.Include(c => c.Friends).ThenInclude(cf => cf.Friend)
+                                             //.Include(c => c.Guild).ThenInclude(g => g.Members)
+                                             .Include(c => c.Quests)
+                                             .Include(c => c.QuickItems)
+                                             .Include(c => c.User)
+                                             .ThenInclude(c => c.BankItems)
+                                             .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId);
 
             if (dbCharacter is null)
             {
-                _logger.LogWarning($"Character with id {characterId} is not found.");
+                _logger.LogWarning("Character with id {characterId} for user {userId} is not found.", characterId, userId);
                 return null;
             }
 
@@ -122,11 +124,11 @@ namespace Imgeneus.World.Game.Player
 
             _levelProvider.Level = dbCharacter.Level;
 
-            _levelingManager.Init(dbCharacter.Mode);
+            _levelingManager.Init(dbCharacter.Id, dbCharacter.Mode);
 
             _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints, profession: dbCharacter.Class);
 
-            _inventoryManager.Init(dbCharacter.Items);
+            _inventoryManager.Init(dbCharacter.Id, dbCharacter.Items, dbCharacter.Gold);
 
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 

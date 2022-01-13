@@ -367,14 +367,14 @@ namespace Imgeneus.World.Game.Trade
 
             if (trader.TradeMoney > 0)
             {
-                trader.ChangeGold(trader.Gold - trader.TradeMoney);
-                partner.ChangeGold(partner.Gold + trader.TradeMoney);
+                trader.InventoryManager.Gold = trader.InventoryManager.Gold - trader.TradeMoney;
+                partner.InventoryManager.Gold = partner.InventoryManager.Gold + trader.TradeMoney;
             }
 
             if (partner.TradeMoney > 0)
             {
-                partner.ChangeGold(partner.Gold - partner.TradeMoney);
-                trader.ChangeGold(trader.Gold + partner.TradeMoney);
+                partner.InventoryManager.Gold = partner.InventoryManager.Gold - partner.TradeMoney;
+                trader.InventoryManager.Gold = trader.InventoryManager.Gold + partner.TradeMoney;
             }
 
             trader.ClearTrade();

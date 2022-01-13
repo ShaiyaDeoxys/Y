@@ -534,7 +534,7 @@ namespace Imgeneus.World.Game.Player
                     return LevelProvider.Level;
 
                 case CharacterAttributeEnum.Money:
-                    return Gold;
+                    return InventoryManager.Gold;
 
                 case CharacterAttributeEnum.StatPoint:
                     return StatsManager.StatPoint;

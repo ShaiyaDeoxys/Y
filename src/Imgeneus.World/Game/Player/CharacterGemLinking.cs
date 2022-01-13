@@ -16,7 +16,7 @@ namespace Imgeneus.World.Game.Player
                 return;
 
             var linkingGold = _linkingManager.GetGold(gem);
-            if (Gold < linkingGold)
+            if (InventoryManager.Gold < linkingGold)
             {
                 // TODO: send warning, that not enough money?
                 return;
@@ -39,7 +39,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             var result = _linkingManager.AddGem(item, gem, hammer, CalculateExtraRate());
-            ChangeGold((uint)(Gold - linkingGold));
+            InventoryManager.Gold = (uint)(InventoryManager.Gold - linkingGold);
             if (gem.Count > 0)
             {
                 _taskQueue.Enqueue(ActionType.UPDATE_ITEM_COUNT_IN_INVENTORY,
@@ -58,7 +58,7 @@ namespace Imgeneus.World.Game.Player
             if (hammer != null)
                 TryUseItem(hammer.Bag, hammer.Slot);
 
-            _packetsHelper.SendAddGem(Client, result.Success, gem, item, result.Slot, Gold, saveItem, hammer);
+            _packetsHelper.SendAddGem(Client, result.Success, gem, item, result.Slot, InventoryManager.Gold, saveItem, hammer);
 
             if (result.Success && item.Bag == 0)
             {
@@ -257,9 +257,9 @@ namespace Imgeneus.World.Game.Player
                 gemPosition = 255; // when remove all gems
             }
 
-            ChangeGold((uint)(Gold - spentGold));
+            InventoryManager.Gold = (uint)(InventoryManager.Gold - spentGold);
 
-            _packetsHelper.SendRemoveGem(Client, gemItems.Count > 0, item, gemPosition, gemItems, Gold);
+            _packetsHelper.SendRemoveGem(Client, gemItems.Count > 0, item, gemPosition, gemItems, InventoryManager.Gold);
 
             bool itemDestroyed = false;
             foreach (var gem in removedGems)

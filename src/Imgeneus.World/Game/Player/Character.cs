@@ -250,22 +250,6 @@ namespace Imgeneus.World.Game.Player
         public uint TradeMoney;
 
         /// <summary>
-        /// Money, that belongs to player.
-        /// </summary>
-        public uint Gold { get; private set; }
-
-        /// <summary>
-        /// Changes amount of money.
-        /// </summary>
-        public void ChangeGold(uint newGold)
-        {
-            Gold = newGold;
-
-            _taskQueue.Enqueue(ActionType.UPDATE_GOLD,
-                               Id, Gold);
-        }
-
-        /// <summary>
         /// Clears trade items and gold.
         /// </summary>
         public void ClearTrade()
@@ -377,7 +361,6 @@ namespace Imgeneus.World.Game.Player
                 AutoWis = dbCharacter.AutoWis,
                 AutoLuc = dbCharacter.AutoLuc,
                 Exp = dbCharacter.Exp,
-                Gold = dbCharacter.Gold,
                 Kills = dbCharacter.Kills,
                 Deaths = dbCharacter.Deaths,
                 Victories = dbCharacter.Victories,
@@ -399,8 +382,8 @@ namespace Imgeneus.World.Game.Player
 
             character.QuickItems = dbCharacter.QuickItems;
 
-            foreach (var friend in dbCharacter.Friends.Select(f => f.Friend))
-                character.Friends.TryAdd(friend.Id, new Friend(friend.Id, friend.Name, friend.Class, gameWorld.Players.ContainsKey(friend.Id)));
+            //foreach (var friend in dbCharacter.Friends.Select(f => f.Friend))
+            //    character.Friends.TryAdd(friend.Id, new Friend(friend.Id, friend.Name, friend.Class, gameWorld.Players.ContainsKey(friend.Id)));
 
             foreach (var bankItem in dbCharacter.User.BankItems.Where(bi => !bi.IsClaimed).Select(bi => new BankItem(bi)))
                 character.BankItems.TryAdd(bankItem.Slot, bankItem);

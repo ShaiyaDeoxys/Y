@@ -23,6 +23,8 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
 
+        private int _owner;
+
         public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager)
         {
             _logger = logger;
@@ -46,12 +48,14 @@ namespace Imgeneus.World.Game.Inventory
 
         #region Init & Clear
 
-        public void Init(IEnumerable<DbCharacterItems> items)
+        public void Init(int owner, IEnumerable<DbCharacterItems> items, uint gold)
         {
-            Clear();
+            _owner = owner;
 
             foreach (var item in items.Select(i => new Item(_databasePreloader, i)))
                 InventoryItems.TryAdd((item.Bag, item.Slot), item);
+
+            Gold = gold;
 
             InitEquipment();
         }
@@ -115,14 +119,11 @@ namespace Imgeneus.World.Game.Inventory
             Wings = item;
         }
 
-        public void Clear()
+        public async Task Clear()
         {
-            InventoryItems.Clear();
-        }
+            await SaveGold();
 
-        public void Dispose()
-        {
-            Clear();
+            InventoryItems.Clear();
             Helmet = null;
             Armor = null;
             Pants = null;
@@ -162,8 +163,8 @@ namespace Imgeneus.World.Game.Inventory
                 _helmet = value;
                 TakeOnItem(_helmet);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _helmet, 0);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 0", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _helmet, 0);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 0", _owner);
             }
         }
 
@@ -177,8 +178,8 @@ namespace Imgeneus.World.Game.Inventory
                 _armor = value;
                 TakeOnItem(_armor);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _armor, 1);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 1", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _armor, 1);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 1", _owner);
             }
         }
 
@@ -192,8 +193,8 @@ namespace Imgeneus.World.Game.Inventory
                 _pants = value;
                 TakeOnItem(_pants);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _pants, 2);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 2", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _pants, 2);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 2", _owner);
             }
         }
 
@@ -207,8 +208,8 @@ namespace Imgeneus.World.Game.Inventory
                 _gauntlet = value;
                 TakeOnItem(_gauntlet);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _gauntlet, 3);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 3", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _gauntlet, 3);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 3", _owner);
             }
         }
 
@@ -222,8 +223,8 @@ namespace Imgeneus.World.Game.Inventory
                 _boots = value;
                 TakeOnItem(_boots);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _boots, 4);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 4", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _boots, 4);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 4", _owner);
             }
         }
 
@@ -243,8 +244,8 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_weapon);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _weapon, 5);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 5", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _weapon, 5);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 5", _owner);
             }
         }
 
@@ -258,8 +259,8 @@ namespace Imgeneus.World.Game.Inventory
                 _shield = value;
                 TakeOnItem(_shield);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _shield, 6);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 6", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _shield, 6);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 6", _owner);
             }
         }
 
@@ -273,8 +274,8 @@ namespace Imgeneus.World.Game.Inventory
                 _cape = value;
                 TakeOnItem(_cape);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _cape, 7);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 7", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _cape, 7);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 7", _owner);
             }
         }
 
@@ -288,8 +289,8 @@ namespace Imgeneus.World.Game.Inventory
                 _amulet = value;
                 TakeOnItem(_amulet);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _amulet, 8);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 8", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _amulet, 8);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 8", _owner);
             }
         }
 
@@ -303,8 +304,8 @@ namespace Imgeneus.World.Game.Inventory
                 _ring1 = value;
                 TakeOnItem(_ring1);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _ring1, 9);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 9", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _ring1, 9);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 9", _owner);
             }
         }
 
@@ -318,8 +319,8 @@ namespace Imgeneus.World.Game.Inventory
                 _ring2 = value;
                 TakeOnItem(_ring2);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _ring2, 10);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 10", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _ring2, 10);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 10", _owner);
             }
         }
 
@@ -333,8 +334,8 @@ namespace Imgeneus.World.Game.Inventory
                 _bracelet1 = value;
                 TakeOnItem(_bracelet1);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _bracelet1, 11);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 11", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _bracelet1, 11);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 11", _owner);
             }
         }
 
@@ -348,8 +349,8 @@ namespace Imgeneus.World.Game.Inventory
                 _bracelet2 = value;
                 TakeOnItem(_bracelet2);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _bracelet2, 12);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 12", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _bracelet2, 12);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 12", _owner);
             }
         }
 
@@ -367,8 +368,8 @@ namespace Imgeneus.World.Game.Inventory
                 _mount = value;
                 TakeOnItem(_mount);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _mount, 13);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 13", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _mount, 13);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 13", _owner);
             }
         }
 
@@ -382,8 +383,8 @@ namespace Imgeneus.World.Game.Inventory
                 _pet = value;
                 TakeOnItem(_pet);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _pet, 14);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 14", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _pet, 14);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 14", _owner);
             }
         }
 
@@ -397,8 +398,8 @@ namespace Imgeneus.World.Game.Inventory
                 _costume = value;
                 TakeOnItem(_costume);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _costume, 15);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 15", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _costume, 15);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 15", _owner);
             }
         }
 
@@ -412,8 +413,8 @@ namespace Imgeneus.World.Game.Inventory
                 _wings = value;
                 TakeOnItem(_wings);
 
-                OnEquipmentChanged?.Invoke(_gameSession.CharId, _wings, 16);
-                _logger.LogDebug("Character {characterId} changed equipment on slot 16", _gameSession.CharId);
+                OnEquipmentChanged?.Invoke(_owner, _wings, 16);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 16", _owner);
             }
         }
 
@@ -498,7 +499,7 @@ namespace Imgeneus.World.Game.Inventory
 
             var dbItem = new DbCharacterItems()
             {
-                CharacterId = _gameSession.CharId,
+                CharacterId = _owner,
                 Type = item.Type,
                 TypeId = item.TypeId,
                 Count = item.Count,
@@ -526,7 +527,7 @@ namespace Imgeneus.World.Game.Inventory
             var count = await _database.SaveChangesAsync();
             if (count != 1)
             {
-                _logger.LogError("Could not crete item for player {characterId}", _gameSession.CharId);
+                _logger.LogError("Could not crete item for player {characterId}", _owner);
                 return null;
             }
 
@@ -537,16 +538,16 @@ namespace Imgeneus.World.Game.Inventory
                 //item.OnExpiration += CharacterItem_OnExpiration;
             }
 
-            _logger.LogDebug("Character {characterId} got item {type} {typeId}", _gameSession.CharId, item.Type, item.TypeId);
+            _logger.LogDebug("Character {characterId} got item {type} {typeId}", _owner, item.Type, item.TypeId);
             return item;
         }
 
         public async Task<Item> RemoveItem(Item item)
         {
-            var dbItem = _database.CharacterItems.FirstOrDefault(x => x.CharacterId == _gameSession.CharId && x.Bag == item.Bag && x.Slot == item.Slot);
+            var dbItem = _database.CharacterItems.FirstOrDefault(x => x.CharacterId == _owner && x.Bag == item.Bag && x.Slot == item.Slot);
             if (dbItem is null)
             {
-                _logger.LogError("Could not find item count during remove for character {characterId}", _gameSession.CharId);
+                _logger.LogError("Could not find item count during remove for character {characterId}", _owner);
                 return null;
             }
 
@@ -570,7 +571,7 @@ namespace Imgeneus.World.Game.Inventory
             var count = await _database.SaveChangesAsync();
             if (count != 1)
             {
-                _logger.LogError("Could not remove item for character {characterId}", _gameSession.CharId);
+                _logger.LogError("Could not remove item for character {characterId}", _owner);
                 return null;
             }
 
@@ -582,7 +583,7 @@ namespace Imgeneus.World.Game.Inventory
                 //item.OnExpiration -= CharacterItem_OnExpiration;
             }
 
-            _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _gameSession.CharId, item.Type, item.TypeId);
+            _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _owner, item.Type, item.TypeId);
             return item;
         }
 
@@ -595,7 +596,7 @@ namespace Imgeneus.World.Game.Inventory
             if (sourceItem is null)
             {
                 // wrong packet, source item should be always presented.
-                _logger.LogError("Could not find source item for player {characterId}", _gameSession.CharId);
+                _logger.LogError("Could not find source item for player {characterId}", _owner);
                 return (null, null);
             }
 
@@ -638,8 +639,8 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             // Add new items to database.
-            var dbSourceItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == sourceBag && x.Slot == sourceSlot && x.CharacterId == _gameSession.CharId);
-            var dbDestinationItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == destinationBag && x.Slot == destinationSlot && x.CharacterId == _gameSession.CharId);
+            var dbSourceItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == sourceBag && x.Slot == sourceSlot && x.CharacterId == _owner);
+            var dbDestinationItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == destinationBag && x.Slot == destinationSlot && x.CharacterId == _owner);
 
             dbSourceItem.Bag = destinationBag;
             dbSourceItem.Slot = destinationSlot;
@@ -660,7 +661,7 @@ namespace Imgeneus.World.Game.Inventory
             var count = await _database.SaveChangesAsync();
             if ((!swapping && count < 1) || (swapping && count != 2))
             {
-                _logger.LogError("Could not move item for player {characterId}", _gameSession.CharId);
+                _logger.LogError("Could not move item for player {characterId}", _owner);
                 return (null, null);
             }
 
@@ -789,6 +790,23 @@ namespace Imgeneus.World.Game.Inventory
                 InventoryItems.TryAdd((destinationItem.Bag, destinationItem.Slot), destinationItem);
 
             return (sourceItem, destinationItem);
+        }
+
+        #endregion
+
+        #region Gold
+
+        public uint Gold { get; set; }
+
+        private async Task SaveGold()
+        {
+            var character = await _database.Characters.FindAsync(_owner);
+            if (character is null)
+                return;
+
+            character.Gold = Gold;
+
+            await _database.SaveChangesAsync();
         }
 
         #endregion

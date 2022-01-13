@@ -5,7 +5,12 @@ namespace Imgeneus.World.Game.Levelling
 {
     public interface ILevelingManager
     {
-        void Init(Mode grow);
+        /// <summary>
+        /// Inits leveling manager.
+        /// </summary>
+        /// <param name="owner">character id</param>
+        /// <param name="grow">character mode</param>
+        void Init(int owner, Mode grow);
 
         /// <summary>
         /// Beginner, Normal, Hard or Ultimate.

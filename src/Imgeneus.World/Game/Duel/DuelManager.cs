@@ -166,7 +166,7 @@ namespace Imgeneus.World.Game.Duel
         /// </summary>
         private void HandleAddMoney(uint money)
         {
-            Sender.TradeMoney = money < Sender.Gold ? money : Sender.Gold;
+            Sender.TradeMoney = money < Sender.InventoryManager.Gold ? money : Sender.InventoryManager.Gold;
             SendAddedMoneyToTrade(Sender.Client, 1, Sender.TradeMoney);
             SendAddedMoneyToTrade(Sender.DuelOpponent.Client, 2, Sender.TradeMoney);
         }

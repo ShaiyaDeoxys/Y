@@ -151,7 +151,7 @@ namespace Imgeneus.World.Game.Player
 
         public void SendPortalTeleportNotAllowed(PortalTeleportNotAllowedReason reason) => _packetsHelper.SendPortalTeleportNotAllowed(Client, reason);
 
-        public void SendTeleportViaNpc(NpcTeleportNotAllowedReason reason) => _packetsHelper.SendTeleportViaNpc(Client, reason, Gold);
+        public void SendTeleportViaNpc(NpcTeleportNotAllowedReason reason) => _packetsHelper.SendTeleportViaNpc(Client, reason, InventoryManager.Gold);
 
         public void SendUseVehicle(bool success, bool status) => _packetsHelper.SendUseVehicle(Client, success, status);
 
@@ -233,6 +233,6 @@ namespace Imgeneus.World.Game.Player
 
         public void SendGuildRanksCalculated(IEnumerable<(int GuildId, int Points, byte Rank)> results) => _packetsHelper.SendGuildRanksCalculated(Client, results);
 
-        public void SendGoldUpdate() => _packetsHelper.SendGoldUpdate(Client, Gold);
+        public void SendGoldUpdate() => _packetsHelper.SendGoldUpdate(Client, InventoryManager.Gold);
     }
 }

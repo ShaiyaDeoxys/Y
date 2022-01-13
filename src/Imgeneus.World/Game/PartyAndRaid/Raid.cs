@@ -157,7 +157,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     }
                     else
                     {
-                        Leader.ChangeGold((uint)(Leader.Gold + item.Gem1.TypeId));
+                        Leader.InventoryManager.Gold = (uint)(Leader.InventoryManager.Gold + item.Gem1.TypeId);
                         Leader.SendAddItemToInventory(item);
                     }
                 }

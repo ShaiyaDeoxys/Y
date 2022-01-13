@@ -1,12 +1,14 @@
 ﻿using Imgeneus.Network.Client;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Server.Crypto;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Session;
 using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sylver.HandlerInvoker;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World
@@ -36,6 +38,16 @@ namespace Imgeneus.World
             gameSession.StartLogOff();
 
             base.OnDisconnected();
+        }
+
+        public async Task ClearSession()
+        {
+            var x = _scope.ServiceProvider;
+
+            var tasks = new List<Task>();
+            tasks.Add(x.GetService<IInventoryManager>().Clear());
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
 }

@@ -93,7 +93,7 @@ namespace Imgeneus.Network.Serialization
             StartLvlExp = character.MinLevelExp / 10; // Normalize experience for ep8 game
             EndLvlExp = character.NextLevelExp / 10; // Normalize experience for ep8 game
             CurrentExp = character.Exp / 10; // Normalize experience for ep8 game
-            Gold = character.Gold;
+            Gold = character.InventoryManager.Gold;
             PosX = character.PosX;
             PosY = character.PosY;
             PosZ = character.PosZ;

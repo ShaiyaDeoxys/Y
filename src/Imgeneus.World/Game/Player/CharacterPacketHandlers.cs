@@ -475,7 +475,7 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 case CharacterAttributeEnum.Money:
-                    targetPlayer.ChangeGold(attributeValue);
+                    targetPlayer.InventoryManager.Gold = attributeValue;
                     SetAttributeAndSendCommandSuccess();
                     break;
 
@@ -579,7 +579,7 @@ namespace Imgeneus.World.Game.Player
 
             var gate = npc.Gates[teleportViaNpcPacket.GateId];
 
-            if (Gold < gate.Cost)
+            if (InventoryManager.Gold < gate.Cost)
             {
                 SendTeleportViaNpc(NpcTeleportNotAllowedReason.NotEnoughMoney);
                 return;
@@ -594,7 +594,7 @@ namespace Imgeneus.World.Game.Player
 
             // TODO: there should be somewhere player's level check. But I can not find it in gate config.
 
-            ChangeGold((uint)(Gold - gate.Cost));
+            InventoryManager.Gold = (uint)(InventoryManager.Gold - gate.Cost);
             SendTeleportViaNpc(NpcTeleportNotAllowedReason.Success);
             Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
@@ -926,7 +926,7 @@ namespace Imgeneus.World.Game.Player
                 return;
 
             var reason = await _guildManager.TryBuyHouse(this);
-            _packetsHelper.SendGuildHouseBuy(Client, reason, Gold);
+            _packetsHelper.SendGuildHouseBuy(Client, reason, InventoryManager.Gold);
         }
         private async void HandleGetEtin()
         {
@@ -974,7 +974,7 @@ namespace Imgeneus.World.Game.Player
             var buyItem = npc.Products[itemIndex];
             var boughtItem = BuyItem(buyItem, count);
             if (boughtItem != null)
-                _packetsHelper.SendBoughtItem(Client, boughtItem, Gold);
+                _packetsHelper.SendBoughtItem(Client, boughtItem, InventoryManager.Gold);
         }
 
         private async void HandleGuildUpgradeNpc(byte npcType, byte npcGroup, byte npcLevel)
