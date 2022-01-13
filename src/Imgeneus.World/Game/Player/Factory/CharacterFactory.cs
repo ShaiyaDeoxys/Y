@@ -19,6 +19,7 @@ using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Skills;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -46,6 +47,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IGuildManager _guildManager;
         private readonly IGameSession _gameSession;
         private readonly IStealthManager _stealthManager;
+        private readonly ISkillsManager _skillsManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -68,7 +70,8 @@ namespace Imgeneus.World.Game.Player
                                 INoticeManager noticeManager,
                                 IGuildManager guildManager,
                                 IGameSession gameSession,
-                                IStealthManager stealthManager)
+                                IStealthManager stealthManager,
+                                ISkillsManager skillsManager)
         {
             _logger = logger;
             _database = database;
@@ -92,6 +95,7 @@ namespace Imgeneus.World.Game.Player
             _guildManager = guildManager;
             _gameSession = gameSession;
             _stealthManager = stealthManager;
+            _skillsManager = skillsManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -130,6 +134,8 @@ namespace Imgeneus.World.Game.Player
 
             _inventoryManager.Init(dbCharacter.Id, dbCharacter.Items, dbCharacter.Gold);
 
+            _skillsManager.Init(dbCharacter.Id, dbCharacter.SkillPoint);
+
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
             var player = Character.FromDbCharacter(dbCharacter,
@@ -152,6 +158,7 @@ namespace Imgeneus.World.Game.Player
                                         _noticeManager,
                                         _guildManager,
                                         _stealthManager,
+                                        _skillsManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.

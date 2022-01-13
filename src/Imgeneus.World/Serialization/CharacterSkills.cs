@@ -19,7 +19,7 @@ namespace Imgeneus.Network.Serialization
 
         public CharacterSkills(Character character)
         {
-            CharSkillPoints = character.SkillPoint;
+            CharSkillPoints = character.SkillsManager.SkillPoints;
             SkillsCount = (byte)character.Skills.Count;
 
             var serializedSkills = new List<byte>();

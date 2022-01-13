@@ -485,7 +485,7 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 case CharacterAttributeEnum.SkillPoint:
-                    targetPlayer.SetSkillPoint((ushort)attributeValue);
+                    //targetPlayer.SetSkillPoint((ushort)attributeValue);
                     SetAttributeAndSendCommandSuccess();
                     break;
 

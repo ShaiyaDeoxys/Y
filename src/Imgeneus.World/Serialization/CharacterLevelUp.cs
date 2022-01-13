@@ -24,7 +24,7 @@ namespace Imgeneus.World.Serialization
             CharacterId = character.Id;
             Level = character.LevelProvider.Level;
             StatPoint = character.StatsManager.StatPoint;
-            SkillPoint = character.SkillPoint;
+            SkillPoint = character.SkillsManager.SkillPoints;
             MinLevelExp = character.MinLevelExp / 10; // Normalize experience for ep8 game
             NextLevelExp = character.NextLevelExp / 10; // Normalize experience for ep8 game
         }

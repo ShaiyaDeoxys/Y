@@ -102,7 +102,7 @@ namespace Imgeneus.World.Game.Player
                 // Increase stats and skill points based on character's mode
                 var levelStats = _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow);
                 //IncreaseStatPoint(levelStats.StatPoint);
-                IncreaseSkillPoint(levelStats.SkillPoint);
+                //IncreaseSkillPoint(levelStats.SkillPoint);
 
                 OnLevelUp?.Invoke(this);
             }

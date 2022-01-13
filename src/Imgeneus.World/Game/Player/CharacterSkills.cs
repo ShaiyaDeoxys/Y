@@ -42,7 +42,7 @@ namespace Imgeneus.World.Game.Player
 
             // Find learned skill.
             var dbSkill = _databasePreloader.Skills[(skillId, skillLevel)];
-            if (SkillPoint < dbSkill.SkillPoint)
+            if (SkillsManager.SkillPoints < dbSkill.SkillPoint)
             {
                 // Not enough skill points.
                 // TODO: log it or throw exception?
@@ -82,8 +82,7 @@ namespace Imgeneus.World.Game.Player
             // Remove previously learned skill.
             if (isSkillLearned != null) Skills.Remove(skillNumber);
 
-            SkillPoint -= dbSkill.SkillPoint;
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);
+            SkillsManager.TrySetSkillPoints((ushort)(SkillsManager.SkillPoints - dbSkill.SkillPoint));
 
             var skill = new Skill(dbSkill, skillNumber, 0);
             Skills.Add(skillNumber, skill);
@@ -156,10 +155,10 @@ namespace Imgeneus.World.Game.Player
         {
             ushort skillFactor = _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow).SkillPoint;
 
-            SkillPoint = (ushort)(skillFactor * (LevelProvider.Level - 1));
+            SkillsManager.TrySetSkillPoints((ushort)(skillFactor * (LevelProvider.Level - 1)));
 
             _taskQueue.Enqueue(ActionType.REMOVE_ALL_SKILLS, Id);
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);
+            //_taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);
 
             SendResetSkills();
 

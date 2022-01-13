@@ -21,7 +21,6 @@ namespace Imgeneus.World.Game.Player
         public byte Face { get; set; }
         public byte Height { get; set; }
         public Gender Gender { get; set; }
-        public ushort SkillPoint { get; private set; }
         public uint Exp { get; private set; }
         public ushort Kills { get; private set; }
         public ushort Deaths { get; private set; }
@@ -540,7 +539,7 @@ namespace Imgeneus.World.Game.Player
                     return StatsManager.StatPoint;
 
                 case CharacterAttributeEnum.SkillPoint:
-                    return SkillPoint;
+                    return SkillsManager.SkillPoints;
 
                 case CharacterAttributeEnum.Strength:
                     return StatsManager.Strength;
@@ -593,20 +592,10 @@ namespace Imgeneus.World.Game.Player
         //public void IncreaseStatPoint(ushort amount) => StatsManager.TrySetStatPoint((ushort)(StatsManager.StatPoint + amount));
 
         /// <summary>
-        /// Set the skill points amount
-        /// </summary>
-        public void SetSkillPoint(ushort skillPoint)
-        {
-            SkillPoint = skillPoint;
-
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);
-        }
-
-        /// <summary>
         /// Increases the player's skill points by a certain amount
         /// </summary>
         /// <param name="amount"></param>
-        public void IncreaseSkillPoint(ushort amount) => SetSkillPoint(SkillPoint += amount);
+        //public void IncreaseSkillPoint(ushort amount) => SetSkillPoint(SkillPoint += amount);
 
         #endregion
 

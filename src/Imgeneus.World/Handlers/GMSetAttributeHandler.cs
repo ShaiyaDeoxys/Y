@@ -68,6 +68,10 @@ namespace Imgeneus.World.Handlers
                     ok = await targetPlayer.StatsManager.TrySetStats(statPoints: (ushort)attributeValue);
                     break;
 
+                case CharacterAttributeEnum.SkillPoint:
+                    ok = await targetPlayer.SkillsManager.TrySetSkillPoints((ushort)attributeValue);
+                    break;
+
                 case CharacterAttributeEnum.Strength:
                     ok = await targetPlayer.StatsManager.TrySetStats(str: (ushort)attributeValue);
                     break;

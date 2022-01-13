@@ -4,6 +4,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,8 @@ namespace Imgeneus.World.Game.Monster
         private readonly ILogger<Mob> _logger;
         private readonly DbMob _dbMob;
 
+        public ISkillsManager SkillsManager { get; private set; }
+
         public Mob(ushort mobId,
                    bool shouldRebirth,
                    MoveArea moveArea,
@@ -24,7 +27,8 @@ namespace Imgeneus.World.Game.Monster
                    IDatabasePreloader databasePreloader,
                    IStatsManager statsManager,
                    IHealthManager healthManager,
-                   ILevelProvider levelProvider) : base(databasePreloader, statsManager, healthManager, levelProvider)
+                   ILevelProvider levelProvider,
+                   ISkillsManager skillsManager) : base(databasePreloader, statsManager, healthManager, levelProvider)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -37,6 +41,7 @@ namespace Imgeneus.World.Game.Monster
             StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, 0);
             LevelProvider.Level = _dbMob.Level;
             HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
+            SkillsManager = skillsManager;
 
             MoveArea = moveArea;
             Map = map;
@@ -125,7 +130,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelProvider);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelProvider, SkillsManager);
         }
 
         public override void Dispose()

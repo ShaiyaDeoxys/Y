@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using System;
 
 namespace Imgeneus.World.Game
@@ -14,6 +15,8 @@ namespace Imgeneus.World.Game
     public interface IKiller : IWorldMember, IStatsHolder
     {
         public ILevelProvider LevelProvider { get; }
+
+        public ISkillsManager SkillsManager { get; }
 
         /// <summary>
         /// Killer's fraction.
