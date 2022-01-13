@@ -343,7 +343,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void UseHealingPotion(Item potion)
         {
-            Recover(potion.HP, potion.MP, potion.SP);
+            HealthManager.Recover(potion.HP, potion.MP, potion.SP);
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace Imgeneus.World.Game.Player
             var mp = Convert.ToInt32(HealthManager.MaxMP * potion.MP / 100);
             var sp = Convert.ToInt32(HealthManager.MaxSP * potion.SP / 100);
 
-            Recover(hp, mp, sp);
+            HealthManager.Recover(hp, mp, sp);
         }
 
         /// <summary>

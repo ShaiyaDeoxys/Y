@@ -102,5 +102,35 @@ namespace Imgeneus.World.Game.Health
         /// </summary>
         /// <param name="hp">hp healed</param>
         public void IncreaseHP(int hp);
+
+        /// <summary>
+        /// Recoves all 3 stats at once.
+        /// </summary>
+        public void Recover(int hp, int mp, int sp);
+
+        /// <summary>
+        /// Fully recovers all hitpoints.
+        /// </summary>
+        public void FullRecover();
+
+        /// <summary>
+        /// Event, that is fired, when hp changes.
+        /// </summary>
+        event Action<int, HitpointArgs> HP_Changed;
+
+        /// <summary>
+        /// Event, that is fired, when mp changes.
+        /// </summary>
+        event Action<int, HitpointArgs> MP_Changed;
+
+        /// <summary>
+        /// Event, that is fired, when sp changes.
+        /// </summary>
+        event Action<int, HitpointArgs> SP_Changed;
+
+        /// <summary>
+        /// Event, that is fired, when killable recovers.
+        /// </summary>
+        event Action<int, int, int, int> OnRecover;
     }
 }

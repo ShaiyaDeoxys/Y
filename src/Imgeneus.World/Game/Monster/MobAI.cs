@@ -507,7 +507,7 @@ namespace Imgeneus.World.Game.Monster
                 _logger.LogDebug($"Mob {Id} reached birth position, back to idle state.");
                 StartPosX = -1;
                 StartPosZ = -1;
-                FullRecover();
+                HealthManager.FullRecover();
                 State = MobState.Idle;
             }
         }

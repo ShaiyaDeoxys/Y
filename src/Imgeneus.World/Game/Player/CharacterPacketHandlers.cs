@@ -634,7 +634,7 @@ namespace Imgeneus.World.Game.Player
                 return;
             }
 
-            target?.FullRecover();
+            target?.HealthManager.FullRecover();
 
             _packetsHelper.SendGmCommandSuccess(Client);
         }

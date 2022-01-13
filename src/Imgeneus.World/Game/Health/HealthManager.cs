@@ -86,7 +86,7 @@ namespace Imgeneus.World.Game.Health
                 //if (_currentHP == MaxHP)
                 //DamageMakers.Clear();
 
-                //HP_Changed?.Invoke(this, new HitpointArgs(oldHP, _currentHP));
+                HP_Changed?.Invoke(_ownerId, new HitpointArgs(oldHP, _currentHP));
             }
         }
 
@@ -104,7 +104,7 @@ namespace Imgeneus.World.Game.Health
 
                 var args = new HitpointArgs(_currentSP, value);
                 _currentSP = value;
-                //SP_Changed?.Invoke(this, args);
+                SP_Changed?.Invoke(_ownerId, args);
             }
         }
 
@@ -122,7 +122,7 @@ namespace Imgeneus.World.Game.Health
 
                 var args = new HitpointArgs(_currentMP, value);
                 _currentMP = value;
-                //MP_Changed?.Invoke(this, args);
+                MP_Changed?.Invoke(_ownerId, args);
             }
         }
 
@@ -228,6 +228,24 @@ namespace Imgeneus.World.Game.Health
 
         #endregion
 
+        #region Recover
+
+        public void Recover(int hp, int mp, int sp)
+        {
+            IncreaseHP(hp);
+            CurrentMP += mp;
+            CurrentSP += sp;
+
+            OnRecover?.Invoke(_ownerId, CurrentHP, CurrentMP, CurrentSP);
+        }
+
+        public void FullRecover()
+        {
+            Recover(MaxHP, MaxMP, MaxSP);
+        }
+
+        #endregion
+
         #region Helpers
 
         /// <summary>
@@ -254,6 +272,8 @@ namespace Imgeneus.World.Game.Health
         public event Action<int, int> OnMaxSPChanged;
 
         public event Action<int, int> OnMaxMPChanged;
+
+        public event Action<int, int, int, int> OnRecover;
 
         #endregion
 
@@ -282,16 +302,16 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Event, that is fired, when hp changes.
         /// </summary>
-        public event Action<IKillable, HitpointArgs> HP_Changed;
+        public event Action<int, HitpointArgs> HP_Changed;
 
         /// <summary>
         /// Event, that is fired, when mp changes.
         /// </summary>
-        public event Action<IKillable, HitpointArgs> MP_Changed;
+        public event Action<int, HitpointArgs> MP_Changed;
 
         /// <summary>
         /// Event, that is fired, when sp changes.
         /// </summary>
-        public event Action<IKillable, HitpointArgs> SP_Changed;
+        public event Action<int, HitpointArgs> SP_Changed;
     }
 }

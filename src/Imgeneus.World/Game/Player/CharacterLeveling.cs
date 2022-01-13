@@ -111,7 +111,7 @@ namespace Imgeneus.World.Game.Player
             //InvokeMax_HP_MP_SP_Changed();
 
             // Recover
-            FullRecover();
+            HealthManager.FullRecover();
 
             // Update primary attribute
             if (changedByAdmin)

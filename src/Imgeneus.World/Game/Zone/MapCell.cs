@@ -212,8 +212,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxSPChanged += Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged += Character_OnMaxMPChanged;
             //character.OnMax_HP_MP_SP_Changed += Character_OnMax_HP_MP_SP_Changed;
-            character.OnRecover += Character_OnRecover;
-            character.OnFullRecover += Character_OnFullRecover;
+            character.HealthManager.OnRecover += Character_OnRecover;
             character.OnSkillKeep += Character_OnSkillKeep;
             character.OnShapeChange += Character_OnShapeChange;
             character.StealthManager.OnStealthChange += Character_OnStealthChange;
@@ -245,8 +244,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxSPChanged -= Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged -= Character_OnMaxMPChanged;
             //character.OnMax_HP_MP_SP_Changed -= Character_OnMax_HP_MP_SP_Changed;
-            character.OnRecover -= Character_OnRecover;
-            character.OnFullRecover -= Character_OnFullRecover;
+            character.HealthManager.OnRecover -= Character_OnRecover;
             character.OnSkillKeep -= Character_OnSkillKeep;
             character.OnShapeChange -= Character_OnShapeChange;
             character.StealthManager.OnStealthChange -= Character_OnStealthChange;
@@ -374,16 +372,10 @@ namespace Imgeneus.World.Game.Zone
                 _packetsHelper.SendUsedItem(player.Client, sender, item);
         }
 
-        private void Character_OnRecover(IKillable sender, int hp, int mp, int sp)
+        private void Character_OnRecover(int senderId, int hp, int mp, int sp)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendRecoverCharacter(player.Client, sender, hp, mp, sp);
-        }
-
-        private void Character_OnFullRecover(IKillable sender)
-        {
-            foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendRecoverCharacter(player.Client, sender, sender.HealthManager.CurrentHP, sender.HealthManager.CurrentMP, sender.HealthManager.CurrentSP);
+                Map.PacketFactory.SendRecoverCharacter(player.Client, senderId, hp, mp, sp);
         }
 
         private void Character_OnMaxHPChanged(int senderId, int value)
@@ -573,7 +565,7 @@ namespace Imgeneus.World.Game.Zone
             mob.OnMove += Mob_OnMove;
             mob.OnAttack += Mob_OnAttack;
             mob.OnUsedSkill += Mob_OnUsedSkill;
-            mob.OnFullRecover += Mob_OnRecover;
+            mob.HealthManager.OnRecover += Mob_OnRecover;
         }
 
         /// <summary>
@@ -586,7 +578,7 @@ namespace Imgeneus.World.Game.Zone
             mob.OnMove -= Mob_OnMove;
             mob.OnAttack -= Mob_OnAttack;
             mob.OnUsedSkill -= Mob_OnUsedSkill;
-            mob.OnFullRecover -= Mob_OnRecover;
+            mob.HealthManager.OnRecover -= Mob_OnRecover;
         }
 
         private void Mob_OnDead(IKillable sender, IKiller killer)
@@ -635,10 +627,10 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Mob_OnRecover(IKillable sender)
+        private void Mob_OnRecover(int senderId, int hp, int mp, int sp)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMobRecover(player.Client, sender);
+                Map.PacketFactory.SendMobRecover(player.Client, senderId, hp);
         }
 
         #endregion

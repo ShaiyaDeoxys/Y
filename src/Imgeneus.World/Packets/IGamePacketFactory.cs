@@ -51,6 +51,8 @@ namespace Imgeneus.World.Packets
         void SendCharacterShape(IWorldClient client, Character character);
         void SendShapeUpdate(IWorldClient client, Character character);
         void SendMaxHitpoints(IWorldClient client, int characterId, HitpointType type, int value);
+        void SendRecoverCharacter(IWorldClient client, int characterId, int hp, int mp, int sp);
+        void SendMobRecover(IWorldClient client, int mobId, int hp);
         #endregion
 
         #region GM

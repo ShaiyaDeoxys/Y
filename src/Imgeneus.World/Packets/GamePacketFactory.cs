@@ -304,6 +304,26 @@ namespace Imgeneus.World.Packets
             packet.Write(new MaxHitpoint(characterId, type, value).Serialize());
             client.Send(packet);
         }
+
+        public void SendRecoverCharacter(IWorldClient client, int characterId, int hp, int mp, int sp)
+        {
+            // NB!!! In previous episodes and in china ep 8 with recover packet it's sent how much hitpoints recovered.
+            // But in os ep8 this packet sends current hitpoints.
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_RECOVER);
+            packet.Write(characterId);
+            packet.Write(hp); // old eps: newHP - oldHP
+            packet.Write(mp); // old eps: newMP - oldMP
+            packet.Write(sp); // old eps: newSP - oldSP
+            client.Send(packet);
+        }
+
+        public void SendMobRecover(IWorldClient client, int mobId, int hp)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MOB_RECOVER);
+            packet.Write(mobId);
+            packet.Write(hp);
+            client.Send(packet);
+        }
         #endregion
 
         #region GM
