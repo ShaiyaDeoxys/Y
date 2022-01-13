@@ -89,6 +89,7 @@ namespace Imgeneus.World
             services.AddScoped<ISelectionScreenManager, SelectionScreenManager>();
             services.AddScoped<IGameSession, GameSession>();
             services.AddScoped<IStatsManager, StatsManager>();
+            services.AddScoped<ILevelProvider, LevelProvider>();
             services.AddScoped<ILevelingManager, LevelingManager>();
             services.AddScoped<IHealthManager, HealthManager>();
             services.AddScoped<IInventoryManager, InventoryManager>();

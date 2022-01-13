@@ -34,7 +34,7 @@ namespace Imgeneus.World.Game.Monster
                               scope.ServiceProvider.GetRequiredService<IDatabasePreloader>(),
                               scope.ServiceProvider.GetRequiredService<IStatsManager>(),
                               scope.ServiceProvider.GetRequiredService<IHealthManager>(),
-                              scope.ServiceProvider.GetRequiredService<ILevelingManager>());
+                              scope.ServiceProvider.GetRequiredService<ILevelProvider>());
             mob.OnDead += Mob_OnDead;
 
             _mobScopes.Add(mob, scope);

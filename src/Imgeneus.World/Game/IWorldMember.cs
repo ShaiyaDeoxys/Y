@@ -1,6 +1,4 @@
-﻿using Imgeneus.World.Game.Levelling;
-
-namespace Imgeneus.World.Game
+﻿namespace Imgeneus.World.Game
 {
     /// <summary>
     /// The interface describes the game world member properties.
@@ -11,7 +9,5 @@ namespace Imgeneus.World.Game
         /// Unique id inside of a game world.
         /// </summary>
         public int Id { get; }
-
-        public ILevelingManager LevelingManager { get; }
     }
 }

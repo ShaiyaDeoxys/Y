@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player;
 using MvvmHelpers;
 using System;
@@ -14,6 +15,8 @@ namespace Imgeneus.World.Game
     public interface IKillable : IWorldMember, IStatsHolder
     {
         public IHealthManager HealthManager { get; }
+
+        public ILevelProvider LevelProvider { get; }
 
         /// <summary>
         /// Element used in armor.

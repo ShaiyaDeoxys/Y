@@ -24,7 +24,7 @@ namespace Imgeneus.World.Game.Monster
                    IDatabasePreloader databasePreloader,
                    IStatsManager statsManager,
                    IHealthManager healthManager,
-                   ILevelingManager levelingManager) : base(databasePreloader, statsManager, healthManager, levelingManager)
+                   ILevelProvider levelProvider) : base(databasePreloader, statsManager, healthManager, levelProvider)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -35,8 +35,8 @@ namespace Imgeneus.World.Game.Monster
             ShouldRebirth = shouldRebirth;
 
             StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, 0);
-            LevelingManager.Init(_dbMob.Level, constHP: _dbMob.HP, constMP: _dbMob.SP, constSP: _dbMob.MP);
-            HealthManager.Init(Id, _dbMob.HP, 0, 0);
+            LevelProvider.Level = _dbMob.Level;
+            HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
 
             MoveArea = moveArea;
             Map = map;
@@ -125,7 +125,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelingManager);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelProvider);
         }
 
         public override void Dispose()

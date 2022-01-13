@@ -23,14 +23,14 @@ namespace Imgeneus.World.Game
         protected readonly IDatabasePreloader _databasePreloader;
         public IStatsManager StatsManager { get; private set; }
         public IHealthManager HealthManager { get; private set; }
-        public ILevelingManager LevelingManager { get; private set; }
+        public ILevelProvider LevelProvider { get; private set; }
 
-        public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ILevelingManager levelingManager)
+        public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider)
         {
             _databasePreloader = databasePreloader;
             StatsManager = statsManager;
             HealthManager = healthManager;
-            LevelingManager = levelingManager;
+            LevelProvider = levelProvider;
 
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;

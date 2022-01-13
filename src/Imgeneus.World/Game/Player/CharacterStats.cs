@@ -508,9 +508,9 @@ namespace Imgeneus.World.Game.Player
                                      defaultStat.Rec,
                                      defaultStat.Int,
                                      defaultStat.Luc,
-                                     (ushort)((LevelingManager.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
+                                     (ushort)((LevelProvider.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
 
-            IncreasePrimaryStat((ushort)(LevelingManager.Level - 1));
+            IncreasePrimaryStat((ushort)(LevelProvider.Level - 1));
 
             _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatsManager.StatPoint);
             _packetsHelper.SendResetStats(Client, this);
@@ -532,7 +532,7 @@ namespace Imgeneus.World.Game.Player
                     return (uint)Mode;
 
                 case CharacterAttributeEnum.Level:
-                    return LevelingManager.Level;
+                    return LevelProvider.Level;
 
                 case CharacterAttributeEnum.Money:
                     return Gold;

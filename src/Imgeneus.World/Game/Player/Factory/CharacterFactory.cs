@@ -34,6 +34,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IMapsLoader _mapsLoader;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
+        private readonly ILevelProvider _levelProvider;
         private readonly ILevelingManager _levelingManager;
         private readonly IInventoryManager _inventoryManager;
         private readonly IChatManager _chatManager;
@@ -56,6 +57,7 @@ namespace Imgeneus.World.Game.Player
                                 IMapsLoader mapsLoader,
                                 IStatsManager statsManager,
                                 IHealthManager healthManager,
+                                ILevelProvider levelProvider,
                                 ILevelingManager levelingManager,
                                 IInventoryManager inventoryManager,
                                 IChatManager chatManager,
@@ -78,6 +80,7 @@ namespace Imgeneus.World.Game.Player
             _mapsLoader = mapsLoader;
             _statsManager = statsManager;
             _healthManager = healthManager;
+            _levelProvider = levelProvider;
             _levelingManager = levelingManager;
             _inventoryManager = inventoryManager;
             _chatManager = chatManager;
@@ -117,9 +120,11 @@ namespace Imgeneus.World.Game.Player
 
             _statsManager.Init(dbCharacter.Id, dbCharacter.Strength, dbCharacter.Dexterity, dbCharacter.Rec, dbCharacter.Intelligence, dbCharacter.Wisdom, dbCharacter.Luck, dbCharacter.StatPoint);
 
-            _levelingManager.Init(dbCharacter.Level, dbCharacter.Class);
+            _levelProvider.Level = dbCharacter.Level;
 
-            _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints);
+            _levelingManager.Init();
+
+            _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints, profession: dbCharacter.Class);
 
             _inventoryManager.Init(dbCharacter.Items);
 
@@ -134,6 +139,7 @@ namespace Imgeneus.World.Game.Player
                                         _mapsLoader,
                                         _statsManager,
                                         _healthManager,
+                                        _levelProvider,
                                         _levelingManager,
                                         _inventoryManager,
                                         _chatManager,

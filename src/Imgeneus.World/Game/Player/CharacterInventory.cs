@@ -404,7 +404,7 @@ namespace Imgeneus.World.Game.Player
                 }
             }
 
-            if (item.Reqlevel > LevelingManager.Level)
+            if (item.Reqlevel > LevelProvider.Level)
                 return false;
 
             if (Mode < item.Grow)

@@ -1,4 +1,6 @@
-﻿using Imgeneus.World.Game.Levelling;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,15 +11,16 @@ namespace Imgeneus.World.Game.Health
     {
         private readonly ILogger<HealthManager> _logger;
         private readonly IStatsManager _statsManager;
-        private readonly ILevelingManager _levelingManager;
-
+        private readonly ILevelProvider _levelProvider;
+        private readonly ICharacterConfiguration _characterConfiguration;
         private int _ownerId;
 
-        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelingManager levelingManager)
+        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration)
         {
             _logger = logger;
             _statsManager = statsManager;
-            _levelingManager = levelingManager;
+            _levelProvider = levelProvider;
+            _characterConfiguration = characterConfiguration;
 
 #if DEBUG
             _logger.LogDebug("HealthManager {hashcode} created", GetHashCode());
@@ -31,9 +34,15 @@ namespace Imgeneus.World.Game.Health
         }
 #endif
 
-        public void Init(int id, int currentHP, int currentSP, int currentMP)
+        public void Init(int id, int currentHP, int currentSP, int currentMP, int? constHP, int? constSP, int? constMP, CharacterProfession? profession)
         {
             _ownerId = id;
+
+            Class = profession;
+
+            _constHP = constHP;
+            _constMP = constMP;
+            _constSP = constSP;
 
             CurrentHP = currentHP;
             CurrentSP = currentSP;
@@ -45,11 +54,11 @@ namespace Imgeneus.World.Game.Health
         }
 
         #region Max
-        public int MaxHP => _levelingManager.ConstHP + ExtraHP + ReactionExtraHP;
+        public int MaxHP => ConstHP + ExtraHP + ReactionExtraHP;
 
-        public int MaxSP => _levelingManager.ConstSP + ExtraSP + DexterityExtraSP;
+        public int MaxSP => ConstSP + ExtraSP + DexterityExtraSP;
 
-        public int MaxMP => _levelingManager.ConstMP + ExtraMP + WisdomExtraMP;
+        public int MaxMP => ConstMP + ExtraMP + WisdomExtraMP;
 
         #endregion
 
@@ -152,6 +161,69 @@ namespace Imgeneus.World.Game.Health
                 _extraMP = value;
                 OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
             }
+        }
+
+        #endregion
+
+        #region Consts
+
+        public CharacterProfession? Class { get; private set; }
+
+        private int? _constHP;
+        public int ConstHP
+        {
+            get
+            {
+                if (_constHP.HasValue)
+                    return _constHP.Value;
+
+                var level = _levelProvider.Level <= 60 ? _levelProvider.Level : 60;
+                var index = (level - 1) * 6 + (byte)Class;
+                var constHP = _characterConfiguration.GetConfig(index).HP;
+
+                return constHP;
+
+            }
+            private set => _constHP = value;
+        }
+
+
+        private int? _constSP;
+        public int ConstSP
+        {
+            get
+            {
+                if (_constSP.HasValue)
+                    return _constSP.Value;
+
+                var level = _levelProvider.Level <= 60 ? _levelProvider.Level : 60;
+                var index = (level - 1) * 6 + (byte)Class;
+                var constSP = _characterConfiguration.GetConfig(index).SP;
+
+                return constSP;
+            }
+
+            private set => _constSP = value;
+        }
+
+
+        private int? _constMP;
+        public int ConstMP
+        {
+
+            get
+            {
+                if (_constMP.HasValue)
+                    return _constMP.Value;
+
+                var level = _levelProvider.Level <= 60 ? _levelProvider.Level : 60;
+                var index = (level - 1) * 6 + (byte)Class;
+                var constMP = _characterConfiguration.GetConfig(index).MP;
+
+                return constMP;
+            }
+
+            private set => _constMP = value;
         }
 
         #endregion

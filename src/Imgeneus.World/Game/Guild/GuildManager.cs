@@ -53,7 +53,7 @@ namespace Imgeneus.World.Game.Guild
                 if (!guildCreator.HasParty || !(guildCreator.Party is Party) || guildCreator.Party.Members.Count != _config.MinMembers)
                     return GuildCreateFailedReason.NotEnoughMembers;
 
-                if (!guildCreator.Party.Members.All(x => x.LevelingManager.Level > _config.MinLevel))
+                if (!guildCreator.Party.Members.All(x => x.LevelProvider.Level > _config.MinLevel))
                     return GuildCreateFailedReason.LevelLimit;
 
                 // TODO: banned words?

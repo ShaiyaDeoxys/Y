@@ -68,7 +68,7 @@ namespace Imgeneus.World.Game.Chat
                     break;
 
                 case MessageType.World:
-                    if (sender.LevelingManager.Level > 10)
+                    if (sender.LevelProvider.Level > 10)
                     {
                         var worldPlayers = _gameWorld.Players.Values.Where(p => p.Country == sender.Country);
                         foreach (var player in worldPlayers)

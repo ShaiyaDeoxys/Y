@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imgeneus.Database.Entities;
+using System;
 
 namespace Imgeneus.World.Game.Health
 {
@@ -7,7 +8,7 @@ namespace Imgeneus.World.Game.Health
     /// </summary>
     public interface IHealthManager
     {
-        public void Init(int ownerId, int currentHP, int currentSP, int currentMP);
+        public void Init(int ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null, CharacterProfession? profession = null);
 
         /// <summary>
         /// Max health.
@@ -38,6 +39,26 @@ namespace Imgeneus.World.Game.Health
         /// Event, that is fired, when max mp changes.
         /// </summary>
         public event Action<int, int> OnMaxMPChanged;
+
+        /// <summary>
+        /// Only for players.
+        /// </summary>
+        public CharacterProfession? Class { get; }
+
+        /// <summary>
+        /// Health points based on level.
+        /// </summary>
+        int ConstHP { get; }
+
+        /// <summary>
+        /// Stamina points based on level.
+        /// </summary>
+        int ConstSP { get; }
+
+        /// <summary>
+        /// Mana points based on level.
+        /// </summary>
+        int ConstMP { get; }
 
         /// <summary>
         /// Health points, that are provided by equipment and buffs.

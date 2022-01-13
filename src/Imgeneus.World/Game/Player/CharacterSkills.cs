@@ -156,7 +156,7 @@ namespace Imgeneus.World.Game.Player
         {
             ushort skillFactor = _characterConfig.GetLevelStatSkillPoints(Mode).SkillPoint;
 
-            SkillPoint = (ushort)(skillFactor * (LevelingManager.Level - 1));
+            SkillPoint = (ushort)(skillFactor * (LevelProvider.Level - 1));
 
             _taskQueue.Enqueue(ActionType.REMOVE_ALL_SKILLS, Id);
             _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);

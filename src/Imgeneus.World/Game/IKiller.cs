@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
 using System;
@@ -12,6 +13,8 @@ namespace Imgeneus.World.Game
     /// </summary>
     public interface IKiller : IWorldMember, IStatsHolder
     {
+        public ILevelProvider LevelProvider { get; }
+
         /// <summary>
         /// Killer's fraction.
         /// </summary>
@@ -185,7 +188,7 @@ namespace Imgeneus.World.Game
             {
                 case TypeAttack.PhysicalAttack:
                 case TypeAttack.ShootingAttack:
-                    levelDifference = LevelingManager.Level * 1.0 / (target.LevelingManager.Level + LevelingManager.Level);
+                    levelDifference = LevelProvider.Level * 1.0 / (target.LevelProvider.Level + LevelProvider.Level);
                     var targetAttackPercent = target.PhysicalHittingChance / (target.PhysicalHittingChance + PhysicalEvasionChance);
                     var myAttackPercent = PhysicalHittingChance / (PhysicalHittingChance + target.PhysicalEvasionChance);
                     var attackPercent = targetAttackPercent * 100 - myAttackPercent * 100;
@@ -206,7 +209,7 @@ namespace Imgeneus.World.Game
                     return new Random().Next(1, 101) < result;
 
                 case TypeAttack.MagicAttack:
-                    levelDifference = ((target.LevelingManager.Level - LevelingManager.Level - 2) * 100 + target.LevelingManager.Level) / (target.LevelingManager.Level + LevelingManager.Level) * 1.1;
+                    levelDifference = ((target.LevelProvider.Level - LevelProvider.Level - 2) * 100 + target.LevelProvider.Level) / (target.LevelProvider.Level + LevelProvider.Level) * 1.1;
                     var fxDef = levelDifference + target.MagicEvasionChance;
                     if (fxDef >= 1)
                     {

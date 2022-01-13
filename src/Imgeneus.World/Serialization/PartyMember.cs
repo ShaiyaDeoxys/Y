@@ -61,7 +61,7 @@ namespace Imgeneus.World.Serialization
         public PartyMember(Character character)
         {
             CharacterId = character.Id;
-            Level = character.LevelingManager.Level;
+            Level = character.LevelProvider.Level;
             Class = character.Class;
             MaxHP = character.HealthManager.MaxHP;
             HP = character.HealthManager.CurrentHP;
