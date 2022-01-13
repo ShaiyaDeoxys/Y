@@ -50,6 +50,7 @@ namespace Imgeneus.World.Game.Player
 
         public readonly IInventoryManager InventoryManager;
         public readonly IStealthManager StealthManager;
+        public readonly ILevelingManager LevelingManager;
         public readonly IGameSession GameSession;
 
         public Character(ILogger<Character> logger,
@@ -88,6 +89,7 @@ namespace Imgeneus.World.Game.Player
 
             InventoryManager = inventoryManager;
             StealthManager = stealthManager;
+            LevelingManager = levelingManager;
             GameSession = gameSession;
 
             _packetsHelper = new PacketsHelper();
@@ -359,7 +361,6 @@ namespace Imgeneus.World.Game.Player
                 MapId = dbCharacter.Map,
                 Race = dbCharacter.Race,
                 Class = dbCharacter.Class,
-                Mode = dbCharacter.Mode,
                 Hair = dbCharacter.Hair,
                 Face = dbCharacter.Face,
                 Height = dbCharacter.Height,

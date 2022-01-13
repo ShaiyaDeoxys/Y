@@ -83,7 +83,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
             Height = character.Height;
             Class = character.Class;
             Gender = character.Gender;
-            Mode = character.Mode;
+            Mode = character.LevelingManager.Grow;
             Kills = character.Kills;
             Name = character.NameAsByteArray;
 

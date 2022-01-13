@@ -154,7 +154,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public void ResetSkills()
         {
-            ushort skillFactor = _characterConfig.GetLevelStatSkillPoints(Mode).SkillPoint;
+            ushort skillFactor = _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow).SkillPoint;
 
             SkillPoint = (ushort)(skillFactor * (LevelProvider.Level - 1));
 

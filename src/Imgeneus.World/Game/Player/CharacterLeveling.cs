@@ -12,12 +12,12 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Minimum experience needed for current player's level
         /// </summary>
-        public uint MinLevelExp => LevelProvider.Level > 1 ? _databasePreloader.Levels[(Mode, (ushort)(LevelProvider.Level - 1))].Exp : 0;
+        public uint MinLevelExp => LevelProvider.Level > 1 ? _databasePreloader.Levels[(LevelingManager.Grow, (ushort)(LevelProvider.Level - 1))].Exp : 0;
 
         /// <summary>
         /// Experience needed to level up to next level
         /// </summary>
-        public uint NextLevelExp => _databasePreloader.Levels[(Mode, LevelProvider.Level)].Exp;
+        public uint NextLevelExp => _databasePreloader.Levels[(LevelingManager.Grow, LevelProvider.Level)].Exp;
 
         /// <summary>
         /// Event that's fired when a player level's up
@@ -52,7 +52,7 @@ namespace Imgeneus.World.Game.Player
                 return false;
 
             // Check maximum level boundary
-            var maxLevel = _characterConfig.GetMaxLevelConfig(Mode).Level;
+            var maxLevel = _characterConfig.GetMaxLevelConfig(LevelingManager.Grow).Level;
 
             if (newLevel > maxLevel) return false;
 
@@ -100,7 +100,7 @@ namespace Imgeneus.World.Game.Player
                 SendAttribute(CharacterAttributeEnum.Exp);
 
                 // Increase stats and skill points based on character's mode
-                var levelStats = _characterConfig.GetLevelStatSkillPoints(Mode);
+                var levelStats = _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow);
                 //IncreaseStatPoint(levelStats.StatPoint);
                 IncreaseSkillPoint(levelStats.SkillPoint);
 
@@ -216,10 +216,10 @@ namespace Imgeneus.World.Game.Player
         private bool CanSetExperience(uint exp)
         {
             // Get max level from config file
-            var maxLevel = _characterConfig.GetMaxLevelConfig(Mode).Level;
+            var maxLevel = _characterConfig.GetMaxLevelConfig(LevelingManager.Grow).Level;
 
             // Get max level info
-            var maxLevelInfo = _databasePreloader.Levels[(Mode, maxLevel)];
+            var maxLevelInfo = _databasePreloader.Levels[(LevelingManager.Grow, maxLevel)];
 
             // Exp can't be superior than max level's experience
             return exp <= maxLevelInfo.Exp;

@@ -407,7 +407,7 @@ namespace Imgeneus.World.Game.Player
             if (item.Reqlevel > LevelProvider.Level)
                 return false;
 
-            if (Mode < item.Grow)
+            if (LevelingManager.Grow < item.Grow)
                 return false;
 
             switch (item.ItemClassType)

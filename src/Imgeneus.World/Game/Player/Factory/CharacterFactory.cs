@@ -122,7 +122,7 @@ namespace Imgeneus.World.Game.Player
 
             _levelProvider.Level = dbCharacter.Level;
 
-            _levelingManager.Init();
+            _levelingManager.Init(dbCharacter.Mode);
 
             _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints, profession: dbCharacter.Class);
 

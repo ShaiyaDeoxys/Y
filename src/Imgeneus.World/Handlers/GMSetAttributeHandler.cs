@@ -1,4 +1,5 @@
-﻿using Imgeneus.Network.Packets;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Session;
@@ -80,6 +81,10 @@ namespace Imgeneus.World.Handlers
 
                 case CharacterAttributeEnum.Wisdom:
                     ok = await targetPlayer.StatsManager.TrySetStats(wis: (ushort)attributeValue);
+                    break;
+
+                case CharacterAttributeEnum.Grow:
+                    ok = await targetPlayer.LevelingManager.TrySetGrow((Mode)attributeValue);
                     break;
 
                 default:

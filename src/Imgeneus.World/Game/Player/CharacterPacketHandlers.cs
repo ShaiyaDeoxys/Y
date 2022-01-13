@@ -417,7 +417,7 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleAutoStatsSettings(byte str, byte dex, byte rec, byte @int, byte wis, byte luc)
         {
-            if (str + dex + rec + @int + wis + luc > _characterConfig.GetLevelStatSkillPoints(Mode).StatPoint)
+            if (str + dex + rec + @int + wis + luc > _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow).StatPoint)
             {
                 return;
             }
@@ -434,7 +434,7 @@ namespace Imgeneus.World.Game.Player
             SendAutoStats();
         }
 
-        private void HandleGMSetAttributePacket(GMSetAttributePacket gmSetAttributePacket)
+        private async void HandleGMSetAttributePacket(GMSetAttributePacket gmSetAttributePacket)
         {
             var (attribute, attributeValue, player) = gmSetAttributePacket;
 
@@ -461,7 +461,7 @@ namespace Imgeneus.World.Game.Player
             switch (attribute)
             {
                 case CharacterAttributeEnum.Grow:
-                    if (targetPlayer.TrySetMode((Mode)attributeValue))
+                    if (await targetPlayer.LevelingManager.TrySetGrow((Mode)attributeValue))
                         SetAttributeAndSendCommandSuccess();
                     else
                         SendCommandError();

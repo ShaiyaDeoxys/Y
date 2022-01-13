@@ -17,7 +17,6 @@ namespace Imgeneus.World.Game.Player
         public ushort MapId { get; private set; }
         public Race Race { get; set; }
         public CharacterProfession Class { get; set; }
-        public Mode Mode { get; private set; } = Mode.Beginner;
         public byte Hair { get; set; }
         public byte Face { get; set; }
         public byte Height { get; set; }
@@ -501,7 +500,7 @@ namespace Imgeneus.World.Game.Player
         public void ResetStats()
         {
             var defaultStat = _characterConfig.DefaultStats.First(s => s.Job == Class);
-            var statPerLevel = _characterConfig.GetLevelStatSkillPoints(Mode).StatPoint;
+            var statPerLevel = _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow).StatPoint;
 
             StatsManager.TrySetStats(defaultStat.Str,
                                      defaultStat.Dex,
@@ -529,7 +528,7 @@ namespace Imgeneus.World.Game.Player
             switch (attribute)
             {
                 case CharacterAttributeEnum.Grow:
-                    return (uint)Mode;
+                    return (uint)LevelingManager.Grow;
 
                 case CharacterAttributeEnum.Level:
                     return LevelProvider.Level;
@@ -581,36 +580,6 @@ namespace Imgeneus.World.Game.Player
                 default:
                     return 0;
             }
-        }
-
-        #endregion
-
-        #region Mode
-
-        /// <summary>
-        /// Set the mode (Grow)
-        /// </summary>
-        private void SetMode(Mode mode)
-        {
-            if (mode > Mode.Ultimate) return;
-
-            Mode = mode;
-
-            _taskQueue.Enqueue(ActionType.UPDATE_CHARACTER_MODE, Id, mode);
-        }
-
-        /// <summary>
-        /// Attempts to set a new mode for a character
-        /// </summary>
-        /// <param name="mode"></param>
-        /// <returns></returns>
-        public bool TrySetMode(Mode mode)
-        {
-            if (mode > Mode.Ultimate)
-                return false;
-
-            SetMode(mode);
-            return true;
         }
 
         #endregion

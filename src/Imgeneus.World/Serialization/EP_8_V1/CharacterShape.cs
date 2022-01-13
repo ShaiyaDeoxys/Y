@@ -83,7 +83,7 @@ namespace Imgeneus.World.Serialization.EP_8_V1
             Height = character.Height;
             Class = character.Class;
             Gender = character.Gender;
-            Mode = character.Mode;
+            Mode = character.LevelingManager.Grow;
             Kills = character.Kills;
             Name = character.NameAsByteArray;
 
