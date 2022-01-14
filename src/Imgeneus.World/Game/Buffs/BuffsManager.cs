@@ -53,22 +53,11 @@ namespace Imgeneus.World.Game.Buffs
             ActiveBuffs.CollectionChanged -= ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged -= PassiveBuffs_CollectionChanged;
 
-            foreach(var buff in ActiveBuffs)
-            {
-                buff.OnReset -= ActiveBuff_OnReset;
-                buff.OnPeriodicalHeal -= Buff_OnPeriodicalHeal;
-                buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
-            }
+            foreach(var buff in ActiveBuffs.ToList())
+                buff.CancelBuff();
 
-            foreach (var buff in PassiveBuffs)
-            {
-                buff.OnReset -= ActiveBuff_OnReset;
-                buff.OnPeriodicalHeal -= Buff_OnPeriodicalHeal;
-                buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
-            }
-
-            ActiveBuffs.Clear();
-            PassiveBuffs.Clear();
+            foreach (var buff in PassiveBuffs.ToList())
+                buff.CancelBuff();
         }
 
         #endregion
@@ -90,7 +79,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (Buff newBuff in e.NewItems)
+               foreach (Buff newBuff in e.NewItems)
                 {
                     newBuff.OnReset += ActiveBuff_OnReset;
                     ApplyBuffSkill(newBuff);
@@ -193,9 +182,9 @@ namespace Imgeneus.World.Game.Buffs
                     {
                         // Remove old buff.
                         if (buff.IsPassive)
-                            PassiveBuffs.Remove(buff);
+                            buff.CancelBuff();
                         else
-                            ActiveBuffs.Remove(buff);
+                            buff.CancelBuff();
 
                         // Create new one with a higher level.
                         buff = new Buff(creator, skill)
