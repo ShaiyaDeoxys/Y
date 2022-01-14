@@ -4,6 +4,7 @@ using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using System.Collections.Generic;
 
 namespace Imgeneus.World.Packets
@@ -33,6 +34,8 @@ namespace Imgeneus.World.Packets
         void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems);
         void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue);
         void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc);
+        void SendLearnedNewSkill(IWorldClient client, bool ok, Skill skill);
+        void SendLearnedSkills(IWorldClient client, Character character);
         #endregion
 
         #region Inventory

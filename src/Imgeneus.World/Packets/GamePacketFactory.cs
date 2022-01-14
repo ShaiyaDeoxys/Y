@@ -20,6 +20,7 @@ using Imgeneus.World.Serialization;
 using Imgeneus.Database.Constants;
 using Imgeneus.World.Game.Health;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Skills;
 
 namespace Imgeneus.World.Packets
 {
@@ -187,6 +188,21 @@ namespace Imgeneus.World.Packets
             packet.Write(intl);
             packet.Write(wis);
             packet.Write(luc);
+            client.Send(packet);
+        }
+
+        public void SendLearnedNewSkill(IWorldClient client, bool ok, Skill skill)
+        {
+            using var answerPacket = new ImgeneusPacket(PacketType.LEARN_NEW_SKILL);
+            answerPacket.Write((byte)(ok ? 0 : 1));
+            answerPacket.Write(new LearnedSkill(skill).Serialize());
+            client.Send(answerPacket);
+        }
+
+        public void SendLearnedSkills(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILLS);
+            packet.Write(new CharacterSkills(character).Serialize());
             client.Send(packet);
         }
         #endregion

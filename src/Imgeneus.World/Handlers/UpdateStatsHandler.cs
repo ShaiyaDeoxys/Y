@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Packets;
@@ -12,10 +13,12 @@ namespace Imgeneus.World.Handlers
     public class UpdateStatsHandler : BaseHandler
     {
         private readonly IStatsManager _statsManager;
+        private readonly IHealthManager _healthManager;
 
-        public UpdateStatsHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IStatsManager statsManager) : base(packetFactory, gameSession)
+        public UpdateStatsHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager) : base(packetFactory, gameSession)
         {
             _statsManager = statsManager;
+            _healthManager = healthManager;
         }
 
         [HandlerAction(PacketType.UPDATE_STATS)]
@@ -36,7 +39,10 @@ namespace Imgeneus.World.Handlers
                                                      (ushort)(_statsManager.StatPoint - fullStat));
 
             if (ok)
+            {
                 _packetFactory.SendStatsUpdate(client, str, dex, rec, intl, wis, luc);
+                _statsManager.RaiseAdditionalStatsUpdate();
+            }
         }
     }
 }

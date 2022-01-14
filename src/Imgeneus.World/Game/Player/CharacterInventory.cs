@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.NPCs;
+using Imgeneus.World.Game.Skills;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -168,7 +169,7 @@ namespace Imgeneus.World.Game.Player
                         UseHealingPotion(item);
 
                     if (item.SkillId != 0)
-                        UseSkill(new Skill(_databasePreloader.Skills[(item.SkillId, item.SkillLevel)], ITEM_SKILL_NUMBER, 0), this);
+                        SkillsManager.UseSkill(new Skill(_databasePreloader.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0), this);
 
                     break;
 

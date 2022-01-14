@@ -1,10 +1,11 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Skills;
 using MvvmHelpers;
 using System;
 
 namespace Imgeneus.World.Game.Buffs
 {
-    public interface IBuffsManager
+    public interface IBuffsManager : IDisposable
     {
         /// <summary>
         /// Inits buffs from database.
@@ -28,7 +29,6 @@ namespace Imgeneus.World.Game.Buffs
         /// Event, that is fired, when buff is removed.
         /// </summary>
         public event Action<int, Buff> OnBuffRemoved;
-
 
         /// <summary>
         /// Skill or buff that is called peridically, e.g. periodical healing.

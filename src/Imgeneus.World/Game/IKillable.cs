@@ -1,9 +1,8 @@
-﻿using Imgeneus.Database.Constants;
+﻿using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
-using Imgeneus.World.Game.Player;
-using MvvmHelpers;
 using System;
 
 namespace Imgeneus.World.Game
@@ -21,15 +20,7 @@ namespace Imgeneus.World.Game
 
         public IBuffsManager BuffsManager { get; }
 
-        /// <summary>
-        /// Element used in armor.
-        /// </summary>
-        public Element DefenceElement { get; }
-
-        /// <summary>
-        /// Element used in weapon.
-        /// </summary>
-        public Element AttackElement { get; }
+        public IElementProvider ElementProvider { get; }
 
         /// <summary>
         /// Indicator, that shows if entity is dead or not.

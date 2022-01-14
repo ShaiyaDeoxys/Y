@@ -11,6 +11,7 @@ using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Guild;
@@ -19,6 +20,7 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
@@ -139,13 +141,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_DETAILS);
             packet.Write(new CharacterDetails(character).Serialize());
             client.Send(packet);
-        }
-
-        internal void SendLearnedNewSkill(IWorldClient client, Skill skill)
-        {
-            using var answerPacket = new ImgeneusPacket(PacketType.LEARN_NEW_SKILL);
-            answerPacket.Write(new LearnedSkill(skill).Serialize());
-            client.Send(answerPacket);
         }
 
         internal void SendLearnedSkills(IWorldClient client, Character character)
@@ -1159,7 +1154,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCharacterUsedSkill(IWorldClient client, Character sender, IKillable target, Skill skill, AttackResult attackResult)
+        internal void SendCharacterUsedSkill(IWorldClient client, int senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             PacketType skillType;
             if (target is Character)
@@ -1177,7 +1172,7 @@ namespace Imgeneus.World.Packets
 
             var packet = new ImgeneusPacket(skillType);
             var targetId = target is null ? 0 : target.Id;
-            packet.Write(new SkillRange(sender.Id, targetId, skill, attackResult).Serialize());
+            packet.Write(new SkillRange(senderId, targetId, skill, attackResult).Serialize());
             client.Send(packet);
             packet.Dispose();
         }
@@ -1239,7 +1234,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCharacterUsualAttack(IWorldClient client, IKiller sender, IKillable target, AttackResult attackResult)
+        internal void SendCharacterUsualAttack(IWorldClient client, int senderId, IKillable target, AttackResult attackResult)
         {
             PacketType attackType;
             if (target is Character)
@@ -1255,7 +1250,7 @@ namespace Imgeneus.World.Packets
                 attackType = PacketType.CHARACTER_CHARACTER_AUTO_ATTACK;
             }
             using var packet = new ImgeneusPacket(attackType);
-            packet.Write(new UsualAttack(sender.Id, target.Id, attackResult).Serialize());
+            packet.Write(new UsualAttack(senderId, target.Id, attackResult).Serialize());
             client.Send(packet);
         }
 
@@ -1283,7 +1278,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendSkillCastStarted(IWorldClient client, Character sender, IKillable target, Skill skill)
+        internal void SendSkillCastStarted(IWorldClient client, int senderId, IKillable target, Skill skill)
         {
             PacketType type;
             if (target is Character)
@@ -1294,7 +1289,7 @@ namespace Imgeneus.World.Packets
                 type = PacketType.CHARACTER_SKILL_CASTING;
 
             using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillCasting(sender.Id, target is null ? 0 : target.Id, skill).Serialize());
+            packet.Write(new SkillCasting(senderId, target is null ? 0 : target.Id, skill).Serialize());
             client.Send(packet);
         }
 
@@ -1350,7 +1345,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendUsedRangeSkill(IWorldClient client, Character sender, IKillable target, Skill skill, AttackResult attackResult)
+        internal void SendUsedRangeSkill(IWorldClient client, int senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             PacketType type;
             if (target is Character)
@@ -1361,7 +1356,7 @@ namespace Imgeneus.World.Packets
                 type = PacketType.USE_CHARACTER_RANGE_SKILL;
 
             using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillRange(sender.Id, target.Id, skill, attackResult).Serialize());
+            packet.Write(new SkillRange(senderId, target.Id, skill, attackResult).Serialize());
             client.Send(packet);
         }
 

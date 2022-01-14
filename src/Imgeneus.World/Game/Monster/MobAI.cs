@@ -1,7 +1,9 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
@@ -803,7 +805,7 @@ namespace Imgeneus.World.Game.Monster
                     //if (t.IsDead)
                     //continue;
 
-                    if (!((IKiller)this).AttackSuccessRate(t, skill.TypeAttack, skill))
+                    if (!AttackManager.AttackSuccessRate(t, skill.TypeAttack, skill))
                     {
                         // Send missed skill.
                         OnUsedSkill?.Invoke(this, t, skill, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
@@ -822,7 +824,7 @@ namespace Imgeneus.World.Game.Monster
 
                     try
                     {
-                        ((IKiller)this).PerformSkill(skill, target, t, attackResult, n);
+                        SkillsManager.PerformSkill(skill, target, t, this, attackResult, n);
                     }
                     catch (NotImplementedException)
                     {
@@ -835,7 +837,7 @@ namespace Imgeneus.World.Game.Monster
 
         private void MeleeAttack(IKillable target, Element element, short minAttack, ushort additionalDamage)
         {
-            if (!((IKiller)this).AttackSuccessRate(target, TypeAttack.PhysicalAttack))
+            if (!AttackManager.AttackSuccessRate(target, TypeAttack.PhysicalAttack))
             {
                 // Send missed attack.
                 OnAttack?.Invoke(this, target, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
@@ -843,7 +845,7 @@ namespace Imgeneus.World.Game.Monster
                 return;
             }
 
-            var res = ((IKiller)this).CalculateDamage(target,
+            var res = AttackManager.CalculateDamage(target,
                                                       TypeAttack.PhysicalAttack,
                                                       element,
                                                       minAttack,

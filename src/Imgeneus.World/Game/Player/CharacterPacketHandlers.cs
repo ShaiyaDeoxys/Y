@@ -45,7 +45,7 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleLearnNewSkill(LearnNewSkillPacket learnNewSkillsPacket)
         {
-            LearnNewSkill(learnNewSkillsPacket.SkillId, learnNewSkillsPacket.SkillLevel);
+            //LearnNewSkill(learnNewSkillsPacket.SkillId, learnNewSkillsPacket.SkillLevel);
         }
 
         private void HandleSkillBarPacket(SkillBarPacket skillBarPacket)

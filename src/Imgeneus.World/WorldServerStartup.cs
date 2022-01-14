@@ -6,9 +6,11 @@ using Imgeneus.Logs;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Dyeing;
+using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
@@ -94,8 +96,10 @@ namespace Imgeneus.World
             services.AddScoped<ILevelProvider, LevelProvider>();
             services.AddScoped<ILevelingManager, LevelingManager>();
             services.AddScoped<IHealthManager, HealthManager>();
+            services.AddScoped<IAttackManager, AttackManager>();
             services.AddScoped<ISkillsManager, SkillsManager>();
             services.AddScoped<IBuffsManager, BuffsManager>();
+            services.AddScoped<IElementProvider, ElementProvider>();
             services.AddScoped<IInventoryManager, InventoryManager>();
             services.AddScoped<IStealthManager, StealthManager>();
 

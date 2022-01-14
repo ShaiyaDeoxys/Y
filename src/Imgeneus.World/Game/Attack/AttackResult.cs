@@ -1,4 +1,4 @@
-﻿namespace Imgeneus.World.Game.Player
+﻿namespace Imgeneus.World.Game.Attack
 {
     /// <summary>
     /// Result of any attack/skill use.

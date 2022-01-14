@@ -1,7 +1,8 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Health;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
@@ -11,7 +12,7 @@ using System.Linq;
 
 namespace Imgeneus.World.Game.Buffs
 {
-    public class BuffsManager : IBuffsManager, IDisposable
+    public class BuffsManager : IBuffsManager
     {
         private readonly ILogger<BuffsManager> _logger;
         private readonly IDatabasePreloader _databasePreloader;
@@ -51,6 +52,23 @@ namespace Imgeneus.World.Game.Buffs
         {
             ActiveBuffs.CollectionChanged -= ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged -= PassiveBuffs_CollectionChanged;
+
+            foreach(var buff in ActiveBuffs)
+            {
+                buff.OnReset -= ActiveBuff_OnReset;
+                buff.OnPeriodicalHeal -= Buff_OnPeriodicalHeal;
+                buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
+            }
+
+            foreach (var buff in PassiveBuffs)
+            {
+                buff.OnReset -= ActiveBuff_OnReset;
+                buff.OnPeriodicalHeal -= Buff_OnPeriodicalHeal;
+                buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
+            }
+
+            ActiveBuffs.Clear();
+            PassiveBuffs.Clear();
         }
 
         #endregion
@@ -98,6 +116,9 @@ namespace Imgeneus.World.Game.Buffs
         private void ActiveBuff_OnReset(Buff sender)
         {
             sender.OnReset -= ActiveBuff_OnReset;
+            sender.OnPeriodicalHeal -= Buff_OnPeriodicalHeal;
+            sender.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
+
             ActiveBuffs.Remove(sender);
         }
 
@@ -228,6 +249,8 @@ namespace Imgeneus.World.Game.Buffs
                     ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true);
                     ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true);
                     ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
                 case TypeDetail.SubtractingDebuff:
@@ -241,6 +264,8 @@ namespace Imgeneus.World.Game.Buffs
                     ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false);
                     ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false);
                     ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
                 case TypeDetail.PeriodicalHeal:
@@ -337,6 +362,8 @@ namespace Imgeneus.World.Game.Buffs
                     ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false);
                     ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false);
                     ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
                 case TypeDetail.SubtractingDebuff:
@@ -350,6 +377,8 @@ namespace Imgeneus.World.Game.Buffs
                     ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true);
                     ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true);
                     ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
                 case TypeDetail.PeriodicalHeal:
@@ -406,54 +435,54 @@ namespace Imgeneus.World.Game.Buffs
 
                 case AbilityType.PhysicalAttackRate:
                 case AbilityType.ShootingAttackRate:
-                    /*if (addAbility)
-                        _skillPhysicalHittingChance += abilityValue;
+                    if (addAbility)
+                        _statsManager.ExtraPhysicalHittingChance += abilityValue;
                     else
-                        _skillPhysicalHittingChance -= abilityValue;*/
+                        _statsManager.ExtraPhysicalHittingChance -= abilityValue;
                     return;
 
                 case AbilityType.PhysicalEvationRate:
                 case AbilityType.ShootingEvationRate:
-                    /*if (addAbility)
-                        _skillPhysicalEvasionChance += abilityValue;
+                    if (addAbility)
+                        _statsManager.ExtraPhysicalEvasionChance += abilityValue;
                     else
-                        _skillPhysicalEvasionChance -= abilityValue;*/
+                        _statsManager.ExtraPhysicalEvasionChance -= abilityValue;
                     return;
 
                 case AbilityType.MagicAttackRate:
-                    /*if (addAbility)
-                        _skillMagicHittingChance += abilityValue;
+                    if (addAbility)
+                        _statsManager.ExtraMagicHittingChance += abilityValue;
                     else
-                        _skillMagicHittingChance -= abilityValue;*/
+                        _statsManager.ExtraMagicHittingChance -= abilityValue;
                     return;
 
                 case AbilityType.MagicEvationRate:
-                    /*if (addAbility)
-                        _skillMagicEvasionChance += abilityValue;
+                    if (addAbility)
+                        _statsManager.ExtraMagicEvasionChance += abilityValue;
                     else
-                        _skillMagicEvasionChance -= abilityValue;*/
+                        _statsManager.ExtraMagicEvasionChance -= abilityValue;
                     return;
 
                 case AbilityType.CriticalAttackRate:
-                    /*if (addAbility)
-                        _skillCriticalHittingChance += abilityValue;
+                    if (addAbility)
+                        _statsManager.ExtraCriticalHittingChance += abilityValue;
                     else
-                        _skillCriticalHittingChance -= abilityValue;*/
+                        _statsManager.ExtraCriticalHittingChance -= abilityValue;
                     return;
 
                 case AbilityType.PhysicalAttackPower:
                 case AbilityType.ShootingAttackPower:
-                    /*if (addAbility)
-                        _skillPhysicalAttackPower += abilityValue;
+                    if (addAbility)
+                        _statsManager.ExtraPhysicalAttackPower += abilityValue;
                     else
-                        _skillPhysicalAttackPower -= abilityValue;*/
+                        _statsManager.ExtraPhysicalAttackPower -= abilityValue;
                     return;
 
                 case AbilityType.MagicAttackPower:
-                    /*if (addAbility)
-                        _skillMagicAttackPower += abilityValue;
+                    if (addAbility)
+                        _statsManager.ExtraMagicAttackPower += abilityValue;
                     else
-                        _skillMagicAttackPower -= abilityValue;*/
+                        _statsManager.ExtraMagicAttackPower -= abilityValue;
                     return;
 
                 case AbilityType.Str:

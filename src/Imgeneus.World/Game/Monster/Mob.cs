@@ -1,8 +1,9 @@
 ﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Skills;
@@ -18,6 +19,7 @@ namespace Imgeneus.World.Game.Monster
         private readonly ILogger<Mob> _logger;
         private readonly DbMob _dbMob;
 
+        public IAttackManager AttackManager { get; private set; }
         public ISkillsManager SkillsManager { get; private set; }
 
         public Mob(ushort mobId,
@@ -29,8 +31,10 @@ namespace Imgeneus.World.Game.Monster
                    IStatsManager statsManager,
                    IHealthManager healthManager,
                    ILevelProvider levelProvider,
+                   IAttackManager attackManager,
                    ISkillsManager skillsManager,
-                   IBuffsManager buffsManager) : base(databasePreloader, statsManager, healthManager, levelProvider, buffsManager)
+                   IBuffsManager buffsManager,
+                   IElementProvider elementProvider) : base(databasePreloader, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -40,12 +44,19 @@ namespace Imgeneus.World.Game.Monster
             AI = _dbMob.AI;
             ShouldRebirth = shouldRebirth;
 
-            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, 0);
+            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc);
             LevelProvider.Level = _dbMob.Level;
             HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
             BuffsManager.Init(Id);
+
+            AttackManager = attackManager;
+            AttackManager.Init(Id);
+
             SkillsManager = skillsManager;
-            SkillsManager.Init(Id, 0);
+            SkillsManager.Init(Id, new Skill[0]);
+
+            ElementProvider.AttackElement = _dbMob.Element;
+            ElementProvider.DefenceElement = _dbMob.Element;
 
             MoveArea = moveArea;
             Map = map;
@@ -99,24 +110,6 @@ namespace Imgeneus.World.Game.Monster
 
         #endregion
 
-        #region Element
-
-        /// <inheritdoc />
-        public override Element DefenceElement
-        {
-            get
-            {
-                if (RemoveElement)
-                    return Element.None;
-                return _dbMob.Element;
-            }
-        }
-
-        /// <inheritdoc />
-        public override Element AttackElement => _dbMob.Element;
-
-        #endregion
-
         #region Untouchable 
 
         ///  <inheritdoc/>
@@ -134,7 +127,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelProvider, SkillsManager, BuffsManager);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelProvider, AttackManager, SkillsManager, BuffsManager, ElementProvider);
         }
 
         public void Dispose()

@@ -10,6 +10,7 @@ using Imgeneus.Network.Server;
 using System.Collections.Generic;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Skills;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -54,6 +55,8 @@ namespace Imgeneus.World.Game.Player
             foreach (var item in inventoryItems.Where(i => i.ExpirationTime != null))
                 SendItemExpiration(item);
         }
+
+        private void SendAdditionalStats() => _packetsHelper.SendAdditionalStats(Client, this);
 
         private void SendItemExpiration(Item item) => _packetsHelper.SendItemExpiration(Client, item);
 

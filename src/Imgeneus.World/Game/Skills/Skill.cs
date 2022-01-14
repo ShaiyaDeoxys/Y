@@ -2,7 +2,7 @@
 using Imgeneus.Database.Entities;
 using System.Collections.Generic;
 
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Skills
 {
     public class Skill
     {

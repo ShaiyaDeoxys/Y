@@ -31,6 +31,8 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Elements;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -53,6 +55,7 @@ namespace Imgeneus.World.Game.Player
         public IInventoryManager InventoryManager { get; private set; }
         public IStealthManager StealthManager { get; private set; }
         public ILevelingManager LevelingManager { get; private set; }
+        public IAttackManager AttackManager { get; private set; }
         public ISkillsManager SkillsManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
@@ -75,9 +78,11 @@ namespace Imgeneus.World.Game.Player
                          ILevelingManager levelingManager,
                          IInventoryManager inventoryManager,
                          IStealthManager stealthManager,
+                         IAttackManager attackManager,
                          ISkillsManager skillsManager,
                          IBuffsManager buffsManager,
-                         IGameSession gameSession) : base(databasePreloader, statsManager, healthManager, levelProvider, buffsManager)
+                         IElementProvider elementProvider,
+                         IGameSession gameSession) : base(databasePreloader, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -95,12 +100,17 @@ namespace Imgeneus.World.Game.Player
             InventoryManager = inventoryManager;
             StealthManager = stealthManager;
             LevelingManager = levelingManager;
+            AttackManager = attackManager;
             SkillsManager = skillsManager;
             GameSession = gameSession;
 
+            StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
+            BuffsManager.OnBuffAdded += OnBuffAdded;
+            BuffsManager.OnBuffRemoved += OnBuffRemoved;
+            AttackManager.OnStartAttack += SendAttackStart;
+
             _packetsHelper = new PacketsHelper();
 
-            _castTimer.Elapsed += CastTimer_Elapsed;
             _summonVehicleTimer.Elapsed += SummonVehicleTimer_Elapsed;
 
             OnDead += Character_OnDead;
@@ -129,7 +139,11 @@ namespace Imgeneus.World.Game.Player
             if (Party != null)
                 SetParty(null);
 
-            _castTimer.Elapsed -= CastTimer_Elapsed;
+            StatsManager.OnAdditionalStatsUpdate -= SendAdditionalStats;
+            BuffsManager.OnBuffAdded -= OnBuffAdded;
+            BuffsManager.OnBuffRemoved -= OnBuffRemoved;
+            AttackManager.OnStartAttack -= SendAttackStart;
+
             _summonVehicleTimer.Elapsed -= SummonVehicleTimer_Elapsed;
 
             OnDead -= Character_OnDead;
@@ -169,6 +183,10 @@ namespace Imgeneus.World.Game.Player
 
             ClearConnection();
         }
+
+        private void OnBuffAdded(int senderId, Buff buff) => SendAddBuff(buff);
+
+        private void OnBuffRemoved(int senderId, Buff buff) => SendRemoveBuff(buff);
 
         #region Run mode
 
@@ -341,9 +359,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, skillsManager, buffsManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -375,9 +393,6 @@ namespace Imgeneus.World.Game.Player
                 GuildId = dbCharacter.GuildId
             };
 
-            foreach (var skill in dbCharacter.Skills.Select(s => new Skill(s.Skill, s.Number, 0)))
-                character.Skills.Add(skill.Number, skill);
-
             //var activeBuffs = dbCharacter.ActiveBuffs.Select(b => Buff.FromDbCharacterActiveBuff(b)).ToList();
             //character.ActiveBuffs.AddRange(activeBuffs);
 
@@ -408,14 +423,14 @@ namespace Imgeneus.World.Game.Player
         ///  TODO: maybe it's better to have db procedure for this?
         ///  For now, we will clear old values, when character is loaded.
         /// </summary>
-        public static void ClearOutdatedValues(IDatabase database, DbCharacter dbCharacter)
+        public static void ClearOutdatedValues(IDatabase database, int characterId)
         {
             // Clear outdated buffs
-            var outdatedBuffs = dbCharacter.ActiveBuffs.Where(b => b.ResetTime < DateTime.UtcNow.AddSeconds(30));
+            var outdatedBuffs = database.ActiveBuffs.Where(b => b.CharacterId == characterId && b.ResetTime < DateTime.UtcNow.AddSeconds(30));
             database.ActiveBuffs.RemoveRange(outdatedBuffs);
 
             // Clear expired items
-            var expiredItems = dbCharacter.Items.Where(i => i.ExpirationTime < DateTime.UtcNow.AddSeconds(30));
+            var expiredItems = database.CharacterItems.Where(i => i.CharacterId == characterId && i.ExpirationTime < DateTime.UtcNow.AddSeconds(30));
             database.CharacterItems.RemoveRange(expiredItems);
 
             database.SaveChanges();

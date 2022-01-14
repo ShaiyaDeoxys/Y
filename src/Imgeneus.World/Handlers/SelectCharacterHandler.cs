@@ -53,7 +53,7 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendInventoryItems(client, character.InventoryManager.InventoryItems.Values); // WARNING: some servers expanded invetory to 6 bags(os is 5 bags), if you send item in 6 bag, client will crash!
             foreach (var item in character.InventoryManager.InventoryItems.Values.Where(i => i.ExpirationTime != null))
                 _packetFactory.SendItemExpiration(client, item);
-            //SendLearnedSkills();
+            _packetFactory.SendLearnedSkills(client, character);
             //SendOpenQuests();
             //SendFinishedQuests();
             //SendActiveBuffs();

@@ -1,12 +1,14 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Packets;
 using System;
 using System.Collections.Concurrent;
@@ -204,10 +206,11 @@ namespace Imgeneus.World.Game.Zone
             character.InventoryManager.OnEquipmentChanged += Character_OnEquipmentChanged;
             character.OnPartyChanged += Character_OnPartyChanged;
             character.OnAttackOrMoveChanged += Character_OnAttackOrMoveChanged;
-            character.OnUsedSkill += Character_OnUsedSkill;
-            character.OnAttack += Character_OnAttack;
+            character.SkillsManager.OnUsedSkill += Character_OnUsedSkill;
+            character.SkillsManager.OnUsedRangeSkill += Character_OnUsedRangeSkill;
+            character.AttackManager.OnAttack += Character_OnAttack;
             character.OnDead += Character_OnDead;
-            character.OnSkillCastStarted += Character_OnSkillCastStarted;
+            character.SkillsManager.OnSkillCastStarted += Character_OnSkillCastStarted;
             character.OnUsedItem += Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged += Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged += Character_OnMaxSPChanged;
@@ -217,7 +220,6 @@ namespace Imgeneus.World.Game.Zone
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
             character.OnShapeChange += Character_OnShapeChange;
             character.StealthManager.OnStealthChange += Character_OnStealthChange;
-            character.OnUsedRangeSkill += Character_OnUsedRangeSkill;
             character.OnRebirthed += Character_OnRebirthed;
             character.OnAppearanceChanged += Character_OnAppearanceChanged;
             character.OnStartSummonVehicle += Character_OnStartSummonVehicle;
@@ -236,10 +238,11 @@ namespace Imgeneus.World.Game.Zone
             character.InventoryManager.OnEquipmentChanged -= Character_OnEquipmentChanged;
             character.OnPartyChanged -= Character_OnPartyChanged;
             character.OnAttackOrMoveChanged -= Character_OnAttackOrMoveChanged;
-            character.OnUsedSkill -= Character_OnUsedSkill;
-            character.OnAttack -= Character_OnAttack;
+            character.SkillsManager.OnUsedSkill -= Character_OnUsedSkill;
+            character.SkillsManager.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
+            character.AttackManager.OnAttack -= Character_OnAttack;
             character.OnDead -= Character_OnDead;
-            character.OnSkillCastStarted -= Character_OnSkillCastStarted;
+            character.SkillsManager.OnSkillCastStarted -= Character_OnSkillCastStarted;
             character.OnUsedItem -= Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged -= Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged -= Character_OnMaxSPChanged;
@@ -249,7 +252,6 @@ namespace Imgeneus.World.Game.Zone
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
             character.OnShapeChange -= Character_OnShapeChange;
             character.StealthManager.OnStealthChange -= Character_OnStealthChange;
-            character.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
             character.OnRebirthed -= Character_OnRebirthed;
             character.OnAppearanceChanged -= Character_OnAppearanceChanged;
             character.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
@@ -321,11 +323,11 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player used skill.
         /// </summary>
-        private void Character_OnUsedSkill(IKiller sender, IKillable target, Skill skill, AttackResult attackResult)
+        private void Character_OnUsedSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendCharacterUsedSkill(player.Client, (Character)sender, target, skill, attackResult);
+                _packetsHelper.SendCharacterUsedSkill(player.Client, senderId, target, skill, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
                     _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);
@@ -335,11 +337,11 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player used auto attack.
         /// </summary>
-        private void Character_OnAttack(IKiller sender, IKillable target, AttackResult attackResult)
+        private void Character_OnAttack(int senderId, IKillable target, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendCharacterUsualAttack(player.Client, sender, target, attackResult);
+                _packetsHelper.SendCharacterUsualAttack(player.Client, senderId, target, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
                     _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);
@@ -358,10 +360,10 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player starts casting.
         /// </summary>
-        private void Character_OnSkillCastStarted(Character sender, IKillable target, Skill skill)
+        private void Character_OnSkillCastStarted(int senderId, IKillable target, Skill skill)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendSkillCastStarted(player.Client, sender, target, skill);
+                _packetsHelper.SendSkillCastStarted(player.Client, senderId, target, skill);
         }
 
         /// <summary>
@@ -425,11 +427,11 @@ namespace Imgeneus.World.Game.Zone
                 Map.PacketFactory.SendShapeUpdate(player.Client, sender);
         }
 
-        private void Character_OnUsedRangeSkill(IKiller sender, IKillable target, Skill skill, AttackResult attackResult)
+        private void Character_OnUsedRangeSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendUsedRangeSkill(player.Client, (Character)sender, target, skill, attackResult);
+                _packetsHelper.SendUsedRangeSkill(player.Client, senderId, target, skill, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
                     _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);

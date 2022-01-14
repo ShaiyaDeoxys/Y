@@ -52,10 +52,10 @@ namespace Imgeneus.World.Serialization
             Luck = character.StatsManager.ExtraLuc;
             Defense = character.Defense;
             Resistance = character.Resistance;
-            MinAttack = character.MinAttack;
-            MaxAttack = character.MaxAttack;
-            MinMagicAttack = character.MinMagicAttack;
-            MaxMagicAttack = character.MaxMagicAttack;
+            MinAttack = character.StatsManager.MinAttack;
+            MaxAttack = character.StatsManager.MaxAttack;
+            MinMagicAttack = character.StatsManager.MinMagicAttack;
+            MaxMagicAttack = character.StatsManager.MaxMagicAttack;
         }
     }
 }

@@ -26,9 +26,6 @@ namespace Imgeneus.World.Handlers
         {
             var items = await _inventoryManager.MoveItem(packet.CurrentBag, packet.CurrentSlot, packet.DestinationBag, packet.DestinationSlot);
             _packetFactory.SendMoveItem(client, items.sourceItem, items.destinationItem);
-
-            if (packet.CurrentBag == 0 || packet.DestinationBag == 0)
-                _packetFactory.SendAdditionalStats(client, _gameWorld.Players[_gameSession.CharId]);
         }
      }
 }

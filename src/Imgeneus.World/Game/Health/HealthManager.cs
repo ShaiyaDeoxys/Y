@@ -22,6 +22,10 @@ namespace Imgeneus.World.Game.Health
             _levelProvider = levelProvider;
             _characterConfiguration = characterConfiguration;
 
+            _statsManager.OnRecUpdate += StatsManager_OnRecUpdate;
+            _statsManager.OnDexUpdate += StatsManager_OnDexUpdate;
+            _statsManager.OnWisUpdate += StatsManager_OnWisUpdate;
+
 #if DEBUG
             _logger.LogDebug("HealthManager {hashcode} created", GetHashCode());
 #endif
@@ -33,6 +37,8 @@ namespace Imgeneus.World.Game.Health
             _logger.LogDebug("HealthManager {hashcode} collected by GC", GetHashCode());
         }
 #endif
+
+        #region Init & Clear
 
         public void Init(int id, int currentHP, int currentSP, int currentMP, int? constHP, int? constSP, int? constMP, CharacterProfession? profession)
         {
@@ -52,6 +58,16 @@ namespace Imgeneus.World.Game.Health
             ExtraSP = 0;
             ExtraMP = 0;
         }
+
+
+        public void Dispose()
+        {
+            _statsManager.OnRecUpdate -= StatsManager_OnRecUpdate;
+            _statsManager.OnDexUpdate -= StatsManager_OnDexUpdate;
+            _statsManager.OnWisUpdate -= StatsManager_OnWisUpdate;
+        }
+
+        #endregion
 
         #region Max
         public int MaxHP => ConstHP + ExtraHP + ReactionExtraHP;
@@ -251,18 +267,24 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Extra HP given by Reaction formula
         /// </summary>
-        private int ReactionExtraHP => _statsManager.Reaction * 5;
+        private int ReactionExtraHP => _statsManager.TotalRec * 5;
 
         /// <summary>
         /// Extra MP given by Wisdom formula
         /// </summary>
-        private int WisdomExtraMP => _statsManager.Wisdom * 5;
+        private int WisdomExtraMP => _statsManager.TotalWis * 5;
 
         /// <summary>
         /// Extra SP given by Dexterity formula
         /// </summary>
-        private int DexterityExtraSP => _statsManager.Dexterity * 5;
+        private int DexterityExtraSP => _statsManager.TotalDex * 5;
 
+        private void StatsManager_OnRecUpdate() => OnMaxHPChanged?.Invoke(_ownerId, MaxHP);
+
+        private void StatsManager_OnWisUpdate() => OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
+
+        private void StatsManager_OnDexUpdate() => OnMaxSPChanged?.Invoke(_ownerId, MaxSP);
+        
         #endregion
 
         #region Events

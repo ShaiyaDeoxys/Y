@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Stats;
 using System;
 using System.Linq;
@@ -241,45 +242,6 @@ namespace Imgeneus.World.Game.Player
             InvokeAttackOrMoveChanged();
         }
 
-        private int NextAttackTime
-        {
-            get
-            {
-                switch (AttackSpeed)
-                {
-                    case AttackSpeed.ExteremelySlow:
-                        return 4000;
-
-                    case AttackSpeed.VerySlow:
-                        return 3750;
-
-                    case AttackSpeed.Slow:
-                        return 3500;
-
-                    case AttackSpeed.ABitSlow:
-                        return 3250;
-
-                    case AttackSpeed.Normal:
-                        return 3000;
-
-                    case AttackSpeed.ABitFast:
-                        return 2750;
-
-                    case AttackSpeed.Fast:
-                        return 2500;
-
-                    case AttackSpeed.VeryFast:
-                        return 2250;
-
-                    case AttackSpeed.ExteremelyFast:
-                        return 2000;
-
-                    default:
-                        return 2000;
-                }
-            }
-        }
-
         /// <summary>
         /// How fast character can make new hit.
         /// </summary>
@@ -339,128 +301,10 @@ namespace Imgeneus.World.Game.Player
 
         #endregion
 
-        #region Min/Max Attack & Magic attack
-
-        /// <summary>
-        /// Calculates character attack, based on character profession.
-        /// </summary>
-        private int GetCharacterAttack()
-        {
-            int characterAttack;
-            switch (Class)
-            {
-                case CharacterProfession.Fighter:
-                case CharacterProfession.Defender:
-                case CharacterProfession.Ranger:
-                    characterAttack = (int)(Math.Floor(1.3 * StatsManager.TotalStr) + Math.Floor(0.25 * StatsManager.TotalDex));
-                    break;
-
-                case CharacterProfession.Mage:
-                case CharacterProfession.Priest:
-                    characterAttack = (int)(Math.Floor(1.3 * StatsManager.TotalInt) + Math.Floor(0.2 * StatsManager.TotalWis));
-                    break;
-
-                case CharacterProfession.Archer:
-                    characterAttack = (int)(StatsManager.TotalStr + Math.Floor(0.3 * StatsManager.TotalLuc) + Math.Floor(0.2 * StatsManager.TotalDex));
-                    break;
-
-                default:
-                    throw new NotImplementedException("Not implemented job.");
-            }
-
-            return characterAttack;
-        }
-
-        /// <summary>
-        /// Min physical attack.
-        /// </summary>
-        public int MinAttack
-        {
-            get
-            {
-                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MinAttack : 0;
-                int characterAttack = 0;
-
-                if (Class == CharacterProfession.Fighter ||
-                    Class == CharacterProfession.Defender ||
-                    Class == CharacterProfession.Ranger ||
-                    Class == CharacterProfession.Archer)
-                {
-                    characterAttack = GetCharacterAttack();
-                }
-
-                return weaponAttack + characterAttack + _skillPhysicalAttackPower;
-            }
-        }
-
-        /// <summary>
-        /// Max physical attack.
-        /// </summary>
-        public int MaxAttack
-        {
-            get
-            {
-                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MaxAttack : 0;
-                int characterAttack = 0;
-
-                if (Class == CharacterProfession.Fighter ||
-                    Class == CharacterProfession.Defender ||
-                    Class == CharacterProfession.Ranger ||
-                    Class == CharacterProfession.Archer)
-                {
-                    characterAttack = GetCharacterAttack();
-                }
-
-                return weaponAttack + characterAttack + _skillPhysicalAttackPower;
-            }
-        }
-
-        /// <summary>
-        /// Min magic attack.
-        /// </summary>
-        public int MinMagicAttack
-        {
-            get
-            {
-                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MinAttack : 0;
-                int characterAttack = 0;
-
-                if (Class == CharacterProfession.Mage ||
-                    Class == CharacterProfession.Priest)
-                {
-                    characterAttack = GetCharacterAttack();
-                }
-
-                return weaponAttack + characterAttack + _skillMagicAttackPower;
-            }
-        }
-
-        /// <summary>
-        /// Max magic attack.
-        /// </summary>
-        public int MaxMagicAttack
-        {
-            get
-            {
-                var weaponAttack = InventoryManager.Weapon != null ? InventoryManager.Weapon.MaxAttack : 0;
-                int characterAttack = 0;
-
-                if (Class == CharacterProfession.Mage ||
-                    Class == CharacterProfession.Priest)
-                {
-                    characterAttack = GetCharacterAttack();
-                }
-
-                return weaponAttack + characterAttack + _skillMagicAttackPower;
-            }
-        }
-
-        #endregion
-
         #region Elements
 
         /// <inheritdoc />
-        public override Element DefenceElement
+        /*public override Element DefenceElement
         {
             get
             {
@@ -475,10 +319,10 @@ namespace Imgeneus.World.Game.Player
 
                 return InventoryManager.Armor.Element;
             }
-        }
+        }*/
 
         /// <inheritdoc />
-        public override Element AttackElement
+        /*public override Element AttackElement
         {
             get
             {
@@ -490,7 +334,7 @@ namespace Imgeneus.World.Game.Player
 
                 return InventoryManager.Weapon.Element;
             }
-        }
+        }*/
 
         #endregion
 

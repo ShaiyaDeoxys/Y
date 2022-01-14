@@ -1,6 +1,8 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
@@ -24,14 +26,16 @@ namespace Imgeneus.World.Game
         public IHealthManager HealthManager { get; private set; }
         public ILevelProvider LevelProvider { get; private set; }
         public IBuffsManager BuffsManager { get; private set; }
+        public IElementProvider ElementProvider { get; private set; }
 
-        public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager)
+        public BaseKillable(IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider)
         {
             _databasePreloader = databasePreloader;
             StatsManager = statsManager;
             HealthManager = healthManager;
             LevelProvider = levelProvider;
             BuffsManager = buffsManager;
+            ElementProvider = elementProvider;
         }
 
         private int _id;
@@ -83,12 +87,6 @@ namespace Imgeneus.World.Game
         #endregion
 
         #region Element
-
-        /// <inheritdoc />
-        public abstract Element DefenceElement { get; }
-
-        /// <inheritdoc />
-        public abstract Element AttackElement { get; }
 
         /// <summary>
         /// Indicator, that shows if defence element should be removed.
@@ -244,102 +242,6 @@ namespace Imgeneus.World.Game
         #endregion
 
         #region Hitting chances
-
-        /// <summary>
-        /// Possibility to hit enemy.
-        /// </summary>
-        public double PhysicalHittingChance
-        {
-            get
-            {
-                var calculated = 1.0 * StatsManager.TotalDex / 2 + _skillPhysicalHittingChance;
-                return calculated > 0 ? calculated : 1;
-            }
-        }
-
-        /// <summary>
-        /// Possibility to escape hit.
-        /// </summary>
-        public double PhysicalEvasionChance
-        {
-            get
-            {
-                var calculated = 1.0 * StatsManager.TotalDex / 2 + _skillPhysicalEvasionChance;
-                return calculated > 0 ? calculated : 1;
-            }
-        }
-
-        /// <summary>
-        /// Possibility to make critical hit.
-        /// </summary>
-        public double CriticalHittingChance
-        {
-            get
-            {
-                // each 5 luck is 1% of critical.
-                var calculated = 0.2 * StatsManager.TotalLuc + _skillCriticalHittingChance;
-                return calculated > 0 ? calculated : 1;
-            }
-        }
-
-        /// <summary>
-        /// Possibility to hit enemy.
-        /// </summary>
-        public double MagicHittingChance
-        {
-            get
-            {
-                var calculated = 1.0 * StatsManager.TotalWis / 2 + _skillMagicHittingChance;
-                return calculated > 0 ? calculated : 1;
-            }
-        }
-
-        /// <summary>
-        /// Possibility to escape hit.
-        /// </summary>
-        public double MagicEvasionChance
-        {
-            get
-            {
-                var calculated = 1.0 * StatsManager.TotalWis / 2 + _skillMagicEvasionChance;
-                return calculated > 0 ? calculated : 1;
-            }
-        }
-
-        /// <summary>
-        /// Possibility to hit enemy gained from skills.
-        /// </summary>
-        protected double _skillPhysicalHittingChance;
-
-        /// <summary>
-        /// Possibility to escape hit gained from skills.
-        /// </summary>
-        protected double _skillPhysicalEvasionChance;
-
-        /// <summary>
-        /// Possibility to make critical hit.
-        /// </summary>
-        protected double _skillCriticalHittingChance;
-
-        /// <summary>
-        /// Possibility to hit enemy gained from skills.
-        /// </summary>
-        protected double _skillMagicHittingChance;
-
-        /// <summary>
-        /// Possibility to escape hit gained from skills.
-        /// </summary>
-        protected double _skillMagicEvasionChance;
-
-        /// <summary>
-        /// Additional attack power.
-        /// </summary>
-        protected int _skillPhysicalAttackPower;
-
-        /// <summary>
-        /// Additional attack power.
-        /// </summary>
-        protected int _skillMagicAttackPower;
 
         /// <summary>
         /// Weapon speed calculated from passive skill. Key is weapon, value is speed modificator.

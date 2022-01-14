@@ -1,4 +1,5 @@
-﻿using Imgeneus.Network.Packets.Game;
+﻿using Imgeneus.Database.Entities;
+using System;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Stats
@@ -8,7 +9,7 @@ namespace Imgeneus.World.Game.Stats
         /// <summary>
         /// Inits constant stats.
         /// </summary>
-        void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints);
+        void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null);
 
         /// <summary>
         /// Str value, needed for attack calculation.
@@ -111,6 +112,96 @@ namespace Imgeneus.World.Game.Stats
         int ExtraResistance { get; set; }
 
         /// <summary>
+        /// Possibility to hit enemy.
+        /// </summary>
+        double PhysicalHittingChance { get; }
+
+        /// <summary>
+        /// Possibility to escape hit.
+        /// </summary>
+        double PhysicalEvasionChance { get; }
+
+        /// <summary>
+        /// Possibility to make critical hit.
+        /// </summary>
+        double CriticalHittingChance { get; }
+
+        /// <summary>
+        /// Possibility to hit enemy.
+        /// </summary>
+        double MagicHittingChance { get; }
+
+        /// <summary>
+        /// Possibility to escape hit.
+        /// </summary>
+        double MagicEvasionChance { get; }
+
+        /// <summary>
+        /// Possibility to hit enemy gained from skills.
+        /// </summary>
+        int ExtraPhysicalHittingChance { get; set; }
+
+        /// <summary>
+        /// Possibility to escape hit gained from skills.
+        /// </summary>
+        int ExtraPhysicalEvasionChance { get; set; }
+
+        /// <summary>
+        /// Possibility to make critical hit.
+        /// </summary>
+        int ExtraCriticalHittingChance { get; set; }
+
+        /// <summary>
+        /// Possibility to hit enemy gained from skills.
+        /// </summary>
+        int ExtraMagicHittingChance { get; set; }
+
+        /// <summary>
+        /// Possibility to escape hit gained from skills.
+        /// </summary>
+        int ExtraMagicEvasionChance { get; set; }
+
+        /// <summary>
+        /// Additional attack power.
+        /// </summary>
+        int ExtraPhysicalAttackPower { get; set; }
+
+        /// <summary>
+        /// Additional attack power.
+        /// </summary>
+        int ExtraMagicAttackPower { get; set; }
+
+        /// <summary>
+        /// Min attack from weapon.
+        /// </summary>
+        int WeaponMinAttack { get; set; }
+
+        /// <summary>
+        /// Max attack from weapon.
+        /// </summary>
+        int WeaponMaxAttack { get; set; }
+
+        /// <summary>
+        /// Min physical attack.
+        /// </summary>
+        int MinAttack { get; }
+
+        /// <summary>
+        /// Max physical attack.
+        /// </summary>
+        int MaxAttack { get; }
+
+        /// <summary>
+        /// Min magic attack.
+        /// </summary>
+        int MinMagicAttack { get; }
+
+        /// <summary>
+        /// Max magic attack.
+        /// </summary>
+        int MaxMagicAttack { get; }
+
+        /// <summary>
         /// Absorbs damage regardless of REC value.
         /// </summary>
         ushort Absorption { get; set; }
@@ -124,5 +215,31 @@ namespace Imgeneus.World.Game.Stats
         /// Tries to set const stats.
         /// </summary>
         Task<bool> TrySetStats(ushort? str = null, ushort? dex = null, ushort? rec = null, ushort? intl = null, ushort? wis = null, ushort? luc = null, ushort? statPoints = null);
+
+        /// <summary>
+        /// Initiates <see cref="OnAdditionalStatsUpdate"/>
+        /// </summary>
+        void RaiseAdditionalStatsUpdate();
+
+        /// <summary>
+        /// Triggers additional stats update send to player. Trigger it via <see cref="RaiseAdditionalStatsUpdate"/>
+        /// </summary>
+        event Action OnAdditionalStatsUpdate;
+
+        /// <summary>
+        /// Event, that is fired, when rec constant or extra stat changes, needed for max hp calculation.
+        /// </summary>
+        event Action OnRecUpdate;
+
+        /// <summary>
+        /// Event, that is fired, when dex constant stat or extra changes, needed for max sp calculation.
+        /// </summary>
+        event Action OnDexUpdate;
+
+        /// <summary>
+        /// Event, that is fired, when wis constant stat or extra changes, needed for max mp calculation.
+        /// </summary>
+        event Action OnWisUpdate;
+
     }
 }

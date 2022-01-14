@@ -6,7 +6,7 @@ namespace Imgeneus.World.Game.Health
     /// <summary>
     /// Manages HP, MP, SP.
     /// </summary>
-    public interface IHealthManager
+    public interface IHealthManager : IDisposable
     {
         public void Init(int ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null, CharacterProfession? profession = null);
 
