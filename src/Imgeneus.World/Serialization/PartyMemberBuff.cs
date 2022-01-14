@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Buffs;
 
 namespace Imgeneus.World.Serialization
 {
@@ -15,7 +15,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(2)]
         public int CountDownInSeconds;
 
-        public PartyMemberBuff(ActiveBuff buff)
+        public PartyMemberBuff(Buff buff)
         {
             SkillId = buff.SkillId;
             SkillLevel = buff.SkillLevel;

@@ -79,7 +79,7 @@ namespace Imgeneus.World.Serialization
             Z = character.PosZ;
             Name = character.NameAsByteArray;
 
-            foreach (var buff in character.ActiveBuffs.ToList())
+            foreach (var buff in character.BuffsManager.ActiveBuffs.ToList())
             {
                 Buffs.Add(new PartyMemberBuff(buff));
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imgeneus.World.Game.Buffs;
+using System;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -7,21 +8,19 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Send notification to client, when new buff added.
         /// </summary>
-        protected override void BuffAdded(ActiveBuff buff)
+        protected void BuffAdded(Buff buff)
         {
-            if (Client != null)
-                SendAddBuff(buff);
-            base.BuffAdded(buff);
+            //if (Client != null)
+            //    SendAddBuff(buff);
         }
 
         /// <summary>
         /// Send notification to client, when buff was removed.
         /// </summary>
-        protected override void BuffRemoved(ActiveBuff buff)
+        protected void BuffRemoved(Buff buff)
         {
-            if (Client != null)
-                SendRemoveBuff(buff);
-            base.BuffRemoved(buff);
+            //if (Client != null)
+            //    SendRemoveBuff(buff);
         }
     }
 }

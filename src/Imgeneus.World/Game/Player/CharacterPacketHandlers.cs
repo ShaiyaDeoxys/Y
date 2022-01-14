@@ -385,7 +385,7 @@ namespace Imgeneus.World.Game.Player
                 HealthManager.ExtraMP += item.ComposedMP;
                 HealthManager.ExtraSP += item.ComposedSP;
 
-                SendAdditionalStats();
+                //SendAdditionalStats();
             }
 
             _taskQueue.Enqueue(ActionType.UPDATE_CRAFT_NAME, Id, item.Bag, item.Slot, item.GetCraftName());

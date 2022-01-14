@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player;
@@ -17,6 +18,8 @@ namespace Imgeneus.World.Game
         public IHealthManager HealthManager { get; }
 
         public ILevelProvider LevelProvider { get; }
+
+        public IBuffsManager BuffsManager { get; }
 
         /// <summary>
         /// Element used in armor.
@@ -37,21 +40,6 @@ namespace Imgeneus.World.Game
         /// Event, that is fired, when entity is killed.
         /// </summary>
         public event Action<IKillable, IKiller> OnDead;
-
-        /// <summary>
-        /// Collection of current applied buffs.
-        /// </summary>
-        public ObservableRangeCollection<ActiveBuff> ActiveBuffs { get; }
-
-        /// <summary>
-        /// Updates collection of active buffs.
-        /// </summary>
-        public ActiveBuff AddActiveBuff(Skill skill, IKiller creator);
-
-        /// <summary>
-        /// Collection of current applied passive buffs.
-        /// </summary>
-        public ObservableRangeCollection<ActiveBuff> PassiveBuffs { get; }
 
         /// <summary>
         /// Current x position.

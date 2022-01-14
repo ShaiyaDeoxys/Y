@@ -11,6 +11,7 @@ using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
@@ -154,21 +155,21 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendActiveBuffs(IWorldClient client, ICollection<ActiveBuff> activeBuffs)
+        internal void SendActiveBuffs(IWorldClient client, ICollection<Buff> activeBuffs)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_ACTIVE_BUFFS);
             packet.Write(new CharacterActiveBuffs(activeBuffs).Serialize());
             client.Send(packet);
         }
 
-        internal void SendAddBuff(IWorldClient client, ActiveBuff buff)
+        internal void SendAddBuff(IWorldClient client, Buff buff)
         {
             using var packet = new ImgeneusPacket(PacketType.BUFF_ADD);
             packet.Write(new SerializedActiveBuff(buff).Serialize());
             client.Send(packet);
         }
 
-        internal void SendRemoveBuff(IWorldClient client, ActiveBuff buff)
+        internal void SendRemoveBuff(IWorldClient client, Buff buff)
         {
             using var packet = new ImgeneusPacket(PacketType.BUFF_REMOVE);
             packet.Write(buff.Id);
@@ -660,10 +661,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendTargetAddBuff(IWorldClient client, IKillable target, ActiveBuff buff)
+        internal void SendTargetAddBuff(IWorldClient client, int targetId, Buff buff, bool isMob)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_BUFF_ADD);
-            if (target is Mob)
+            if (isMob)
             {
                 packet.WriteByte(2);
             }
@@ -671,17 +672,17 @@ namespace Imgeneus.World.Packets
             {
                 packet.WriteByte(1);
             }
-            packet.Write(target.Id);
+            packet.Write(targetId);
             packet.Write(buff.SkillId);
             packet.Write(buff.SkillLevel);
 
             client.Send(packet);
         }
 
-        internal void SendTargetRemoveBuff(IWorldClient client, IKillable target, ActiveBuff buff)
+        internal void SendTargetRemoveBuff(IWorldClient client, int targetId, Buff buff, bool isMob)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_BUFF_REMOVE);
-            if (target is Mob)
+            if (isMob)
             {
                 packet.WriteByte(2);
             }
@@ -689,7 +690,7 @@ namespace Imgeneus.World.Packets
             {
                 packet.WriteByte(1);
             }
-            packet.Write(target.Id);
+            packet.Write(targetId);
             packet.Write(buff.SkillId);
             packet.Write(buff.SkillLevel);
 

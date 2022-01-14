@@ -77,8 +77,8 @@ namespace Imgeneus.World.Game.Player
                 MoveSpeed += gem.MoveSpeed;
                 SetAttackSpeedModifier(gem.AttackSpeed);
 
-                if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.MaxAttack != 0)
-                    SendAdditionalStats();
+                //if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.MaxAttack != 0)
+                    //SendAdditionalStats();
 
                 if (gem.AttackSpeed != 0 || gem.MoveSpeed != 0)
                     InvokeAttackOrMoveChanged();
@@ -327,8 +327,8 @@ namespace Imgeneus.World.Game.Player
                         MoveSpeed -= gem.MoveSpeed;
                         SetAttackSpeedModifier(gem.AttackSpeed * (-1));
 
-                        if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.PlusAttack != 0)
-                            SendAdditionalStats();
+                        //if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.PlusAttack != 0)
+                            //SendAdditionalStats();
 
                         if (gem.AttackSpeed != 0 || gem.MoveSpeed != 0)
                             InvokeAttackOrMoveChanged();

@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Monster;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,29 +21,29 @@ namespace Imgeneus.World.Game.Player
             {
                 if (_target != null)
                 {
-                    _target.OnBuffAdded -= Target_OnBuffAdded;
-                    _target.OnBuffRemoved -= Target_OnBuffRemoved;
+                    _target.BuffsManager.OnBuffAdded -= Target_OnBuffAdded;
+                    _target.BuffsManager.OnBuffRemoved -= Target_OnBuffRemoved;
                 }
 
                 _target = value;
 
                 if (_target != null)
                 {
-                    _target.OnBuffAdded += Target_OnBuffAdded;
-                    _target.OnBuffRemoved += Target_OnBuffRemoved;
+                    _target.BuffsManager.OnBuffAdded += Target_OnBuffAdded;
+                    _target.BuffsManager.OnBuffRemoved += Target_OnBuffRemoved;
                     TargetChanged(Target);
                 }
             }
         }
 
-        private void Target_OnBuffAdded(IKillable sender, ActiveBuff buff)
+        private void Target_OnBuffAdded(int senderId, Buff buff)
         {
-            SendTargetAddBuff(sender, buff);
+            SendTargetAddBuff(senderId, buff, Target is Mob);
         }
 
-        private void Target_OnBuffRemoved(IKillable sender, ActiveBuff buff)
+        private void Target_OnBuffRemoved(int senderId, Buff buff)
         {
-            SendTargetRemoveBuff(sender, buff);
+            SendTargetRemoveBuff(senderId, buff, Target is Mob);
         }
 
         #endregion
@@ -125,7 +126,7 @@ namespace Imgeneus.World.Game.Player
         {
             if (StealthManager.IsStealth && !StealthManager.IsAdminStealth)
             {
-                var stealthBuff = ActiveBuffs.FirstOrDefault(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
+                var stealthBuff = BuffsManager.ActiveBuffs.FirstOrDefault(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
                 stealthBuff.CancelBuff();
             }
 
@@ -326,7 +327,7 @@ namespace Imgeneus.World.Game.Player
                 return false;
             }
 
-            if (skillNumber == AUTO_ATTACK_NUMBER && ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
+            if (skillNumber == AUTO_ATTACK_NUMBER && BuffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
             {
                 SendAutoAttackCanNotAttack(target);
                 return false;
@@ -393,14 +394,14 @@ namespace Imgeneus.World.Game.Player
             }
 
             if ((skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack) &&
-                ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
+                BuffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
             {
                 SendSkillAttackCanNotAttack(target, skill);
                 return false;
             }
 
             if (skill.TypeAttack == TypeAttack.MagicAttack &&
-                ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Darkness))
+                BuffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Darkness))
             {
                 SendSkillAttackCanNotAttack(target, skill);
                 return false;

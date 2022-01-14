@@ -1,11 +1,12 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Player;
 using System;
 using System.Timers;
 
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Buffs
 {
-    public class ActiveBuff
+    public class Buff
     {
         private static uint Counter = 1;
 
@@ -32,7 +33,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public IKiller BuffCreator { get; }
 
-        public ActiveBuff(IKiller maker, Skill skill)
+        public Buff(IKiller maker, Skill skill)
         {
             lock (SyncObj)
             {
@@ -147,7 +148,7 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Event, that is fired, when it's time to remove buff.
         /// </summary>
-        public event Action<ActiveBuff> OnReset;
+        public event Action<Buff> OnReset;
 
         /// <summary>
         /// Removes buff from character.
@@ -176,7 +177,7 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Event, that is fired, when it's time to make periodical heal.
         /// </summary>
-        public event Action<ActiveBuff, AttackResult> OnPeriodicalHeal;
+        public event Action<Buff, AttackResult> OnPeriodicalHeal;
 
         public ushort TimeHealHP;
 
@@ -209,7 +210,7 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Event, that is fired, when it's time to make periodical debuff.
         /// </summary>
-        public event Action<ActiveBuff, AttackResult> OnPeriodicalDebuff;
+        public event Action<Buff, AttackResult> OnPeriodicalDebuff;
 
         public ushort TimeHPDamage;
 
@@ -231,9 +232,9 @@ namespace Imgeneus.World.Game.Player
 
         #endregion
 
-        public static ActiveBuff FromDbCharacterActiveBuff(DbCharacterActiveBuff buff)
+        public static Buff FromDbCharacterActiveBuff(DbCharacterActiveBuff buff)
         {
-            return new ActiveBuff(null, new Skill(buff.Skill, 0, 0))
+            return new Buff(null, new Skill(buff.Skill, 0, 0))
             {
                 ResetTime = buff.ResetTime
             };

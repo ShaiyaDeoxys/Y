@@ -20,6 +20,7 @@ using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Buffs;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -48,6 +49,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IGameSession _gameSession;
         private readonly IStealthManager _stealthManager;
         private readonly ISkillsManager _skillsManager;
+        private readonly IBuffsManager _buffsManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -71,7 +73,8 @@ namespace Imgeneus.World.Game.Player
                                 IGuildManager guildManager,
                                 IGameSession gameSession,
                                 IStealthManager stealthManager,
-                                ISkillsManager skillsManager)
+                                ISkillsManager skillsManager,
+                                IBuffsManager buffsManager)
         {
             _logger = logger;
             _database = database;
@@ -96,6 +99,7 @@ namespace Imgeneus.World.Game.Player
             _gameSession = gameSession;
             _stealthManager = stealthManager;
             _skillsManager = skillsManager;
+            _buffsManager = buffsManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -136,6 +140,8 @@ namespace Imgeneus.World.Game.Player
 
             _skillsManager.Init(dbCharacter.Id, dbCharacter.SkillPoint);
 
+            _buffsManager.Init(dbCharacter.Id);
+
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
             var player = Character.FromDbCharacter(dbCharacter,
@@ -159,6 +165,7 @@ namespace Imgeneus.World.Game.Player
                                         _guildManager,
                                         _stealthManager,
                                         _skillsManager,
+                                        _buffsManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.

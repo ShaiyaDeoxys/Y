@@ -119,7 +119,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public AttackResult UsedStealthSkill(Skill skill, IKillable target)
         {
-            target.AddActiveBuff(skill, this);
+            target.BuffsManager.AddActiveBuff(skill, this);
             return new AttackResult(AttackSuccess.Normal, new Damage());
         }
 
@@ -128,7 +128,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public AttackResult UsedDispelSkill(Skill skill, IKillable target)
         {
-            var debuffs = target.ActiveBuffs.Where(b => b.IsDebuff).ToList();
+            var debuffs = target.BuffsManager.ActiveBuffs.Where(b => b.IsDebuff).ToList();
             foreach (var debuff in debuffs)
             {
                 debuff.CancelBuff();
@@ -162,7 +162,7 @@ namespace Imgeneus.World.Game.Player
 
             SendResetSkills();
 
-            foreach (var passive in PassiveBuffs.ToList())
+            foreach (var passive in BuffsManager.PassiveBuffs.ToList())
                 passive.CancelBuff();
 
             Skills.Clear();

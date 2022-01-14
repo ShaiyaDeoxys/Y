@@ -27,7 +27,7 @@ namespace Imgeneus.World.Game.Player
             if (IsTeleporting)
                 return;
 
-            if (ActiveBuffs.Any(b => b.StateType == StateType.Immobilize || b.StateType == StateType.Sleep || b.StateType == StateType.Stun))
+            if (BuffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Immobilize || b.StateType == StateType.Sleep || b.StateType == StateType.Stun))
             {
                 OnPositionChanged?.Invoke(this);
                 return;

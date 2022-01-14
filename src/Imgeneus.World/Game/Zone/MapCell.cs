@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
@@ -213,7 +214,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxMPChanged += Character_OnMaxMPChanged;
             //character.OnMax_HP_MP_SP_Changed += Character_OnMax_HP_MP_SP_Changed;
             character.HealthManager.OnRecover += Character_OnRecover;
-            character.OnSkillKeep += Character_OnSkillKeep;
+            character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
             character.OnShapeChange += Character_OnShapeChange;
             character.StealthManager.OnStealthChange += Character_OnStealthChange;
             character.OnUsedRangeSkill += Character_OnUsedRangeSkill;
@@ -245,7 +246,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxMPChanged -= Character_OnMaxMPChanged;
             //character.OnMax_HP_MP_SP_Changed -= Character_OnMax_HP_MP_SP_Changed;
             character.HealthManager.OnRecover -= Character_OnRecover;
-            character.OnSkillKeep -= Character_OnSkillKeep;
+            character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
             character.OnShapeChange -= Character_OnShapeChange;
             character.StealthManager.OnStealthChange -= Character_OnStealthChange;
             character.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
@@ -405,10 +406,10 @@ namespace Imgeneus.World.Game.Zone
                 _packetsHelper.SendMax_HP_MP_SP(player.Client, (Character)sender);
         }
 
-        private void Character_OnSkillKeep(IKillable sender, ActiveBuff buff, AttackResult result)
+        private void Character_OnSkillKeep(int senderId, Buff buff, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendSkillKeep(player.Client, sender.Id, buff.SkillId, buff.SkillLevel, result);
+                _packetsHelper.SendSkillKeep(player.Client, senderId, buff.SkillId, buff.SkillLevel, result);
         }
 
         private void Character_OnShapeChange(Character sender)

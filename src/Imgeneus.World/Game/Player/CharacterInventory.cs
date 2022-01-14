@@ -363,7 +363,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void UseCureDebuffPotion(StateType debuffType)
         {
-            var debuffs = ActiveBuffs.Where(b => b.StateType == debuffType).ToList();
+            var debuffs = BuffsManager.ActiveBuffs.Where(b => b.StateType == debuffType).ToList();
             foreach (var d in debuffs)
             {
                 d.CancelBuff();

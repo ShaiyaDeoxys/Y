@@ -324,7 +324,7 @@ namespace Imgeneus.World.Game.Player
             }
             get
             {
-                if (ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Immobilize))
+                if (BuffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Immobilize))
                     return (int)MoveSpeedEnum.CanNotMove;
 
                 if (StealthManager.IsStealth)
@@ -512,7 +512,7 @@ namespace Imgeneus.World.Game.Player
 
             _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatsManager.StatPoint);
             _packetsHelper.SendResetStats(Client, this);
-            SendAdditionalStats();
+            //SendAdditionalStats();
         }
 
         #endregion

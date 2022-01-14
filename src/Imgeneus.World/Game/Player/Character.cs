@@ -30,6 +30,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Buffs;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -75,7 +76,8 @@ namespace Imgeneus.World.Game.Player
                          IInventoryManager inventoryManager,
                          IStealthManager stealthManager,
                          ISkillsManager skillsManager,
-                         IGameSession gameSession) : base(databasePreloader, statsManager, healthManager, levelProvider)
+                         IBuffsManager buffsManager,
+                         IGameSession gameSession) : base(databasePreloader, statsManager, healthManager, levelProvider, buffsManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -122,7 +124,7 @@ namespace Imgeneus.World.Game.Player
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             if (Party != null)
                 SetParty(null);
@@ -148,7 +150,7 @@ namespace Imgeneus.World.Game.Player
 
             // Save current buffs to database.
             _taskQueue.Enqueue(ActionType.REMOVE_BUFF_ALL, Id);
-            foreach (var buff in ActiveBuffs)
+            foreach (var buff in BuffsManager.ActiveBuffs)
             {
                 _taskQueue.Enqueue(ActionType.SAVE_BUFF, Id, buff.SkillId, buff.SkillLevel, buff.ResetTime);
             }
@@ -166,7 +168,6 @@ namespace Imgeneus.World.Game.Player
             Map = null;
 
             ClearConnection();
-            base.Dispose();
         }
 
         #region Run mode
@@ -179,7 +180,7 @@ namespace Imgeneus.World.Game.Player
         {
             get
             {
-                if (ActiveBuffs.Any(b => b.StateType == StateType.Immobilize || b.StateType == StateType.Sleep || b.StateType == StateType.Stun))
+                if (BuffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Immobilize || b.StateType == StateType.Sleep || b.StateType == StateType.Stun))
                 {
                     return 193; // Can not move motion.
                 }
@@ -340,9 +341,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, ISkillsManager skillsManager, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, skillsManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, skillsManager, buffsManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -377,8 +378,8 @@ namespace Imgeneus.World.Game.Player
             foreach (var skill in dbCharacter.Skills.Select(s => new Skill(s.Skill, s.Number, 0)))
                 character.Skills.Add(skill.Number, skill);
 
-            var activeBuffs = dbCharacter.ActiveBuffs.Select(b => ActiveBuff.FromDbCharacterActiveBuff(b)).ToList();
-            character.ActiveBuffs.AddRange(activeBuffs);
+            //var activeBuffs = dbCharacter.ActiveBuffs.Select(b => Buff.FromDbCharacterActiveBuff(b)).ToList();
+            //character.ActiveBuffs.AddRange(activeBuffs);
 
             var quests = dbCharacter.Quests.Select(q => new Quest(databasePreloader, q)).ToList();
             character.Quests.AddRange(quests);

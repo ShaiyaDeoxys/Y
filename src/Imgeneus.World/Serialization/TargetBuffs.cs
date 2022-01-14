@@ -1,8 +1,8 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Monster;
-using Imgeneus.World.Game.Player;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,7 +32,7 @@ namespace Imgeneus.World.Serialization
             else
                 TargetType = 1;
 
-            foreach (var buff in target.ActiveBuffs.ToList())
+            foreach (var buff in target.BuffsManager.ActiveBuffs.ToList())
             {
                 Buffs.Add(new TargetBuff(buff));
             }
@@ -50,7 +50,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(2)]
         public int CountDownInSeconds;
 
-        public TargetBuff(ActiveBuff buff)
+        public TargetBuff(Buff buff)
         {
             SkillId = buff.SkillId;
             SkillLevel = buff.SkillLevel;

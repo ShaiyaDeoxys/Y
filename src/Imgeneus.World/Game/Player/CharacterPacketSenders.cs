@@ -9,6 +9,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Network.Server;
 using System.Collections.Generic;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Buffs;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -23,13 +24,13 @@ namespace Imgeneus.World.Game.Player
             SendGuildList();
             SendGuildMembersOnline();
             SendDetails();
-            SendAdditionalStats();
-            SendCurrentHitpoints();
+            //SendAdditionalStats();
+            //SendCurrentHitpoints();
             SendInventoryItems();
             SendLearnedSkills();
             SendOpenQuests();
             SendFinishedQuests();
-            SendActiveBuffs();
+            //SendActiveBuffs();
             SendMoveAndAttackSpeed();
             SendFriends();
             SendBlessAmount();
@@ -44,8 +45,6 @@ namespace Imgeneus.World.Game.Player
         private void SendWorldDay() => _packetsHelper.SendWorldDay(Client);
 
         private void SendDetails() => _packetsHelper.SendDetails(Client, this);
-
-        protected override void SendCurrentHitpoints() => _packetsHelper.SendCurrentHitpoints(Client, this);
 
         private void SendInventoryItems()
         {
@@ -82,16 +81,11 @@ namespace Imgeneus.World.Game.Player
 
         private void SendQuestCountUpdate(ushort questId, byte index, byte count) => _packetsHelper.SendQuestCountUpdate(Client, questId, index, count);
 
-        private void SendActiveBuffs() => _packetsHelper.SendActiveBuffs(Client, ActiveBuffs);
+        //private void SendActiveBuffs() => _packetsHelper.SendActiveBuffs(Client, ActiveBuffs);
 
-        private void SendAddBuff(ActiveBuff buff) => _packetsHelper.SendAddBuff(Client, buff);
+        private void SendAddBuff(Buff buff) => _packetsHelper.SendAddBuff(Client, buff);
 
-        private void SendRemoveBuff(ActiveBuff buff) => _packetsHelper.SendRemoveBuff(Client, buff);
-
-        protected override void SendAdditionalStats()
-        {
-            if (Client != null) _packetsHelper.SendAdditionalStats(Client, this);
-        }
+        private void SendRemoveBuff(Buff buff) => _packetsHelper.SendRemoveBuff(Client, buff);
 
         private void SendAutoStats() => _packetsHelper.SendAutoStats(Client, this);
 
@@ -122,16 +116,16 @@ namespace Imgeneus.World.Game.Player
 
         private void SendCooldownNotOver(IKillable target, Skill skill) => _packetsHelper.SendCooldownNotOver(Client, this, target, skill);
 
-        protected override void SendMoveAndAttackSpeed()
+        protected void SendMoveAndAttackSpeed()
         {
             if (Client != null) _packetsHelper.SendMoveAndAttackSpeed(Client, this);
         }
 
         private void SendRunMode() => _packetsHelper.SendRunMode(Client, this);
 
-        private void SendTargetAddBuff(IKillable target, ActiveBuff buff) => _packetsHelper.SendTargetAddBuff(Client, target, buff);
+        private void SendTargetAddBuff(int targetId, Buff buff, bool isMob) => _packetsHelper.SendTargetAddBuff(Client, targetId, buff, isMob);
 
-        private void SendTargetRemoveBuff(IKillable target, ActiveBuff buff) => _packetsHelper.SendTargetRemoveBuff(Client, target, buff);
+        private void SendTargetRemoveBuff(int targetId, Buff buff, bool isMob) => _packetsHelper.SendTargetRemoveBuff(Client, targetId, buff, isMob);
 
         public void SendAddItemToInventory(Item item)
         {

@@ -70,7 +70,7 @@ namespace Imgeneus.World.Game
                 case TypeDetail.ElementalAttack:
                 case TypeDetail.ElementalProtection:
                 case TypeDetail.Untouchable:
-                    target.AddActiveBuff(skill, this);
+                    target.BuffsManager.AddActiveBuff(skill, this);
 
                     if (initialTarget == target || this == target)
                         OnUsedSkillInvoke(initialTarget, skill, attackResult);
@@ -112,7 +112,7 @@ namespace Imgeneus.World.Game
 
                 case TypeDetail.PassiveDefence:
                 case TypeDetail.WeaponMastery:
-                    target.AddActiveBuff(skill, this);
+                    target.BuffsManager.AddActiveBuff(skill, this);
                     break;
 
                 default:
