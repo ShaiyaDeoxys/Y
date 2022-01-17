@@ -8,15 +8,5 @@ namespace Imgeneus.World.Game
     public interface IStatsHolder
     {
         public IStatsManager StatsManager { get; }
-
-        /// <summary>
-        /// Physical defense.
-        /// </summary>
-        int Defense { get; }
-
-        /// <summary>
-        /// Magic resistance.
-        /// </summary>
-        int Resistance { get; }
     }
 }

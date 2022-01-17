@@ -199,32 +199,6 @@ namespace Imgeneus.World.Game.Player
  
         #endregion
 
-        #region Defense & Resistance
-
-        /// <summary>
-        /// Physical defense.
-        /// </summary>
-        public override int Defense
-        {
-            get
-            {
-                return StatsManager.TotalRec + StatsManager.ExtraDefense;
-            }
-        }
-
-        /// <summary>
-        /// Magic resistance.
-        /// </summary>
-        public override int Resistance
-        {
-            get
-            {
-                return StatsManager.TotalWis + StatsManager.ExtraResistance;
-            }
-        }
-
-        #endregion
-
         #region Attack & Move speed
 
         /// <summary>

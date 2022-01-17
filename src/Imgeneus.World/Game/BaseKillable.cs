@@ -237,14 +237,6 @@ namespace Imgeneus.World.Game
 
         #endregion
 
-        #region Defense & Resistance
-
-        public abstract int Defense { get; }
-
-        public abstract int Resistance { get; }
-
-        #endregion
-
         #region Hitting chances
 
         /// <summary>

@@ -50,8 +50,8 @@ namespace Imgeneus.World.Serialization
             Wisdom = character.StatsManager.ExtraWis;
             Dexterity = character.StatsManager.ExtraDex;
             Luck = character.StatsManager.ExtraLuc;
-            Defense = character.Defense;
-            Resistance = character.Resistance;
+            Defense = character.StatsManager.TotalDefense;
+            Resistance = character.StatsManager.TotalResistance;
             MinAttack = character.StatsManager.MinAttack;
             MaxAttack = character.StatsManager.MaxAttack;
             MinMagicAttack = character.StatsManager.MinMagicAttack;

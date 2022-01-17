@@ -336,7 +336,7 @@ namespace Imgeneus.World.Game.Attack
                     {
                         damage += skill.DamageHP;
                     }
-                    damage -= target.Defense;
+                    damage -= target.StatsManager.TotalDefense;
                     if (damage < 0)
                         damage = 1;
                     damage = damage * 1.5;
@@ -348,7 +348,7 @@ namespace Imgeneus.World.Game.Attack
                     {
                         damage += skill.DamageHP;
                     }
-                    damage -= target.Defense;
+                    damage -= target.StatsManager.TotalDefense;
                     if (damage < 0)
                         damage = 1;
                     // TODO: multiply by range to the target.
@@ -361,7 +361,7 @@ namespace Imgeneus.World.Game.Attack
                     {
                         damage += skill.DamageHP;
                     }
-                    damage -= target.Resistance;
+                    damage -= target.StatsManager.TotalResistance;
                     if (damage < 0)
                         damage = 1;
                     damage = damage * 1.5;

@@ -30,7 +30,7 @@ namespace Imgeneus.World.Game.Stats
         }
 #endif
 
-        public void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null)
+        public void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0)
         {
             _ownerId = ownerId;
 
@@ -43,6 +43,8 @@ namespace Imgeneus.World.Game.Stats
             Wisdom = wis;
             Luck = luc;
             StatPoint = statPoints;
+            _def = def;
+            _res = res;
 
             _extraStr = 0;
             _extraDex = 0;
@@ -83,6 +85,10 @@ namespace Imgeneus.World.Game.Stats
 
         private ushort _wis;
         public ushort Wisdom { get => _wis; private set { _wis = value; OnWisUpdate?.Invoke(); } }
+
+        private ushort _def;
+
+        private ushort _res;
         #endregion
 
         #region Extras
@@ -123,6 +129,8 @@ namespace Imgeneus.World.Game.Stats
         public int TotalInt => Intelligence + ExtraInt;
         public int TotalWis => Wisdom + ExtraWis;
         public int TotalLuc => Luck + ExtraLuc;
+        public int TotalDefense => _def + TotalRec + ExtraDefense;
+        public int TotalResistance => _res + TotalWis + ExtraResistance;
         #endregion
 
         #region Hitting chances

@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Stats
         /// <summary>
         /// Inits constant stats.
         /// </summary>
-        void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null);
+        void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0);
 
         /// <summary>
         /// Str value, needed for attack calculation.
@@ -40,6 +40,16 @@ namespace Imgeneus.World.Game.Stats
         /// Luck value, needed for critical damage calculation.
         /// </summary>
         int TotalLuc { get; }
+
+        /// <summary>
+        /// Physical defense.
+        /// </summary>
+        int TotalDefense { get; }
+
+        /// <summary>
+        /// Magic resistance.
+        /// </summary>
+        int TotalResistance { get; }
 
         /// <summary>
         /// Constant str.

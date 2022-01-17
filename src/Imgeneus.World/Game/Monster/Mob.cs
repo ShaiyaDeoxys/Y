@@ -46,7 +46,7 @@ namespace Imgeneus.World.Game.Monster
             AI = _dbMob.AI;
             ShouldRebirth = shouldRebirth;
 
-            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc);
+            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, def: _dbMob.Defense, res: _dbMob.Magic);
             LevelProvider.Level = _dbMob.Level;
             HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
             BuffsManager.Init(Id);
@@ -103,16 +103,6 @@ namespace Imgeneus.World.Game.Monster
         /// During GBR how many points added to guild.
         /// </summary>
         public short GuildPoints => _dbMob.MoneyMax;
-
-        #region Defense & Resistance
-
-        /// <inheritdoc />
-        public override int Defense => _dbMob.Defense;
-
-        /// <inheritdoc />
-        public override int Resistance => _dbMob.Magic;
-
-        #endregion
 
         #region Untouchable 
 
