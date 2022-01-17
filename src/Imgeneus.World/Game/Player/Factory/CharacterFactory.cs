@@ -121,9 +121,9 @@ namespace Imgeneus.World.Game.Player
 
             var dbCharacter = await _database.Characters
                                              .AsNoTracking()
-                                             .Include(c => c.Skills).ThenInclude(cs => cs.Skill)
+                                             .Include(c => c.Skills)
                                              .Include(c => c.Items).ThenInclude(ci => ci.Item)
-                                             .Include(c => c.ActiveBuffs).ThenInclude(cb => cb.Skill)
+                                             .Include(c => c.ActiveBuffs)
                                              //.Include(c => c.Friends).ThenInclude(cf => cf.Friend)
                                              //.Include(c => c.Guild).ThenInclude(g => g.Members)
                                              .Include(c => c.Quests)
@@ -153,9 +153,9 @@ namespace Imgeneus.World.Game.Player
 
             _inventoryManager.Init(dbCharacter.Id, dbCharacter.Items, dbCharacter.Gold);
 
-            _skillsManager.Init(dbCharacter.Id, dbCharacter.Skills.Select(s => new Skill(s.Skill, s.Number, 0)), dbCharacter.SkillPoint);
+            _skillsManager.Init(dbCharacter.Id, dbCharacter.Skills.Select(s => new Skill(_databasePreloader.SkillsById[s.SkillId], s.Number, 0)), dbCharacter.SkillPoint);
 
-            _buffsManager.Init(dbCharacter.Id);
+            _buffsManager.Init(dbCharacter.Id, dbCharacter.ActiveBuffs);
 
             _attackManager.Init(dbCharacter.Id);
 

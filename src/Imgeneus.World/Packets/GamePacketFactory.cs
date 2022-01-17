@@ -22,6 +22,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Buffs;
 
 namespace Imgeneus.World.Packets
 {
@@ -204,6 +205,13 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILLS);
             packet.Write(new CharacterSkills(character).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendActiveBuffs(IWorldClient client, ICollection<Buff> activeBuffs)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ACTIVE_BUFFS);
+            packet.Write(new CharacterActiveBuffs(activeBuffs).Serialize());
             client.Send(packet);
         }
         #endregion

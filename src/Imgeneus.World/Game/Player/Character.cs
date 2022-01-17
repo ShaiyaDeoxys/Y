@@ -164,13 +164,6 @@ namespace Imgeneus.World.Game.Player
             // Notify guild members, that player is offline.
             NotifyGuildMembersOffline();
 
-            // Save current buffs to database.
-            _taskQueue.Enqueue(ActionType.REMOVE_BUFF_ALL, Id);
-            foreach (var buff in BuffsManager.ActiveBuffs)
-            {
-                _taskQueue.Enqueue(ActionType.SAVE_BUFF, Id, buff.SkillId, buff.SkillLevel, buff.ResetTime);
-            }
-
             // Save current quests state to database.
             foreach (var quest in Quests.Where(q => q.SaveUpdateToDatabase))
             {
@@ -393,9 +386,6 @@ namespace Imgeneus.World.Game.Player
                 Points = dbCharacter.User.Points,
                 GuildId = dbCharacter.GuildId
             };
-
-            //var activeBuffs = dbCharacter.ActiveBuffs.Select(b => Buff.FromDbCharacterActiveBuff(b)).ToList();
-            //character.ActiveBuffs.AddRange(activeBuffs);
 
             var quests = dbCharacter.Quests.Select(q => new Quest(databasePreloader, q)).ToList();
             character.Quests.AddRange(quests);

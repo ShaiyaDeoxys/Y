@@ -20,6 +20,8 @@ namespace Imgeneus.World.Game.Buffs
 
         public int CountDownInSeconds { get => (int)ResetTime.Subtract(DateTime.UtcNow).TotalSeconds; }
 
+        public int SkillUniqueId => _skill.Id;
+
         public ushort SkillId => _skill.SkillId;
 
         public byte SkillLevel => _skill.SkillLevel;
@@ -234,9 +236,9 @@ namespace Imgeneus.World.Game.Buffs
 
         #endregion
 
-        public static Buff FromDbCharacterActiveBuff(DbCharacterActiveBuff buff)
+        public static Buff FromDbCharacterActiveBuff(DbCharacterActiveBuff buff, DbSkill dbSkill)
         {
-            return new Buff(null, new Skill(buff.Skill, 0, 0))
+            return new Buff(null, new Skill(dbSkill, 0, 0))
             {
                 ResetTime = buff.ResetTime
             };

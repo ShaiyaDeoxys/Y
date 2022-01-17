@@ -2,10 +2,12 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
+using MvvmHelpers;
 using System.Collections.Generic;
 
 namespace Imgeneus.World.Packets
@@ -37,6 +39,7 @@ namespace Imgeneus.World.Packets
         void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc);
         void SendLearnedNewSkill(IWorldClient client, bool ok, Skill skill);
         void SendLearnedSkills(IWorldClient client, Character character);
+        void SendActiveBuffs(IWorldClient client, ICollection<Buff> activeBuffs);
         #endregion
 
         #region Inventory

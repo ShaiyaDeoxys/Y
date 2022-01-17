@@ -151,13 +151,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendActiveBuffs(IWorldClient client, ICollection<Buff> activeBuffs)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ACTIVE_BUFFS);
-            packet.Write(new CharacterActiveBuffs(activeBuffs).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendAddBuff(IWorldClient client, Buff buff)
         {
             using var packet = new ImgeneusPacket(PacketType.BUFF_ADD);

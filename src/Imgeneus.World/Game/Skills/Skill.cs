@@ -12,6 +12,7 @@ namespace Imgeneus.World.Game.Skills
             CooldownInSeconds = cooldown;
 
             // DB values will be stored.
+            Id = dbSkill.Id;
             SkillId = dbSkill.SkillId;
             SkillLevel = dbSkill.SkillLevel;
             Type = dbSkill.TypeDetail;
@@ -53,6 +54,11 @@ namespace Imgeneus.World.Game.Skills
             MultiAttack = dbSkill.MultiAttack;
             ShouldClearAfterDeath = dbSkill.FixRange == ClearAfterDeath.Clear;
         }
+
+        /// <summary>
+        /// Unique id.
+        /// </summary>
+        public int Id;
 
         /// <summary>
         /// Skill id.

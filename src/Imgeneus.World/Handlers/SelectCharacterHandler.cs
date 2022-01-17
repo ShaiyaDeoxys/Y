@@ -56,7 +56,7 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendLearnedSkills(client, character);
             //SendOpenQuests();
             //SendFinishedQuests();
-            //SendActiveBuffs();
+            _packetFactory.SendActiveBuffs(client, character.BuffsManager.ActiveBuffs);
             //SendMoveAndAttackSpeed();
             //SendFriends();
             //SendBlessAmount();

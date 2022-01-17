@@ -1,4 +1,6 @@
-﻿using Imgeneus.Database.Constants;
+﻿using Imgeneus.Database;
+using Imgeneus.Database.Constants;
+using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Health;
@@ -7,22 +9,26 @@ using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Buffs
 {
     public class BuffsManager : IBuffsManager
     {
         private readonly ILogger<BuffsManager> _logger;
+        private readonly IDatabase _database;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager)
         {
             _logger = logger;
+            _database = database;
             _databasePreloader = databasePreloader;
             _statsManager = statsManager;
             _healthManager = healthManager;
@@ -41,23 +47,52 @@ namespace Imgeneus.World.Game.Buffs
         }
 #endif
 
-        #region Init & Dispose
+        #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(int ownerId, IEnumerable<DbCharacterActiveBuff> initBuffs = null)
         {
             _ownerId = ownerId;
+
+            if (initBuffs != null)
+            {
+                var buffs = new List<Buff>();
+                foreach (var b in initBuffs)
+                    buffs.Add(Buff.FromDbCharacterActiveBuff(b, _databasePreloader.SkillsById[b.SkillId]));
+
+                ActiveBuffs.AddRange(buffs);
+            }
+        }
+
+        public async Task Clear()
+        {
+            var oldBuffs = _database.ActiveBuffs.Where(b => b.CharacterId == _ownerId);
+            _database.ActiveBuffs.RemoveRange(oldBuffs);
+
+            foreach (var b in ActiveBuffs)
+            {
+                var dbBuff = new DbCharacterActiveBuff()
+                {
+                    CharacterId = _ownerId,
+                    SkillId = b.SkillUniqueId,
+                    ResetTime = b.ResetTime
+                };
+                _database.ActiveBuffs.Add(dbBuff);
+            }
+
+            await _database.SaveChangesAsync();
+
+            // Cancel buff after saving it to db, as buffs are not shared between sessions.
+            foreach (var buff in ActiveBuffs.ToList())
+                buff.CancelBuff();
+
+            foreach (var buff in PassiveBuffs.ToList())
+                buff.CancelBuff();
         }
 
         public void Dispose()
         {
             ActiveBuffs.CollectionChanged -= ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged -= PassiveBuffs_CollectionChanged;
-
-            foreach(var buff in ActiveBuffs.ToList())
-                buff.CancelBuff();
-
-            foreach (var buff in PassiveBuffs.ToList())
-                buff.CancelBuff();
         }
 
         #endregion
@@ -79,7 +114,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-               foreach (Buff newBuff in e.NewItems)
+                foreach (Buff newBuff in e.NewItems)
                 {
                     newBuff.OnReset += ActiveBuff_OnReset;
                     ApplyBuffSkill(newBuff);

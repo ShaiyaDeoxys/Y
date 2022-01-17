@@ -1,16 +1,19 @@
-﻿using Imgeneus.World.Game.Attack;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
 using MvvmHelpers;
 using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Buffs
 {
-    public interface IBuffsManager : IDisposable
+    public interface IBuffsManager : IDisposable, ISessionedService
     {
         /// <summary>
         /// Inits buffs from database.
         /// </summary>
-        void Init(int ownerId);
+        void Init(int ownerId, IEnumerable<DbCharacterActiveBuff> initBuffs = null);
 
         #region Active buffs
 

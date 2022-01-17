@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Network.Client;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Server.Crypto;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
@@ -49,6 +50,7 @@ namespace Imgeneus.World
 
             tasks.Add(x.GetService<IInventoryManager>().Clear());
             tasks.Add(x.GetService<ISkillsManager>().Clear());
+            tasks.Add(x.GetService<IBuffsManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
