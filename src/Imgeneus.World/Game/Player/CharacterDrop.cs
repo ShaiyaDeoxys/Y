@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Monster;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using System.Collections.Generic;
 

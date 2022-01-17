@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Player;
 
 namespace Imgeneus.World.Game.Linking
 {

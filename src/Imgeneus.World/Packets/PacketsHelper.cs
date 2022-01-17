@@ -16,6 +16,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;

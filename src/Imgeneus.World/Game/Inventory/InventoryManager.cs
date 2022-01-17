@@ -2,7 +2,6 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Health;
-using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;

@@ -6,8 +6,9 @@ using Imgeneus.World.Game.Dyeing;
 using System.Collections.Generic;
 using System.Text;
 using System.Timers;
+using Imgeneus.World.Game.Player;
 
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Inventory
 {
     public class Item : IDisposable
     {
@@ -953,12 +954,12 @@ namespace Imgeneus.World.Game.Player
         /// <returns>true, if item already has such gem</returns>
         public bool ContainsGem(byte typeId)
         {
-            return (Gem1 != null && Gem1.TypeId == typeId) ||
-                   (Gem2 != null && Gem2.TypeId == typeId) ||
-                   (Gem3 != null && Gem3.TypeId == typeId) ||
-                   (Gem4 != null && Gem4.TypeId == typeId) ||
-                   (Gem5 != null && Gem5.TypeId == typeId) ||
-                   (Gem6 != null && Gem6.TypeId == typeId);
+            return Gem1 != null && Gem1.TypeId == typeId ||
+                   Gem2 != null && Gem2.TypeId == typeId ||
+                   Gem3 != null && Gem3.TypeId == typeId ||
+                   Gem4 != null && Gem4.TypeId == typeId ||
+                   Gem5 != null && Gem5.TypeId == typeId ||
+                   Gem6 != null && Gem6.TypeId == typeId;
         }
 
         public bool IsCloakSlot

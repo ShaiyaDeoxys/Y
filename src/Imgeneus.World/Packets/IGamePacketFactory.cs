@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
 using System.Collections.Generic;

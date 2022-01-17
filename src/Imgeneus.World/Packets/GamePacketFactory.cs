@@ -21,6 +21,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.World.Game.Health;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Inventory;
 
 namespace Imgeneus.World.Packets
 {

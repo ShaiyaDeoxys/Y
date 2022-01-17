@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using System.Collections.Generic;
 using System.Threading.Tasks;

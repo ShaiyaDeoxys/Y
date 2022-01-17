@@ -1,4 +1,4 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

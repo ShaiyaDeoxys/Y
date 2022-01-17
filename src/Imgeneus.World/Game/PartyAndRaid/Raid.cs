@@ -2,6 +2,7 @@
 using Imgeneus.Network.Data;
 using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Serialization;
 using System;

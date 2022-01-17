@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using Imgeneus.DatabaseBackgroundService.Handlers;
+using Imgeneus.World.Game.Inventory;
 
 namespace Imgeneus.World.Game.Player
 {

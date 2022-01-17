@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Skills;
 using Microsoft.Extensions.Logging;

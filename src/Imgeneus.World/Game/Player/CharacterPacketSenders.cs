@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Inventory;
 
 namespace Imgeneus.World.Game.Player
 {

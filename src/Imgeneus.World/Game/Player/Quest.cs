@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Inventory;
 using System;
 using System.Collections;
 using System.Collections.Generic;
