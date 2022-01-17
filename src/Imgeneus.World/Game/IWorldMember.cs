@@ -1,4 +1,6 @@
-﻿namespace Imgeneus.World.Game
+﻿using Imgeneus.World.Game.Country;
+
+namespace Imgeneus.World.Game
 {
     /// <summary>
     /// The interface describes the game world member properties.
@@ -9,5 +11,7 @@
         /// Unique id inside of a game world.
         /// </summary>
         public int Id { get; }
+
+        public ICountryProvider CountryProvider { get; }
     }
 }

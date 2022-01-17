@@ -3,6 +3,7 @@ using Imgeneus.Network.Data;
 using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Country;
 using System;
 
 namespace Imgeneus.World.Game.Player
@@ -11,7 +12,7 @@ namespace Imgeneus.World.Game.Player
     {
         private void OnDarkBlessChanged(BlessArgs args)
         {
-            if (Country == Fraction.Dark)
+            if (CountryProvider.Country == CountryType.Dark)
                 AddBlessBonuses(args);
 
             if (Client != null)
@@ -20,7 +21,7 @@ namespace Imgeneus.World.Game.Player
 
         private void OnLightBlessChanged(BlessArgs args)
         {
-            if (Country == Fraction.Light)
+            if (CountryProvider.Country == CountryType.Light)
                 AddBlessBonuses(args);
 
             if (Client != null)
@@ -64,9 +65,9 @@ namespace Imgeneus.World.Game.Player
         private void SendBlessAmount()
         {
             using var packet = new ImgeneusPacket(PacketType.BLESS_INIT);
-            packet.Write((byte)Country);
+            packet.Write((byte)CountryProvider.Country);
 
-            var blessAmount = Country == Fraction.Light ? Bless.Instance.LightAmount : Bless.Instance.DarkAmount;
+            var blessAmount = CountryProvider.Country == CountryType.Light ? Bless.Instance.LightAmount : Bless.Instance.DarkAmount;
             packet.Write(blessAmount);
             packet.Write(Bless.Instance.RemainingTime);
 

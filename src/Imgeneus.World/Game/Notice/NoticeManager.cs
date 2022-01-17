@@ -1,9 +1,7 @@
 ﻿using System.Linq;
-using System.Text;
-using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
 using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 using Microsoft.Extensions.Logging;
 
@@ -34,9 +32,9 @@ namespace Imgeneus.World.Game.Notice
 
         /// <inheritdoc/>
         // TODO: Implement notice timer with time interval
-        public void SendFactionNotice(string message, Fraction faction, short timeInterval = 0)
+        public void SendFactionNotice(string message, CountryType faction, short timeInterval = 0)
         {
-            var factionPlayers = _gameWorld.Players.Values.Where(p => p.Country == faction);
+            var factionPlayers = _gameWorld.Players.Values.Where(p => p.CountryProvider.Country == faction);
 
             foreach (var player in factionPlayers)
             {

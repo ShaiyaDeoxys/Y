@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
@@ -18,15 +19,17 @@ namespace Imgeneus.World.Game.Attack
         private readonly IStatsManager _statsManager;
         private readonly ILevelProvider _levelProvider;
         private readonly IElementProvider _elementManager;
+        private readonly ICountryProvider _countryProvider;
         private int _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IBuffsManager buffsManager, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager)
+        public AttackManager(ILogger<AttackManager> logger, IBuffsManager buffsManager, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider)
         {
             _logger = logger;
             _buffsManager = buffsManager;
             _statsManager = statsManager;
             _levelProvider = levelProvider;
             _elementManager = elementManager;
+            _countryProvider = countryProvider;
 
 #if DEBUG
             _logger.LogDebug("AttackManager {hashcode} created", GetHashCode());
@@ -138,11 +141,11 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            /*if (skillNumber == AUTO_ATTACK_NUMBER && (Target is Mob && (Target as Mob).Country == Country))
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && Target.CountryProvider.Country == _countryProvider.Country)
             {
-                SendAutoAttackWrongTarget(target);
+                success = AttackSuccess.WrongTarget;
                 return false;
-            }*/
+            }
 
             if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
             {

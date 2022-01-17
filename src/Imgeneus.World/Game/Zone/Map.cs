@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
@@ -322,12 +323,12 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <inheritdoc/>
-        public (float X, float Y, float Z) GetNearestSpawn(float currentX, float currentY, float currentZ, Fraction fraction)
+        public (float X, float Y, float Z) GetNearestSpawn(float currentX, float currentY, float currentZ, CountryType country)
         {
             SpawnConfiguration nearestSpawn = null;
             foreach (var spawn in _config.Spawns)
             {
-                if (spawn.Faction == 1 && fraction == Fraction.Light || spawn.Faction == 2 && fraction == Fraction.Dark)
+                if (spawn.Faction == 1 && country == CountryType.Light || spawn.Faction == 2 && country == CountryType.Dark)
                 {
                     if (nearestSpawn is null)
                     {
@@ -358,14 +359,14 @@ namespace Imgeneus.World.Game.Zone
             if (_definition.RebirthMap != null)
                 return (_definition.RebirthMap.MapId, _definition.RebirthMap.PosX, _definition.RebirthMap.PosY, _definition.RebirthMap.PosZ);
 
-            if (_definition.LightRebirthMap != null && player.Country == Fraction.Light)
+            if (_definition.LightRebirthMap != null && player.CountryProvider.Country == CountryType.Light)
                 return (_definition.LightRebirthMap.MapId, _definition.LightRebirthMap.PosX, _definition.LightRebirthMap.PosY, _definition.LightRebirthMap.PosZ);
 
-            if (_definition.DarkRebirthMap != null && player.Country == Fraction.Dark)
+            if (_definition.DarkRebirthMap != null && player.CountryProvider.Country == CountryType.Dark)
                 return (_definition.DarkRebirthMap.MapId, _definition.DarkRebirthMap.PosX, _definition.DarkRebirthMap.PosY, _definition.DarkRebirthMap.PosZ);
 
             // There is no rebirth map, use the nearest spawn.
-            var spawn = GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.Country);
+            var spawn = GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.CountryProvider.Country);
             return (Id, spawn.X, spawn.Y, spawn.Z);
         }
 

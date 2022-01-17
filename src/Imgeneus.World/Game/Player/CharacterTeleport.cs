@@ -78,7 +78,7 @@ namespace Imgeneus.World.Game.Player
                 return false;
             }
 
-            if (!portal.IsSameFaction(Country))
+            if (!portal.IsSameFaction(CountryProvider.Country))
             {
                 return false;
             }

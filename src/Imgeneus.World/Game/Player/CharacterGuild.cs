@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Country;
 using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Player
@@ -35,7 +36,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public void SendGuildList()
         {
-            var guilds = _guildManager.GetAllGuilds(Country);
+            var guilds = _guildManager.GetAllGuilds(CountryProvider.Country == CountryType.Light ? Fraction.Light : Fraction.Dark);
             _packetsHelper.SendGuildList(Client, guilds);
         }
 

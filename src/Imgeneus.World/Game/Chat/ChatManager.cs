@@ -6,6 +6,7 @@ using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.Network.Data;
 using Imgeneus.Network.Packets;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 using Microsoft.Extensions.Logging;
 
@@ -29,7 +30,7 @@ namespace Imgeneus.World.Game.Chat
             switch (messageType)
             {
                 case MessageType.Normal:
-                    var players = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 50, Fraction.NotSelected, true);
+                    var players = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 50, CountryType.None, true);
                     foreach (var player in players)
                     {
                         SendNormal((Character)player, sender.Id, message);
@@ -39,7 +40,7 @@ namespace Imgeneus.World.Game.Chat
 
                 case MessageType.Whisper:
                     var target = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == targetName);
-                    if (target != null && target.Id != sender.Id && target.Country == sender.Country)
+                    if (target != null && target.Id != sender.Id && target.CountryProvider.Country == sender.CountryProvider.Country)
                     {
                         SendWhisper(sender, sender.Name, message);
                         SendWhisper(target, sender.Name, message);
@@ -59,7 +60,7 @@ namespace Imgeneus.World.Game.Chat
                     break;
 
                 case MessageType.Map:
-                    var mapPlayers = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 0, sender.Country, true);
+                    var mapPlayers = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 0, sender.CountryProvider.Country, true);
                     foreach (var player in mapPlayers)
                     {
                         SendMap((Character)player, sender.Name, message);
@@ -70,7 +71,7 @@ namespace Imgeneus.World.Game.Chat
                 case MessageType.World:
                     if (sender.LevelProvider.Level > 10)
                     {
-                        var worldPlayers = _gameWorld.Players.Values.Where(p => p.Country == sender.Country);
+                        var worldPlayers = _gameWorld.Players.Values.Where(p => p.CountryProvider.Country == sender.CountryProvider.Country);
                         foreach (var player in worldPlayers)
                         {
                             SendWorld(player, sender.Name, message);

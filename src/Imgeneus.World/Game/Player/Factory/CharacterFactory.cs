@@ -24,6 +24,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using System.Linq;
+using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -37,6 +38,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IMapsLoader _mapsLoader;
+        private readonly ICountryProvider _countryProvider;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
         private readonly ILevelProvider _levelProvider;
@@ -64,6 +66,7 @@ namespace Imgeneus.World.Game.Player
                                 IBackgroundTaskQueue backgroundTaskQueue,
                                 IDatabasePreloader databasePreloader,
                                 IMapsLoader mapsLoader,
+                                ICountryProvider countryProvider,
                                 IStatsManager statsManager,
                                 IHealthManager healthManager,
                                 ILevelProvider levelProvider,
@@ -91,6 +94,7 @@ namespace Imgeneus.World.Game.Player
             _backgroundTaskQueue = backgroundTaskQueue;
             _databasePreloader = databasePreloader;
             _mapsLoader = mapsLoader;
+            _countryProvider = countryProvider;
             _statsManager = statsManager;
             _healthManager = healthManager;
             _levelProvider = levelProvider;
@@ -137,6 +141,8 @@ namespace Imgeneus.World.Game.Player
             _gameSession.CharId = dbCharacter.Id;
             _gameSession.IsAdmin = dbCharacter.User.Authority == 0;
 
+            _countryProvider.Init(dbCharacter.Id, dbCharacter.User.Faction);
+
             _statsManager.Init(dbCharacter.Id, dbCharacter.Strength, dbCharacter.Dexterity, dbCharacter.Rec, dbCharacter.Intelligence, dbCharacter.Wisdom, dbCharacter.Luck, dbCharacter.StatPoint, dbCharacter.Class);
 
             _levelProvider.Level = dbCharacter.Level;
@@ -162,6 +168,7 @@ namespace Imgeneus.World.Game.Player
                                         _backgroundTaskQueue,
                                         _databasePreloader,
                                         _mapsLoader,
+                                        _countryProvider,
                                         _statsManager,
                                         _healthManager,
                                         _levelProvider,

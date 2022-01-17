@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
@@ -28,13 +29,14 @@ namespace Imgeneus.World.Game.Monster
                    Map map,
                    ILogger<Mob> logger,
                    IDatabasePreloader databasePreloader,
+                   ICountryProvider countryProvider,
                    IStatsManager statsManager,
                    IHealthManager healthManager,
                    ILevelProvider levelProvider,
                    IAttackManager attackManager,
                    ISkillsManager skillsManager,
                    IBuffsManager buffsManager,
-                   IElementProvider elementProvider) : base(databasePreloader, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
+                   IElementProvider elementProvider) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -48,6 +50,8 @@ namespace Imgeneus.World.Game.Monster
             LevelProvider.Level = _dbMob.Level;
             HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
             BuffsManager.Init(Id);
+
+            CountryProvider.Init(Id, _dbMob.Fraction);
 
             AttackManager = attackManager;
             AttackManager.Init(Id);
@@ -127,7 +131,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, StatsManager, HealthManager, LevelProvider, AttackManager, SkillsManager, BuffsManager, ElementProvider);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, AttackManager, SkillsManager, BuffsManager, ElementProvider);
         }
 
         public void Dispose()

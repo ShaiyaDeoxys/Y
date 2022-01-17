@@ -33,6 +33,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -72,6 +73,7 @@ namespace Imgeneus.World.Game.Player
                          INpcFactory npcFactory,
                          INoticeManager noticeManager,
                          IGuildManager guildManager,
+                         ICountryProvider countryProvider,
                          IStatsManager statsManager,
                          IHealthManager healthManager,
                          ILevelProvider levelProvider,
@@ -82,7 +84,7 @@ namespace Imgeneus.World.Game.Player
                          ISkillsManager skillsManager,
                          IBuffsManager buffsManager,
                          IElementProvider elementProvider,
-                         IGameSession gameSession) : base(databasePreloader, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
+                         IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -359,9 +361,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -388,7 +390,6 @@ namespace Imgeneus.World.Game.Player
                 Victories = dbCharacter.Victories,
                 Defeats = dbCharacter.Defeats,
                 IsAdmin = dbCharacter.User.Authority == 0,
-                Country = dbCharacter.User.Faction,
                 Points = dbCharacter.User.Points,
                 GuildId = dbCharacter.GuildId
             };

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.Core.Extensions;
+using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -128,7 +129,7 @@ namespace Imgeneus.World.Game.Player
         private void HandleFriendRequest(string characterName)
         {
             var character = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == characterName).Value;
-            if (character is null || character.Country != this.Country)
+            if (character is null || character.CountryProvider.Country != CountryProvider.Country)
                 return;
 
             character.RequestFriendship(this);
@@ -142,7 +143,7 @@ namespace Imgeneus.World.Game.Player
             Map.RegisterSearchForParty(this);
             _packetsHelper.SendRegisteredInPartySearch(Client, true);
 
-            var searchers = Map.PartySearchers.Where(s => s.Country == Country && s != this);
+            var searchers = Map.PartySearchers.Where(s => s.CountryProvider.Country == CountryProvider.Country && s != this);
             if (searchers.Any())
                 _packetsHelper.SendPartySearchList(Client, searchers.Take(30));
         }
@@ -666,7 +667,7 @@ namespace Imgeneus.World.Game.Player
 
             float x = 100;
             float z = 100;
-            var spawn = _mapLoader.LoadMapConfiguration(mapId).Spawns.FirstOrDefault(s => (s.Faction == 1 && Country == Fraction.Light) || (s.Faction == 2 && Country == Fraction.Dark));
+            var spawn = _mapLoader.LoadMapConfiguration(mapId).Spawns.FirstOrDefault(s => (s.Faction == 1 && CountryProvider.Country == CountryType.Light) || (s.Faction == 2 && CountryProvider.Country == CountryType.Dark));
             if (spawn != null)
             {
                 x = spawn.X1;
@@ -1015,7 +1016,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             var player = Map.GetPlayer(characterId);
-            if (player is null || player.IsOnVehicle || player.Country != Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
+            if (player is null || player.IsOnVehicle || player.CountryProvider.Country != CountryProvider.Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
             {
                 SendVehicleResponse(VehicleResponse.Error);
                 return;
@@ -1033,7 +1034,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             var player = Map.GetPlayer(VehicleRequesterID);
-            if (player is null || !player.IsOnVehicle || player.Vehicle2CharacterID != 0 || player.Country != Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
+            if (player is null || !player.IsOnVehicle || player.Vehicle2CharacterID != 0 || player.CountryProvider.Country != CountryProvider.Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
             {
                 return;
             }

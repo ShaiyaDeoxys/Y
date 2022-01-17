@@ -3,6 +3,7 @@ using Imgeneus.World.Game.Player;
 using System;
 using System.Collections.Generic;
 using Imgeneus.World.Game.Zone.Portals;
+using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -36,7 +37,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="currentZ">current player z coordinate</param>
         /// <param name="fraction">player's faction</param>
         /// <returns>coordinate, where player should spawn</returns>
-        public (float X, float Y, float Z) GetNearestSpawn(float currentX, float currentY, float currentZ, Fraction fraction);
+        public (float X, float Y, float Z) GetNearestSpawn(float currentX, float currentY, float currentZ, CountryType fraction);
 
         /// <summary>
         ///Gets map, where the character must appear after death or disconnect.

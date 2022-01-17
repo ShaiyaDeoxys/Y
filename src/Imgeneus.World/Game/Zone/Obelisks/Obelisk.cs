@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
 using System;
 using System.Collections.Generic;
@@ -91,7 +92,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
         {
             ObeliskAI.OnDead -= ObeliskAI_OnDead;
 
-            ObeliskCountry = killer.Country == Fraction.Light ? ObeliskCountry.Light : ObeliskCountry.Dark;
+            ObeliskCountry = killer.CountryProvider.Country == CountryType.Light ? ObeliskCountry.Light : ObeliskCountry.Dark;
             OnObeliskBroken?.Invoke(this);
 
             if (ObeliskCountry == ObeliskCountry.Light)

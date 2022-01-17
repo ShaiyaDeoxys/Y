@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.PartyAndRaid;
@@ -177,7 +178,7 @@ namespace Imgeneus.World.Game
             // Map was completely deleted from the server. Fallback to map 0.
             if (!AvailableMapIds.Contains(dbCharacter.Map))
             {
-                var coordinates = Maps[0].GetNearestSpawn(0, 0, 0, dbCharacter.User.Faction);
+                var coordinates = Maps[0].GetNearestSpawn(0, 0, 0, dbCharacter.User.Faction == Fraction.Light ? CountryType.Light : CountryType.Dark);
                 dbCharacter.Map = 0;
                 dbCharacter.PosX = coordinates.X;
                 dbCharacter.PosY = coordinates.Y;
@@ -342,7 +343,7 @@ namespace Imgeneus.World.Game
                 if (mapDef is null)
                 {
                     _logger.LogWarning("Unknown map {id} for character {characterId}. Fallback to 0 map.", player.MapId, player.Id);
-                    var town = Maps[0].GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.Country);
+                    var town = Maps[0].GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.CountryProvider.Country);
                     player.Teleport(0, town.X, town.Y, town.Z);
                     return;
                 }

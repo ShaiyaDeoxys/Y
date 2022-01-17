@@ -227,7 +227,7 @@ namespace Imgeneus.World.Game.Guild
 
         private async Task<DbGuild> CreateGuild(string name, string message, Character master)
         {
-            var guild = new DbGuild(name, message, master.Id, master.Country);
+            var guild = new DbGuild(name, message, master.Id, master.CountryProvider.Country == Country.CountryType.Light ? Fraction.Light : Fraction.Dark);
 
             _database.Guilds.Add(guild);
 

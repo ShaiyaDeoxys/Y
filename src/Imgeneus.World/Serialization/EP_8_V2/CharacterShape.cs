@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Serialization;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 
 namespace Imgeneus.World.Serialization.EP_8_V2
@@ -18,7 +19,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
         public Motion Motion { get; }
 
         [FieldOrder(3)]
-        public Fraction Country { get; }
+        public CountryType Country { get; }
 
         [FieldOrder(4)]
         public Race Race { get; }
@@ -82,7 +83,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
             CharId = character.Id;
             IsDead = character.IsDead;
             Motion = character.Motion;
-            Country = character.Country;
+            Country = character.CountryProvider.Country;
             Race = character.Race;
             Hair = character.Hair;
             Face = character.Face;

@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Zone;
@@ -137,23 +138,23 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// Returns fraction of those players, who are enemies to this mob.
         /// </summary>
-        public Fraction EnemyPlayersFraction
+        public CountryType EnemyPlayersFraction
         {
             get
             {
-                Fraction playerFraction;
+                CountryType playerFraction;
                 switch (_dbMob.Fraction)
                 {
                     case MobFraction.Dark:
-                        playerFraction = Fraction.Light;
+                        playerFraction = CountryType.Light;
                         break;
 
                     case MobFraction.Light:
-                        playerFraction = Fraction.Dark;
+                        playerFraction = CountryType.Dark;
                         break;
 
                     default:
-                        playerFraction = Fraction.NotSelected;
+                        playerFraction = CountryType.None;
                         break;
                 }
 

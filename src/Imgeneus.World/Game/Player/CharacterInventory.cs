@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Skills;
 using Microsoft.Extensions.Logging;
@@ -376,7 +377,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         private void UseBlessItem()
         {
-            if (Country == Fraction.Light)
+            if (CountryProvider.Country == CountryType.Light)
                 Bless.Instance.LightAmount += 500;
             else
                 Bless.Instance.DarkAmount += 500;
@@ -423,7 +424,7 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 case ItemClassType.AllLights:
-                    if (Country != Fraction.Light)
+                    if (CountryProvider.Country != CountryType.Light)
                         return false;
                     break;
 
@@ -438,7 +439,7 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 case ItemClassType.AllFury:
-                    if (Country != Fraction.Dark)
+                    if (CountryProvider.Country != CountryType.Dark)
                         return false;
                     break;
             }

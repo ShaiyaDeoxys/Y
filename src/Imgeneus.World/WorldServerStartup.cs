@@ -9,6 +9,7 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Chat;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Guild;
@@ -93,6 +94,7 @@ namespace Imgeneus.World
             services.AddScoped<ISelectionScreenManager, SelectionScreenManager>();
             services.AddScoped<IGameSession, GameSession>();
             services.AddScoped<IStatsManager, StatsManager>();
+            services.AddScoped<ICountryProvider, CountryProvider>();
             services.AddScoped<ILevelProvider, LevelProvider>();
             services.AddScoped<ILevelingManager, LevelingManager>();
             services.AddScoped<IHealthManager, HealthManager>();

@@ -3,6 +3,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
@@ -141,17 +142,17 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="x">x coordinate</param>
         /// <param name="z">z coordinate</param>
         /// <param name="range">minimum range to target, if set to 0 is not calculated</param>
-        /// <param name="fraction">light, dark or both</param>
+        /// <param name="country">light, dark or both</param>
         /// <param name="includeDead">include dead players or not</param>
         /// <param name="includeNeighborCells">include players from neighbor cells, usually true</param>
-        public IEnumerable<IKillable> GetPlayers(float x, float z, byte range, Fraction fraction = Fraction.NotSelected, bool includeDead = false, bool includeNeighborCells = true)
+        public IEnumerable<IKillable> GetPlayers(float x, float z, byte range, CountryType country = CountryType.None, bool includeDead = false, bool includeNeighborCells = true)
         {
             var myPlayers = Players.Values.Where(
                      p => (includeDead || !p.IsDead) && // filter by death
-                     (p.Country == fraction || fraction == Fraction.NotSelected) && // filter by fraction
+                     (p.CountryProvider.Country == country || country == CountryType.None) && // filter by fraction
                      (range == 0 || MathExtensions.Distance(x, p.PosX, z, p.PosZ) <= range)); // filter by range
             if (includeNeighborCells)
-                return myPlayers.Concat(NeighborCells.Select(index => Map.Cells[index]).SelectMany(cell => cell.GetPlayers(x, z, range, fraction, includeDead, false))).Distinct();
+                return myPlayers.Concat(NeighborCells.Select(index => Map.Cells[index]).SelectMany(cell => cell.GetPlayers(x, z, range, country, includeDead, false))).Distinct();
             return myPlayers;
         }
 
@@ -161,7 +162,7 @@ namespace Imgeneus.World.Game.Zone
         public IEnumerable<IKillable> GetEnemies(Character sender, IKillable target, byte range)
         {
             IEnumerable<IKillable> mobs = GetAllMobs(true).Where(m => !m.IsDead && MathExtensions.Distance(target.PosX, m.PosX, target.PosZ, m.PosZ) <= range);
-            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.IsDead && p.Country != sender.Country && MathExtensions.Distance(target.PosX, p.PosX, target.PosZ, p.PosZ) <= range);
+            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(target.PosX, p.PosX, target.PosZ, p.PosZ) <= range);
 
             return mobs.Concat(chars);
         }
