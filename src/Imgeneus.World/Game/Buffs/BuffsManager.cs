@@ -3,6 +3,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
@@ -25,9 +26,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
         private readonly ISpeedManager _speedManager;
+        private readonly IElementProvider _elementProvider;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider)
         {
             _logger = logger;
             _database = database;
@@ -35,6 +37,7 @@ namespace Imgeneus.World.Game.Buffs
             _statsManager = statsManager;
             _healthManager = healthManager;
             _speedManager = speedManager;
+            _elementProvider = elementProvider;
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
 #if DEBUG
@@ -340,7 +343,7 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.RemoveAttribute:
-                    //RemoveElement = true;
+                    _elementProvider.IsRemoveElement = true;
                     break;
 
                 case TypeDetail.ElementalAttack:
@@ -348,7 +351,7 @@ namespace Imgeneus.World.Game.Buffs
                     if (elementSkin != null)
                         elementSkin.CancelBuff();
 
-                    //AttackSkillElement = skill.Element;
+                    _elementProvider.AttackSkillElement = skill.Element;
                     break;
 
                 case TypeDetail.ElementalProtection:
@@ -356,7 +359,7 @@ namespace Imgeneus.World.Game.Buffs
                     if (elementWeapon != null)
                         elementWeapon.CancelBuff();
 
-                    //DefenceSkillElement = skill.Element;
+                    _elementProvider.DefenceSkillElement = skill.Element;
                     break;
 
                 case TypeDetail.Untouchable:
@@ -441,15 +444,15 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.RemoveAttribute:
-                    //RemoveElement = false;
+                    _elementProvider.IsRemoveElement = false;
                     break;
 
                 case TypeDetail.ElementalAttack:
-                    //AttackSkillElement = Element.None;
+                    _elementProvider.AttackSkillElement = Element.None;
                     break;
 
                 case TypeDetail.ElementalProtection:
-                    //DefenceSkillElement = Element.None;
+                    _elementProvider.DefenceSkillElement = Element.None;
                     break;
 
                 case TypeDetail.Untouchable:

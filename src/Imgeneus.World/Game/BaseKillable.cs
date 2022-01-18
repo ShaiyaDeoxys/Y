@@ -90,25 +90,6 @@ namespace Imgeneus.World.Game
 
         #endregion
 
-        #region Element
-
-        /// <summary>
-        /// Indicator, that shows if defence element should be removed.
-        /// </summary>
-        protected bool RemoveElement { get; private set; }
-
-        /// <summary>
-        /// Element set by skill.
-        /// </summary>
-        protected Element AttackSkillElement { get; private set; }
-
-        /// <summary>
-        /// Element set by skill.
-        /// </summary>
-        protected Element DefenceSkillElement { get; private set; }
-
-        #endregion
-
         #region Death
 
         /// <inheritdoc />

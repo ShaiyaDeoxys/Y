@@ -65,8 +65,8 @@ namespace Imgeneus.World.Game.Monster
             SkillsManager = skillsManager;
             SkillsManager.Init(Id, new Skill[0]);
 
-            ElementProvider.AttackElement = _dbMob.Element;
-            ElementProvider.DefenceElement = _dbMob.Element;
+            ElementProvider.ConstAttackElement = _dbMob.Element;
+            ElementProvider.ConstDefenceElement = _dbMob.Element;
 
             MoveArea = moveArea;
             Map = map;

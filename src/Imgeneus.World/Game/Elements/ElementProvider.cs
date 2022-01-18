@@ -24,8 +24,47 @@ namespace Imgeneus.World.Game.Elements
         }
 #endif
 
-        public Element AttackElement { get; set; }
+        #region Attack
 
-        public Element DefenceElement { get; set; }
+        public Element AttackSkillElement { get; set; }
+
+        public Element ConstAttackElement { get; set; }
+
+        public Element AttackElement
+        {
+            get
+            {
+                if (AttackSkillElement != Element.None)
+                    return AttackSkillElement;
+
+                return ConstAttackElement;
+            }
+        }
+
+        #endregion
+
+        #region Defence
+
+        public bool IsRemoveElement { get; set; }
+
+        public Element DefenceSkillElement { get; set; }
+
+        public Element ConstDefenceElement { get; set; }
+
+        public Element DefenceElement
+        {
+            get
+            {
+                if (IsRemoveElement)
+                    return Element.None;
+
+                if (DefenceSkillElement != Element.None)
+                    return DefenceSkillElement;
+
+                return ConstDefenceElement;
+            }
+        }
+
+        #endregion
     }
 }

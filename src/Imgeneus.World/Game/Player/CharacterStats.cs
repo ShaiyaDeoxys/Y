@@ -199,43 +199,6 @@ namespace Imgeneus.World.Game.Player
  
         #endregion
 
-        #region Elements
-
-        /// <inheritdoc />
-        /*public override Element DefenceElement
-        {
-            get
-            {
-                if (RemoveElement)
-                    return Element.None;
-
-                if (DefenceSkillElement != Element.None)
-                    return DefenceSkillElement;
-
-                if (InventoryManager.Armor is null)
-                    return Element.None;
-
-                return InventoryManager.Armor.Element;
-            }
-        }*/
-
-        /// <inheritdoc />
-        /*public override Element AttackElement
-        {
-            get
-            {
-                if (AttackSkillElement != Element.None)
-                    return AttackSkillElement;
-
-                if (InventoryManager.Weapon is null)
-                    return Element.None;
-
-                return InventoryManager.Weapon.Element;
-            }
-        }*/
-
-        #endregion
-
         #region Reset stats
 
         public void ResetStats()

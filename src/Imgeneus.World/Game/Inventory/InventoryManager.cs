@@ -1,6 +1,8 @@
 ﻿using Imgeneus.Database;
+using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Speed;
@@ -23,9 +25,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
         private readonly ISpeedManager _speedManager;
+        private readonly IElementProvider _elementProvider;
         private int _owner;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -34,7 +37,7 @@ namespace Imgeneus.World.Game.Inventory
             _statsManager = statsManager;
             _healthManager = healthManager;
             _speedManager = speedManager;
-
+            _elementProvider = elementProvider;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
 
 #if DEBUG
@@ -186,6 +189,16 @@ namespace Imgeneus.World.Game.Inventory
             {
                 TakeOffItem(_armor);
                 _armor = value;
+
+                if (_armor != null)
+                {
+                    _elementProvider.ConstDefenceElement = _armor.Element;
+                }
+                else
+                {
+                    _elementProvider.ConstDefenceElement = Element.None;
+                }
+
                 TakeOnItem(_armor);
 
                 OnEquipmentChanged?.Invoke(_owner, _armor, 1);
@@ -255,9 +268,15 @@ namespace Imgeneus.World.Game.Inventory
                 {
                     _speedManager.WeaponSpeedPassiveSkillModificator.TryGetValue(_weapon.ToPassiveSkillType(), out var passiveSkillModifier);
                     _speedManager.ConstAttackSpeed = _weapon.AttackSpeed + passiveSkillModifier;
+
+                    _elementProvider.ConstAttackElement = _weapon.Element;
                 }
                 else
+                {
                     _speedManager.ConstAttackSpeed = 0;
+
+                    _elementProvider.ConstAttackElement = Element.None;
+                }
 
                 TakeOnItem(_weapon);
 
