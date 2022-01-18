@@ -50,8 +50,10 @@ namespace Imgeneus.World.Serialization
                 if (HasColor)
                     DyeColor = new DyeColorSerialized(item.DyeColor.Saturation, item.DyeColor.R, item.DyeColor.G, item.DyeColor.B);
                 else
-                    DyeColor = new DyeColorSerialized(0, 0, 0, 0);
+                    DyeColor = new DyeColorSerialized();
             }
+            else
+                DyeColor = new DyeColorSerialized();
         }
     }
 }

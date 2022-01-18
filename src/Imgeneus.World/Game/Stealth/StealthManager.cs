@@ -1,5 +1,4 @@
-﻿using Imgeneus.World.Game.Session;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 
 namespace Imgeneus.World.Game.Stealth
@@ -7,14 +6,12 @@ namespace Imgeneus.World.Game.Stealth
     public class StealthManager : IStealthManager
     {
         private readonly ILogger<StealthManager> _logger;
-        private readonly IGameSession _gameSession;
 
-        public event Action<int> OnStealthChange;
+        private int _ownerId;
 
-        public StealthManager(ILogger<StealthManager> logger, IGameSession gameSession)
+        public StealthManager(ILogger<StealthManager> logger)
         {
             _logger = logger;
-            _gameSession = gameSession;
 
 #if DEBUG
             _logger.LogDebug("StealthManager {hashcode} created", GetHashCode());
@@ -28,17 +25,24 @@ namespace Imgeneus.World.Game.Stealth
         }
 #endif
 
+        public void Init(int ownerId)
+        {
+            _ownerId  = ownerId;
+        }
+
+        public event Action<int> OnStealthChange;
+
         private bool _isAdminStealth = false;
         public bool IsAdminStealth
         {
             set
             {
-                if (!_gameSession.IsAdmin || _isAdminStealth == value)
+                if (_isAdminStealth == value)
                     return;
 
                 _isAdminStealth = value;
 
-                OnStealthChange?.Invoke(_gameSession.CharId);
+                OnStealthChange?.Invoke(_ownerId);
                 //InvokeAttackOrMoveChanged();
             }
 
@@ -55,7 +59,7 @@ namespace Imgeneus.World.Game.Stealth
 
                 _isStealth = value;
 
-                OnStealthChange?.Invoke(_gameSession.CharId);
+                OnStealthChange?.Invoke(_ownerId);
                 //SendRunMode(); // Do we need this in new eps?
                 //InvokeAttackOrMoveChanged();
             }

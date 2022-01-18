@@ -11,12 +11,10 @@ namespace Imgeneus.World.Handlers
     [Handler]
     public class GMStealthHandler : BaseHandler
     {
-        private readonly IGameWorld _gameWorld;
         private readonly IStealthManager _stealthManager;
 
-        public GMStealthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IStealthManager stealthManager) : base(packetFactory, gameSession)
+        public GMStealthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IStealthManager stealthManager) : base(packetFactory, gameSession)
         {
-            _gameWorld = gameWorld;
             _stealthManager = stealthManager;
         }
 

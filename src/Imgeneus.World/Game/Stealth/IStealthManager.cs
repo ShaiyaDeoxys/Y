@@ -4,6 +4,8 @@ namespace Imgeneus.World.Game.Stealth
 {
     public interface IStealthManager
     {
+        void Init(int ownerId);
+
         /// <summary>
         /// Admin stealth, that is changed by /char on/off command.
         /// </summary>

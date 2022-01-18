@@ -171,6 +171,7 @@ namespace Imgeneus.World.Game.Player
 
             _killsManager.Init(dbCharacter.Id, dbCharacter.Kills, dbCharacter.Deaths, dbCharacter.Victories, dbCharacter.Defeats);
 
+            _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
             var player = Character.FromDbCharacter(dbCharacter,
