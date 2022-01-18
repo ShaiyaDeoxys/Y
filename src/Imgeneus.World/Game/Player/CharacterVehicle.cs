@@ -5,7 +5,7 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {
-        private bool _isSummmoningVehicle;
+        /*private bool _isSummmoningVehicle;
 
         private readonly Timer _summonVehicleTimer = new Timer()
         {
@@ -32,14 +32,14 @@ namespace Imgeneus.World.Game.Player
                     _summonVehicleTimer.Stop();
                 }
             }
-        }
+        }*/
 
         /// <summary>
         /// Event, that is fired, when the player starts summoning mount.
         /// </summary>
-        public event Action<Character> OnStartSummonVehicle;
+        //public event Action<Character> OnStartSummonVehicle;
 
-        private bool _isOnVehicle;
+        /*private bool _isOnVehicle;
         /// <summary>
         /// Indicator if character is on mount now.
         /// </summary>
@@ -56,13 +56,13 @@ namespace Imgeneus.World.Game.Player
                 OnShapeChange?.Invoke(this);
                 //InvokeAttackOrMoveChanged();
             }
-        }
+        }*/
 
         /// <summary>
         /// Tries to summon vehicle(mount).
         /// </summary>
         /// <param name="skipSummoning">Indicates whether the summon casting time should be skipped or not.</param>
-        public void CallVehicle(bool skipSummoning = false)
+        /*public void CallVehicle(bool skipSummoning = false)
         {
             if (InventoryManager.Mount is null || StealthManager.IsStealth)
                 return;
@@ -71,79 +71,79 @@ namespace Imgeneus.World.Game.Player
                 IsOnVehicle = true;
             else
                 IsSummmoningVehicle = true;
-        }
+        }*/
 
         /// <summary>
         /// Unmounts vehicle(mount).
         /// </summary>
-        public void RemoveVehicle()
+        /*public void RemoveVehicle()
         {
             IsOnVehicle = false;
             Vehicle2CharacterID = 0;
-        }
+        }*/
 
         /// <summary>
         /// Stops summon timer.
         /// </summary>
-        public void CancelVehicleSummon()
+        /*public void CancelVehicleSummon()
         {
             IsSummmoningVehicle = false;
-        }
+        }*/
 
-        private void SummonVehicleTimer_Elapsed(object sender, ElapsedEventArgs e)
+        /*private void SummonVehicleTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             SendUseVehicle(true, true);
             IsOnVehicle = true;
-        }
+        }*/
 
         /// <summary>
         /// Event, that is fired, when 2 vehicle character changes.
         /// </summary>
-        public Action<Character, int> OnVehiclePassengerChanged;
+        //public Action<Character, int> OnVehiclePassengerChanged;
 
-        private int _vehicle2CharacterID;
+        //private int _vehicle2CharacterID;
 
-        private Character _vehicleOwner;
+        //private Character _vehicleOwner;
 
         /// <summary>
         /// Id of player, that is vehicle owner (2 places mount).
         /// </summary>
-        public int Vehicle2CharacterID
-        {
-            get => _vehicle2CharacterID;
-            set
-            {
-                if (_vehicle2CharacterID == value)
-                    return;
+        //public int Vehicle2CharacterID
+        //{
+        //    get => _vehicle2CharacterID;
+        //    set
+        //    {
+        //        if (_vehicle2CharacterID == value)
+        //            return;
 
-                _vehicle2CharacterID = value;
-                OnVehiclePassengerChanged?.Invoke(this, _vehicle2CharacterID);
+        //        _vehicle2CharacterID = value;
+        //        OnVehiclePassengerChanged?.Invoke(this, _vehicle2CharacterID);
 
-                if (_vehicle2CharacterID == 0)
-                {
-                    _vehicleOwner.OnShapeChange -= VehicleOwner_OnShapeChange;
-                    _vehicleOwner = null;
-                }
-                else
-                {
-                    _vehicleOwner = _gameWorld.Players[_vehicle2CharacterID];
-                    _vehicleOwner.OnShapeChange += VehicleOwner_OnShapeChange;
-                }
-            }
-        }
+        //        if (_vehicle2CharacterID == 0)
+        //        {
+        //            _vehicleOwner.OnShapeChange -= VehicleOwner_OnShapeChange;
+        //            _vehicleOwner = null;
+        //        }
+        //        else
+        //        {
+        //            _vehicleOwner = _gameWorld.Players[_vehicle2CharacterID];
+        //            _vehicleOwner.OnShapeChange += VehicleOwner_OnShapeChange;
+        //        }
+        //    }
+        //}
 
-        private void VehicleOwner_OnShapeChange(Character sender)
-        {
-            if (!sender.IsOnVehicle)
-            {
-                Vehicle2CharacterID = 0;
-                IsOnVehicle = false;
-            }
-        }
+        //private void VehicleOwner_OnShapeChange(Character sender)
+        //{
+        //    if (!sender.IsOnVehicle)
+        //    {
+        //        Vehicle2CharacterID = 0;
+        //        IsOnVehicle = false;
+        //    }
+        //}
 
         /// <summary>
         /// Id of player, who has sent vehicle request.
         /// </summary>
-        public int VehicleRequesterID { get; set; }
+        //public int VehicleRequesterID { get; set; }
     }
 }

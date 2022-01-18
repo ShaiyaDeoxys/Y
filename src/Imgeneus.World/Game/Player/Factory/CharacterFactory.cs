@@ -27,6 +27,8 @@ using System.Linq;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Kills;
+using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Shape;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -61,6 +63,8 @@ namespace Imgeneus.World.Game.Player
         private readonly IBuffsManager _buffsManager;
         private readonly IElementProvider _elementProvider;
         private readonly IKillsManager _killsManager;
+        private readonly IVehicleManager _vehicleManager;
+        private readonly IShapeManager _shapeManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -90,7 +94,9 @@ namespace Imgeneus.World.Game.Player
                                 ISkillsManager skillsManager,
                                 IBuffsManager buffsManager,
                                 IElementProvider elementProvider,
-                                IKillsManager killsManager)
+                                IKillsManager killsManager,
+                                IVehicleManager vehicleManager,
+                                IShapeManager shapeManager)
         {
             _logger = logger;
             _database = database;
@@ -121,6 +127,8 @@ namespace Imgeneus.World.Game.Player
             _buffsManager = buffsManager;
             _elementProvider = elementProvider;
             _killsManager = killsManager;
+            _vehicleManager = vehicleManager;
+            _shapeManager = shapeManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -171,6 +179,10 @@ namespace Imgeneus.World.Game.Player
 
             _killsManager.Init(dbCharacter.Id, dbCharacter.Kills, dbCharacter.Deaths, dbCharacter.Victories, dbCharacter.Defeats);
 
+            _vehicleManager.Init(dbCharacter.Id);
+
+            _shapeManager.Init(dbCharacter.Id);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -201,6 +213,8 @@ namespace Imgeneus.World.Game.Player
                                         _buffsManager,
                                         _elementProvider,
                                         _killsManager,
+                                        _vehicleManager,
+                                        _shapeManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.

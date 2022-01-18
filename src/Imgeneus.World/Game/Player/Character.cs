@@ -36,6 +36,8 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Kills;
+using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Shape;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -62,6 +64,8 @@ namespace Imgeneus.World.Game.Player
         public IAttackManager AttackManager { get; private set; }
         public ISkillsManager SkillsManager { get; private set; }
         public IKillsManager KillsManager { get; private set; }
+        public IVehicleManager VehicleManager { get; private set; }
+        public IShapeManager ShapeManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -90,6 +94,8 @@ namespace Imgeneus.World.Game.Player
                          IBuffsManager buffsManager,
                          IElementProvider elementProvider,
                          IKillsManager killsManager,
+                         IVehicleManager vehicleManager,
+                         IShapeManager shapeManager,
                          IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
         {
             _logger = logger;
@@ -112,16 +118,17 @@ namespace Imgeneus.World.Game.Player
             AttackManager = attackManager;
             SkillsManager = skillsManager;
             KillsManager = killsManager;
+            VehicleManager = vehicleManager;
+            ShapeManager = shapeManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
             BuffsManager.OnBuffAdded += OnBuffAdded;
             BuffsManager.OnBuffRemoved += OnBuffRemoved;
             AttackManager.OnStartAttack += SendAttackStart;
+            VehicleManager.OnUsedVehicle += SendUseVehicle;
 
             _packetsHelper = new PacketsHelper();
-
-            _summonVehicleTimer.Elapsed += SummonVehicleTimer_Elapsed;
 
             OnDead += Character_OnDead;
 
@@ -152,8 +159,7 @@ namespace Imgeneus.World.Game.Player
             BuffsManager.OnBuffAdded -= OnBuffAdded;
             BuffsManager.OnBuffRemoved -= OnBuffRemoved;
             AttackManager.OnStartAttack -= SendAttackStart;
-
-            _summonVehicleTimer.Elapsed -= SummonVehicleTimer_Elapsed;
+            VehicleManager.OnUsedVehicle -= SendUseVehicle;
 
             OnDead -= Character_OnDead;
 
@@ -361,9 +367,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,

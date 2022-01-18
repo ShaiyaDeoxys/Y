@@ -6,8 +6,8 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
-using MvvmHelpers;
 using System.Collections.Generic;
 
 namespace Imgeneus.World.Packets
@@ -52,11 +52,17 @@ namespace Imgeneus.World.Packets
         void SendFullInventory(IWorldClient client);
         #endregion
 
+        #region Vehicle
+
+        void SendUseVehicle(IWorldClient client, bool ok, bool isOnVehicle);
+
+        #endregion
+
         #region Map
         void SendCharacterMotion(IWorldClient client, int characterId, Motion motion);
         void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot);
         void SendCharacterShape(IWorldClient client, Character character);
-        void SendShapeUpdate(IWorldClient client, Character character);
+        void SendShapeUpdate(IWorldClient client, int senderId, ShapeEnum shape, int? param1 = null, int? param2 = null);
         void SendMaxHitpoints(IWorldClient client, int characterId, HitpointType type, int value);
         void SendRecoverCharacter(IWorldClient client, int characterId, int hp, int mp, int sp);
         void SendMobRecover(IWorldClient client, int mobId, int hp);

@@ -23,6 +23,7 @@ using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Shape;
 
 namespace Imgeneus.World.Packets
 {
@@ -284,6 +285,18 @@ namespace Imgeneus.World.Packets
         }
         #endregion
 
+        #region Vehicle
+
+        public void SendUseVehicle(IWorldClient client, bool ok, bool isOnVehicle)
+        {
+            using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE);
+            packet.Write(ok);
+            packet.Write(isOnVehicle);
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region Map
         public void SendCharacterMotion(IWorldClient client, int characterId, Motion motion)
         {
@@ -307,17 +320,17 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendShapeUpdate(IWorldClient client, Character character)
+        public void SendShapeUpdate(IWorldClient client, int senderId, ShapeEnum shape, int? param1 = null, int? param2 = null)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE_UPDATE);
-            packet.Write(character.Id);
-            packet.Write((byte)character.Shape);
+            packet.Write(senderId);
+            packet.Write((byte)shape);
 
-            // Only for ep 8.
-            if (character.InventoryManager.Mount != null)
+            // Only for ep 8. Type & TypeId for new mounts.
+            if (param1 != null && param2 != null)
             {
-                packet.Write((int)character.InventoryManager.Mount.Type);
-                packet.Write((int)character.InventoryManager.Mount.TypeId);
+                packet.Write((int)param1);
+                packet.Write((int)param2);
             }
 
             client.Send(packet);

@@ -7,6 +7,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Vehicle;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -26,9 +27,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IHealthManager _healthManager;
         private readonly ISpeedManager _speedManager;
         private readonly IElementProvider _elementProvider;
+        private readonly IVehicleManager _vehicleManager;
         private int _owner;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -38,6 +40,7 @@ namespace Imgeneus.World.Game.Inventory
             _healthManager = healthManager;
             _speedManager = speedManager;
             _elementProvider = elementProvider;
+            _vehicleManager = vehicleManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
 
 #if DEBUG
@@ -148,7 +151,6 @@ namespace Imgeneus.World.Game.Inventory
             Costume = null;
             Wings = null;
         }
-
 
         public void Dispose()
         {
@@ -407,9 +409,14 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_mount);
 
                 // Remove mount if user was mounted while switching mount
-                //RemoveVehicle();
+                _vehicleManager.RemoveVehicle();
 
                 _mount = value;
+                if (_mount != null)
+                    _vehicleManager.SummoningTime = _mount.AttackSpeed > 0 ? _mount.AttackSpeed * 1000 : _mount.AttackSpeed + 1000;
+                else
+                    _vehicleManager.SummoningTime = 0;
+
                 TakeOnItem(_mount);
 
                 OnEquipmentChanged?.Invoke(_owner, _mount, 13);

@@ -21,8 +21,10 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
@@ -1179,7 +1181,7 @@ namespace Imgeneus.World.Packets
 
             SendCharacterShape(client, character); // Fix for admin in stealth + dye.
 
-            SendShapeUpdate(client, character);
+            SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.TypeId);
         }
 
         internal void SendMobEnter(IWorldClient client, Mob mob, bool isNew)
@@ -1319,17 +1321,17 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendShapeUpdate(IWorldClient client, Character sender)
+        internal void SendShapeUpdate(IWorldClient client, int senderId, ShapeEnum shape, int? param1 = null, int? param2 = null)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE_UPDATE);
-            packet.Write(sender.Id);
-            packet.Write((byte)sender.Shape);
+            packet.Write(senderId);
+            packet.Write((byte)shape);
 
             // Only for ep 8.
-            if (sender.InventoryManager.Mount != null)
+            if (param1 != null && param2 != null)
             {
-                packet.Write((int)sender.InventoryManager.Mount.Type);
-                packet.Write((int)sender.InventoryManager.Mount.TypeId);
+                packet.Write((int)param1);
+                packet.Write((int)param2);
             }
 
             client.Send(packet);
@@ -1442,10 +1444,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendStartSummoningVehicle(IWorldClient client, Character sender)
+        internal void SendStartSummoningVehicle(IWorldClient client, int senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_READY);
-            packet.Write(sender.Id);
+            packet.Write(senderId);
             client.Send(packet);
         }
 

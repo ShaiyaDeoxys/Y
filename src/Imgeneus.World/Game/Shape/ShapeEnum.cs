@@ -1,6 +1,6 @@
-﻿namespace Imgeneus.World.Game.Player
+﻿namespace Imgeneus.World.Game.Shape
 {
-    public enum CharacterShapeEnum : byte
+    public enum ShapeEnum : byte
     {
         None = 0,
         OppositeCountry = 1,

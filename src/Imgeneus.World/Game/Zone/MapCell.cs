@@ -10,6 +10,7 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Packets;
@@ -221,14 +222,13 @@ namespace Imgeneus.World.Game.Zone
             //character.OnMax_HP_MP_SP_Changed += Character_OnMax_HP_MP_SP_Changed;
             character.HealthManager.OnRecover += Character_OnRecover;
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
-            character.OnShapeChange += Character_OnShapeChange;
-            character.StealthManager.OnStealthChange += Character_OnStealthChange;
+            character.ShapeManager.OnShapeChange += Character_OnShapeChange;
             character.OnRebirthed += Character_OnRebirthed;
             character.OnAppearanceChanged += Character_OnAppearanceChanged;
-            character.OnStartSummonVehicle += Character_OnStartSummonVehicle;
+            character.VehicleManager.OnStartSummonVehicle += Character_OnStartSummonVehicle;
             character.OnLevelUp += Character_OnLevelUp;
             character.OnAdminLevelChange += Character_OnAdminLevelChange;
-            character.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
+            character.VehicleManager.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
         }
 
         /// <summary>
@@ -253,14 +253,13 @@ namespace Imgeneus.World.Game.Zone
             //character.OnMax_HP_MP_SP_Changed -= Character_OnMax_HP_MP_SP_Changed;
             character.HealthManager.OnRecover -= Character_OnRecover;
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
-            character.OnShapeChange -= Character_OnShapeChange;
-            character.StealthManager.OnStealthChange -= Character_OnStealthChange;
+            character.ShapeManager.OnShapeChange -= Character_OnShapeChange;
             character.OnRebirthed -= Character_OnRebirthed;
             character.OnAppearanceChanged -= Character_OnAppearanceChanged;
-            character.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
+            character.VehicleManager.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
             character.OnLevelUp -= Character_OnLevelUp;
             character.OnAdminLevelChange -= Character_OnAdminLevelChange;
-            character.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
+            character.VehicleManager.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
         }
 
         #region Character listeners
@@ -417,17 +416,10 @@ namespace Imgeneus.World.Game.Zone
                 _packetsHelper.SendSkillKeep(player.Client, senderId, buff.SkillId, buff.SkillLevel, result);
         }
 
-        private void Character_OnShapeChange(Character sender)
+        private void Character_OnShapeChange(int senderId, ShapeEnum shape, int param1, int param2)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendShapeUpdate(player.Client, sender);
-        }
-
-        private void Character_OnStealthChange(int senderId)
-        {
-            var sender = Players[senderId];
-            foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendShapeUpdate(player.Client, sender);
+                _packetsHelper.SendShapeUpdate(player.Client, senderId, shape, param1, param2);
         }
 
         private void Character_OnUsedRangeSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
@@ -457,10 +449,10 @@ namespace Imgeneus.World.Game.Zone
                 _packetsHelper.SendAppearanceChanged(player.Client, sender);
         }
 
-        private void Character_OnStartSummonVehicle(Character sender)
+        private void Character_OnStartSummonVehicle(int senderId)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendStartSummoningVehicle(player.Client, sender);
+                _packetsHelper.SendStartSummoningVehicle(player.Client, senderId);
         }
 
         /// <summary>
@@ -485,10 +477,10 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that 2 character now move together on 1 vehicle.
         /// </summary>
-        private void Character_OnVehiclePassengerChanged(Character sender, int vehicle2CharacterID)
+        private void Character_OnVehiclePassengerChanged(int senderId, int vehicle2CharacterID)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.VehiclePassengerChanged(player.Client, sender.Id, vehicle2CharacterID);
+                _packetsHelper.VehiclePassengerChanged(player.Client, senderId, vehicle2CharacterID);
         }
 
         #endregion

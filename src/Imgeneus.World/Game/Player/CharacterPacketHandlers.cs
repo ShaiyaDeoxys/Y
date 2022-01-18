@@ -13,6 +13,7 @@ using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.Core.Extensions;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Vehicle;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -1009,32 +1010,32 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleVehicleRequestPacket(int characterId)
         {
-            if (!IsOnVehicle || Vehicle2CharacterID != 0)
+            if (!VehicleManager.IsOnVehicle || VehicleManager.Vehicle2CharacterID != 0)
             {
                 SendVehicleResponse(VehicleResponse.Error);
                 return;
             }
 
             var player = Map.GetPlayer(characterId);
-            if (player is null || player.IsOnVehicle || player.CountryProvider.Country != CountryProvider.Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
+            if (player is null || player.VehicleManager.IsOnVehicle || player.CountryProvider.Country != CountryProvider.Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
             {
                 SendVehicleResponse(VehicleResponse.Error);
                 return;
             }
 
-            player.VehicleRequesterID = Id;
+            player.VehicleManager.VehicleRequesterID = Id;
             player.SendVehicleRequest(Id);
         }
 
         private void HandleVehicleResponsePacket(bool rejected)
         {
-            if (IsOnVehicle)
+            if (VehicleManager.IsOnVehicle)
             {
                 return;
             }
 
-            var player = Map.GetPlayer(VehicleRequesterID);
-            if (player is null || !player.IsOnVehicle || player.Vehicle2CharacterID != 0 || player.CountryProvider.Country != CountryProvider.Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
+            var player = Map.GetPlayer(VehicleManager.VehicleRequesterID);
+            if (player is null || !player.VehicleManager.IsOnVehicle || player.VehicleManager.Vehicle2CharacterID != 0 || player.CountryProvider.Country != CountryProvider.Country || MathExtensions.Distance(PosX, player.PosX, PosZ, player.PosZ) > 20)
             {
                 return;
             }
@@ -1045,22 +1046,22 @@ namespace Imgeneus.World.Game.Player
             }
             else
             {
-                Vehicle2CharacterID = VehicleRequesterID;
-                VehicleRequesterID = 0;
-                IsOnVehicle = true;
+                VehicleManager.Vehicle2CharacterID = VehicleManager.VehicleRequesterID;
+                VehicleManager.VehicleRequesterID = 0;
+                //VehicleManager.IsOnVehicle = true;
                 player.SendVehicleResponse(VehicleResponse.Accepted);
             }
         }
 
         private void HandleUseVehicle2Packet()
         {
-            if (Vehicle2CharacterID == 0)
+            if (VehicleManager.Vehicle2CharacterID == 0)
             {
                 return;
             }
 
-            Vehicle2CharacterID = 0;
-            IsOnVehicle = false;
+            VehicleManager.Vehicle2CharacterID = 0;
+            //IsOnVehicle = false;
         }
     }
 }

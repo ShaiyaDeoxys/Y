@@ -271,7 +271,7 @@ namespace Imgeneus.World.Game.Zone
 
             if (success)
             {
-                character.RemoveVehicle();
+                //character.RemoveVehicle();
 
                 if (character.IsDead)
                 {

@@ -15,14 +15,14 @@ namespace Imgeneus.World.Game.Speed
         {
             _logger = logger;
 #if DEBUG
-            _logger.LogDebug("BaseSpeedManager {hashcode} created", GetHashCode());
+            _logger.LogDebug("SpeedManager {hashcode} created", GetHashCode());
 #endif
         }
 
 #if DEBUG
         ~SpeedManager()
         {
-            _logger.LogDebug("BaseSpeedManager {hashcode} collected by GC", GetHashCode());
+            _logger.LogDebug("SpeedManager {hashcode} collected by GC", GetHashCode());
         }
 #endif
 
@@ -109,33 +109,5 @@ namespace Imgeneus.World.Game.Speed
         }
 
         #endregion
-
-        /*
-        * 
-       /// <summary>
-       /// How fast character can make new hit.
-       /// </summary>
-       public override AttackSpeed AttackSpeed
-       {
-           get
-           {
-               if (_weaponSpeed == 0)
-                   return AttackSpeed.None;
-
-               var weaponType = InventoryManager.Weapon.ToPassiveSkillType();
-               _weaponSpeedPassiveSkillModificator.TryGetValue(weaponType, out var passiveSkillModifier);
-
-               var finalSpeed = _weaponSpeed + _attackSpeedModifier + passiveSkillModifier;
-
-               if (finalSpeed < 0)
-                   return AttackSpeed.ExteremelySlow;
-
-               if (finalSpeed > 9)
-                   return AttackSpeed.ExteremelyFast;
-
-               return (AttackSpeed)finalSpeed;
-           }
-       }
-        */
     }
 }

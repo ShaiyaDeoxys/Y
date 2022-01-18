@@ -12,6 +12,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Vehicle;
 
 namespace Imgeneus.World.Game.Player
 {

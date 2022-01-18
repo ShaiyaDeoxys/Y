@@ -24,11 +24,13 @@ using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Time;
+using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
@@ -108,6 +110,8 @@ namespace Imgeneus.World
             services.AddScoped<IInventoryManager, InventoryManager>();
             services.AddScoped<IStealthManager, StealthManager>();
             services.AddScoped<IKillsManager, KillsManager>();
+            services.AddScoped<IVehicleManager, VehicleManager>();
+            services.AddScoped<IShapeManager, ShapeManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
