@@ -26,6 +26,7 @@ using Imgeneus.World.Game.Elements;
 using System.Linq;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Kills;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -59,6 +60,7 @@ namespace Imgeneus.World.Game.Player
         private readonly ISkillsManager _skillsManager;
         private readonly IBuffsManager _buffsManager;
         private readonly IElementProvider _elementProvider;
+        private readonly IKillsManager _killsManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -87,7 +89,8 @@ namespace Imgeneus.World.Game.Player
                                 IAttackManager attackManager,
                                 ISkillsManager skillsManager,
                                 IBuffsManager buffsManager,
-                                IElementProvider elementProvider)
+                                IElementProvider elementProvider,
+                                IKillsManager killsManager)
         {
             _logger = logger;
             _database = database;
@@ -117,6 +120,7 @@ namespace Imgeneus.World.Game.Player
             _skillsManager = skillsManager;
             _buffsManager = buffsManager;
             _elementProvider = elementProvider;
+            _killsManager = killsManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -165,6 +169,8 @@ namespace Imgeneus.World.Game.Player
 
             _attackManager.Init(dbCharacter.Id);
 
+            _killsManager.Init(dbCharacter.Id, dbCharacter.Kills, dbCharacter.Deaths, dbCharacter.Victories, dbCharacter.Defeats);
+
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
             var player = Character.FromDbCharacter(dbCharacter,
@@ -193,6 +199,7 @@ namespace Imgeneus.World.Game.Player
                                         _skillsManager,
                                         _buffsManager,
                                         _elementProvider,
+                                        _killsManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.

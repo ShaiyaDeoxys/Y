@@ -35,6 +35,7 @@ using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Kills;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -60,6 +61,7 @@ namespace Imgeneus.World.Game.Player
         public ISpeedManager SpeedManager { get; private set; }
         public IAttackManager AttackManager { get; private set; }
         public ISkillsManager SkillsManager { get; private set; }
+        public IKillsManager KillsManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -87,6 +89,7 @@ namespace Imgeneus.World.Game.Player
                          ISkillsManager skillsManager,
                          IBuffsManager buffsManager,
                          IElementProvider elementProvider,
+                         IKillsManager killsManager,
                          IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
         {
             _logger = logger;
@@ -108,6 +111,7 @@ namespace Imgeneus.World.Game.Player
             SpeedManager = speedManager;
             AttackManager = attackManager;
             SkillsManager = skillsManager;
+            KillsManager = killsManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
@@ -325,8 +329,8 @@ namespace Imgeneus.World.Game.Player
             {
                 if (reason == DuelCancelReason.Lose || reason == DuelCancelReason.AdmitDefeat)
                 {
-                    SetDefeats(++Defeats);
-                    DuelOpponent.SetVictories(++DuelOpponent.Victories);
+                    KillsManager.Defeats++;
+                    DuelOpponent.KillsManager.Victories++;
                 }
                 OnDuelFinish?.Invoke(reason);
             }
@@ -357,9 +361,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -381,10 +385,6 @@ namespace Imgeneus.World.Game.Player
                 AutoWis = dbCharacter.AutoWis,
                 AutoLuc = dbCharacter.AutoLuc,
                 Exp = dbCharacter.Exp,
-                Kills = dbCharacter.Kills,
-                Deaths = dbCharacter.Deaths,
-                Victories = dbCharacter.Victories,
-                Defeats = dbCharacter.Defeats,
                 IsAdmin = dbCharacter.User.Authority == 0,
                 Points = dbCharacter.User.Points,
                 GuildId = dbCharacter.GuildId

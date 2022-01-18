@@ -96,6 +96,24 @@ namespace Imgeneus.World.Handlers
                     ok = await targetPlayer.StatsManager.TrySetStats(wis: (ushort)attributeValue);
                     break;
 
+                case CharacterAttributeEnum.Kills:
+                    targetPlayer.KillsManager.Kills = (ushort)attributeValue;
+                    ok = true;
+                    break;
+
+                case CharacterAttributeEnum.Deaths:
+                    targetPlayer.KillsManager.Deaths = (ushort)attributeValue;
+                    ok = true;
+                    break;
+
+                case CharacterAttributeEnum.Hg:
+                case CharacterAttributeEnum.Vg:
+                case CharacterAttributeEnum.Cg:
+                case CharacterAttributeEnum.Og:
+                case CharacterAttributeEnum.Ig:
+                    _packetFactory.SendGmCommandError(client, PacketType.CHARACTER_ATTRIBUTE_SET);
+                    return;
+
                 default:
                     throw new NotImplementedException($"{attribute}");
             }

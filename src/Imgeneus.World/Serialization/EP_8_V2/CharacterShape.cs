@@ -91,7 +91,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
             Class = character.Class;
             Gender = character.Gender;
             Mode = character.LevelingManager.Grow;
-            Kills = character.Kills;
+            Kills = character.KillsManager.Kills;
             Name = character.NameAsByteArray;
             Name2 = character.NameAsByteArray; // not sure why, but server definitely sends name twice
 

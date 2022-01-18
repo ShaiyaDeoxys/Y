@@ -1,8 +1,6 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Entities;
+﻿using Imgeneus.Database.Entities;
 using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.Network.Packets.Game;
-using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Stats;
 using System;
 using System.Linq;
@@ -22,10 +20,6 @@ namespace Imgeneus.World.Game.Player
         public byte Height { get; set; }
         public Gender Gender { get; set; }
         public uint Exp { get; private set; }
-        public ushort Kills { get; private set; }
-        public ushort Deaths { get; private set; }
-        public ushort Victories { get; private set; }
-        public ushort Defeats { get; private set; }
         public bool IsAdmin { get; set; }
         public bool IsRename { get; set; }
 
@@ -276,10 +270,10 @@ namespace Imgeneus.World.Game.Player
                     return Exp;
 
                 case CharacterAttributeEnum.Kills:
-                    return Kills;
+                    return KillsManager.Kills;
 
                 case CharacterAttributeEnum.Deaths:
-                    return Deaths;
+                    return KillsManager.Deaths;
 
                 default:
                     return 0;
@@ -301,54 +295,6 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         /// <param name="amount"></param>
         //public void IncreaseSkillPoint(ushort amount) => SetSkillPoint(SkillPoint += amount);
-
-        #endregion
-
-        #region Kills and Deaths
-
-        /// <summary>
-        /// Sets the kill count
-        /// </summary>
-        public void SetKills(ushort kills)
-        {
-            Kills = kills;
-
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_KILLS, Id, Kills);
-        }
-
-        /// <summary>
-        /// Sets the death count
-        /// </summary>
-        public void SetDeaths(ushort deaths)
-        {
-            Deaths = deaths;
-
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_DEATHS, Id, Deaths);
-        }
-
-        #endregion
-
-        #region Wins & Loses
-
-        /// <summary>
-        /// Sets the number of duel victories.
-        /// </summary>
-        public void SetVictories(ushort victories)
-        {
-            Victories = victories;
-
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_VICTORIES, Id, Victories);
-        }
-
-        /// <summary>
-        /// Sets the number of duel defeats.
-        /// </summary>
-        public void SetDefeats(ushort defeats)
-        {
-            Defeats = defeats;
-
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_DEFEATS, Id, Defeats);
-        }
 
         #endregion
 

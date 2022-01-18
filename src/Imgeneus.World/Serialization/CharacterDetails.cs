@@ -97,10 +97,10 @@ namespace Imgeneus.Network.Serialization
             PosX = character.PosX;
             PosY = character.PosY;
             PosZ = character.PosZ;
-            Kills = character.Kills;
-            Deaths = character.Deaths;
-            Victories = character.Victories;
-            Defeats = character.Defeats;
+            Kills = character.KillsManager.Kills;
+            Deaths = character.KillsManager.Deaths;
+            Victories = character.KillsManager.Victories;
+            Defeats = character.KillsManager.Defeats;
             MaxHP = character.HealthManager.MaxHP;
             MaxMP = character.HealthManager.MaxMP;
             MaxSP = character.HealthManager.MaxSP;

@@ -15,6 +15,7 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Monster;
@@ -106,6 +107,7 @@ namespace Imgeneus.World
             services.AddScoped<IElementProvider, ElementProvider>();
             services.AddScoped<IInventoryManager, InventoryManager>();
             services.AddScoped<IStealthManager, StealthManager>();
+            services.AddScoped<IKillsManager, KillsManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

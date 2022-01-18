@@ -516,12 +516,12 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 case CharacterAttributeEnum.Kills:
-                    targetPlayer.SetKills((ushort)attributeValue);
+                    targetPlayer.KillsManager.Kills = (ushort)attributeValue;
                     SetAttributeAndSendCommandSuccess();
                     break;
 
                 case CharacterAttributeEnum.Deaths:
-                    targetPlayer.SetDeaths((ushort)attributeValue);
+                    targetPlayer.KillsManager.Deaths = (ushort)attributeValue;
                     SetAttributeAndSendCommandSuccess();
                     break;
 
