@@ -5,6 +5,7 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,9 +21,10 @@ namespace Imgeneus.World.Game.Attack
         private readonly ILevelProvider _levelProvider;
         private readonly IElementProvider _elementManager;
         private readonly ICountryProvider _countryProvider;
+        private readonly ISpeedManager _speedManager;
         private int _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IBuffsManager buffsManager, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider)
+        public AttackManager(ILogger<AttackManager> logger, IBuffsManager buffsManager, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager)
         {
             _logger = logger;
             _buffsManager = buffsManager;
@@ -30,6 +32,7 @@ namespace Imgeneus.World.Game.Attack
             _levelProvider = levelProvider;
             _elementManager = elementManager;
             _countryProvider = countryProvider;
+            _speedManager = speedManager;
 
 #if DEBUG
             _logger.LogDebug("AttackManager {hashcode} created", GetHashCode());
@@ -52,12 +55,6 @@ namespace Imgeneus.World.Game.Attack
 
         #endregion
 
-        #region Attack speed
-
-        public AttackSpeed AttackSpeed { get; private set; }
-
-        #endregion
-
         #region Target
 
         public IKillable Target { get; set; }
@@ -74,7 +71,7 @@ namespace Imgeneus.World.Game.Attack
         {
             get
             {
-                switch (AttackSpeed)
+                switch (_speedManager.TotalAttackSpeed)
                 {
                     case AttackSpeed.ExteremelySlow:
                         return 4000;

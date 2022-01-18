@@ -34,6 +34,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Speed;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -56,6 +57,7 @@ namespace Imgeneus.World.Game.Player
         public IInventoryManager InventoryManager { get; private set; }
         public IStealthManager StealthManager { get; private set; }
         public ILevelingManager LevelingManager { get; private set; }
+        public ISpeedManager SpeedManager { get; private set; }
         public IAttackManager AttackManager { get; private set; }
         public ISkillsManager SkillsManager { get; private set; }
         public IGameSession GameSession { get; private set; }
@@ -74,6 +76,7 @@ namespace Imgeneus.World.Game.Player
                          INoticeManager noticeManager,
                          IGuildManager guildManager,
                          ICountryProvider countryProvider,
+                         ISpeedManager speedManager,
                          IStatsManager statsManager,
                          IHealthManager healthManager,
                          ILevelProvider levelProvider,
@@ -102,6 +105,7 @@ namespace Imgeneus.World.Game.Player
             InventoryManager = inventoryManager;
             StealthManager = stealthManager;
             LevelingManager = levelingManager;
+            SpeedManager = speedManager;
             AttackManager = attackManager;
             SkillsManager = skillsManager;
             GameSession = gameSession;
@@ -123,7 +127,6 @@ namespace Imgeneus.World.Game.Player
 
         private void Init()
         {
-            InitPassiveSkills();
             InitQuests();
 
             // Send notification to friends.
@@ -354,9 +357,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,

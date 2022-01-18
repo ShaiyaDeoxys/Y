@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Inventory
 {
-    public interface IInventoryManager : ISessionedService
+    public interface IInventoryManager : ISessionedService, IDisposable
     {
         /// <summary>
         /// Collection of inventory items.

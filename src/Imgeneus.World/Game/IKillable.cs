@@ -3,6 +3,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Speed;
 using System;
 
 namespace Imgeneus.World.Game
@@ -46,16 +47,6 @@ namespace Imgeneus.World.Game
         /// Current z position.
         /// </summary>
         public float PosZ { get; }
-
-        /// <summary>
-        /// Attack speed.
-        /// </summary>
-        public AttackSpeed AttackSpeed { get; }
-
-        /// <summary>
-        /// Move speed.
-        /// </summary>
-        public int MoveSpeed { get; }
 
         /// <summary>
         /// Absorbs damage regardless of REC value.

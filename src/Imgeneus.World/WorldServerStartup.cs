@@ -24,6 +24,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Time;
@@ -98,6 +99,7 @@ namespace Imgeneus.World
             services.AddScoped<ILevelProvider, LevelProvider>();
             services.AddScoped<ILevelingManager, LevelingManager>();
             services.AddScoped<IHealthManager, HealthManager>();
+            services.AddScoped<ISpeedManager, SpeedManager>();
             services.AddScoped<IAttackManager, AttackManager>();
             services.AddScoped<ISkillsManager, SkillsManager>();
             services.AddScoped<IBuffsManager, BuffsManager>();

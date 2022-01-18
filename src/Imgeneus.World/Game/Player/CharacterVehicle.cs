@@ -54,7 +54,7 @@ namespace Imgeneus.World.Game.Player
                 _isOnVehicle = value;
 
                 OnShapeChange?.Invoke(this);
-                InvokeAttackOrMoveChanged();
+                //InvokeAttackOrMoveChanged();
             }
         }
 

@@ -5,6 +5,7 @@ using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
@@ -23,16 +24,17 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
+        private readonly ISpeedManager _speedManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager)
         {
             _logger = logger;
             _database = database;
             _databasePreloader = databasePreloader;
             _statsManager = statsManager;
             _healthManager = healthManager;
-
+            _speedManager = speedManager;
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
 #if DEBUG
@@ -323,17 +325,18 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.WeaponMastery:
-                    /*if (!_weaponSpeedPassiveSkillModificator.ContainsKey(skill.Weapon1))
-                        _weaponSpeedPassiveSkillModificator.Add(skill.Weapon1, skill.Weaponvalue);
-                    else
-                        _weaponSpeedPassiveSkillModificator[skill.Weapon1] = skill.Weaponvalue;
+                    if (skill.Weapon1 != 0)
+                    {
+                        _speedManager.WeaponSpeedPassiveSkillModificator.Add(skill.Weapon1, skill.Weaponvalue);
+                        _speedManager.RaisePassiveModificatorChanged(skill.Weapon1, skill.Weaponvalue, true);
+                    }
 
-                    if (!_weaponSpeedPassiveSkillModificator.ContainsKey(skill.Weapon2))
-                        _weaponSpeedPassiveSkillModificator.Add(skill.Weapon2, skill.Weaponvalue);
-                    else
-                        _weaponSpeedPassiveSkillModificator[skill.Weapon2] = skill.Weaponvalue;
+                    if (skill.Weapon2 != 0)
+                    {
+                        _speedManager.WeaponSpeedPassiveSkillModificator.Add(skill.Weapon2, skill.Weaponvalue);
+                        _speedManager.RaisePassiveModificatorChanged(skill.Weapon2, skill.Weaponvalue, true);
+                    }
 
-                    SendMoveAndAttackSpeed();*/
                     break;
 
                 case TypeDetail.RemoveAttribute:
@@ -361,7 +364,8 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 default:
-                    throw new NotImplementedException("Not implemented buff skill type.");
+                    _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
+                    break;
             }
         }
 
@@ -423,10 +427,17 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.WeaponMastery:
-                    /*_weaponSpeedPassiveSkillModificator.Remove(skill.Weapon1);
-                    _weaponSpeedPassiveSkillModificator.Remove(skill.Weapon2);
+                    if (skill.Weapon1 != 0)
+                    {
+                        _speedManager.WeaponSpeedPassiveSkillModificator.Remove(skill.Weapon1);
+                        _speedManager.RaisePassiveModificatorChanged(skill.Weapon1, skill.Weaponvalue, false);
+                    }
 
-                    SendMoveAndAttackSpeed();*/
+                    if (skill.Weapon2 != 0)
+                    {
+                        _speedManager.WeaponSpeedPassiveSkillModificator.Remove(skill.Weapon2);
+                        _speedManager.RaisePassiveModificatorChanged(skill.Weapon2, skill.Weaponvalue, false);
+                    }
                     break;
 
                 case TypeDetail.RemoveAttribute:
@@ -446,7 +457,8 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 default:
-                    throw new NotImplementedException("Not implemented buff skill type.");
+                    _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
+                    break;
             }
         }
 
@@ -588,17 +600,17 @@ namespace Imgeneus.World.Game.Buffs
                     return;
 
                 case AbilityType.MoveSpeed:
-                    /*if (addAbility)
-                        MoveSpeed += abilityValue;
+                    if (addAbility)
+                        _speedManager.ExtraMoveSpeed += abilityValue;
                     else
-                        MoveSpeed -= abilityValue;*/
+                        _speedManager.ExtraMoveSpeed -= abilityValue;
                     return;
 
                 case AbilityType.AttackSpeed:
-                    /*if (addAbility)
-                        SetAttackSpeedModifier(abilityValue);
+                    if (addAbility)
+                        _speedManager.ExtraAttackSpeed += abilityValue;
                     else
-                        SetAttackSpeedModifier(-1 * abilityValue);*/
+                        _speedManager.ExtraAttackSpeed -= abilityValue;
                     return;
 
                 case AbilityType.AbsorptionAura:

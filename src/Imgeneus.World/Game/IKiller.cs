@@ -1,6 +1,7 @@
 ﻿using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 
 namespace Imgeneus.World.Game
 {
@@ -11,6 +12,8 @@ namespace Imgeneus.World.Game
     public interface IKiller : IWorldMember, IStatsHolder
     {
         public ILevelProvider LevelProvider { get; }
+
+        public ISpeedManager SpeedManager { get; }
 
         public IAttackManager AttackManager { get; }
 

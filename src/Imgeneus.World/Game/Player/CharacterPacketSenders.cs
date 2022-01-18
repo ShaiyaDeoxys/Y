@@ -122,7 +122,7 @@ namespace Imgeneus.World.Game.Player
 
         protected void SendMoveAndAttackSpeed()
         {
-            if (Client != null) _packetsHelper.SendMoveAndAttackSpeed(Client, this);
+            //if (Client != null) _packetsHelper.SendMoveAndAttackSpeed(Client, this);
         }
 
         private void SendRunMode() => _packetsHelper.SendRunMode(Client, this);

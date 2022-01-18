@@ -1,6 +1,5 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
-using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
@@ -9,6 +8,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using System;
@@ -234,53 +234,6 @@ namespace Imgeneus.World.Game
 
         /// <inheritdoc />
         public ushort Angle { get; protected set; }
-
-        #endregion
-
-        #region Hitting chances
-
-        /// <summary>
-        /// Weapon speed calculated from passive skill. Key is weapon, value is speed modificator.
-        /// </summary>
-        protected readonly Dictionary<byte, byte> _weaponSpeedPassiveSkillModificator = new Dictionary<byte, byte>();
-
-        #endregion
-
-        #region Move & Attack speed
-
-        /// <summary>
-        /// Event, that is fired, when attack or move speed changes.
-        /// </summary>
-        public event Action<IKillable> OnAttackOrMoveChanged;
-
-        protected void InvokeAttackOrMoveChanged()
-        {
-            OnAttackOrMoveChanged?.Invoke(this);
-        }
-
-        public abstract AttackSpeed AttackSpeed { get; }
-
-        /// <summary>
-        /// Attack speed modifier is made of equipment and buffs.
-        /// </summary>
-        protected int _attackSpeedModifier;
-
-        /// <summary>
-        /// Sets attack modifier.
-        /// </summary>
-        protected void SetAttackSpeedModifier(int speed)
-        {
-            if (speed == 0)
-                return;
-
-            _attackSpeedModifier += speed;
-            InvokeAttackOrMoveChanged();
-        }
-
-        /// <summary>
-        /// How fast killable changes its' position.
-        /// </summary>
-        public abstract int MoveSpeed { get; protected set; }
 
         #endregion
 

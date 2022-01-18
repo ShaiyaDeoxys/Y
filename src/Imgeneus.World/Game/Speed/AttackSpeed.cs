@@ -1,4 +1,4 @@
-﻿namespace Imgeneus.World.Game.Attack
+﻿namespace Imgeneus.World.Game.Speed
 {
     public enum AttackSpeed : byte
     {

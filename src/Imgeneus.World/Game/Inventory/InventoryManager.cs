@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,10 +22,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IGameSession _gameSession;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
-
+        private readonly ISpeedManager _speedManager;
         private int _owner;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -32,6 +33,9 @@ namespace Imgeneus.World.Game.Inventory
             _gameSession = gameSession;
             _statsManager = statsManager;
             _healthManager = healthManager;
+            _speedManager = speedManager;
+
+            _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
 
 #if DEBUG
             _logger.LogDebug("InventoryManager {hashcode} created", GetHashCode());
@@ -142,6 +146,12 @@ namespace Imgeneus.World.Game.Inventory
             Wings = null;
         }
 
+
+        public void Dispose()
+        {
+            _speedManager.OnPassiveModificatorChanged -= SpeedManager_OnPassiveModificatorChanged;
+        }
+
         #endregion
 
         #region Equipment
@@ -241,10 +251,13 @@ namespace Imgeneus.World.Game.Inventory
                 TakeOffItem(_weapon);
                 _weapon = value;
 
-                //if (_weapon != null)
-                //    SetWeaponSpeed(_weapon.AttackSpeed);
-                //else
-                //    SetWeaponSpeed(0);
+                if (_weapon != null)
+                {
+                    _speedManager.WeaponSpeedPassiveSkillModificator.TryGetValue(_weapon.ToPassiveSkillType(), out var passiveSkillModifier);
+                    _speedManager.ConstAttackSpeed = _weapon.AttackSpeed + passiveSkillModifier;
+                }
+                else
+                    _speedManager.ConstAttackSpeed = 0;
 
                 TakeOnItem(_weapon);
 
@@ -461,11 +474,11 @@ namespace Imgeneus.World.Game.Inventory
                 _statsManager.WeaponMaxAttack -= item.MaxAttack;
             }
 
-            /* if (item != Weapon && item != Mount)
-                 SetAttackSpeedModifier(-1 * item.AttackSpeed);
+            if (item != Weapon && item != Mount)
+                _speedManager.ExtraAttackSpeed -= item.AttackSpeed;
 
-             if (item != Mount)
-                 MoveSpeed -= item.MoveSpeed;*/
+            if (item != Mount)
+                _speedManager.ExtraMoveSpeed -= item.MoveSpeed;
         }
 
         /// <summary>
@@ -495,11 +508,11 @@ namespace Imgeneus.World.Game.Inventory
                 _statsManager.WeaponMaxAttack += item.MaxAttack;
             }
 
-            /*if (item != Weapon && item != Mount)
-                SetAttackSpeedModifier(item.AttackSpeed);
+            if (item != Weapon && item != Mount)
+                _speedManager.ExtraAttackSpeed += item.AttackSpeed;
 
             if (item != Mount)
-                MoveSpeed += item.MoveSpeed;*/
+                _speedManager.ExtraMoveSpeed += item.MoveSpeed;
         }
 
         #endregion
@@ -883,6 +896,18 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             return (bagSlot, freeSlot);
+        }
+
+        private void SpeedManager_OnPassiveModificatorChanged(byte weaponType, byte passiveSkillModifier, bool shouldAdd)
+        {
+            if (Weapon is null || passiveSkillModifier == 0 || weaponType != Weapon.ToPassiveSkillType())
+                return;
+
+            if (shouldAdd)
+                _speedManager.ConstAttackSpeed += passiveSkillModifier;
+            else
+                _speedManager.ConstAttackSpeed -= passiveSkillModifier;
+
         }
 
         #endregion

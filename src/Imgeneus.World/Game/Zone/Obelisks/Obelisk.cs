@@ -176,15 +176,15 @@ namespace Imgeneus.World.Game.Zone.Obelisks
             var mob = timerMob.Mob;
             var shouldAdd = false;
 
-            if (mob.Country == Fraction.NotSelected && ObeliskCountry == ObeliskCountry.None)
+            if (mob.CountryProvider.Country == CountryType.None && ObeliskCountry == ObeliskCountry.None)
             {
                 shouldAdd = true;
             }
-            else if (mob.Country == Fraction.Light && ObeliskCountry == ObeliskCountry.Light)
+            else if (mob.CountryProvider.Country == CountryType.Light && ObeliskCountry == ObeliskCountry.Light)
             {
                 shouldAdd = true;
             }
-            else if (mob.Country == Fraction.Dark && ObeliskCountry == ObeliskCountry.Dark)
+            else if (mob.CountryProvider.Country == CountryType.Dark && ObeliskCountry == ObeliskCountry.Dark)
             {
                 shouldAdd = true;
             }

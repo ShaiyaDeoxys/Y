@@ -22,11 +22,6 @@ namespace Imgeneus.World.Game.Attack
         void StartAttack();
 
         /// <summary>
-        /// How fast the new hit can be made.
-        /// </summary>
-        AttackSpeed AttackSpeed { get; }
-
-        /// <summary>
         /// Current enemy in target.
         /// </summary>
         IKillable Target { get; }

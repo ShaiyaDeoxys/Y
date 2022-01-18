@@ -22,6 +22,7 @@ using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
@@ -608,13 +609,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendMoveAndAttackSpeed(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTACK_MOVEMENT_SPEED);
-            packet.Write(new CharacterAttackAndMovement(character).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendResetStats(IWorldClient client, Character character)
         {
             using var packet = new ImgeneusPacket(PacketType.STATS_RESET);
@@ -698,8 +692,8 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_GET_STATE);
             packet.Write(target.Id);
             packet.Write(target.HealthManager.CurrentHP);
-            packet.Write((byte)target.AttackSpeed);
-            packet.Write((byte)target.MoveSpeed);
+            packet.Write((byte)target.SpeedManager.TotalAttackSpeed);
+            packet.Write((byte)target.SpeedManager.TotalMoveSpeed);
             client.Send(packet);
         }
 
@@ -1181,6 +1175,8 @@ namespace Imgeneus.World.Packets
             packet1.Write(new CharacterMove(character).Serialize());
             client.Send(packet1);
 
+            SendAttackAndMovementSpeed(client, character.Id, character.SpeedManager.TotalAttackSpeed, character.SpeedManager.TotalMoveSpeed);
+
             SendCharacterShape(client, character); // Fix for admin in stealth + dye.
 
             SendShapeUpdate(client, character);
@@ -1256,10 +1252,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendAttackAndMovementSpeed(IWorldClient client, IKillable sender)
+        internal void SendAttackAndMovementSpeed(IWorldClient client, int senderId, AttackSpeed attack, MoveSpeed move)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTACK_MOVEMENT_SPEED);
-            packet.Write(new CharacterAttackAndMovement(sender).Serialize());
+            packet.Write(new CharacterAttackAndMovement(senderId, attack, move).Serialize());
             client.Send(packet);
         }
 

@@ -11,6 +11,7 @@ using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Packets;
 using System;
 using System.Collections.Concurrent;
@@ -207,7 +208,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnMotion += Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged += Character_OnEquipmentChanged;
             character.OnPartyChanged += Character_OnPartyChanged;
-            character.OnAttackOrMoveChanged += Character_OnAttackOrMoveChanged;
+            character.SpeedManager.OnAttackOrMoveChanged += Character_OnAttackOrMoveChanged;
             character.SkillsManager.OnUsedSkill += Character_OnUsedSkill;
             character.SkillsManager.OnUsedRangeSkill += Character_OnUsedRangeSkill;
             character.AttackManager.OnAttack += Character_OnAttack;
@@ -239,7 +240,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnMotion -= Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged -= Character_OnEquipmentChanged;
             character.OnPartyChanged -= Character_OnPartyChanged;
-            character.OnAttackOrMoveChanged -= Character_OnAttackOrMoveChanged;
+            character.SpeedManager.OnAttackOrMoveChanged -= Character_OnAttackOrMoveChanged;
             character.SkillsManager.OnUsedSkill -= Character_OnUsedSkill;
             character.SkillsManager.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
             character.AttackManager.OnAttack -= Character_OnAttack;
@@ -316,10 +317,10 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player changed attack/move speed.
         /// </summary>
-        private void Character_OnAttackOrMoveChanged(IKillable sender)
+        private void Character_OnAttackOrMoveChanged(int senderId, AttackSpeed attack, MoveSpeed move)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendAttackAndMovementSpeed(player.Client, sender);
+                _packetsHelper.SendAttackAndMovementSpeed(player.Client, senderId, attack, move);
         }
 
         /// <summary>

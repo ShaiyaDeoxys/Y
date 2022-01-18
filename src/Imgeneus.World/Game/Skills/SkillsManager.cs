@@ -5,8 +5,10 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
@@ -29,10 +31,10 @@ namespace Imgeneus.World.Game.Skills
         private readonly IBuffsManager _buffsManager;
         private readonly IStatsManager _statsManager;
         private readonly IElementProvider _elementProvider;
-
+        private readonly ICountryProvider _countryProvider;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider)
+        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -42,7 +44,7 @@ namespace Imgeneus.World.Game.Skills
             _buffsManager = buffsManager;
             _statsManager = statsManager;
             _elementProvider = elementProvider;
-
+            _countryProvider = countryProvider;
             _castTimer.Elapsed += CastTimer_Elapsed;
 
 #if DEBUG
@@ -66,6 +68,9 @@ namespace Imgeneus.World.Game.Skills
 
             foreach (var skill in skills)
                 Skills.TryAdd(skill.Number, skill);
+
+            foreach (var skill in Skills.Values.Where(s => s.IsPassive && s.Type != TypeDetail.Stealth))
+                _buffsManager.AddActiveBuff(skill, null);
         }
 
         public async Task Clear()
@@ -205,8 +210,8 @@ namespace Imgeneus.World.Game.Skills
             _logger.LogDebug("Character {characterId} learned skill {skillId} of level {skillLevel}", _ownerId, skillId, skillLevel);
 
             // Activate passive skill as soon as it's learned.
-            //if (skill.IsPassive)
-            //UseSkill(skill);
+            if (skill.IsPassive)
+                _buffsManager.AddActiveBuff(skill, null);
 
             return (true, skill);
         }
@@ -269,7 +274,7 @@ namespace Imgeneus.World.Game.Skills
                 skill.TargetType == TargetType.AnyEnemy ||
                 skill.TargetType == TargetType.EnemiesNearTarget)
                 &&
-                (target is null || target.IsDead /*|| (target is Mob && (target as Mob).Country == Country)*/))
+                (target is null || target.IsDead || (target is Mob && (target as Mob).CountryProvider.Country == _countryProvider.Country)))
             {
                 success = AttackSuccess.WrongTarget;
                 return false;
@@ -444,7 +449,7 @@ namespace Imgeneus.World.Game.Skills
 
                 case TypeDetail.PassiveDefence:
                 case TypeDetail.WeaponMastery:
-                    //target.BuffsManager.AddActiveBuff(skill, this);
+                    target.BuffsManager.AddActiveBuff(skill, skillOwner);
                     break;
 
                 default:

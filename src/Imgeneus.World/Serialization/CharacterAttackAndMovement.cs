@@ -1,8 +1,8 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game;
-using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Speed;
 
 namespace Imgeneus.World.Serialization
 {
@@ -15,13 +15,13 @@ namespace Imgeneus.World.Serialization
         public AttackSpeed AttackSpeed { get; }
 
         [FieldOrder(2)]
-        public MoveSpeedEnum MoveSpeed { get; }
+        public MoveSpeed MoveSpeed { get; }
 
-        public CharacterAttackAndMovement(IKillable character)
+        public CharacterAttackAndMovement(int characterId, AttackSpeed attack, MoveSpeed move)
         {
-            CharacterId = character.Id;
-            AttackSpeed = character.AttackSpeed;
-            MoveSpeed = (MoveSpeedEnum)character.MoveSpeed;
+            CharacterId = characterId;
+            AttackSpeed = attack;
+            MoveSpeed = move;
         }
     }
 }

@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ namespace Imgeneus.World.Game.Monster
         private readonly ILogger<Mob> _logger;
         private readonly DbMob _dbMob;
 
+        public ISpeedManager SpeedManager { get; private set; }
         public IAttackManager AttackManager { get; private set; }
         public ISkillsManager SkillsManager { get; private set; }
 
@@ -33,6 +35,7 @@ namespace Imgeneus.World.Game.Monster
                    IStatsManager statsManager,
                    IHealthManager healthManager,
                    ILevelProvider levelProvider,
+                   ISpeedManager speedManager,
                    IAttackManager attackManager,
                    ISkillsManager skillsManager,
                    IBuffsManager buffsManager,
@@ -52,6 +55,9 @@ namespace Imgeneus.World.Game.Monster
             BuffsManager.Init(Id);
 
             CountryProvider.Init(Id, _dbMob.Fraction);
+
+            SpeedManager = speedManager;
+            SpeedManager.Init(Id);
 
             AttackManager = attackManager;
             AttackManager.Init(Id);
@@ -121,7 +127,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, AttackManager, SkillsManager, BuffsManager, ElementProvider);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider);
         }
 
         public void Dispose()

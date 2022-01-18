@@ -75,14 +75,14 @@ namespace Imgeneus.World.Game.Player
                 StatsManager.ExtraDefense += gem.Defense;
                 StatsManager.ExtraResistance += gem.Resistance;
                 StatsManager.Absorption += gem.Absorb;
-                MoveSpeed += gem.MoveSpeed;
-                SetAttackSpeedModifier(gem.AttackSpeed);
+                SpeedManager.ExtraMoveSpeed += gem.MoveSpeed;
+                SpeedManager.ExtraAttackSpeed += gem.AttackSpeed;
 
                 //if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.MaxAttack != 0)
                     //SendAdditionalStats();
 
-                if (gem.AttackSpeed != 0 || gem.MoveSpeed != 0)
-                    InvokeAttackOrMoveChanged();
+                //if (gem.AttackSpeed != 0 || gem.MoveSpeed != 0)
+                    //InvokeAttackOrMoveChanged();
             }
 
             if (!result.Success && saveItem == null && gem.ReqVg > 0)
@@ -325,14 +325,14 @@ namespace Imgeneus.World.Game.Player
                         StatsManager.ExtraDefense -= gem.Defense;
                         StatsManager.ExtraResistance -= gem.Resistance;
                         StatsManager.Absorption -= gem.Absorb;
-                        MoveSpeed -= gem.MoveSpeed;
-                        SetAttackSpeedModifier(gem.AttackSpeed * (-1));
+                        SpeedManager.ExtraMoveSpeed -= gem.MoveSpeed;
+                        SpeedManager.ExtraAttackSpeed -= gem.AttackSpeed;
 
                         //if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.PlusAttack != 0)
                             //SendAdditionalStats();
 
-                        if (gem.AttackSpeed != 0 || gem.MoveSpeed != 0)
-                            InvokeAttackOrMoveChanged();
+                        //if (gem.AttackSpeed != 0 || gem.MoveSpeed != 0)
+                            //InvokeAttackOrMoveChanged();
                     }
                 }
             }

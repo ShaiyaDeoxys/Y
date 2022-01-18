@@ -10,17 +10,6 @@ namespace Imgeneus.World.Game.Player
     public partial class Character : IKillable
     {
         /// <summary>
-        /// Initialize passive skills.
-        /// </summary>
-        public void InitPassiveSkills()
-        {
-            foreach (var skill in SkillsManager.Skills.Values.Where(s => s.IsPassive && s.Type != TypeDetail.Stealth))
-            {
-                SkillsManager.UseSkill(skill, this);
-            }
-        }
-
-        /// <summary>
         /// Clears skills and adds skill points.
         /// </summary>
         public void ResetSkills()

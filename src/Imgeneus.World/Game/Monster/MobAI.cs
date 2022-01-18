@@ -163,27 +163,6 @@ namespace Imgeneus.World.Game.Monster
         }
 
         /// <summary>
-        /// Mob's fraction.
-        /// </summary>
-        public Fraction Country
-        {
-            get
-            {
-                switch (_dbMob.Fraction)
-                {
-                    case MobFraction.Dark:
-                        return Fraction.Dark;
-
-                    case MobFraction.Light:
-                        return Fraction.Light;
-
-                    default:
-                        return Fraction.NotSelected;
-                }
-            }
-        }
-
-        /// <summary>
         /// Turns on ai of mob, based on its' type.
         /// </summary>
         private void SelectActionBasedOnAI()
@@ -285,9 +264,6 @@ namespace Imgeneus.World.Game.Monster
         #endregion
 
         #region Move
-
-        /// <inheritdoc />
-        public override int MoveSpeed { get; protected set; } = 2;
 
         /// <summary>
         /// Event, that is fired, when mob moves.
@@ -566,9 +542,6 @@ namespace Imgeneus.World.Game.Monster
         {
             ClearTarget();
         }
-
-        /// <inheritdoc />
-        public override AttackSpeed AttackSpeed => AttackSpeed.Normal;
 
         /// <summary>
         /// Event, that is fired, when mob attacks some user.

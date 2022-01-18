@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,10 +42,11 @@ namespace Imgeneus.World.Game.Monster
                               scope.ServiceProvider.GetRequiredService<IStatsManager>(),
                               scope.ServiceProvider.GetRequiredService<IHealthManager>(),
                               scope.ServiceProvider.GetRequiredService<ILevelProvider>(),
+                              scope.ServiceProvider.GetRequiredService<ISpeedManager>(),
                               scope.ServiceProvider.GetRequiredService<IAttackManager>(),
                               scope.ServiceProvider.GetRequiredService<ISkillsManager>(),
                               scope.ServiceProvider.GetRequiredService<IBuffsManager>(),
-                              scope.ServiceProvider.GetRequiredService<IElementProvider>()); ; ;
+                              scope.ServiceProvider.GetRequiredService<IElementProvider>());
             mob.OnDead += Mob_OnDead;
 
             _mobScopes.Add(mob, scope);
