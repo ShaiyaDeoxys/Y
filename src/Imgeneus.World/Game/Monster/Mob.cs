@@ -7,6 +7,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -39,7 +40,8 @@ namespace Imgeneus.World.Game.Monster
                    IAttackManager attackManager,
                    ISkillsManager skillsManager,
                    IBuffsManager buffsManager,
-                   IElementProvider elementProvider) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
+                   IElementProvider elementProvider,
+                   IMovementManager movementManager) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -70,9 +72,11 @@ namespace Imgeneus.World.Game.Monster
 
             MoveArea = moveArea;
             Map = map;
-            PosX = new Random().NextFloat(MoveArea.X1, MoveArea.X2);
-            PosY = new Random().NextFloat(MoveArea.Y1, MoveArea.Y2);
-            PosZ = new Random().NextFloat(MoveArea.Z1, MoveArea.Z2);
+
+            var x = new Random().NextFloat(MoveArea.X1, MoveArea.X2);
+            var y = new Random().NextFloat(MoveArea.Y1, MoveArea.Y2);
+            var z = new Random().NextFloat(MoveArea.Z1, MoveArea.Z2);
+            MovementManager.Init(Id, x, y, z, 0, MoveMotion.Walk);
 
             IsAttack1Enabled = _dbMob.AttackOk1 != 0;
             IsAttack2Enabled = _dbMob.AttackOk2 != 0;
@@ -127,7 +131,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager);
         }
 
         public void Dispose()

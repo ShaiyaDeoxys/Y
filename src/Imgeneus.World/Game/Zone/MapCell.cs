@@ -7,6 +7,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
@@ -164,8 +165,8 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         public IEnumerable<IKillable> GetEnemies(Character sender, IKillable target, byte range)
         {
-            IEnumerable<IKillable> mobs = GetAllMobs(true).Where(m => !m.IsDead && MathExtensions.Distance(target.PosX, m.PosX, target.PosZ, m.PosZ) <= range);
-            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(target.PosX, p.PosX, target.PosZ, p.PosZ) <= range);
+            IEnumerable<IKillable> mobs = GetAllMobs(true).Where(m => !m.IsDead && MathExtensions.Distance(target.MovementManager.PosX, m.PosX, target.MovementManager.PosZ, m.PosZ) <= range);
+            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(target.MovementManager.PosX, p.PosX, target.MovementManager.PosZ, p.PosZ) <= range);
 
             return mobs.Concat(chars);
         }
@@ -205,7 +206,7 @@ namespace Imgeneus.World.Game.Zone
             // Map with id is test map.
             if (character.MapId == Map.TEST_MAP_ID)
                 return;
-            character.OnPositionChanged += Character_OnPositionChanged;
+            character.MovementManager.OnMove += Character_OnMove;
             character.OnMotion += Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged += Character_OnEquipmentChanged;
             character.OnPartyChanged += Character_OnPartyChanged;
@@ -236,7 +237,7 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         private void RemoveListeners(Character character)
         {
-            character.OnPositionChanged -= Character_OnPositionChanged;
+            character.MovementManager.OnMove -= Character_OnMove;
             character.OnMotion -= Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged -= Character_OnEquipmentChanged;
             character.OnPartyChanged -= Character_OnPartyChanged;
@@ -267,11 +268,11 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players about position change.
         /// </summary>
-        private void Character_OnPositionChanged(Character movedPlayer)
+        private void Character_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             // Send other clients notification, that user is moving.
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendCharacterMoves(player.Client, movedPlayer);
+                _packetsHelper.SendCharacterMoves(player.Client, senderId, x, y, z ,a, motion);
         }
 
         /// <summary>
@@ -560,7 +561,7 @@ namespace Imgeneus.World.Game.Zone
         private void AddListeners(Mob mob)
         {
             mob.OnDead += Mob_OnDead;
-            mob.OnMove += Mob_OnMove;
+            mob.MovementManager.OnMove += Mob_OnMove;
             mob.OnAttack += Mob_OnAttack;
             mob.OnUsedSkill += Mob_OnUsedSkill;
             mob.HealthManager.OnRecover += Mob_OnRecover;
@@ -573,7 +574,7 @@ namespace Imgeneus.World.Game.Zone
         private void RemoveListeners(Mob mob)
         {
             mob.OnDead -= Mob_OnDead;
-            mob.OnMove -= Mob_OnMove;
+            mob.MovementManager.OnMove -= Mob_OnMove;
             mob.OnAttack -= Mob_OnAttack;
             mob.OnUsedSkill -= Mob_OnUsedSkill;
             mob.HealthManager.OnRecover -= Mob_OnRecover;
@@ -597,10 +598,10 @@ namespace Imgeneus.World.Game.Zone
 
         }
 
-        private void Mob_OnMove(Mob sender)
+        private void Mob_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
-            //foreach (var player in GetAllPlayers(true))
-                //_packetsHelper.SendMobMove(player.Client, sender);
+            foreach (var player in GetAllPlayers(true))
+                _packetsHelper.SendMobMove(player.Client, senderId, x, z, motion);
         }
 
         private void Mob_OnAttack(IKiller sender, IKillable target, AttackResult attackResult)

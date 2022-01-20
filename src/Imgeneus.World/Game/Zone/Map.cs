@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Time;
@@ -249,7 +250,7 @@ namespace Imgeneus.World.Game.Zone
                 character.Map = this;
                 Cells[GetCellIndex(character)].AddPlayer(character);
 
-                character.OnPositionChanged += Character_OnPositionChanged;
+                character.MovementManager.OnMove += Character_OnMove;
                 _logger.LogDebug($"Player {character.Id} connected to map {Id}, cell index {character.CellId}.");
             }
             else
@@ -271,7 +272,7 @@ namespace Imgeneus.World.Game.Zone
 
             if (success)
             {
-                //character.RemoveVehicle();
+                character.VehicleManager.RemoveVehicle();
 
                 if (character.IsDead)
                 {
@@ -281,7 +282,7 @@ namespace Imgeneus.World.Game.Zone
 
                 Cells[character.CellId].RemovePlayer(character, true);
                 UnregisterSearchForParty(character);
-                character.OnPositionChanged -= Character_OnPositionChanged;
+                character.MovementManager.OnMove -= Character_OnMove;
                 character.OldCellId = -1;
                 character.CellId = -1;
                 _logger.LogDebug($"Player {character.Id} left map {Id}");
@@ -309,8 +310,9 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// When player's position changes, we are checking if player's map cell should be changed.
         /// </summary>
-        private void Character_OnPositionChanged(Character sender)
+        private void Character_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
+            var sender = Players[senderId];
             var newCellId = GetCellIndex(sender);
             var oldCellId = sender.CellId;
             if (oldCellId == newCellId) // All is fine, character is in the right cell
@@ -492,9 +494,9 @@ namespace Imgeneus.World.Game.Zone
             var mob = sender.Clone();
 
             // TODO: generate rebirth coordinates based on the spawn area.
-            mob.PosX = sender.PosX;
-            mob.PosY = sender.PosY;
-            mob.PosZ = sender.PosZ;
+            mob.MovementManager.PosX = sender.PosX;
+            mob.MovementManager.PosY = sender.PosY;
+            mob.MovementManager.PosZ = sender.PosZ;
 
             AddMob(mob);
         }

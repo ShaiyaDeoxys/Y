@@ -18,6 +18,7 @@ using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
@@ -642,7 +643,7 @@ namespace Imgeneus.World.Packets
         internal void SendRunMode(IWorldClient client, Character character)
         {
             using var packet = new ImgeneusPacket(PacketType.RUN_MODE);
-            packet.Write(character.MoveMotion);
+            packet.Write(character.MovementManager.MoveMotion);
             client.Send(packet);
         }
 
@@ -682,10 +683,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendMobPosition(IWorldClient client, Mob mob)
+        internal void SendMobPosition(IWorldClient client, int senderId, float x, float z, MoveMotion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
-            packet.Write(new MobMove(mob).Serialize());
+            packet.Write(new MobMove(senderId, x, z, motion).Serialize());
             client.Send(packet);
         }
 
@@ -1129,10 +1130,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCharacterMoves(IWorldClient client, Character movedPlayer)
+        internal void SendCharacterMoves(IWorldClient client, int senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_MOVE);
-            packet.Write(new CharacterMove(movedPlayer).Serialize());
+            packet.Write(new CharacterMove(senderId, x, y, z, a, motion).Serialize());
             client.Send(packet);
         }
 
@@ -1174,7 +1175,12 @@ namespace Imgeneus.World.Packets
             client.Send(packet0);
 
             using var packet1 = new ImgeneusPacket(PacketType.CHARACTER_MOVE);
-            packet1.Write(new CharacterMove(character).Serialize());
+            packet1.Write(new CharacterMove(character.Id,
+                                            character.MovementManager.PosX,
+                                            character.MovementManager.PosY,
+                                            character.MovementManager.PosZ,
+                                            character.MovementManager.Angle,
+                                            character.MovementManager.MoveMotion).Serialize());
             client.Send(packet1);
 
             SendAttackAndMovementSpeed(client, character.Id, character.SpeedManager.TotalAttackSpeed, character.SpeedManager.TotalMoveSpeed);
@@ -1198,10 +1204,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendMobMove(IWorldClient client, Mob mob)
+        internal void SendMobMove(IWorldClient client, int senderId, float x, float z, MoveMotion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
-            packet.Write(new MobMove(mob).Serialize());
+            packet.Write(new MobMove(senderId, x, z, motion).Serialize());
             client.Send(packet);
         }
 

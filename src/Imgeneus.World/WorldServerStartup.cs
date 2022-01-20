@@ -19,6 +19,7 @@ using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Notice;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
@@ -112,6 +113,7 @@ namespace Imgeneus.World
             services.AddScoped<IKillsManager, KillsManager>();
             services.AddScoped<IVehicleManager, VehicleManager>();
             services.AddScoped<IShapeManager, ShapeManager>();
+            services.AddScoped<IMovementManager, MovementManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

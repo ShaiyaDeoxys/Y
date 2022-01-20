@@ -7,6 +7,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -30,8 +31,9 @@ namespace Imgeneus.World.Game
         public ILevelProvider LevelProvider { get; private set; }
         public IBuffsManager BuffsManager { get; private set; }
         public IElementProvider ElementProvider { get; private set; }
+        public IMovementManager MovementManager { get; private set; }
 
-        public BaseKillable(IDatabasePreloader databasePreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider)
+        public BaseKillable(IDatabasePreloader databasePreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider, IMovementManager movementManager)
         {
             _databasePreloader = databasePreloader;
             CountryProvider = countryProvider;
@@ -40,6 +42,7 @@ namespace Imgeneus.World.Game
             LevelProvider = levelProvider;
             BuffsManager = buffsManager;
             ElementProvider = elementProvider;
+            MovementManager = movementManager;
         }
 
         private int _id;
@@ -205,16 +208,16 @@ namespace Imgeneus.World.Game
         #region Position
 
         /// <inheritdoc />
-        public float PosX { get; set; }
+        public float PosX { get => MovementManager.PosX; }
 
         /// <inheritdoc />
-        public float PosY { get; set; }
+        public float PosY { get => MovementManager.PosY; }
 
         /// <inheritdoc />
-        public float PosZ { get; set; }
+        public float PosZ { get => MovementManager.PosZ; }
 
         /// <inheritdoc />
-        public ushort Angle { get; protected set; }
+        public ushort Angle { get => MovementManager.Angle; }
 
         #endregion
 
@@ -244,9 +247,9 @@ namespace Imgeneus.World.Game
             HealthManager.CurrentSP = HealthManager.MaxSP;
             IsDead = false;
 
-            PosX = x;
-            PosY = y;
-            PosZ = z;
+            MovementManager.PosX = x;
+            MovementManager.PosY = y;
+            MovementManager.PosZ = z;
 
             OnRebirthed?.Invoke(this);
 

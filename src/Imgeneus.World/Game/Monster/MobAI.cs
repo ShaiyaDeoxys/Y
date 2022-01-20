@@ -3,6 +3,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Zone;
@@ -175,7 +176,7 @@ namespace Imgeneus.World.Game.Monster
                     break;
 
                 case MobAI.Relic:
-                    if (Target != null && MathExtensions.Distance(PosX, Target.PosX, PosZ, Target.PosZ) <= _dbMob.ChaseRange)
+                    if (Target != null && MathExtensions.Distance(PosX, Target.MovementManager.PosX, PosZ, Target.MovementManager.PosZ) <= _dbMob.ChaseRange)
                         State = MobState.ReadyToAttack;
                     else
                         State = MobState.Idle;
@@ -253,22 +254,17 @@ namespace Imgeneus.World.Game.Monster
             if (z2 < MoveArea.Z2)
                 z2 = MoveArea.Z2;
 
-            PosX = new Random().NextFloat(x1, x2);
-            PosZ = new Random().NextFloat(z1, z2);
+            MovementManager.PosX = new Random().NextFloat(x1, x2);
+            MovementManager.PosZ = new Random().NextFloat(z1, z2);
 
             //_logger.LogDebug($"Mob {Id} walks to new position x={PosX} y={PosY} z={PosZ}.");
 
-            OnMove?.Invoke(this);
+            MovementManager.RaisePositionChanged();
         }
 
         #endregion
 
         #region Move
-
-        /// <summary>
-        /// Event, that is fired, when mob moves.
-        /// </summary>
-        public event Action<Mob> OnMove;
 
         /// <summary>
         /// Since when we sent the last update to players about mob position.
@@ -279,29 +275,6 @@ namespace Imgeneus.World.Game.Monster
         /// Used for calculation delta time.
         /// </summary>
         private DateTime _lastMoveUpdate;
-
-        /// <summary>
-        /// Describes if mob is "walking" or "running".
-        /// </summary>
-        public MobMotion MoveMotion
-        {
-            get
-            {
-                switch (State)
-                {
-                    case MobState.Idle:
-                        return MobMotion.Walk;
-
-                    case MobState.Chase:
-                    case MobState.BackToBirthPosition:
-                    case MobState.ReadyToAttack:
-                        return MobMotion.Run;
-
-                    default:
-                        return MobMotion.Run;
-                }
-            }
-        }
 
         /// <summary>
         /// Moves mob to the specified position.
@@ -324,15 +297,15 @@ namespace Imgeneus.World.Game.Monster
             var deltaTime = now.Subtract(_lastMoveUpdate);
             var deltaMilliseconds = deltaTime.TotalMilliseconds > 2000 ? 500 : deltaTime.TotalMilliseconds;
             var temp = normalizedVector * (float)(_dbMob.ChaseStep * 1.0 / _dbMob.ChaseTime * deltaMilliseconds);
-            PosX += float.IsNaN(temp.X) ? 0 : temp.X;
-            PosZ += float.IsNaN(temp.Y) ? 0 : temp.Y;
+            MovementManager.PosX += float.IsNaN(temp.X) ? 0 : temp.X;
+            MovementManager.PosZ += float.IsNaN(temp.Y) ? 0 : temp.Y;
 
             _lastMoveUpdate = now;
 
             // Send update to players, that mob position has changed.
             if (DateTime.UtcNow.Subtract(_lastMoveUpdateSent).TotalMilliseconds > 1000)
             {
-                OnMove?.Invoke(this);
+                MovementManager.RaisePositionChanged();
                 _lastMoveUpdateSent = now;
             }
         }
@@ -388,6 +361,8 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         private void StartChasing()
         {
+            MovementManager.MoveMotion = MoveMotion.Run;
+
             _chaseTimer.Start();
 
             if (StartPosX == -1)
@@ -412,7 +387,7 @@ namespace Imgeneus.World.Game.Monster
                 return;
             }
 
-            var distanceToPlayer = MathExtensions.Distance(PosX, Target.PosX, PosZ, Target.PosZ);
+            var distanceToPlayer = MathExtensions.Distance(PosX, Target.MovementManager.PosX, PosZ, Target.MovementManager.PosZ);
             if (distanceToPlayer <= _dbMob.AttackRange1 || distanceToPlayer <= _dbMob.AttackRange2 || distanceToPlayer <= _dbMob.AttackRange3)
             {
                 State = MobState.ReadyToAttack;
@@ -420,7 +395,7 @@ namespace Imgeneus.World.Game.Monster
                 return;
             }
 
-            Move(Target.PosX, Target.PosZ);
+            Move(Target.MovementManager.PosX, Target.MovementManager.PosZ);
 
             if (IsTooFarAway)
             {
@@ -488,6 +463,7 @@ namespace Imgeneus.World.Game.Monster
                 StartPosZ = -1;
                 HealthManager.FullRecover();
                 State = MobState.Idle;
+                MovementManager.MoveMotion = MoveMotion.Walk;
             }
         }
 
@@ -580,7 +556,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public void UseAttack()
         {
-            var distanceToPlayer = MathExtensions.Distance(PosX, Target.PosX, PosZ, Target.PosZ);
+            var distanceToPlayer = MathExtensions.Distance(PosX, Target.MovementManager.PosX, PosZ, Target.MovementManager.PosZ);
             var now = DateTime.UtcNow;
             int delay = 1000;
             var attackId = RandomiseAttack(now);
@@ -764,7 +740,7 @@ namespace Imgeneus.World.Game.Monster
                         break;
 
                     case TargetType.EnemiesNearTarget:
-                        targets.AddRange(Map.Cells[CellId].GetPlayers(target.PosX, target.PosZ, skill.ApplyRange, EnemyPlayersFraction));
+                        targets.AddRange(Map.Cells[CellId].GetPlayers(target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange, EnemyPlayersFraction));
                         break;
 
                     default:
@@ -876,33 +852,6 @@ namespace Imgeneus.World.Game.Monster
         /// Indicator of attack 3.
         /// </summary>
         private readonly bool IsAttack3Enabled;
-
-        #endregion
-
-        #region Stealth
-
-        public AttackResult UsedStealthSkill(Skill skill, IKillable target)
-        {
-            throw new NotImplementedException("Mobs do not support stealth for now.");
-        }
-
-        #endregion
-
-        #region Healing
-
-        public AttackResult UsedHealingSkill(Skill skill, IKillable target)
-        {
-            throw new NotImplementedException("Mob doesn't support healing for now.");
-        }
-
-        #endregion
-
-        #region Dispel
-
-        public AttackResult UsedDispelSkill(Skill skill, IKillable target)
-        {
-            throw new NotImplementedException("Mob doesn't support dispel for now.");
-        }
 
         #endregion
     }

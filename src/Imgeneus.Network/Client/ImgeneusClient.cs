@@ -57,10 +57,11 @@ namespace Imgeneus.Network.Client
                     packetType = (PacketType)decryptedPacket.Read<ushort>();
                 }
 
-                _logger.LogTrace("Received {0} (0x{1}) packet from {2}.",
-                                    packetType,
-                                    ((ushort)packetType).ToString("X2"),
-                                    Socket.RemoteEndPoint);
+                if (packetType != PacketType.CHARACTER_MOVE)
+                    _logger.LogTrace("Received {0} (0x{1}) packet from {2}.",
+                                        packetType,
+                                        ((ushort)packetType).ToString("X2"),
+                                        Socket.RemoteEndPoint);
 
                 await InvokePacketAsync(packetType, decryptedPacket).ConfigureAwait(false);
             }
@@ -193,7 +194,7 @@ namespace Imgeneus.Network.Client
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.WaitForFullGCComplete();
-            });   
+            });
 #endif
         }
     }

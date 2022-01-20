@@ -3,6 +3,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Speed;
 using System;
 
@@ -23,6 +24,8 @@ namespace Imgeneus.World.Game
 
         public IElementProvider ElementProvider { get; }
 
+        public IMovementManager MovementManager { get; }
+
         /// <summary>
         /// Indicator, that shows if entity is dead or not.
         /// </summary>
@@ -32,21 +35,6 @@ namespace Imgeneus.World.Game
         /// Event, that is fired, when entity is killed.
         /// </summary>
         public event Action<IKillable, IKiller> OnDead;
-
-        /// <summary>
-        /// Current x position.
-        /// </summary>
-        public float PosX { get; }
-
-        /// <summary>
-        /// Current y position.
-        /// </summary>
-        public float PosY { get; }
-
-        /// <summary>
-        /// Current z position.
-        /// </summary>
-        public float PosZ { get; }
 
         /// <summary>
         /// Absorbs damage regardless of REC value.

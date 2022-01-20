@@ -40,10 +40,10 @@ namespace Imgeneus.World.Game.Player
             OnMotion?.Invoke(this, packet.Motion);
         }
 
-        private void HandleMove(MoveCharacterPacket packet)
-        {
-            UpdatePosition(packet.X, packet.Y, packet.Z, packet.Angle, packet.MovementType == MovementType.Stopped);
-        }
+        //private void HandleMove(MoveCharacterPacket packet)
+        //{
+        //    UpdatePosition(packet.X, packet.Y, packet.Z, packet.Angle, packet.MovementType == MovementType.Stopped);
+        //}
 
         private void HandleLearnNewSkill(LearnNewSkillPacket learnNewSkillsPacket)
         {
@@ -98,7 +98,7 @@ namespace Imgeneus.World.Game.Player
             var target = Map.GetMob(CellId, targetId);
             if (target != null)
             {
-                _packetsHelper.SendMobPosition(Client, target);
+                _packetsHelper.SendMobPosition(Client, target.Id, target.MovementManager.PosX, target.MovementManager.PosZ, target.MovementManager.MoveMotion);
                 _packetsHelper.SendMobState(Client, target);
             }
             else

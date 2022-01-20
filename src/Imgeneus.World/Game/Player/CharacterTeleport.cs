@@ -37,9 +37,9 @@ namespace Imgeneus.World.Game.Player
 
             var prevMapId = MapId;
             MapId = mapId;
-            PosX = x;
-            PosY = y;
-            PosZ = z;
+            MovementManager.PosX = x;
+            MovementManager.PosY = y;
+            MovementManager.PosZ = z;
             _taskQueue.Enqueue(ActionType.SAVE_MAP_ID, Id, MapId);
             _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_MOVE, Id, x, y, z, Angle);
 

@@ -38,6 +38,7 @@ using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Movement;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -96,7 +97,8 @@ namespace Imgeneus.World.Game.Player
                          IKillsManager killsManager,
                          IVehicleManager vehicleManager,
                          IShapeManager shapeManager,
-                         IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider)
+                         IMovementManager movementManager,
+                         IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -195,30 +197,6 @@ namespace Imgeneus.World.Game.Player
         private void OnBuffAdded(int senderId, Buff buff) => SendAddBuff(buff);
 
         private void OnBuffRemoved(int senderId, Buff buff) => SendRemoveBuff(buff);
-
-        #region Run mode
-
-        /// <summary>
-        ///  Set to 1 if you want character running or to 0 if character is "walking".
-        ///  Used to change with Tab in previous episodes.
-        /// </summary>
-        public byte MoveMotion
-        {
-            get
-            {
-                if (BuffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Immobilize || b.StateType == StateType.Sleep || b.StateType == StateType.Stun))
-                {
-                    return 193; // Can not move motion.
-                }
-
-                if (StealthManager.IsStealth)
-                    return 0;
-
-                return 1;
-            }
-        }
-
-        #endregion
 
         #region Motion
 
@@ -367,9 +345,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -380,10 +358,6 @@ namespace Imgeneus.World.Game.Player
                 Face = dbCharacter.Face,
                 Height = dbCharacter.Height,
                 Gender = dbCharacter.Gender,
-                PosX = dbCharacter.PosX,
-                PosY = dbCharacter.PosY,
-                PosZ = dbCharacter.PosZ,
-                Angle = dbCharacter.Angle,
                 AutoStr = dbCharacter.AutoStr,
                 AutoDex = dbCharacter.AutoDex,
                 AutoInt = dbCharacter.AutoInt,

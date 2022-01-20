@@ -29,6 +29,7 @@ using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Movement;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -65,6 +66,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IKillsManager _killsManager;
         private readonly IVehicleManager _vehicleManager;
         private readonly IShapeManager _shapeManager;
+        private readonly IMovementManager _movementManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -96,7 +98,8 @@ namespace Imgeneus.World.Game.Player
                                 IElementProvider elementProvider,
                                 IKillsManager killsManager,
                                 IVehicleManager vehicleManager,
-                                IShapeManager shapeManager)
+                                IShapeManager shapeManager,
+                                IMovementManager movementManager)
         {
             _logger = logger;
             _database = database;
@@ -129,6 +132,7 @@ namespace Imgeneus.World.Game.Player
             _killsManager = killsManager;
             _vehicleManager = vehicleManager;
             _shapeManager = shapeManager;
+            _movementManager = movementManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -183,6 +187,8 @@ namespace Imgeneus.World.Game.Player
 
             _shapeManager.Init(dbCharacter.Id);
 
+            _movementManager.Init(dbCharacter.Id, dbCharacter.PosX, dbCharacter.PosY, dbCharacter.PosZ, dbCharacter.Angle, MoveMotion.Run);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -215,6 +221,7 @@ namespace Imgeneus.World.Game.Player
                                         _killsManager,
                                         _vehicleManager,
                                         _shapeManager,
+                                        _movementManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.
