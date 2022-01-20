@@ -977,14 +977,14 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGemPossibility(IWorldClient client, double rate, int gold)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GEM_ADD_POSSIBILITY);
-            packet.WriteByte(1); // TODO: unknown, maybe bool, that we can link?
-            packet.Write(rate);
-            packet.Write(gold);
-            client.Send(packet);
-        }
+        //internal void SendGemPossibility(IWorldClient client, double rate, int gold)
+        //{
+        //    using var packet = new ImgeneusPacket(PacketType.GEM_ADD_POSSIBILITY);
+        //    packet.WriteByte(1); // TODO: unknown, maybe bool, that we can link?
+        //    packet.Write(rate);
+        //    packet.Write(gold);
+        //    client.Send(packet);
+        //}
 
         internal void SendGemRemovePossibility(IWorldClient client, double rate, int gold)
         {

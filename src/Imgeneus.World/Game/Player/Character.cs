@@ -51,7 +51,6 @@ namespace Imgeneus.World.Game.Player
         private readonly IMapsLoader _mapLoader;
         private readonly PacketsHelper _packetsHelper;
         private readonly IChatManager _chatManager;
-        private readonly ILinkingManager _linkingManager;
         private readonly IDyeingManager _dyeingManager;
         private readonly IMobFactory _mobFactory;
         private readonly INpcFactory _npcFactory;
@@ -67,6 +66,7 @@ namespace Imgeneus.World.Game.Player
         public IKillsManager KillsManager { get; private set; }
         public IVehicleManager VehicleManager { get; private set; }
         public IShapeManager ShapeManager { get; private set; }
+        public ILinkingManager LinkingManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -76,7 +76,6 @@ namespace Imgeneus.World.Game.Player
                          IDatabasePreloader databasePreloader,
                          IMapsLoader mapLoader,
                          IChatManager chatManager,
-                         ILinkingManager linkinManager,
                          IDyeingManager dyeingManager,
                          IMobFactory mobFactory,
                          INpcFactory npcFactory,
@@ -98,6 +97,7 @@ namespace Imgeneus.World.Game.Player
                          IVehicleManager vehicleManager,
                          IShapeManager shapeManager,
                          IMovementManager movementManager,
+                         ILinkingManager linkinManager,
                          IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager)
         {
             _logger = logger;
@@ -106,7 +106,6 @@ namespace Imgeneus.World.Game.Player
             _taskQueue = taskQueue;
             _mapLoader = mapLoader;
             _chatManager = chatManager;
-            _linkingManager = linkinManager;
             _dyeingManager = dyeingManager;
             _mobFactory = mobFactory;
             _npcFactory = npcFactory;
@@ -122,6 +121,7 @@ namespace Imgeneus.World.Game.Player
             KillsManager = killsManager;
             VehicleManager = vehicleManager;
             ShapeManager = shapeManager;
+            LinkingManager = linkinManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
@@ -347,7 +347,7 @@ namespace Imgeneus.World.Game.Player
         /// </summary>
         public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, IMobFactory mobFactory, INpcFactory npcFactory, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, linkingManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, mobFactory, npcFactory, noticeManager, guildManger, countryProvider, speedManager, statsManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,

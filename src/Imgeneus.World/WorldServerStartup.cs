@@ -114,10 +114,11 @@ namespace Imgeneus.World
             services.AddScoped<IVehicleManager, VehicleManager>();
             services.AddScoped<IShapeManager, ShapeManager>();
             services.AddScoped<IMovementManager, MovementManager>();
+            services.AddScoped<ILinkingManager, LinkingManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
-            services.AddTransient<ILinkingManager, LinkingManager>();
+            
             services.AddTransient<IDyeingManager, DyeingManager>();
             services.AddTransient<IGuildManager, GuildManager>();
             services.AddTransient<ITimeService, TimeService>();

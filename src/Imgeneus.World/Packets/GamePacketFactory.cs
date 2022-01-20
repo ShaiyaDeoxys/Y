@@ -364,6 +364,19 @@ namespace Imgeneus.World.Packets
         }
         #endregion
 
+        #region Linking
+
+        public void SendGemPossibility(IWorldClient client, double rate, int gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GEM_ADD_POSSIBILITY);
+            packet.WriteByte(1); // TODO: unknown, maybe bool, that we can link?
+            packet.Write(rate);
+            packet.Write(gold);
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {
@@ -377,6 +390,7 @@ namespace Imgeneus.World.Packets
             packet.Write((ushort)error);
             client.Send(packet);
         }
+
         #endregion
     }
 }

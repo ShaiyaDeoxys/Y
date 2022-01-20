@@ -68,6 +68,12 @@ namespace Imgeneus.World.Packets
         void SendMobRecover(IWorldClient client, int mobId, int hp);
         #endregion
 
+        #region Linking
+
+        void SendGemPossibility(IWorldClient client, double rate, int gold);
+
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

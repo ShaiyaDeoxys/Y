@@ -2,6 +2,7 @@
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -10,18 +11,32 @@ namespace Imgeneus.World.Game.Linking
     public class LinkingManager : ILinkingManager
     {
         private readonly Random _random = new Random();
+
+        private readonly ILogger<LinkingManager> _logger;
         private readonly IDatabasePreloader _databasePreloader;
 
-        public LinkingManager(IDatabasePreloader databasePreloader)
+        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader)
         {
+            _logger = logger;
             _databasePreloader = databasePreloader;
+
+#if DEBUG
+            _logger.LogDebug("LinkingManager {hashcode} created", GetHashCode());
+#endif
         }
+
+#if DEBUG
+        ~LinkingManager()
+        {
+            _logger.LogDebug("LinkingManager {hashcode} collected by GC", GetHashCode());
+        }
+#endif
 
         public Item Item { get; set; }
 
-        public (bool Success, byte Slot) AddGem(Item item, Item gem, Item hammer, byte extraRate)
+        public (bool Success, byte Slot) AddGem(Item item, Item gem, Item hammer)
         {
-            double rate = GetRate(gem, hammer, extraRate);
+            double rate = GetRate(gem, hammer);
             var rand = _random.Next(1, 101);
             var success = rate >= rand;
             byte slot = 0;
@@ -71,10 +86,10 @@ namespace Imgeneus.World.Game.Linking
             return success;
         }
 
-        public double GetRate(Item gem, Item hammer, byte extraRate)
+        public double GetRate(Item gem, Item hammer)
         {
             double rate = GetRateByReqIg(gem.ReqIg);
-            rate += extraRate;
+            rate += CalculateExtraRate();
 
             if (hammer != null)
             {
@@ -90,6 +105,25 @@ namespace Imgeneus.World.Game.Linking
             }
 
             return rate;
+        }
+
+
+        /// <summary>
+        /// Extra rate is made of guild house blacksmith rate + bless rate.
+        /// </summary>
+        /// <returns></returns>
+        private byte CalculateExtraRate()
+        {
+            byte extraRate = 0;
+            //if (HasGuild && Map is GuildHouseMap)
+            //{
+            //    var rates = _guildManager.GetBlacksmithRates((int)GuildId);
+            //    extraRate += rates.LinkRate;
+            //}
+
+            // TODO: add bless rate.
+
+            return extraRate;
         }
 
         public int GetGold(Item gem)

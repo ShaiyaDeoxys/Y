@@ -16,7 +16,7 @@ namespace Imgeneus.World.Game.Player
             if (gem is null || gem.Type != Item.GEM_ITEM_TYPE)
                 return;
 
-            var linkingGold = _linkingManager.GetGold(gem);
+            var linkingGold = LinkingManager.GetGold(gem);
             if (InventoryManager.Gold < linkingGold)
             {
                 // TODO: send warning, that not enough money?
@@ -39,7 +39,7 @@ namespace Imgeneus.World.Game.Player
                     TryUseItem(saveItem.Bag, saveItem.Slot);
             }
 
-            var result = _linkingManager.AddGem(item, gem, hammer, CalculateExtraRate());
+            var result = LinkingManager.AddGem(item, gem, hammer);
             InventoryManager.Gold = (uint)(InventoryManager.Gold - linkingGold);
             if (gem.Count > 0)
             {
@@ -128,7 +128,7 @@ namespace Imgeneus.World.Game.Player
             }
         }
 
-        public void AddGemPossibility(byte gemBag, byte gemSlot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
+        /*public void AddGemPossibility(byte gemBag, byte gemSlot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
         {
             InventoryItems.TryGetValue((gemBag, gemSlot), out var gem);
             if (gem is null)
@@ -138,11 +138,11 @@ namespace Imgeneus.World.Game.Player
             if (hammerBag != 0)
                 InventoryItems.TryGetValue((hammerBag, hammerSlot), out hammer);
 
-            var rate = _linkingManager.GetRate(gem, hammer, CalculateExtraRate());
-            var gold = _linkingManager.GetGold(gem);
+            var rate = LinkingManager.GetRate(gem, hammer, CalculateExtraRate());
+            var gold = LinkingManager.GetGold(gem);
 
             _packetsHelper.SendGemPossibility(Client, rate, gold);
-        }
+        }*/
 
         public void RemoveGem(byte bag, byte slot, bool shouldRemoveSpecificGem, byte gemPosition, byte hammerBag, byte hammerSlot)
         {
@@ -198,8 +198,8 @@ namespace Imgeneus.World.Game.Player
                 if (hammer != null)
                     TryUseItem(hammer.Bag, hammer.Slot);
 
-                success = _linkingManager.RemoveGem(item, gem, hammer, CalculateExtraRate());
-                spentGold += _linkingManager.GetRemoveGold(gem);
+                success = LinkingManager.RemoveGem(item, gem, hammer);
+                spentGold += LinkingManager.GetRemoveGold(gem);
 
                 if (success)
                 {
@@ -238,8 +238,8 @@ namespace Imgeneus.World.Game.Player
 
                 foreach (var gem in gems)
                 {
-                    success = _linkingManager.RemoveGem(item, gem, null);
-                    spentGold += _linkingManager.GetRemoveGold(gem);
+                    success = LinkingManager.RemoveGem(item, gem, null);
+                    spentGold += LinkingManager.GetRemoveGold(gem);
 
                     if (success)
                     {
@@ -422,8 +422,8 @@ namespace Imgeneus.World.Game.Player
 
                 InventoryItems.TryGetValue((hammerBag, hammerSlot), out var hammer);
 
-                rate = _linkingManager.GetRemoveRate(gem, hammer, CalculateExtraRate());
-                gold = _linkingManager.GetRemoveGold(gem);
+                rate = LinkingManager.GetRemoveRate(gem, hammer);
+                gold = LinkingManager.GetRemoveGold(gem);
             }
             else
             {
@@ -444,32 +444,14 @@ namespace Imgeneus.World.Game.Player
 
                 foreach (var gem in gems)
                 {
-                    rate *= _linkingManager.GetRemoveRate(gem, null) / 100;
-                    gold += _linkingManager.GetRemoveGold(gem);
+                    rate *= LinkingManager.GetRemoveRate(gem, null) / 100;
+                    gold += LinkingManager.GetRemoveGold(gem);
                 }
 
                 rate = rate * 100;
             }
 
             _packetsHelper.SendGemRemovePossibility(Client, rate, gold);
-        }
-
-        /// <summary>
-        /// Extra rate is made of guild house blacksmith rate + bless rate.
-        /// </summary>
-        /// <returns></returns>
-        private byte CalculateExtraRate()
-        {
-            byte extraRate = 0;
-            if (HasGuild && Map is GuildHouseMap)
-            {
-                var rates = _guildManager.GetBlacksmithRates((int)GuildId);
-                extraRate += rates.LinkRate;
-            }
-
-            // TODO: add bless rate.
-
-            return extraRate;
         }
     }
 }

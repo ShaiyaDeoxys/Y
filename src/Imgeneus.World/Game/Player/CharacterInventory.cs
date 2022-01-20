@@ -491,7 +491,7 @@ namespace Imgeneus.World.Game.Player
                 case SpecialEffect.RecreationRune_INT:
                 case SpecialEffect.RecreationRune_WIS:
                 case SpecialEffect.RecreationRune_LUC:
-                    return _linkingManager.Item != null && _linkingManager.Item.IsComposable;
+                    return LinkingManager.Item != null && LinkingManager.Item.IsComposable;
             }
 
             return true;
