@@ -2,9 +2,16 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Vehicle;
@@ -28,9 +35,17 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ISpeedManager _speedManager;
         private readonly IElementProvider _elementProvider;
         private readonly IVehicleManager _vehicleManager;
-        private int _owner;
+        private readonly ILevelProvider _levelProvider;
+        private readonly ILevelingManager _levelingManager;
+        private readonly ICountryProvider _countryProvider;
+        private readonly IGameWorld _gameWorld;
+        private readonly IAdditionalInfoManager _additionalInfoManager;
+        private readonly ISkillsManager _skillsManager;
+        private readonly IBuffsManager _buffsManager;
+        private readonly ICharacterConfiguration _characterConfig;
+        private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -41,6 +56,14 @@ namespace Imgeneus.World.Game.Inventory
             _speedManager = speedManager;
             _elementProvider = elementProvider;
             _vehicleManager = vehicleManager;
+            _levelProvider = levelProvider;
+            _levelingManager = levelingManager;
+            _countryProvider = countryProvider;
+            _gameWorld = gameWorld;
+            _additionalInfoManager = additionalInfoManager;
+            _skillsManager = skillsManager;
+            _buffsManager = buffsManager;
+            _characterConfig = characterConfiguration;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
 
 #if DEBUG
@@ -57,9 +80,9 @@ namespace Imgeneus.World.Game.Inventory
 
         #region Init & Clear
 
-        public void Init(int owner, IEnumerable<DbCharacterItems> items, uint gold)
+        public void Init(int ownerId, IEnumerable<DbCharacterItems> items, uint gold)
         {
-            _owner = owner;
+            _ownerId = ownerId;
 
             foreach (var item in items.Select(i => new Item(_databasePreloader, i)))
                 InventoryItems.TryAdd((item.Bag, item.Slot), item);
@@ -177,9 +200,9 @@ namespace Imgeneus.World.Game.Inventory
                 _helmet = value;
                 TakeOnItem(_helmet);
 
-                OnEquipmentChanged?.Invoke(_owner, _helmet, 0);
+                OnEquipmentChanged?.Invoke(_ownerId, _helmet, 0);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 0", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 0", _ownerId);
             }
         }
 
@@ -203,9 +226,9 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_armor);
 
-                OnEquipmentChanged?.Invoke(_owner, _armor, 1);
+                OnEquipmentChanged?.Invoke(_ownerId, _armor, 1);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 1", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 1", _ownerId);
             }
         }
 
@@ -219,9 +242,9 @@ namespace Imgeneus.World.Game.Inventory
                 _pants = value;
                 TakeOnItem(_pants);
 
-                OnEquipmentChanged?.Invoke(_owner, _pants, 2);
+                OnEquipmentChanged?.Invoke(_ownerId, _pants, 2);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 2", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 2", _ownerId);
             }
         }
 
@@ -235,9 +258,9 @@ namespace Imgeneus.World.Game.Inventory
                 _gauntlet = value;
                 TakeOnItem(_gauntlet);
 
-                OnEquipmentChanged?.Invoke(_owner, _gauntlet, 3);
+                OnEquipmentChanged?.Invoke(_ownerId, _gauntlet, 3);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 3", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 3", _ownerId);
             }
         }
 
@@ -251,9 +274,9 @@ namespace Imgeneus.World.Game.Inventory
                 _boots = value;
                 TakeOnItem(_boots);
 
-                OnEquipmentChanged?.Invoke(_owner, _boots, 4);
+                OnEquipmentChanged?.Invoke(_ownerId, _boots, 4);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 4", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 4", _ownerId);
             }
         }
 
@@ -282,9 +305,9 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_weapon);
 
-                OnEquipmentChanged?.Invoke(_owner, _weapon, 5);
+                OnEquipmentChanged?.Invoke(_ownerId, _weapon, 5);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 5", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 5", _ownerId);
             }
         }
 
@@ -298,9 +321,9 @@ namespace Imgeneus.World.Game.Inventory
                 _shield = value;
                 TakeOnItem(_shield);
 
-                OnEquipmentChanged?.Invoke(_owner, _shield, 6);
+                OnEquipmentChanged?.Invoke(_ownerId, _shield, 6);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 6", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 6", _ownerId);
             }
         }
 
@@ -314,9 +337,9 @@ namespace Imgeneus.World.Game.Inventory
                 _cape = value;
                 TakeOnItem(_cape);
 
-                OnEquipmentChanged?.Invoke(_owner, _cape, 7);
+                OnEquipmentChanged?.Invoke(_ownerId, _cape, 7);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 7", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 7", _ownerId);
             }
         }
 
@@ -330,9 +353,9 @@ namespace Imgeneus.World.Game.Inventory
                 _amulet = value;
                 TakeOnItem(_amulet);
 
-                OnEquipmentChanged?.Invoke(_owner, _amulet, 8);
+                OnEquipmentChanged?.Invoke(_ownerId, _amulet, 8);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 8", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 8", _ownerId);
             }
         }
 
@@ -346,9 +369,9 @@ namespace Imgeneus.World.Game.Inventory
                 _ring1 = value;
                 TakeOnItem(_ring1);
 
-                OnEquipmentChanged?.Invoke(_owner, _ring1, 9);
+                OnEquipmentChanged?.Invoke(_ownerId, _ring1, 9);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 9", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 9", _ownerId);
             }
         }
 
@@ -362,9 +385,9 @@ namespace Imgeneus.World.Game.Inventory
                 _ring2 = value;
                 TakeOnItem(_ring2);
 
-                OnEquipmentChanged?.Invoke(_owner, _ring2, 10);
+                OnEquipmentChanged?.Invoke(_ownerId, _ring2, 10);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 10", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 10", _ownerId);
             }
         }
 
@@ -378,9 +401,9 @@ namespace Imgeneus.World.Game.Inventory
                 _bracelet1 = value;
                 TakeOnItem(_bracelet1);
 
-                OnEquipmentChanged?.Invoke(_owner, _bracelet1, 11);
+                OnEquipmentChanged?.Invoke(_ownerId, _bracelet1, 11);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 11", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 11", _ownerId);
             }
         }
 
@@ -394,9 +417,9 @@ namespace Imgeneus.World.Game.Inventory
                 _bracelet2 = value;
                 TakeOnItem(_bracelet2);
 
-                OnEquipmentChanged?.Invoke(_owner, _bracelet2, 12);
+                OnEquipmentChanged?.Invoke(_ownerId, _bracelet2, 12);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 12", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 12", _ownerId);
             }
         }
 
@@ -419,9 +442,9 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_mount);
 
-                OnEquipmentChanged?.Invoke(_owner, _mount, 13);
+                OnEquipmentChanged?.Invoke(_ownerId, _mount, 13);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 13", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 13", _ownerId);
             }
         }
 
@@ -435,9 +458,9 @@ namespace Imgeneus.World.Game.Inventory
                 _pet = value;
                 TakeOnItem(_pet);
 
-                OnEquipmentChanged?.Invoke(_owner, _pet, 14);
+                OnEquipmentChanged?.Invoke(_ownerId, _pet, 14);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 14", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 14", _ownerId);
             }
         }
 
@@ -451,9 +474,9 @@ namespace Imgeneus.World.Game.Inventory
                 _costume = value;
                 TakeOnItem(_costume);
 
-                OnEquipmentChanged?.Invoke(_owner, _costume, 15);
+                OnEquipmentChanged?.Invoke(_ownerId, _costume, 15);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 15", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 15", _ownerId);
             }
         }
 
@@ -467,9 +490,9 @@ namespace Imgeneus.World.Game.Inventory
                 _wings = value;
                 TakeOnItem(_wings);
 
-                OnEquipmentChanged?.Invoke(_owner, _wings, 16);
+                OnEquipmentChanged?.Invoke(_ownerId, _wings, 16);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 16", _owner);
+                _logger.LogDebug("Character {characterId} changed equipment on slot 16", _ownerId);
             }
         }
 
@@ -566,7 +589,7 @@ namespace Imgeneus.World.Game.Inventory
 
             var dbItem = new DbCharacterItems()
             {
-                CharacterId = _owner,
+                CharacterId = _ownerId,
                 Type = item.Type,
                 TypeId = item.TypeId,
                 Count = item.Count,
@@ -594,7 +617,7 @@ namespace Imgeneus.World.Game.Inventory
             var count = await _database.SaveChangesAsync();
             if (count != 1)
             {
-                _logger.LogError("Could not crete item for player {characterId}", _owner);
+                _logger.LogError("Could not crete item for player {characterId}", _ownerId);
                 return null;
             }
 
@@ -605,16 +628,16 @@ namespace Imgeneus.World.Game.Inventory
                 //item.OnExpiration += CharacterItem_OnExpiration;
             }
 
-            _logger.LogDebug("Character {characterId} got item {type} {typeId}", _owner, item.Type, item.TypeId);
+            _logger.LogDebug("Character {characterId} got item {type} {typeId}", _ownerId, item.Type, item.TypeId);
             return item;
         }
 
         public async Task<Item> RemoveItem(Item item)
         {
-            var dbItem = _database.CharacterItems.FirstOrDefault(x => x.CharacterId == _owner && x.Bag == item.Bag && x.Slot == item.Slot);
+            var dbItem = _database.CharacterItems.FirstOrDefault(x => x.CharacterId == _ownerId && x.Bag == item.Bag && x.Slot == item.Slot);
             if (dbItem is null)
             {
-                _logger.LogError("Could not find item count during remove for character {characterId}", _owner);
+                _logger.LogError("Could not find item count during remove for character {characterId}", _ownerId);
                 return null;
             }
 
@@ -638,7 +661,7 @@ namespace Imgeneus.World.Game.Inventory
             var count = await _database.SaveChangesAsync();
             if (count != 1)
             {
-                _logger.LogError("Could not remove item for character {characterId}", _owner);
+                _logger.LogError("Could not remove item for character {characterId}", _ownerId);
                 return null;
             }
 
@@ -650,7 +673,7 @@ namespace Imgeneus.World.Game.Inventory
                 //item.OnExpiration -= CharacterItem_OnExpiration;
             }
 
-            _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _owner, item.Type, item.TypeId);
+            _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _ownerId, item.Type, item.TypeId);
             return item;
         }
 
@@ -663,7 +686,7 @@ namespace Imgeneus.World.Game.Inventory
             if (sourceItem is null)
             {
                 // wrong packet, source item should be always presented.
-                _logger.LogError("Could not find source item for player {characterId}", _owner);
+                _logger.LogError("Could not find source item for player {characterId}", _ownerId);
                 return (null, null);
             }
 
@@ -706,8 +729,8 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             // Add new items to database.
-            var dbSourceItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == sourceBag && x.Slot == sourceSlot && x.CharacterId == _owner);
-            var dbDestinationItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == destinationBag && x.Slot == destinationSlot && x.CharacterId == _owner);
+            var dbSourceItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == sourceBag && x.Slot == sourceSlot && x.CharacterId == _ownerId);
+            var dbDestinationItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == destinationBag && x.Slot == destinationSlot && x.CharacterId == _ownerId);
 
             dbSourceItem.Bag = destinationBag;
             dbSourceItem.Slot = destinationSlot;
@@ -728,7 +751,7 @@ namespace Imgeneus.World.Game.Inventory
             var count = await _database.SaveChangesAsync();
             if ((!swapping && count < 1) || (swapping && count != 2))
             {
-                _logger.LogError("Could not move item for player {characterId}", _owner);
+                _logger.LogError("Could not move item for player {characterId}", _ownerId);
                 return (null, null);
             }
 
@@ -867,13 +890,417 @@ namespace Imgeneus.World.Game.Inventory
 
         private async Task SaveGold()
         {
-            var character = await _database.Characters.FindAsync(_owner);
+            var character = await _database.Characters.FindAsync(_ownerId);
             if (character is null)
                 return;
 
             character.Gold = Gold;
 
             await _database.SaveChangesAsync();
+        }
+
+        #endregion
+
+        #region Use item
+
+        private readonly Dictionary<byte, DateTime> _itemCooldowns = new Dictionary<byte, DateTime>();
+
+        public event Action<int, Item> OnUsedItem;
+
+        public async Task<bool> TryUseItem(byte bag, byte slot, int? targetId = null)
+        {
+            InventoryItems.TryGetValue((bag, slot), out var item);
+            if (item is null)
+            {
+                _logger.LogWarning("Character {id} is trying to use item, that does not exist. Possible hack?", _ownerId);
+                return false;
+            }
+
+            if (!CanUseItem(item))
+            {
+                //_packetsHelper.SendCanNotUseItem(Client, Id);
+                return false;
+            }
+
+            if (targetId != null)
+            {
+                if (!CanUseItemOnTarget(item, (int)targetId))
+                {
+                    //_packetsHelper.SendCanNotUseItem(Client, Id);
+                    return false;
+                }
+            }
+
+            item.Count--;
+            _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
+            await ApplyItemEffect(item, targetId);
+            OnUsedItem?.Invoke(_ownerId, item);
+
+            if (item.Count > 0)
+            {
+                //_taskQueue.Enqueue(ActionType.UPDATE_ITEM_COUNT_IN_INVENTORY,
+                //                   Id, item.Bag, item.Slot, item.Count);
+            }
+            else
+            {
+                InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
+                //_taskQueue.Enqueue(ActionType.REMOVE_ITEM_FROM_INVENTORY,
+                //                   Id, item.Bag, item.Slot);
+            }
+
+            return true;
+        }
+
+        public bool CanUseItem(Item item)
+        {
+            if (item.Special == SpecialEffect.None && item.HP == 0 && item.MP == 0 && item.SP == 0 && item.SkillId == 0)
+                return false;
+
+            if (item.Type == Item.GEM_ITEM_TYPE)
+                return true;
+
+            if (item.ReqIg != 0)
+            {
+                if (_itemCooldowns.ContainsKey(item.ReqIg) && Item.ReqIgToCooldownInMilliseconds.ContainsKey(item.ReqIg))
+                {
+                    if (DateTime.UtcNow.Subtract(_itemCooldowns[item.ReqIg]).TotalMilliseconds < Item.ReqIgToCooldownInMilliseconds[item.ReqIg])
+                        return false;
+                }
+            }
+
+            if (item.Reqlevel > _levelProvider.Level)
+                return false;
+
+            if (_levelingManager.Grow < item.Grow)
+                return false;
+
+            switch (item.ItemClassType)
+            {
+                case ItemClassType.Human:
+                    if (_additionalInfoManager.Race != Race.Human)
+                        return false;
+                    break;
+
+                case ItemClassType.Elf:
+                    if (_additionalInfoManager.Race != Race.Elf)
+                        return false;
+                    break;
+
+                case ItemClassType.AllLights:
+                    if (_countryProvider.Country != CountryType.Light)
+                        return false;
+                    break;
+
+                case ItemClassType.Deatheater:
+                    if (_additionalInfoManager.Race != Race.DeathEater)
+                        return false;
+                    break;
+
+                case ItemClassType.Vail:
+                    if (_additionalInfoManager.Race != Race.Vail)
+                        return false;
+                    break;
+
+                case ItemClassType.AllFury:
+                    if (_countryProvider.Country != CountryType.Dark)
+                        return false;
+                    break;
+            }
+
+            if (item.ItemClassType != ItemClassType.AllFactions)
+            {
+                switch (_additionalInfoManager.Class)
+                {
+                    case CharacterProfession.Fighter:
+                        if (!item.IsForFighter)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Defender:
+                        if (!item.IsForDefender)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Ranger:
+                        if (!item.IsForRanger)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Archer:
+                        if (!item.IsForArcher)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Mage:
+                        if (!item.IsForMage)
+                            return false;
+                        break;
+
+                    case CharacterProfession.Priest:
+                        if (!item.IsForPriest)
+                            return false;
+                        break;
+                }
+            }
+
+            /*switch (item.Special)
+            {
+                case SpecialEffect.RecreationRune:
+                case SpecialEffect.AbsoluteRecreationRune:
+                case SpecialEffect.RecreationRune_STR:
+                case SpecialEffect.RecreationRune_DEX:
+                case SpecialEffect.RecreationRune_REC:
+                case SpecialEffect.RecreationRune_INT:
+                case SpecialEffect.RecreationRune_WIS:
+                case SpecialEffect.RecreationRune_LUC:
+                    return LinkingManager.Item != null && LinkingManager.Item.IsComposable;
+            }*/
+
+            return true;
+        }
+
+        public bool CanUseItemOnTarget(Item item, int targetId)
+        {
+            switch (item.Special)
+            {
+                case SpecialEffect.MovementRune:
+                /*if (_gameWorld.Players.TryGetValue(targetId, out var target))
+                {
+                    if (target.Party != Party)
+                        return false;
+
+                    return _gameWorld.CanTeleport(this, target.MapId, out var reason);
+                }
+                else
+                    return false;*/
+
+                default:
+                    return true;
+            }
+        }
+
+        /// <summary>
+        /// Adds the effect of the item to the character.
+        /// </summary>
+        private async Task ApplyItemEffect(Item item, int? targetId = null)
+        {
+            switch (item.Special)
+            {
+                case SpecialEffect.None:
+                    if (item.HP > 0 || item.MP > 0 || item.SP > 0)
+                        UseHealingPotion(item);
+
+                    if (item.SkillId != 0)
+                        _skillsManager.UseSkill(new Skill(_databasePreloader.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0), _gameWorld.Players[_ownerId]);
+
+                    break;
+
+                case SpecialEffect.PercentHealingPotion:
+                    UsePercentHealingPotion(item);
+                    break;
+
+                case SpecialEffect.HypnosisCure:
+                    UseCureDebuffPotion(StateType.Sleep);
+                    break;
+
+                case SpecialEffect.StunCure:
+                    UseCureDebuffPotion(StateType.Stun);
+                    break;
+
+                case SpecialEffect.SilenceCure:
+                    UseCureDebuffPotion(StateType.Silence);
+                    break;
+
+                case SpecialEffect.DarknessCure:
+                    UseCureDebuffPotion(StateType.Darkness);
+                    break;
+
+                case SpecialEffect.StopCure:
+                    UseCureDebuffPotion(StateType.Immobilize);
+                    break;
+
+                case SpecialEffect.SlowCure:
+                    UseCureDebuffPotion(StateType.Slow);
+                    break;
+
+                case SpecialEffect.VenomCure:
+                    UseCureDebuffPotion(StateType.HPDamageOverTime);
+                    break;
+
+                case SpecialEffect.DiseaseCure:
+                    UseCureDebuffPotion(StateType.SPDamageOverTime);
+                    UseCureDebuffPotion(StateType.MPDamageOverTime);
+                    break;
+
+                case SpecialEffect.IllnessDelusionCure:
+                    UseCureDebuffPotion(StateType.HPDamageOverTime);
+                    UseCureDebuffPotion(StateType.SPDamageOverTime);
+                    UseCureDebuffPotion(StateType.MPDamageOverTime);
+                    break;
+
+                case SpecialEffect.SleepStunStopSlowCure:
+                    UseCureDebuffPotion(StateType.Sleep);
+                    UseCureDebuffPotion(StateType.Stun);
+                    UseCureDebuffPotion(StateType.Immobilize);
+                    UseCureDebuffPotion(StateType.Slow);
+                    break;
+
+                case SpecialEffect.SilenceDarknessCure:
+                    UseCureDebuffPotion(StateType.Silence);
+                    UseCureDebuffPotion(StateType.Darkness);
+                    break;
+
+                case SpecialEffect.DullBadLuckCure:
+                    UseCureDebuffPotion(StateType.DexDecrease);
+                    UseCureDebuffPotion(StateType.Misfortunate);
+                    break;
+
+                case SpecialEffect.DoomFearCure:
+                    UseCureDebuffPotion(StateType.MentalSmasher);
+                    UseCureDebuffPotion(StateType.LowerAttackOrDefence);
+                    break;
+
+                case SpecialEffect.FullCure:
+                    UseCureDebuffPotion(StateType.Sleep);
+                    UseCureDebuffPotion(StateType.Stun);
+                    UseCureDebuffPotion(StateType.Silence);
+                    UseCureDebuffPotion(StateType.Darkness);
+                    UseCureDebuffPotion(StateType.Immobilize);
+                    UseCureDebuffPotion(StateType.Slow);
+                    UseCureDebuffPotion(StateType.HPDamageOverTime);
+                    UseCureDebuffPotion(StateType.SPDamageOverTime);
+                    UseCureDebuffPotion(StateType.MPDamageOverTime);
+                    UseCureDebuffPotion(StateType.DexDecrease);
+                    UseCureDebuffPotion(StateType.Misfortunate);
+                    UseCureDebuffPotion(StateType.MentalSmasher);
+                    UseCureDebuffPotion(StateType.LowerAttackOrDefence);
+                    break;
+
+                case SpecialEffect.DisorderCure:
+                    // ?
+                    break;
+
+                case SpecialEffect.StatResetStone:
+                    await TryResetStats();
+                    break;
+
+                case SpecialEffect.GoddessBlessing:
+                    UseBlessItem();
+                    break;
+
+                case SpecialEffect.AppearanceChange:
+                case SpecialEffect.SexChange:
+                    // Used in ChangeAppearance call.
+                    break;
+
+                case SpecialEffect.LinkingHammer:
+                case SpecialEffect.PerfectLinkingHammer:
+                case SpecialEffect.RecreationRune:
+                case SpecialEffect.AbsoluteRecreationRune:
+                    // Effect is added in linking manager.
+                    break;
+
+                case SpecialEffect.Dye:
+                    // Effect is handled in dyeing manager.
+                    break;
+
+                case SpecialEffect.NameChange:
+                    UseNameChangeStone();
+                    break;
+
+                case SpecialEffect.AnotherItemGenerator:
+                    // TODO: Generate another item based on item ReqVg.
+                    break;
+
+                case SpecialEffect.SkillResetStone:
+                    await _skillsManager.TryResetSkills();
+                    break;
+
+                case SpecialEffect.MovementRune:
+                    //if (_gameWorld.Players.TryGetValue((int)targetId, out var target))
+                    //    Teleport(target.Map.Id, target.PosX, target.PosY, target.PosZ);
+                    break;
+
+                default:
+                    _logger.LogError($"Uninplemented item effect {item.Special}.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Uses potion, that restores hp,sp,mp.
+        /// </summary>
+        private void UseHealingPotion(Item potion)
+        {
+            _healthManager.Recover(potion.HP, potion.MP, potion.SP);
+        }
+
+        /// <summary>
+        /// Cures character from some debuff.
+        /// </summary>
+        private void UseCureDebuffPotion(StateType debuffType)
+        {
+            var debuffs = _buffsManager.ActiveBuffs.Where(b => b.StateType == debuffType).ToList();
+            foreach (var d in debuffs)
+            {
+                d.CancelBuff();
+            }
+        }
+
+        /// <summary>
+        /// Uses potion, that restores % of hp,sp,mp.
+        /// </summary>
+        private void UsePercentHealingPotion(Item potion)
+        {
+            var hp = Convert.ToInt32(_healthManager.MaxHP * potion.HP / 100);
+            var mp = Convert.ToInt32(_healthManager.MaxMP * potion.MP / 100);
+            var sp = Convert.ToInt32(_healthManager.MaxSP * potion.SP / 100);
+
+            _healthManager.Recover(hp, mp, sp);
+        }
+
+        /// <summary>
+        /// Initiates name change process
+        /// </summary>
+        public void UseNameChangeStone()
+        {
+            //IsRename = true;
+
+            //_taskQueue.Enqueue(ActionType.SAVE_IS_RENAME, Id, true);
+        }
+
+        /// <summary>
+        /// GM item ,that increases bless amount of player's fraction.
+        /// </summary>
+        private void UseBlessItem()
+        {
+            if (_countryProvider.Country == CountryType.Light)
+                Bless.Instance.LightAmount += 500;
+            else
+                Bless.Instance.DarkAmount += 500;
+        }
+
+        private async Task<bool> TryResetStats()
+        {
+            var defaultStat = _characterConfig.DefaultStats.First(s => s.Job == _additionalInfoManager.Class);
+            var statPerLevel = _characterConfig.GetLevelStatSkillPoints(_levelingManager.Grow).StatPoint;
+
+            var ok = await _statsManager.TrySetStats(defaultStat.Str,
+                                                     defaultStat.Dex,
+                                                     defaultStat.Rec,
+                                                     defaultStat.Int,
+                                                     defaultStat.Luc,
+                                                     (ushort)((_levelProvider.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
+            if (!ok)
+                return false;
+
+            await _levelingManager.IncreasePrimaryStat((ushort)(_levelProvider.Level - 1));
+            return true;
+
+
+            //_taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatsManager.StatPoint);
+            //_packetsHelper.SendResetStats(Client, this);
+            //SendAdditionalStats();
         }
 
         #endregion

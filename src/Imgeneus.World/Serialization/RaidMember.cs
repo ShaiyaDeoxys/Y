@@ -66,7 +66,7 @@ namespace Imgeneus.World.Serialization
             IndexPositionInRaid = position;
             CharacterId = character.Id;
             Level = character.LevelProvider.Level;
-            Class = character.Class;
+            Class = character.AdditionalInfoManager.Class;
             MaxHP = character.HealthManager.MaxHP;
             HP = character.HealthManager.CurrentHP;
             MaxSP = character.HealthManager.MaxSP;

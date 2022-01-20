@@ -216,7 +216,7 @@ namespace Imgeneus.World.Game.Zone
             character.AttackManager.OnAttack += Character_OnAttack;
             character.OnDead += Character_OnDead;
             character.SkillsManager.OnSkillCastStarted += Character_OnSkillCastStarted;
-            character.OnUsedItem += Character_OnUsedItem;
+            character.InventoryManager.OnUsedItem += Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged += Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged += Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged += Character_OnMaxMPChanged;
@@ -247,7 +247,7 @@ namespace Imgeneus.World.Game.Zone
             character.AttackManager.OnAttack -= Character_OnAttack;
             character.OnDead -= Character_OnDead;
             character.SkillsManager.OnSkillCastStarted -= Character_OnSkillCastStarted;
-            character.OnUsedItem -= Character_OnUsedItem;
+            character.InventoryManager.OnUsedItem -= Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged -= Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged -= Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged -= Character_OnMaxMPChanged;
@@ -372,10 +372,10 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player used some item.
         /// </summary>
-        private void Character_OnUsedItem(Character sender, Item item)
+        private void Character_OnUsedItem(int senderId, Item item)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendUsedItem(player.Client, sender, item);
+                _packetsHelper.SendUsedItem(player.Client, senderId, item);
         }
 
         private void Character_OnRecover(int senderId, int hp, int mp, int sp)

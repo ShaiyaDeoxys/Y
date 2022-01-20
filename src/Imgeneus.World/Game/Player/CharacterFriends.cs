@@ -36,11 +36,11 @@ namespace Imgeneus.World.Game.Player
             {
                 _taskQueue.Enqueue(ActionType.SAVE_FRIENDS, Id, LastFriendRequester.Id);
 
-                var friend = new Friend(LastFriendRequester.Id, LastFriendRequester.Name, LastFriendRequester.Class, true);
+                var friend = new Friend(LastFriendRequester.Id, LastFriendRequester.Name, LastFriendRequester.AdditionalInfoManager.Class, true);
                 Friends.TryAdd(LastFriendRequester.Id, friend);
                 SendFriendAdd(LastFriendRequester);
 
-                friend = new Friend(Id, Name, Class, true);
+                friend = new Friend(Id, Name, AdditionalInfoManager.Class, true);
                 LastFriendRequester.Friends.TryAdd(Id, friend);
                 LastFriendRequester.SendFriendAdd(this);
             }

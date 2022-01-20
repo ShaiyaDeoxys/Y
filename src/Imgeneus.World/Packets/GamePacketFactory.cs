@@ -283,6 +283,19 @@ namespace Imgeneus.World.Packets
             packet.WriteByte(1); // Inventory is full.
             client.Send(packet);
         }
+
+        public void SendCanNotUseItem(IWorldClient client, int characterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.USE_ITEM);
+            packet.Write(characterId);
+            packet.WriteByte(0); // bag
+            packet.WriteByte(0); // slot
+            packet.WriteByte(0); // type
+            packet.WriteByte(0); // type id
+            packet.WriteByte(0); // count
+            client.Send(packet);
+
+        }
         #endregion
 
         #region Vehicle

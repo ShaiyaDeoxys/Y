@@ -123,7 +123,7 @@ namespace Imgeneus.World.Game.Player
             if (item is null || (item.Special != SpecialEffect.AppearanceChange && item.Special != SpecialEffect.SexChange))
                 return;
 
-            TryUseItem(changeAppearancePacket.Bag, changeAppearancePacket.Slot);
+            InventoryManager.TryUseItem(changeAppearancePacket.Bag, changeAppearancePacket.Slot);
             ChangeAppearance(changeAppearancePacket.Face, changeAppearancePacket.Hair, changeAppearancePacket.Size, changeAppearancePacket.Sex);
         }
 
@@ -312,7 +312,7 @@ namespace Imgeneus.World.Game.Player
                 //if (item.Bag == 0)
                     //OnEquipmentChanged?.Invoke(this, item, item.Slot);
 
-                TryUseItem(dyeItem.Bag, dyeItem.Slot);
+                InventoryManager.TryUseItem(dyeItem.Bag, dyeItem.Slot);
             }
         }
 
@@ -391,7 +391,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             _taskQueue.Enqueue(ActionType.UPDATE_CRAFT_NAME, Id, item.Bag, item.Slot, item.GetCraftName());
-            TryUseItem(rune.Bag, rune.Slot);
+            InventoryManager.TryUseItem(rune.Bag, rune.Slot);
 
             LinkingManager.Item = null;
         }

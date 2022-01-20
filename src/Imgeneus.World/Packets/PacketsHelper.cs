@@ -758,7 +758,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.FRIEND_ADD);
             packet.Write(friend.Id);
-            packet.Write((byte)friend.Class);
+            packet.Write((byte)friend.AdditionalInfoManager.Class);
             packet.WriteString(friend.Name);
             client.Send(packet);
         }
@@ -1099,18 +1099,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCanNotUseItem(IWorldClient client, int characterId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.USE_ITEM);
-            packet.Write(characterId);
-            packet.WriteByte(0); // bag
-            packet.WriteByte(0); // slot
-            packet.WriteByte(0); // type
-            packet.WriteByte(0); // type id
-            packet.WriteByte(0); // count
-            client.Send(packet);
-        }
-
         internal void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
         {
             using var packet = new ImgeneusPacket(PacketType.UPDATE_STATS);
@@ -1291,10 +1279,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendUsedItem(IWorldClient client, Character sender, Item item)
+        internal void SendUsedItem(IWorldClient client, int senderId, Item item)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_ITEM);
-            packet.Write(sender.Id);
+            packet.Write(senderId);
             packet.Write(item.Bag);
             packet.Write(item.Slot);
             packet.Write(item.Type);
@@ -1443,10 +1431,10 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.CHANGE_APPEARANCE);
             packet.Write(character.Id);
-            packet.Write(character.Hair);
-            packet.Write(character.Face);
-            packet.Write(character.Height);
-            packet.Write((byte)character.Gender);
+            packet.Write(character.AdditionalInfoManager.Hair);
+            packet.Write(character.AdditionalInfoManager.Face);
+            packet.Write(character.AdditionalInfoManager.Height);
+            packet.Write((byte)character.AdditionalInfoManager.Gender);
             client.Send(packet);
         }
 

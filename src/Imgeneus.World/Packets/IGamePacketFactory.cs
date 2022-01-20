@@ -50,6 +50,7 @@ namespace Imgeneus.World.Packets
         void SendRemoveItem(IWorldClient client, Item item, bool fullRemove);
         void SendItemDoesNotBelong(IWorldClient client);
         void SendFullInventory(IWorldClient client);
+        void SendCanNotUseItem(IWorldClient client, int characterId);
         #endregion
 
         #region Vehicle

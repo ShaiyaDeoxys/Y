@@ -90,5 +90,10 @@ namespace Imgeneus.World.Game.Skills
         /// <param name="skill">skill, that we are casting</param>
         /// <param name="target">target for which, that we are casting</param>
         void StartCasting(Skill skill, IKillable target);
+
+        /// <summary>
+        /// Clears skills and adds skill points.
+        /// </summary>
+        Task<bool> TryResetSkills();
     }
 }

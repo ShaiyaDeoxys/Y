@@ -1,6 +1,8 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
@@ -12,15 +14,18 @@ namespace Imgeneus.World.Game.Levelling
         private readonly IDatabase _database;
         private readonly IGameSession _gameSession;
         private readonly ILevelProvider _levelProvider;
-
+        private readonly IAdditionalInfoManager _additionalInfoManager;
+        private readonly IStatsManager _statsManager;
         private int _owner;
 
-        public LevelingManager(ILogger<LevelingManager> logger, IDatabase database, IGameSession gameSession, ILevelProvider levelProvider)
+        public LevelingManager(ILogger<LevelingManager> logger, IDatabase database, IGameSession gameSession, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IStatsManager statsManager)
         {
             _logger = logger;
             _database = database;
             _gameSession = gameSession;
             _levelProvider = levelProvider;
+            _additionalInfoManager = additionalInfoManager;
+            _statsManager = statsManager;
 
 #if DEBUG
             _logger.LogDebug("LevelingManager {hashcode} created", GetHashCode());
@@ -63,6 +68,89 @@ namespace Imgeneus.World.Game.Levelling
                 Grow = grow;
 
             return ok;
+        }
+
+        #endregion
+
+        #region Primary stats
+
+
+        /// <summary>
+        /// Increases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        public async Task IncreasePrimaryStat(ushort amount = 1)
+        {
+            var primaryAttribute = _additionalInfoManager.GetPrimaryStat();
+
+            switch (primaryAttribute)
+            {
+                case CharacterStatEnum.Strength:
+                    await _statsManager.TrySetStats(str: (ushort)(_statsManager.Strength + amount));
+                    break;
+
+                case CharacterStatEnum.Dexterity:
+                    await _statsManager.TrySetStats(dex: (ushort)(_statsManager.Dexterity + amount));
+                    break;
+
+                case CharacterStatEnum.Reaction:
+                    await _statsManager.TrySetStats(rec: (ushort)(_statsManager.Reaction + amount));
+                    break;
+
+                case CharacterStatEnum.Intelligence:
+                    await _statsManager.TrySetStats(intl: (ushort)(_statsManager.Intelligence + amount));
+                    break;
+
+                case CharacterStatEnum.Wisdom:
+                    await _statsManager.TrySetStats(wis: (ushort)(_statsManager.Wisdom + amount));
+                    break;
+
+                case CharacterStatEnum.Luck:
+                    await _statsManager.TrySetStats(luc: (ushort)(_statsManager.Luck + amount));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Decreases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        public async Task DecreasePrimaryStat(ushort amount = 1)
+        {
+            var primaryAttribute = _additionalInfoManager.GetPrimaryStat();
+
+            switch (primaryAttribute)
+            {
+                case CharacterStatEnum.Strength:
+                    await _statsManager.TrySetStats(str: (ushort)(_statsManager.Strength - amount));
+                    break;
+
+                case CharacterStatEnum.Dexterity:
+                    await _statsManager.TrySetStats(dex: (ushort)(_statsManager.Dexterity - amount));
+                    break;
+
+                case CharacterStatEnum.Reaction:
+                    await _statsManager.TrySetStats(rec: (ushort)(_statsManager.Reaction - amount));
+                    break;
+
+                case CharacterStatEnum.Intelligence:
+                    await _statsManager.TrySetStats(intl: (ushort)(_statsManager.Intelligence - amount));
+                    break;
+
+                case CharacterStatEnum.Wisdom:
+                    await _statsManager.TrySetStats(wis: (ushort)(_statsManager.Wisdom - amount));
+                    break;
+
+                case CharacterStatEnum.Luck:
+                    await _statsManager.TrySetStats(luc: (ushort)(_statsManager.Luck - amount));
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         #endregion

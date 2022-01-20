@@ -6,6 +6,7 @@ using Imgeneus.Logs;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Chat;
@@ -115,6 +116,7 @@ namespace Imgeneus.World
             services.AddScoped<IShapeManager, ShapeManager>();
             services.AddScoped<IMovementManager, MovementManager>();
             services.AddScoped<ILinkingManager, LinkingManager>();
+            services.AddScoped<IAdditionalInfoManager, AdditionalInfoManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

@@ -12,137 +12,8 @@ namespace Imgeneus.World.Game.Player
     {
         public void AddGem(byte bag, byte slot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
         {
-            InventoryItems.TryGetValue((bag, slot), out var gem);
-            if (gem is null || gem.Type != Item.GEM_ITEM_TYPE)
-                return;
-
-            var linkingGold = LinkingManager.GetGold(gem);
-            if (InventoryManager.Gold < linkingGold)
-            {
-                // TODO: send warning, that not enough money?
-                return;
-            }
-
-            InventoryItems.TryGetValue((destinationBag, destinationSlot), out var item);
-            if (item is null || item.FreeSlots == 0 || item.ContainsGem(gem.TypeId))
-                return;
-
-            Item hammer = null;
-            if (hammerBag != 0)
-                InventoryItems.TryGetValue((hammerBag, hammerSlot), out hammer);
-
-            Item saveItem = null;
-            if (gem.ReqVg > 0)
-            {
-                saveItem = InventoryItems.Select(itm => itm.Value).FirstOrDefault(itm => itm.Special == SpecialEffect.LuckyCharm);
-                if (saveItem != null)
-                    TryUseItem(saveItem.Bag, saveItem.Slot);
-            }
-
-            var result = LinkingManager.AddGem(item, gem, hammer);
-            InventoryManager.Gold = (uint)(InventoryManager.Gold - linkingGold);
-            if (gem.Count > 0)
-            {
-                _taskQueue.Enqueue(ActionType.UPDATE_ITEM_COUNT_IN_INVENTORY,
-                                   Id, gem.Bag, gem.Slot, gem.Count);
-            }
-            else
-            {
-                InventoryItems.TryRemove((gem.Bag, gem.Slot), out var removedGem);
-                _taskQueue.Enqueue(ActionType.REMOVE_ITEM_FROM_INVENTORY,
-                                   Id, gem.Bag, gem.Slot);
-            }
-
-            if (result.Success)
-                _taskQueue.Enqueue(ActionType.UPDATE_GEM, Id, item.Bag, item.Slot, result.Slot, (int)gem.TypeId);
-
-            if (hammer != null)
-                TryUseItem(hammer.Bag, hammer.Slot);
-
-            _packetsHelper.SendAddGem(Client, result.Success, gem, item, result.Slot, InventoryManager.Gold, saveItem, hammer);
-
-            if (result.Success && item.Bag == 0)
-            {
-                StatsManager.ExtraStr += gem.Str;
-                StatsManager.ExtraDex += gem.Dex;
-                StatsManager.ExtraRec += gem.Rec;
-                StatsManager.ExtraInt += gem.Int;
-                StatsManager.ExtraLuc += gem.Luc;
-                StatsManager.ExtraWis += gem.Wis;
-                HealthManager.ExtraHP += gem.HP;
-                HealthManager.ExtraSP += gem.SP;
-                HealthManager.ExtraMP += gem.MP;
-                StatsManager.ExtraDefense += gem.Defense;
-                StatsManager.ExtraResistance += gem.Resistance;
-                StatsManager.Absorption += gem.Absorb;
-                SpeedManager.ExtraMoveSpeed += gem.MoveSpeed;
-                SpeedManager.ExtraAttackSpeed += gem.AttackSpeed;
-
-                //if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.MaxAttack != 0)
-                    //SendAdditionalStats();
-
-                //if (gem.AttackSpeed != 0 || gem.MoveSpeed != 0)
-                    //InvokeAttackOrMoveChanged();
-            }
-
-            if (!result.Success && saveItem == null && gem.ReqVg > 0)
-            {
-                RemoveItemFromInventory(item);
-                SendRemoveItemFromInventory(item, true);
-
-                if (item.Bag == 0)
-                {
-                    /*if (item == InventoryManager.Helmet)
-                        InventoryManager.Helmet = null;
-                    else if (item == Armor)
-                        Armor = null;
-                    else if (item == Pants)
-                        Pants = null;
-                    else if (item == Gauntlet)
-                        Gauntlet = null;
-                    else if (item == Boots)
-                        Boots = null;
-                    else if (item == Weapon)
-                        Weapon = null;
-                    else if (item == Shield)
-                        Shield = null;
-                    else if (item == Cape)
-                        Cape = null;
-                    else if (item == Amulet)
-                        Amulet = null;
-                    else if (item == Ring1)
-                        Ring1 = null;
-                    else if (item == Ring2)
-                        Ring2 = null;
-                    else if (item == Bracelet1)
-                        Bracelet1 = null;
-                    else if (item == Bracelet2)
-                        Bracelet2 = null;
-                    else if (item == Mount)
-                        Mount = null;
-                    else if (item == Pet)
-                        Pet = null;
-                    else if (item == Costume)
-                        Costume = null;*/
-                }
-            }
+            
         }
-
-        /*public void AddGemPossibility(byte gemBag, byte gemSlot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
-        {
-            InventoryItems.TryGetValue((gemBag, gemSlot), out var gem);
-            if (gem is null)
-                return;
-
-            Item hammer = null;
-            if (hammerBag != 0)
-                InventoryItems.TryGetValue((hammerBag, hammerSlot), out hammer);
-
-            var rate = LinkingManager.GetRate(gem, hammer, CalculateExtraRate());
-            var gold = LinkingManager.GetGold(gem);
-
-            _packetsHelper.SendGemPossibility(Client, rate, gold);
-        }*/
 
         public void RemoveGem(byte bag, byte slot, bool shouldRemoveSpecificGem, byte gemPosition, byte hammerBag, byte hammerSlot)
         {
@@ -196,7 +67,7 @@ namespace Imgeneus.World.Game.Player
 
                 InventoryItems.TryGetValue((hammerBag, hammerSlot), out var hammer);
                 if (hammer != null)
-                    TryUseItem(hammer.Bag, hammer.Slot);
+                    InventoryManager.TryUseItem(hammer.Bag, hammer.Slot);
 
                 success = LinkingManager.RemoveGem(item, gem, hammer);
                 spentGold += LinkingManager.GetRemoveGold(gem);

@@ -8,8 +8,10 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,9 +34,12 @@ namespace Imgeneus.World.Game.Skills
         private readonly IStatsManager _statsManager;
         private readonly IElementProvider _elementProvider;
         private readonly ICountryProvider _countryProvider;
+        private readonly ICharacterConfiguration _characterConfig;
+        private readonly ILevelingManager _levelingManager;
+        private readonly ILevelProvider _levelProvider;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider)
+        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelingManager levelingManager, ILevelProvider levelProvider)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -45,6 +50,9 @@ namespace Imgeneus.World.Game.Skills
             _statsManager = statsManager;
             _elementProvider = elementProvider;
             _countryProvider = countryProvider;
+            _characterConfig = characterConfig;
+            _levelingManager = levelingManager;
+            _levelProvider = levelProvider;
             _castTimer.Elapsed += CastTimer_Elapsed;
 
 #if DEBUG
@@ -214,6 +222,29 @@ namespace Imgeneus.World.Game.Skills
                 _buffsManager.AddActiveBuff(skill, null);
 
             return (true, skill);
+        }
+
+        public async Task<bool> TryResetSkills()
+        {
+            var skillFactor = _characterConfig.GetLevelStatSkillPoints(_levelingManager.Grow).SkillPoint;
+
+            var ok = await TrySetSkillPoints((ushort)(skillFactor * (_levelProvider.Level - 1)));
+            if (!ok)
+                return false;
+
+            var skillsToRemove = _database.CharacterSkills.Where(s => s.CharacterId == _ownerId);
+            _database.CharacterSkills.RemoveRange(skillsToRemove);
+            await _database.SaveChangesAsync();
+            //_taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);
+
+            // SendResetSkills();
+
+            foreach (var passive in _buffsManager.PassiveBuffs.ToList())
+                passive.CancelBuff();
+
+            Skills.Clear();
+
+            return true;
         }
 
         #endregion

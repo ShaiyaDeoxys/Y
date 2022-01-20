@@ -30,6 +30,7 @@ using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.AdditionalInfo;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -67,6 +68,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IVehicleManager _vehicleManager;
         private readonly IShapeManager _shapeManager;
         private readonly IMovementManager _movementManager;
+        private readonly IAdditionalInfoManager _additionalInfoManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -99,7 +101,8 @@ namespace Imgeneus.World.Game.Player
                                 IKillsManager killsManager,
                                 IVehicleManager vehicleManager,
                                 IShapeManager shapeManager,
-                                IMovementManager movementManager)
+                                IMovementManager movementManager,
+                                IAdditionalInfoManager additionalInfoManager)
         {
             _logger = logger;
             _database = database;
@@ -133,6 +136,7 @@ namespace Imgeneus.World.Game.Player
             _vehicleManager = vehicleManager;
             _shapeManager = shapeManager;
             _movementManager = movementManager;
+            _additionalInfoManager = additionalInfoManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -189,6 +193,8 @@ namespace Imgeneus.World.Game.Player
 
             _movementManager.Init(dbCharacter.Id, dbCharacter.PosX, dbCharacter.PosY, dbCharacter.PosZ, dbCharacter.Angle, MoveMotion.Run);
 
+            _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -202,6 +208,7 @@ namespace Imgeneus.World.Game.Player
                                         _countryProvider,
                                         _speedManager,
                                         _statsManager,
+                                        _additionalInfoManager,
                                         _healthManager,
                                         _levelProvider,
                                         _levelingManager,

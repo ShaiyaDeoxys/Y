@@ -22,5 +22,17 @@ namespace Imgeneus.World.Game.Levelling
         /// </summary>
         /// <returns></returns>
         Task<bool> TrySetGrow(Mode grow);
+
+        /// <summary>
+        /// Increases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        Task IncreasePrimaryStat(ushort amount = 1);
+
+        /// <summary>
+        /// Decreases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        Task DecreasePrimaryStat(ushort amount = 1);
     }
 }

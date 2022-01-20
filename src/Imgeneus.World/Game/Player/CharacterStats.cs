@@ -1,5 +1,4 @@
-﻿using Imgeneus.Database.Entities;
-using Imgeneus.DatabaseBackgroundService.Handlers;
+﻿using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Stats;
 using System;
@@ -13,12 +12,7 @@ namespace Imgeneus.World.Game.Player
 
         public string Name { get; set; } = "";
         public ushort MapId { get; private set; }
-        public Race Race { get; set; }
-        public CharacterProfession Class { get; set; }
-        public byte Hair { get; set; }
-        public byte Face { get; set; }
-        public byte Height { get; set; }
-        public Gender Gender { get; set; }
+       
         public uint Exp { get; private set; }
         public bool IsAdmin { get; set; }
         public bool IsRename { get; set; }
@@ -54,38 +48,6 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Gets the character's primary stat
         /// </summary>
-        public CharacterStatEnum GetPrimaryStat()
-        {
-            var defaultStat = _characterConfig.DefaultStats.First(s => s.Job == Class);
-
-            switch (defaultStat.MainStat)
-            {
-                case 0:
-                    return CharacterStatEnum.Strength;
-
-                case 1:
-                    return CharacterStatEnum.Dexterity;
-
-                case 2:
-                    return CharacterStatEnum.Reaction;
-
-                case 3:
-                    return CharacterStatEnum.Intelligence;
-
-                case 4:
-                    return CharacterStatEnum.Wisdom;
-
-                case 5:
-                    return CharacterStatEnum.Luck;
-
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
-        /// <summary>
-        /// Gets the character's primary stat
-        /// </summary>
         public CharacterAttributeEnum GetAttributeByStat(CharacterStatEnum stat)
         {
             switch (stat)
@@ -112,108 +74,7 @@ namespace Imgeneus.World.Game.Player
                     throw new NotSupportedException();
             }
         }
-
-        /// <summary>
-        /// Increases a character's main stat by a certain amount
-        /// </summary>
-        /// <param name="amount">Decrease amount</param>
-        public void IncreasePrimaryStat(ushort amount = 1)
-        {
-            var primaryAttribute = GetPrimaryStat();
-
-            switch (primaryAttribute)
-            {
-                case CharacterStatEnum.Strength:
-                    StatsManager.TrySetStats(str: (ushort)(StatsManager.Strength + amount));
-                    break;
-
-                case CharacterStatEnum.Dexterity:
-                    StatsManager.TrySetStats(dex: (ushort)(StatsManager.Dexterity + amount));
-                    break;
-
-                case CharacterStatEnum.Reaction:
-                    StatsManager.TrySetStats(rec: (ushort)(StatsManager.Reaction + amount));
-                    break;
-
-                case CharacterStatEnum.Intelligence:
-                    StatsManager.TrySetStats(intl: (ushort)(StatsManager.Intelligence + amount));
-                    break;
-
-                case CharacterStatEnum.Wisdom:
-                    StatsManager.TrySetStats(wis: (ushort)(StatsManager.Wisdom + amount));
-                    break;
-
-                case CharacterStatEnum.Luck:
-                    StatsManager.TrySetStats(luc: (ushort)(StatsManager.Luck + amount));
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Decreases a character's main stat by a certain amount
-        /// </summary>
-        /// <param name="amount">Decrease amount</param>
-        public void DecreasePrimaryStat(ushort amount = 1)
-        {
-            var primaryAttribute = GetPrimaryStat();
-
-            switch (primaryAttribute)
-            {
-                case CharacterStatEnum.Strength:
-                    StatsManager.TrySetStats(str: (ushort)(StatsManager.Strength - amount));
-                    break;
-
-                case CharacterStatEnum.Dexterity:
-                    StatsManager.TrySetStats(dex: (ushort)(StatsManager.Dexterity - amount));
-                    break;
-
-                case CharacterStatEnum.Reaction:
-                    StatsManager.TrySetStats(rec: (ushort)(StatsManager.Reaction - amount));
-                    break;
-
-                case CharacterStatEnum.Intelligence:
-                    StatsManager.TrySetStats(intl: (ushort)(StatsManager.Intelligence - amount));
-                    break;
-
-                case CharacterStatEnum.Wisdom:
-                    StatsManager.TrySetStats(wis: (ushort)(StatsManager.Wisdom - amount));
-                    break;
-
-                case CharacterStatEnum.Luck:
-                    StatsManager.TrySetStats(luc: (ushort)(StatsManager.Luck - amount));
-                    break;
-
-                default:
-                    break;
-            }
-        }
  
-        #endregion
-
-        #region Reset stats
-
-        public void ResetStats()
-        {
-            var defaultStat = _characterConfig.DefaultStats.First(s => s.Job == Class);
-            var statPerLevel = _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow).StatPoint;
-
-            StatsManager.TrySetStats(defaultStat.Str,
-                                     defaultStat.Dex,
-                                     defaultStat.Rec,
-                                     defaultStat.Int,
-                                     defaultStat.Luc,
-                                     (ushort)((LevelProvider.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
-
-            IncreasePrimaryStat((ushort)(LevelProvider.Level - 1));
-
-            _taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatsManager.StatPoint);
-            _packetsHelper.SendResetStats(Client, this);
-            //SendAdditionalStats();
-        }
-
         #endregion
 
         #region Attributes

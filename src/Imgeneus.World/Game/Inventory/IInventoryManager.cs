@@ -137,5 +137,28 @@ namespace Imgeneus.World.Game.Inventory
         /// Money, that belongs to player.
         /// </summary>
         uint Gold { get; set; }
+
+        /// <summary>
+        /// Event, that is fired, when player uses any item from inventory.
+        /// </summary>
+        event Action<int, Item> OnUsedItem;
+
+        /// <summary>
+        /// Use item from inventory.
+        /// </summary>
+        /// <param name="bag">bag, where item is situated</param>
+        /// <param name="slot">slot, where item is situated</param>
+        /// <param name="targetId">id of another player</param>
+        Task<bool> TryUseItem(byte bag, byte slot, int? targetId = null);
+
+        /// <summary>
+        /// Checks if item can be used. E.g. cooldown is over, required level is right etc.
+        /// </summary>
+        bool CanUseItem(Item item);
+
+        /// <summary>
+        /// Checks if item can be used on another player.
+        /// </summary>
+        bool CanUseItemOnTarget(Item item, int targetId);
     }
 }
