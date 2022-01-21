@@ -18,6 +18,6 @@ namespace Imgeneus.World
         /// <summary>
         /// Clears all session specific services.
         /// </summary>
-        Task ClearSession();
+        Task ClearSession(bool quitGame = false);
     }
 }

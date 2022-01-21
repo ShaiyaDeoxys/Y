@@ -21,7 +21,7 @@ namespace Imgeneus.World
     {
         private readonly IHandlerInvoker _handlerInvoker;
 
-        public WorldClient(ILogger<ImgeneusClient> logger, ICryptoManager cryptoManager, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker):
+        public WorldClient(ILogger<ImgeneusClient> logger, ICryptoManager cryptoManager, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker) :
             base(logger, cryptoManager, serviceProvider)
         {
             _handlerInvoker = handlerInvoker;
@@ -39,12 +39,10 @@ namespace Imgeneus.World
         protected override void OnDisconnected()
         {
             var gameSession = _scope.ServiceProvider.GetService<IGameSession>();
-            gameSession.StartLogOff();
-
-            base.OnDisconnected();
+            gameSession.StartLogOff(true);
         }
 
-        public async Task ClearSession()
+        public async Task ClearSession(bool quitGame = false)
         {
             var x = _scope.ServiceProvider;
 
@@ -57,6 +55,9 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<IMovementManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            if (quitGame)
+                base.OnDisconnected();
         }
     }
 }

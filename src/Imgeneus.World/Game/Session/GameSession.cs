@@ -78,14 +78,14 @@ namespace Imgeneus.World.Game.Session
             if (_quitGame)
             {
                 _packetFactory.SendQuitGame(Client);
-                await Client.ClearSession();
+                await Client.ClearSession(_quitGame);
             }
             else
             {
                 _packetFactory.SendLogout(Client);
                 (Client as WorldClient).CryptoManager.UseExpandedKey = false;
 
-                await Client.ClearSession();
+                await Client.ClearSession(_quitGame);
 
                 _packetFactory.SendCharacterList(Client, await _selectionScreenManager.GetCharacters(Client.UserId));
                 _packetFactory.SendFaction(Client, await _selectionScreenManager.GetFaction(Client.UserId), await _selectionScreenManager.GetMaxMode(Client.UserId));
