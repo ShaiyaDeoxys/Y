@@ -232,6 +232,16 @@ namespace Imgeneus.World.Game.Stats
         void RaiseAdditionalStatsUpdate();
 
         /// <summary>
+        /// Initiates <see cref="OnResetStats"/>
+        /// </summary>
+        void RaiseResetStats();
+
+        /// <summary>
+        /// Triggers const stats update send to player.
+        /// </summary>
+        event Action OnResetStats;
+
+        /// <summary>
         /// Triggers additional stats update send to player. Trigger it via <see cref="RaiseAdditionalStatsUpdate"/>
         /// </summary>
         event Action OnAdditionalStatsUpdate;

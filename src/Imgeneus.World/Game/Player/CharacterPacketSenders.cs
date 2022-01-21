@@ -60,6 +60,8 @@ namespace Imgeneus.World.Game.Player
 
         private void SendAdditionalStats() => _packetsHelper.SendAdditionalStats(Client, this);
 
+        private void SendResetStats() => _packetsHelper.SendResetStats(Client, this);
+
         private void SendItemExpiration(Item item) => _packetsHelper.SendItemExpiration(Client, item);
 
         private void SendLearnedSkills() => _packetsHelper.SendLearnedSkills(Client, this);

@@ -1289,18 +1289,16 @@ namespace Imgeneus.World.Game.Inventory
                                                      defaultStat.Dex,
                                                      defaultStat.Rec,
                                                      defaultStat.Int,
+                                                     defaultStat.Wis,
                                                      defaultStat.Luc,
                                                      (ushort)((_levelProvider.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
             if (!ok)
                 return false;
 
             await _levelingManager.IncreasePrimaryStat((ushort)(_levelProvider.Level - 1));
-            return true;
 
-
-            //_taskQueue.Enqueue(ActionType.UPDATE_STATS, Id, StatsManager.Strength, StatsManager.Dexterity, StatsManager.Reaction, StatsManager.Intelligence, StatsManager.Wisdom, StatsManager.Luck, StatsManager.StatPoint);
-            //_packetsHelper.SendResetStats(Client, this);
-            //SendAdditionalStats();
+            _statsManager.RaiseResetStats();
+            return ok;
         }
 
         #endregion

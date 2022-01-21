@@ -95,5 +95,10 @@ namespace Imgeneus.World.Game.Skills
         /// Clears skills and adds skill points.
         /// </summary>
         Task<bool> TryResetSkills();
+
+        /// <summary>
+        /// Triggers send reset skills for player.
+        /// </summary>
+        event Action OnResetSkills;
     }
 }

@@ -224,6 +224,8 @@ namespace Imgeneus.World.Game.Skills
             return (true, skill);
         }
 
+        public event Action OnResetSkills;
+
         public async Task<bool> TryResetSkills()
         {
             var skillFactor = _characterConfig.GetLevelStatSkillPoints(_levelingManager.Grow).SkillPoint;
@@ -235,14 +237,15 @@ namespace Imgeneus.World.Game.Skills
             var skillsToRemove = _database.CharacterSkills.Where(s => s.CharacterId == _ownerId);
             _database.CharacterSkills.RemoveRange(skillsToRemove);
             await _database.SaveChangesAsync();
-            //_taskQueue.Enqueue(ActionType.SAVE_CHARACTER_SKILLPOINT, Id, SkillPoint);
 
-            // SendResetSkills();
+            OnResetSkills?.Invoke();
 
             foreach (var passive in _buffsManager.PassiveBuffs.ToList())
                 passive.CancelBuff();
 
             Skills.Clear();
+
+
 
             return true;
         }

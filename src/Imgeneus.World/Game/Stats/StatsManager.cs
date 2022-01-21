@@ -353,6 +353,12 @@ namespace Imgeneus.World.Game.Stats
             OnAdditionalStatsUpdate?.Invoke();
         }
 
+        public event Action OnResetStats;
+        public void RaiseResetStats()
+        {
+            OnResetStats?.Invoke();
+        }
+
         #endregion
     }
 }

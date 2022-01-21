@@ -129,10 +129,12 @@ namespace Imgeneus.World.Game.Player
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
+            StatsManager.OnResetStats += SendResetStats;
             BuffsManager.OnBuffAdded += OnBuffAdded;
             BuffsManager.OnBuffRemoved += OnBuffRemoved;
             AttackManager.OnStartAttack += SendAttackStart;
             VehicleManager.OnUsedVehicle += SendUseVehicle;
+            SkillsManager.OnResetSkills += SendResetSkills;
 
             _packetsHelper = new PacketsHelper();
 
@@ -162,10 +164,12 @@ namespace Imgeneus.World.Game.Player
                 SetParty(null);
 
             StatsManager.OnAdditionalStatsUpdate -= SendAdditionalStats;
+            StatsManager.OnResetStats -= SendResetStats;
             BuffsManager.OnBuffAdded -= OnBuffAdded;
             BuffsManager.OnBuffRemoved -= OnBuffRemoved;
             AttackManager.OnStartAttack -= SendAttackStart;
             VehicleManager.OnUsedVehicle -= SendUseVehicle;
+            SkillsManager.OnResetSkills -= SendResetSkills;
 
             OnDead -= Character_OnDead;
 
