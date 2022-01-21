@@ -1,10 +1,14 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Imgeneus.World.Game.Linking
 {
@@ -14,11 +18,19 @@ namespace Imgeneus.World.Game.Linking
 
         private readonly ILogger<LinkingManager> _logger;
         private readonly IDatabasePreloader _databasePreloader;
+        private readonly IInventoryManager _inventoryManager;
+        private readonly IStatsManager _statsManager;
+        private readonly IHealthManager _healthManager;
+        private readonly ISpeedManager _speedManager;
 
-        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader)
+        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
+            _inventoryManager = inventoryManager;
+            _statsManager = statsManager;
+            _healthManager = healthManager;
+            _speedManager = speedManager;
 
 #if DEBUG
             _logger.LogDebug("LinkingManager {hashcode} created", GetHashCode());
@@ -34,7 +46,108 @@ namespace Imgeneus.World.Game.Linking
 
         public Item Item { get; set; }
 
-        public (bool Success, byte Slot) AddGem(Item item, Item gem, Item hammer)
+        public (bool Success, byte Slot, Item Gem, Item Item, Item Hammer) AddGem(byte bag, byte slot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
+        {
+            _inventoryManager.InventoryItems.TryGetValue((bag, slot), out var gem);
+            if (gem is null || gem.Type != Item.GEM_ITEM_TYPE)
+                return (false, 0, null, null, null);
+
+            var linkingGold = GetGold(gem);
+            if (_inventoryManager.Gold < linkingGold)
+            {
+                // TODO: send warning, that not enough money?
+                return (false, 0, null, null, null);
+            }
+
+            _inventoryManager.InventoryItems.TryGetValue((destinationBag, destinationSlot), out var item);
+            if (item is null || item.FreeSlots == 0 || item.ContainsGem(gem.TypeId))
+                return (false, 0, null, null, null);
+
+            Item hammer = null;
+            if (hammerBag != 0)
+                _inventoryManager.InventoryItems.TryGetValue((hammerBag, hammerSlot), out hammer);
+
+            Item saveItem = null;
+            if (gem.ReqVg > 0)
+            {
+                saveItem = _inventoryManager.InventoryItems.Select(itm => itm.Value).FirstOrDefault(itm => itm.Special == SpecialEffect.LuckyCharm);
+                if (saveItem != null)
+                    _inventoryManager.TryUseItem(saveItem.Bag, saveItem.Slot);
+            }
+
+            if (hammer != null)
+                _inventoryManager.TryUseItem(hammer.Bag, hammer.Slot);
+
+            _inventoryManager.Gold = (uint)(_inventoryManager.Gold - linkingGold);
+
+            var result = AddGem(item, gem, hammer);
+
+            if (result.Success && item.Bag == 0)
+            {
+                _statsManager.ExtraStr += gem.Str;
+                _statsManager.ExtraDex += gem.Dex;
+                _statsManager.ExtraRec += gem.Rec;
+                _statsManager.ExtraInt += gem.Int;
+                _statsManager.ExtraLuc += gem.Luc;
+                _statsManager.ExtraWis += gem.Wis;
+                _healthManager.ExtraHP += gem.HP;
+                _healthManager.ExtraSP += gem.SP;
+                _healthManager.ExtraMP += gem.MP;
+                _statsManager.ExtraDefense += gem.Defense;
+                _statsManager.ExtraResistance += gem.Resistance;
+                _statsManager.Absorption += gem.Absorb;
+                _speedManager.ExtraMoveSpeed += gem.MoveSpeed;
+                _speedManager.ExtraAttackSpeed += gem.AttackSpeed;
+
+                if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.MaxAttack != 0)
+                    _statsManager.RaiseAdditionalStatsUpdate();
+            }
+
+            if (!result.Success && saveItem == null && gem.ReqVg > 0)
+            {
+                _inventoryManager.RemoveItem(item);
+
+                if (item.Bag == 0)
+                {
+                    if (item == _inventoryManager.Helmet)
+                        _inventoryManager.Helmet = null;
+                    else if (item == _inventoryManager.Armor)
+                        _inventoryManager.Armor = null;
+                    else if (item == _inventoryManager.Pants)
+                        _inventoryManager.Pants = null;
+                    else if (item == _inventoryManager.Gauntlet)
+                        _inventoryManager.Gauntlet = null;
+                    else if (item == _inventoryManager.Boots)
+                        _inventoryManager.Boots = null;
+                    else if (item == _inventoryManager.Weapon)
+                        _inventoryManager.Weapon = null;
+                    else if (item == _inventoryManager.Shield)
+                        _inventoryManager.Shield = null;
+                    else if (item == _inventoryManager.Cape)
+                        _inventoryManager.Cape = null;
+                    else if (item == _inventoryManager.Amulet)
+                        _inventoryManager.Amulet = null;
+                    else if (item == _inventoryManager.Ring1)
+                        _inventoryManager.Ring1 = null;
+                    else if (item == _inventoryManager.Ring2)
+                        _inventoryManager.Ring2 = null;
+                    else if (item == _inventoryManager.Bracelet1)
+                        _inventoryManager.Bracelet1 = null;
+                    else if (item == _inventoryManager.Bracelet2)
+                        _inventoryManager.Bracelet2 = null;
+                    else if (item == _inventoryManager.Mount)
+                        _inventoryManager.Mount = null;
+                    else if (item == _inventoryManager.Pet)
+                        _inventoryManager.Pet = null;
+                    else if (item == _inventoryManager.Costume)
+                        _inventoryManager.Costume = null;
+                }
+            }
+
+            return (result.Success, result.Slot, gem, item, hammer);
+        }
+
+        private (bool Success, byte Slot) AddGem(Item item, Item gem, Item hammer)
         {
             double rate = GetRate(gem, hammer);
             var rand = _random.Next(1, 101);

@@ -925,35 +925,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendAddGem(IWorldClient client, bool success, Item gem, Item destinationItem, byte gemSlot, uint gold, Item saveItem, Item hammer)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GEM_ADD);
-            packet.Write(success);
-            packet.Write(gem.Bag);
-            packet.Write(gem.Slot);
-            packet.Write(gem.Count);
-            packet.Write(destinationItem.Bag);
-            packet.Write(destinationItem.Slot);
-            packet.Write(gemSlot);
-            packet.Write(gem.TypeId);
-            packet.WriteByte(0); // unknown, old eps: byBag
-            packet.WriteByte(0); // unknown, old eps: bySlot
-            packet.WriteByte(0); // unknown, old eps: byTypeID; maybe in new ep TypeId is int?
-            packet.Write(gold);
-            if (hammer is null)
-            {
-                packet.WriteByte(0);
-                packet.WriteByte(0);
-            }
-            else
-            {
-                packet.Write(hammer.Bag);
-                packet.Write(hammer.Slot);
-            }
-
-            client.Send(packet);
-        }
-
         internal void SendEtinReturnResult(IWorldClient client, IList<Item> etins)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_ETIN_RETURN);

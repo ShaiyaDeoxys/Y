@@ -35,13 +35,9 @@ namespace Imgeneus.World.Handlers
             {
                 var newItem = new Item(_databasePreloader, packet.Type, packet.TypeId, itemCount);
 
-                var item = await _inventoryManager.AddItem(newItem);
+                var item = _inventoryManager.AddItem(newItem);
                 if (item != null)
                 {
-                    _packetFactory.SendAddItem(client, item);
-                    if (item.ExpirationTime != null)
-                        _packetFactory.SendItemExpiration(client, item);
-
                     ok = true;
                 }
 

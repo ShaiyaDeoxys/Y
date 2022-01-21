@@ -12,19 +12,17 @@ namespace Imgeneus.World.Handlers
     [Handler]
     public class MoveItemInInventoryHandler : BaseHandler
     {
-        private readonly IGameWorld _gameWorld;
         private readonly IInventoryManager _inventoryManager;
 
-        public MoveItemInInventoryHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld,  IInventoryManager inventoryManager) : base(packetFactory, gameSession)
+        public MoveItemInInventoryHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
         {
-            _gameWorld = gameWorld;
             _inventoryManager = inventoryManager;
         }
 
         [HandlerAction(PacketType.INVENTORY_MOVE_ITEM)]
-        public async Task Handle(WorldClient client, MoveItemInInventoryPacket packet)
+        public void Handle(WorldClient client, MoveItemInInventoryPacket packet)
         {
-            var items = await _inventoryManager.MoveItem(packet.CurrentBag, packet.CurrentSlot, packet.DestinationBag, packet.DestinationSlot);
+            var items = _inventoryManager.MoveItem(packet.CurrentBag, packet.CurrentSlot, packet.DestinationBag, packet.DestinationSlot);
             _packetFactory.SendMoveItem(client, items.sourceItem, items.destinationItem);
         }
      }

@@ -15,7 +15,6 @@ namespace Imgeneus.World.Game.Player
        
         public uint Exp { get; private set; }
         public bool IsAdmin { get; set; }
-        public bool IsRename { get; set; }
 
         /// <summary>
         /// Account points, used for item mall or online shop purchases.

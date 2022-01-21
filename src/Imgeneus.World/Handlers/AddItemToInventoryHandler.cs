@@ -22,7 +22,7 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.ADD_ITEM)]
-        public async Task Handle(WorldClient client, MapPickUpItemPacket packet)
+        public void Handle(WorldClient client, MapPickUpItemPacket packet)
         {
             var player = _gameWorld.Players[_gameSession.CharId];
             var mapItem = player.Map.GetItem(packet.ItemId, player);
@@ -41,7 +41,7 @@ namespace Imgeneus.World.Handlers
             }
             else
             {
-                var inventoryItem = await _inventoryManager.AddItem(mapItem.Item);
+                var inventoryItem = _inventoryManager.AddItem(mapItem.Item);
                 if (inventoryItem is null)
                 {
                     _packetFactory.SendFullInventory(client);
@@ -49,7 +49,6 @@ namespace Imgeneus.World.Handlers
                 else
                 {
                     player.Map.RemoveItem(player.CellId, mapItem.Id);
-                    _packetFactory.SendAddItem(client, inventoryItem);
 
                     if (player.Party != null)
                         player.Party.MemberGetItem(player, inventoryItem);

@@ -388,6 +388,66 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendAddGem(IWorldClient client, bool success, Item gem, Item item, byte slot, uint gold, Item hammer)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GEM_ADD);
+            packet.Write(success);
+
+            if (gem is null)
+            {
+                packet.WriteByte(0);
+                packet.WriteByte(0);
+                packet.WriteByte(0);
+            }
+            else
+            {
+                packet.Write(gem.Bag);
+                packet.Write(gem.Slot);
+                packet.Write(gem.Count);
+            }
+
+            if (item is null)
+            {
+                packet.WriteByte(0);
+                packet.WriteByte(0);
+            }
+            else
+            {
+                packet.Write(item.Bag);
+                packet.Write(item.Slot);
+            }
+
+
+            packet.Write(slot);
+
+            if (gem is null)
+            {
+                packet.WriteByte(0);
+            }
+            else
+            {
+                packet.Write(gem.TypeId);
+            }
+            packet.WriteByte(0); // unknown, old eps: byBag
+            packet.WriteByte(0); // unknown, old eps: bySlot
+            packet.WriteByte(0); // unknown, old eps: byTypeID; maybe in new ep TypeId is int?
+
+            packet.Write(gold);
+
+            if (hammer is null)
+            {
+                packet.WriteByte(0);
+                packet.WriteByte(0);
+            }
+            else
+            {
+                packet.Write(hammer.Bag);
+                packet.Write(hammer.Slot);
+            }
+
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

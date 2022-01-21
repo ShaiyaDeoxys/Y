@@ -24,7 +24,7 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.REMOVE_ITEM)]
-        public async Task Handle(WorldClient client, RemoveItemPacket packet)
+        public void Handle(WorldClient client, RemoveItemPacket packet)
         {
             _inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var item);
 
@@ -33,11 +33,9 @@ namespace Imgeneus.World.Handlers
 
             item.TradeQuantity = packet.Count <= item.Count ? packet.Count : item.Count;
 
-            var removedItem = await _inventoryManager.RemoveItem(item);
+            var removedItem = _inventoryManager.RemoveItem(item);
             if (removedItem is null)
                 return;
-
-            _packetFactory.SendRemoveItem(client, item, removedItem.Count == item.Count);
 
             var player = _gameWorld.Players[_gameSession.CharId];
             player.Map.AddItem(new MapItem(removedItem, player, player.PosX, player.PosY, player.PosZ));

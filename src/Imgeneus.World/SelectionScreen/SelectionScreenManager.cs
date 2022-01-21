@@ -52,7 +52,9 @@ namespace Imgeneus.World.SelectionScreen
 
         public async Task<IEnumerable<DbCharacter>> GetCharacters(int userId)
         {
-            var characters = await _database.Characters.Include(c => c.Items)
+            var characters = await _database.Characters
+                                        .AsNoTracking()
+                                        .Include(c => c.Items)
                                         .Where(u => u.UserId == userId)
                                         .ToListAsync();
 

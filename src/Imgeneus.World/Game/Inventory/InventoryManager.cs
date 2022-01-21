@@ -15,6 +15,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Vehicle;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -153,7 +154,45 @@ namespace Imgeneus.World.Game.Inventory
 
         public async Task Clear()
         {
-            await SaveGold();
+            var character = await _database.Characters.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == _ownerId);
+            if (character is null)
+                return;
+
+            character.Gold = Gold;
+
+            _database.CharacterItems.RemoveRange(character.Items);
+
+            foreach (var item in InventoryItems.Values)
+            {
+                var dbItem = new DbCharacterItems()
+                {
+                    CharacterId = _ownerId,
+                    Type = item.Type,
+                    TypeId = item.TypeId,
+                    Count = item.Count,
+                    Quality = item.Quality,
+                    Bag = item.Bag,
+                    Slot = item.Slot,
+                    GemTypeId1 = item.Gem1 is null ? 0 : item.Gem1.TypeId,
+                    GemTypeId2 = item.Gem2 is null ? 0 : item.Gem2.TypeId,
+                    GemTypeId3 = item.Gem3 is null ? 0 : item.Gem3.TypeId,
+                    GemTypeId4 = item.Gem4 is null ? 0 : item.Gem4.TypeId,
+                    GemTypeId5 = item.Gem5 is null ? 0 : item.Gem5.TypeId,
+                    GemTypeId6 = item.Gem6 is null ? 0 : item.Gem6.TypeId,
+                    HasDyeColor = item.DyeColor.IsEnabled,
+                    DyeColorAlpha = item.DyeColor.Alpha,
+                    DyeColorSaturation = item.DyeColor.Saturation,
+                    DyeColorR = item.DyeColor.R,
+                    DyeColorG = item.DyeColor.G,
+                    DyeColorB = item.DyeColor.B,
+                    CreationTime = item.CreationTime,
+                    ExpirationTime = item.ExpirationTime
+                };
+
+                _database.CharacterItems.Add(dbItem);
+            }
+
+            await _database.SaveChangesAsync();
 
             InventoryItems.Clear();
             Helmet = null;
@@ -573,7 +612,9 @@ namespace Imgeneus.World.Game.Inventory
         /// </summary>
         public ConcurrentDictionary<(byte Bag, byte Slot), Item> InventoryItems { get; private set; } = new ConcurrentDictionary<(byte Bag, byte Slot), Item>();
 
-        public async Task<Item> AddItem(Item item)
+        public event Action<Item> OnAddItem;
+
+        public Item AddItem(Item item)
         {
             // Find free space.
             var free = FindFreeSlotInInventory();
@@ -587,40 +628,6 @@ namespace Imgeneus.World.Game.Inventory
             item.Bag = free.Bag;
             item.Slot = (byte)free.Slot;
 
-            var dbItem = new DbCharacterItems()
-            {
-                CharacterId = _ownerId,
-                Type = item.Type,
-                TypeId = item.TypeId,
-                Count = item.Count,
-                Quality = item.Quality,
-                Bag = item.Bag,
-                Slot = item.Slot,
-                GemTypeId1 = item.Gem1 is null ? 0 : item.Gem1.TypeId,
-                GemTypeId2 = item.Gem2 is null ? 0 : item.Gem2.TypeId,
-                GemTypeId3 = item.Gem3 is null ? 0 : item.Gem3.TypeId,
-                GemTypeId4 = item.Gem4 is null ? 0 : item.Gem4.TypeId,
-                GemTypeId5 = item.Gem5 is null ? 0 : item.Gem5.TypeId,
-                GemTypeId6 = item.Gem6 is null ? 0 : item.Gem6.TypeId,
-                HasDyeColor = item.DyeColor.IsEnabled,
-                DyeColorAlpha = item.DyeColor.Alpha,
-                DyeColorSaturation = item.DyeColor.Saturation,
-                DyeColorR = item.DyeColor.R,
-                DyeColorG = item.DyeColor.G,
-                DyeColorB = item.DyeColor.B,
-                CreationTime = item.CreationTime,
-                ExpirationTime = item.ExpirationTime
-            };
-
-            _database.CharacterItems.Add(dbItem);
-
-            var count = await _database.SaveChangesAsync();
-            if (count != 1)
-            {
-                _logger.LogError("Could not crete item for player {characterId}", _ownerId);
-                return null;
-            }
-
             InventoryItems.TryAdd((item.Bag, item.Slot), item);
 
             if (item.ExpirationTime != null)
@@ -629,18 +636,15 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             _logger.LogDebug("Character {characterId} got item {type} {typeId}", _ownerId, item.Type, item.TypeId);
+
+            OnAddItem?.Invoke(item);
             return item;
         }
 
-        public async Task<Item> RemoveItem(Item item)
-        {
-            var dbItem = _database.CharacterItems.FirstOrDefault(x => x.CharacterId == _ownerId && x.Bag == item.Bag && x.Slot == item.Slot);
-            if (dbItem is null)
-            {
-                _logger.LogError("Could not find item count during remove for character {characterId}", _ownerId);
-                return null;
-            }
+        public event Action<Item, bool> OnRemoveItem;
 
+        public Item RemoveItem(Item item)
+        {
             // If we are giving consumable item.
             if (item.TradeQuantity < item.Count && item.TradeQuantity != 0)
             {
@@ -650,19 +654,9 @@ namespace Imgeneus.World.Game.Inventory
                 item.Count -= item.TradeQuantity;
                 item.TradeQuantity = 0;
 
-
-                dbItem.Count = item.Count;
-                await _database.SaveChangesAsync();
+                OnRemoveItem?.Invoke(item, item.Count == 0);
 
                 return givenItem;
-            }
-
-            _database.CharacterItems.Remove(dbItem);
-            var count = await _database.SaveChangesAsync();
-            if (count != 1)
-            {
-                _logger.LogError("Could not remove item for character {characterId}", _ownerId);
-                return null;
             }
 
             InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
@@ -674,13 +668,13 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _ownerId, item.Type, item.TypeId);
+
+            OnRemoveItem?.Invoke(item, true);
             return item;
         }
 
-        public async Task<(Item sourceItem, Item destinationItem)> MoveItem(byte sourceBag, byte sourceSlot, byte destinationBag, byte destinationSlot)
+        public (Item sourceItem, Item destinationItem) MoveItem(byte sourceBag, byte sourceSlot, byte destinationBag, byte destinationSlot)
         {
-            bool swapping = false;
-
             // Find source item.
             InventoryItems.TryRemove((sourceBag, sourceSlot), out var sourceItem);
             if (sourceItem is null)
@@ -724,35 +718,7 @@ namespace Imgeneus.World.Game.Inventory
 
                     sourceItem.Bag = destinationBag;
                     sourceItem.Slot = destinationSlot;
-                    swapping = true;
                 }
-            }
-
-            // Add new items to database.
-            var dbSourceItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == sourceBag && x.Slot == sourceSlot && x.CharacterId == _ownerId);
-            var dbDestinationItem = _database.CharacterItems.FirstOrDefault(x => x.Bag == destinationBag && x.Slot == destinationSlot && x.CharacterId == _ownerId);
-
-            dbSourceItem.Bag = destinationBag;
-            dbSourceItem.Slot = destinationSlot;
-
-            if (swapping)
-            {
-                dbDestinationItem.Bag = sourceBag;
-                dbDestinationItem.Slot = sourceSlot;
-            }
-            else
-            {
-                dbSourceItem.Count = destinationItem.Count;
-
-                if (dbDestinationItem != null)
-                    _database.CharacterItems.Remove(dbDestinationItem);
-            }
-
-            var count = await _database.SaveChangesAsync();
-            if ((!swapping && count < 1) || (swapping && count != 2))
-            {
-                _logger.LogError("Could not move item for player {characterId}", _ownerId);
-                return (null, null);
             }
 
             // Update equipment if needed.
@@ -888,17 +854,6 @@ namespace Imgeneus.World.Game.Inventory
 
         public uint Gold { get; set; }
 
-        private async Task SaveGold()
-        {
-            var character = await _database.Characters.FindAsync(_ownerId);
-            if (character is null)
-                return;
-
-            character.Gold = Gold;
-
-            await _database.SaveChangesAsync();
-        }
-
         #endregion
 
         #region Use item
@@ -936,16 +891,9 @@ namespace Imgeneus.World.Game.Inventory
             await ApplyItemEffect(item, targetId);
             OnUsedItem?.Invoke(_ownerId, item);
 
-            if (item.Count > 0)
-            {
-                //_taskQueue.Enqueue(ActionType.UPDATE_ITEM_COUNT_IN_INVENTORY,
-                //                   Id, item.Bag, item.Slot, item.Count);
-            }
-            else
+            if (item.Count == 0)
             {
                 InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
-                //_taskQueue.Enqueue(ActionType.REMOVE_ITEM_FROM_INVENTORY,
-                //                   Id, item.Bag, item.Slot);
             }
 
             return true;
@@ -1205,7 +1153,7 @@ namespace Imgeneus.World.Game.Inventory
                     break;
 
                 case SpecialEffect.NameChange:
-                    UseNameChangeStone();
+                    await UseNameChangeStone();
                     break;
 
                 case SpecialEffect.AnotherItemGenerator:
@@ -1262,11 +1210,17 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Initiates name change process
         /// </summary>
-        public void UseNameChangeStone()
+        public async Task UseNameChangeStone()
         {
-            //IsRename = true;
+            var character = await _database.Characters.FindAsync(_ownerId);
+            if (character is null)
+            {
+                _logger.LogError("Character {id} is not found", _ownerId);
+                return;
+            }
 
-            //_taskQueue.Enqueue(ActionType.SAVE_IS_RENAME, Id, true);
+            character.IsRename = true;
+            await _database.SaveChangesAsync();
         }
 
         /// <summary>

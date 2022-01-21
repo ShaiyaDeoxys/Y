@@ -22,87 +22,87 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Worm helmet.
         /// </summary>
-        Item Helmet { get; }
+        Item Helmet { get; set; }
 
         /// <summary>
         /// Worm armor.
         /// </summary>
-        Item Armor { get; }
+        Item Armor { get; set; }
 
         /// <summary>
         /// Worm pants.
         /// </summary>
-        Item Pants { get; }
+        Item Pants { get; set; }
 
         /// <summary>
         /// Worm gauntlet.
         /// </summary>
-        Item Gauntlet { get; }
+        Item Gauntlet { get; set; }
 
         /// <summary>
         /// Worm boots.
         /// </summary>
-        Item Boots { get; }
+        Item Boots { get; set; }
 
         /// <summary>
         /// Worm weapon.
         /// </summary>
-        Item Weapon { get; }
+        Item Weapon { get; set; }
 
         /// <summary>
         /// Worm shield.
         /// </summary>
-        Item Shield { get; }
+        Item Shield { get; set; }
 
         /// <summary>
         /// Worm cape.
         /// </summary>
-        Item Cape { get; }
+        Item Cape { get; set; }
 
         /// <summary>
         /// Worm amulet.
         /// </summary>
-        Item Amulet { get; }
+        Item Amulet { get; set; }
 
         /// <summary>
         /// Worm ring1.
         /// </summary>
-        Item Ring1 { get; }
+        Item Ring1 { get; set; }
 
         /// <summary>
         /// Worm ring2.
         /// </summary>
-        Item Ring2 { get; }
+        Item Ring2 { get; set; }
 
         /// <summary>
         /// Worm bracelet1.
         /// </summary>
-        Item Bracelet1 { get; }
+        Item Bracelet1 { get; set; }
 
         /// <summary>
         /// Worm bracelet2.
         /// </summary>
-        Item Bracelet2 { get; }
+        Item Bracelet2 { get; set; }
 
         /// <summary>
         /// Worm mount.
         /// </summary>
-        Item Mount { get; }
+        Item Mount { get; set; }
 
         /// <summary>
         /// Worm pet.
         /// </summary>
-        Item Pet { get; }
+        Item Pet { get; set; }
 
         /// <summary>
         /// Worm costume.
         /// </summary>
-        Item Costume { get; }
+        Item Costume { get; set; }
 
         /// <summary>
         /// Worm wings.
         /// </summary>
-        Item Wings { get; }
+        Item Wings { get; set; }
 
         /// <summary>
         /// Inits character inventory with items from db.
@@ -112,17 +112,21 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="gold">gold amount from database</param>
         void Init(int owner, IEnumerable<DbCharacterItems> items, uint gold);
 
+        event Action<Item> OnAddItem;
+
         /// <summary>
         /// Adds item to player's inventory.
         /// </summary>
         /// <param name="item">ite, that we want to add</param>
-        Task<Item> AddItem(Item item);
+        Item AddItem(Item item);
+
+        event Action<Item, bool> OnRemoveItem;
 
         /// <summary>
         /// Removes item from inventory
         /// </summary>
         /// <param name="item">item, that we want to remove</param>
-        Task<Item> RemoveItem(Item item);
+        Item RemoveItem(Item item);
 
         /// <summary>
         /// Moves item inside inventory.
@@ -131,7 +135,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="currentSlot">current slot id</param>
         /// <param name="destinationBag">bag id, where item should be moved</param>
         /// <param name="destinationSlot">slot id, where item should be moved</param>
-        public Task<(Item sourceItem, Item destinationItem)> MoveItem(byte currentBag, byte currentSlot, byte destinationBag, byte destinationSlot);
+        public (Item sourceItem, Item destinationItem) MoveItem(byte currentBag, byte currentSlot, byte destinationBag, byte destinationSlot);
 
         /// <summary>
         /// Money, that belongs to player.

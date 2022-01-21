@@ -16,11 +16,8 @@ namespace Imgeneus.World.Game.Linking
         /// <summary>
         /// Tries to add gem to item.
         /// </summary>
-        /// <param name="item">item to which we should link gem</param>
-        /// <param name="gem">linking gem</param>
-        /// <param name="hammer">linking hammer, can be null</param>
         /// <returns>true, if gem was successfully linked, otherwise false; also returns slot, where gem was linked</returns>
-        public (bool Success, byte Slot) AddGem(Item item, Item gem, Item hammer);
+        public (bool Success, byte Slot, Item Gem, Item Item, Item Hammer) AddGem(byte bag, byte slot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot);
 
         /// <summary>
         /// Removes gem from item.

@@ -135,6 +135,8 @@ namespace Imgeneus.World.Game.Player
             AttackManager.OnStartAttack += SendAttackStart;
             VehicleManager.OnUsedVehicle += SendUseVehicle;
             SkillsManager.OnResetSkills += SendResetSkills;
+            InventoryManager.OnAddItem += SendAddItemToInventory;
+            InventoryManager.OnRemoveItem += SendRemoveItemFromInventory;
 
             _packetsHelper = new PacketsHelper();
 
@@ -170,6 +172,8 @@ namespace Imgeneus.World.Game.Player
             AttackManager.OnStartAttack -= SendAttackStart;
             VehicleManager.OnUsedVehicle -= SendUseVehicle;
             SkillsManager.OnResetSkills -= SendResetSkills;
+            InventoryManager.OnAddItem -= SendAddItemToInventory;
+            InventoryManager.OnRemoveItem -= SendRemoveItemFromInventory;
 
             OnDead -= Character_OnDead;
 
