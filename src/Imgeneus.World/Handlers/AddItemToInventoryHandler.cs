@@ -5,7 +5,6 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
-using System.Threading.Tasks;
 
 namespace Imgeneus.World.Handlers
 {

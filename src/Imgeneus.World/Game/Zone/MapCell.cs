@@ -225,7 +225,7 @@ namespace Imgeneus.World.Game.Zone
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange += Character_OnShapeChange;
             character.OnRebirthed += Character_OnRebirthed;
-            character.OnAppearanceChanged += Character_OnAppearanceChanged;
+            character.AdditionalInfoManager.OnAppearanceChanged += Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle += Character_OnStartSummonVehicle;
             character.OnLevelUp += Character_OnLevelUp;
             character.OnAdminLevelChange += Character_OnAdminLevelChange;
@@ -256,7 +256,7 @@ namespace Imgeneus.World.Game.Zone
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange -= Character_OnShapeChange;
             character.OnRebirthed -= Character_OnRebirthed;
-            character.OnAppearanceChanged -= Character_OnAppearanceChanged;
+            character.AdditionalInfoManager.OnAppearanceChanged -= Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
             character.OnLevelUp -= Character_OnLevelUp;
             character.OnAdminLevelChange -= Character_OnAdminLevelChange;
@@ -444,10 +444,10 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Character_OnAppearanceChanged(Character sender)
+        private void Character_OnAppearanceChanged(int characterId, byte hair, byte face, byte size, byte gender)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendAppearanceChanged(player.Client, sender);
+                Map.PacketFactory.SendAppearanceChanged(player.Client, characterId, hair, face, size, gender);
         }
 
         private void Character_OnStartSummonVehicle(int senderId)

@@ -375,6 +375,17 @@ namespace Imgeneus.World.Packets
             packet.Write(hp);
             client.Send(packet);
         }
+
+        public void SendAppearanceChanged(IWorldClient client, int characterId, byte hair, byte face, byte size, byte gender)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHANGE_APPEARANCE);
+            packet.Write(characterId);
+            packet.Write(hair);
+            packet.Write(face);
+            packet.Write(size);
+            packet.Write(gender);
+            client.Send(packet);
+        }
         #endregion
 
         #region Linking

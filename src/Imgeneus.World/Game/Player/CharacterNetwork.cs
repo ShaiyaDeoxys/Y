@@ -192,10 +192,6 @@ namespace Imgeneus.World.Game.Player
                     FinishDuel(Duel.DuelCancelReason.AdmitDefeat);
                     break;
 
-                case ChangeAppearancePacket changeAppearancePacket:
-                    HandleChangeAppearance(changeAppearancePacket);
-                    break;
-
                 case FriendRequestPacket friendRequestPacket:
                     HandleFriendRequest(friendRequestPacket.CharacterName);
                     break;

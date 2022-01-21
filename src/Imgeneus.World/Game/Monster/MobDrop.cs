@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
 using Microsoft.Extensions.Logging;

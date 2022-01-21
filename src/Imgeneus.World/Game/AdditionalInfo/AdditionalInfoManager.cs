@@ -1,9 +1,11 @@
-﻿using Imgeneus.Database.Entities;
+﻿using Imgeneus.Database;
+using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.AdditionalInfo
 {
@@ -11,12 +13,14 @@ namespace Imgeneus.World.Game.AdditionalInfo
     {
         private readonly ILogger<AdditionalInfoManager> _logger;
         private readonly ICharacterConfiguration _characterConfig;
+        private readonly IDatabase _database;
         private int _ownerId;
 
-        public AdditionalInfoManager(ILogger<AdditionalInfoManager> logger, ICharacterConfiguration characterConfiguration)
+        public AdditionalInfoManager(ILogger<AdditionalInfoManager> logger, ICharacterConfiguration characterConfiguration, IDatabase database)
         {
             _logger = logger;
             _characterConfig = characterConfiguration;
+            _database = database;
 
 #if DEBUG
             _logger.LogDebug("AdditionalInfoManager {hashcode} created", GetHashCode());
@@ -80,6 +84,31 @@ namespace Imgeneus.World.Game.AdditionalInfo
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        public event Action<int, byte, byte, byte, byte> OnAppearanceChanged;
+        public async Task ChangeAppearance(byte hair, byte face, byte size, byte sex)
+        {
+            Hair = hair;
+            Face = face;
+            Height = size;
+            Gender = (Gender)sex;
+
+            var character = await _database.Characters.FindAsync(_ownerId);
+            if (character is null)
+            {
+                _logger.LogError("Character {id} is not found", _ownerId);
+                return;
+            }
+
+            character.Face = Face;
+            character.Hair = Hair;
+            character.Height = Height;
+            character.Gender = Gender;
+
+            await _database.SaveChangesAsync();
+
+            OnAppearanceChanged?.Invoke(_ownerId, Hair, Face, Height, (byte)Gender);
         }
     }
 }

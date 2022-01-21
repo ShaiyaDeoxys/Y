@@ -106,37 +106,7 @@ namespace Imgeneus.World.Game.Player
 
         #region Use Item
 
-        
-
-        /// <summary>
-        /// Event, that is fired, when player changes appearance.
-        /// </summary>
-        public event Action<Character> OnAppearanceChanged;
-
-        /// <summary>
-        /// Changes player's appearance.
-        /// </summary>
-        /// <param name="face">new face</param>
-        /// <param name="hair">new hair</param>
-        /// <param name="size">new size</param>
-        /// <param name="sex">new sex</param>
-        private void ChangeAppearance(byte face, byte hair, byte size, byte sex)
-        {
-            AdditionalInfoManager.Face = face;
-            AdditionalInfoManager.Hair = hair;
-            AdditionalInfoManager.Height = size;
-            AdditionalInfoManager.Gender = (Gender)sex;
-
-            //_taskQueue.Enqueue(ActionType.SAVE_APPEARANCE, Id, Face, Hair, Height, Gender);
-
-            OnAppearanceChanged?.Invoke(this);
-        }
-
-
-
-
-
-        
+          
 
 
 

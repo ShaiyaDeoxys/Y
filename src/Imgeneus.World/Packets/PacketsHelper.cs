@@ -1344,17 +1344,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendAppearanceChanged(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHANGE_APPEARANCE);
-            packet.Write(character.Id);
-            packet.Write(character.AdditionalInfoManager.Hair);
-            packet.Write(character.AdditionalInfoManager.Face);
-            packet.Write(character.AdditionalInfoManager.Height);
-            packet.Write((byte)character.AdditionalInfoManager.Gender);
-            client.Send(packet);
-        }
-
         internal void SendStartSummoningVehicle(IWorldClient client, int senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_READY);

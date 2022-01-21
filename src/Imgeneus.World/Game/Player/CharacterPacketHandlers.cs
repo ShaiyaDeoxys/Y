@@ -117,16 +117,6 @@ namespace Imgeneus.World.Game.Player
             _packetsHelper.SendCharacterShape(Client, character);
         }
 
-        private void HandleChangeAppearance(ChangeAppearancePacket changeAppearancePacket)
-        {
-            InventoryItems.TryGetValue((changeAppearancePacket.Bag, changeAppearancePacket.Slot), out var item);
-            if (item is null || (item.Special != SpecialEffect.AppearanceChange && item.Special != SpecialEffect.SexChange))
-                return;
-
-            InventoryManager.TryUseItem(changeAppearancePacket.Bag, changeAppearancePacket.Slot);
-            ChangeAppearance(changeAppearancePacket.Face, changeAppearancePacket.Hair, changeAppearancePacket.Size, changeAppearancePacket.Sex);
-        }
-
         private void HandleFriendRequest(string characterName)
         {
             var character = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == characterName).Value;
