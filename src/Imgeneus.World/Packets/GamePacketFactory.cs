@@ -457,6 +457,42 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendRemoveGem(IWorldClient client, bool success, Item item, byte slot, List<Item> savedGems, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GEM_REMOVE);
+            packet.Write(success);
+            packet.Write(item.Bag);
+            packet.Write(item.Slot);
+            packet.Write(slot);
+
+            for (var i = 0; i < 6; i++)
+                if (savedGems[i] is null)
+                    packet.WriteByte(0); // bag
+                else
+                    packet.Write(savedGems[i].Bag);
+
+            for (var i = 0; i < 6; i++)
+                if (savedGems[i] is null)
+                    packet.WriteByte(0); // slot
+                else
+                    packet.Write(savedGems[i].Slot);
+
+            for (var i = 0; i < 6; i++) // NB! in old eps this value was byte.
+                if (savedGems[i] is null)
+                    packet.Write(0); // type id
+                else
+                    packet.Write((int)savedGems[i].TypeId);
+
+            for (var i = 0; i < 6; i++)
+                if (savedGems[i] is null)
+                    packet.WriteByte(0); // count
+                else
+                    packet.Write(savedGems[i].Count);
+
+            packet.Write(gold);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM
@@ -472,7 +508,6 @@ namespace Imgeneus.World.Packets
             packet.Write((ushort)error);
             client.Send(packet);
         }
-
         #endregion
     }
 }

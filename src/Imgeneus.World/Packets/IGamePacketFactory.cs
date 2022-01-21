@@ -73,6 +73,7 @@ namespace Imgeneus.World.Packets
         void SendGemPossibility(IWorldClient client, double rate, int gold);
         void SendAddGem(IWorldClient client, bool success, Item gem, Item item, byte slot, uint gold, Item hammer);
         void SendGemRemovePossibility(IWorldClient client, double rate, int gold);
+        void SendRemoveGem(IWorldClient client, bool success, Item item, byte slot, List<Item> savedGems, uint gold);
         #endregion
 
         #region GM

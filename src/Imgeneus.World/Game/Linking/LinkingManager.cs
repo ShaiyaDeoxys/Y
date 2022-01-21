@@ -190,7 +190,236 @@ namespace Imgeneus.World.Game.Linking
             return (success, slot);
         }
 
-        public bool RemoveGem(Item item, Gem gem, Item hammer, byte extraRate = 0)
+        public (bool Success, byte Slot, List<Item> SavedGems, Item Item) RemoveGem(byte bag, byte slot, bool shouldRemoveSpecificGem, byte gemPosition, byte hammerBag, byte hammerSlot)
+        {
+            bool success = false;
+            int spentGold = 0;
+            var gemItems = new List<Item>() { null, null, null, null, null, null };
+            var savedGems = new List<Gem>();
+            var removedGems = new List<Gem>();
+
+            _inventoryManager.InventoryItems.TryGetValue((bag, slot), out var item);
+            if (item is null)
+                return (success, 0, gemItems, null);
+
+            if (shouldRemoveSpecificGem)
+            {
+                Gem gem = null;
+                switch (gemPosition)
+                {
+                    case 0:
+                        gem = item.Gem1;
+                        item.Gem1 = null;
+                        break;
+
+                    case 1:
+                        gem = item.Gem2;
+                        item.Gem2 = null;
+                        break;
+
+                    case 2:
+                        gem = item.Gem3;
+                        item.Gem3 = null;
+                        break;
+
+                    case 3:
+                        gem = item.Gem4;
+                        item.Gem4 = null;
+                        break;
+
+                    case 4:
+                        gem = item.Gem5;
+                        item.Gem5 = null;
+                        break;
+
+                    case 5:
+                        gem = item.Gem6;
+                        item.Gem6 = null;
+                        break;
+                }
+
+                if (gem is null)
+                    return (success, 0, gemItems, null);
+
+                _inventoryManager.InventoryItems.TryGetValue((hammerBag, hammerSlot), out var hammer);
+                if (hammer != null)
+                    _inventoryManager.TryUseItem(hammer.Bag, hammer.Slot);
+
+                success = RemoveGem(item, gem, hammer);
+                spentGold += GetRemoveGold(gem);
+
+                if (success)
+                {
+                    savedGems.Add(gem);
+                    var gemItem = new Item(_databasePreloader, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                    _inventoryManager.AddItem(gemItem);
+
+                    if (gemItem != null)
+                        gemItems[gem.Position] = gemItem;
+                    //else // Not enough place in inventory.
+                    // Map.AddItem(); ?
+                }
+                removedGems.Add(gem);
+            }
+            else
+            {
+                var gems = new List<Gem>();
+
+                if (item.Gem1 != null)
+                    gems.Add(item.Gem1);
+
+                if (item.Gem2 != null)
+                    gems.Add(item.Gem2);
+
+                if (item.Gem3 != null)
+                    gems.Add(item.Gem3);
+
+                if (item.Gem4 != null)
+                    gems.Add(item.Gem4);
+
+                if (item.Gem5 != null)
+                    gems.Add(item.Gem5);
+
+                if (item.Gem6 != null)
+                    gems.Add(item.Gem6);
+
+                foreach (var gem in gems)
+                {
+                    success = RemoveGem(item, gem, null);
+                    spentGold += GetRemoveGold(gem);
+
+                    if (success)
+                    {
+                        savedGems.Add(gem);
+                        var gemItem = new Item(_databasePreloader, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                        _inventoryManager.AddItem(gemItem);
+
+                        if (gemItem != null)
+                            gemItems[gem.Position] = gemItem;
+                        //else // Not enough place in inventory.
+                        // Map.AddItem(); ?
+                    }
+                }
+
+                removedGems.AddRange(gems);
+                gemPosition = 255; // when remove all gems
+            }
+
+            _inventoryManager.Gold = (uint)(_inventoryManager.Gold - spentGold);
+
+            var itemDestroyed = false;
+            foreach (var gem in removedGems)
+            {
+                if (gem.ReqVg > 0 && !savedGems.Contains(gem))
+                {
+                    itemDestroyed = true;
+                    break;
+                }
+            }
+
+            if (item.Bag == 0)
+            {
+                if (itemDestroyed)
+                {
+                    if (item == _inventoryManager.Helmet)
+                        _inventoryManager.Helmet = null;
+                    else if (item == _inventoryManager.Armor)
+                        _inventoryManager.Armor = null;
+                    else if (item == _inventoryManager.Pants)
+                        _inventoryManager.Pants = null;
+                    else if (item == _inventoryManager.Gauntlet)
+                        _inventoryManager.Gauntlet = null;
+                    else if (item == _inventoryManager.Boots)
+                        _inventoryManager.Boots = null;
+                    else if (item == _inventoryManager.Weapon)
+                        _inventoryManager.Weapon = null;
+                    else if (item == _inventoryManager.Shield)
+                        _inventoryManager.Shield = null;
+                    else if (item == _inventoryManager.Cape)
+                        _inventoryManager.Cape = null;
+                    else if (item == _inventoryManager.Amulet)
+                        _inventoryManager.Amulet = null;
+                    else if (item == _inventoryManager.Ring1)
+                        _inventoryManager.Ring1 = null;
+                    else if (item == _inventoryManager.Ring2)
+                        _inventoryManager.Ring2 = null;
+                    else if (item == _inventoryManager.Bracelet1)
+                        _inventoryManager.Bracelet1 = null;
+                    else if (item == _inventoryManager.Bracelet2)
+                        _inventoryManager.Bracelet2 = null;
+                    else if (item == _inventoryManager.Mount)
+                        _inventoryManager.Mount = null;
+                    else if (item == _inventoryManager.Pet)
+                        _inventoryManager.Pet = null;
+                    else if (item == _inventoryManager.Costume)
+                        _inventoryManager.Costume = null;
+                }
+                else
+                {
+                    foreach (var gem in removedGems)
+                    {
+                        _statsManager.ExtraStr -= gem.Str;
+                        _statsManager.ExtraDex -= gem.Dex;
+                        _statsManager.ExtraRec -= gem.Rec;
+                        _statsManager.ExtraInt -= gem.Int;
+                        _statsManager.ExtraLuc -= gem.Luc;
+                        _statsManager.ExtraWis -= gem.Wis;
+                        _healthManager.ExtraHP -= gem.HP;
+                        _healthManager.ExtraSP -= gem.SP;
+                        _healthManager.ExtraMP -= gem.MP;
+                        _statsManager.ExtraDefense -= gem.Defense;
+                        _statsManager.ExtraResistance -= gem.Resistance;
+                        _statsManager.Absorption -= gem.Absorb;
+                        _speedManager.ExtraMoveSpeed -= gem.MoveSpeed;
+                        _speedManager.ExtraAttackSpeed -= gem.AttackSpeed;
+
+                        if (gem.Str != 0 || gem.Dex != 0 || gem.Rec != 0 || gem.Wis != 0 || gem.Int != 0 || gem.Luc != 0 || gem.MinAttack != 0 || gem.PlusAttack != 0)
+                            _statsManager.RaiseAdditionalStatsUpdate();
+                    }
+                }
+            }
+
+            if (itemDestroyed)
+            {
+                _inventoryManager.RemoveItem(item);
+            }
+            else
+            {
+                foreach (var gem in removedGems)
+                {
+                    switch (gem.Position)
+                    {
+                        case 0:
+                            item.Gem1 = null;
+                            break;
+
+                        case 1:
+                            item.Gem2 = null;
+                            break;
+
+                        case 2:
+                            item.Gem3 = null;
+                            break;
+
+                        case 3:
+                            item.Gem4 = null;
+                            break;
+
+                        case 4:
+                            item.Gem5 = null;
+                            break;
+
+                        case 5:
+                            item.Gem6 = null;
+                            break;
+                    }
+                }
+            }
+
+            return (!itemDestroyed, gemPosition, gemItems, item);
+        }
+
+        private bool RemoveGem(Item item, Gem gem, Item hammer, byte extraRate = 0)
         {
             var rate = GetRemoveRate(gem, hammer, extraRate);
             var rand = _random.Next(1, 101);
