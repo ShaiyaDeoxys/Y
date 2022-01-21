@@ -2,7 +2,6 @@
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
