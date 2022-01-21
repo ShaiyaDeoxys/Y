@@ -448,6 +448,15 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendGemRemovePossibility(IWorldClient client, double rate, int gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GEM_REMOVE_POSSIBILITY);
+            packet.WriteByte(1); // TODO: unknown, maybe bool, that we can link?
+            packet.Write(rate);
+            packet.Write(gold);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

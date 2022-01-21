@@ -10,11 +10,6 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {
-        public void AddGem(byte bag, byte slot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
-        {
-            
-        }
-
         public void RemoveGem(byte bag, byte slot, bool shouldRemoveSpecificGem, byte gemPosition, byte hammerBag, byte hammerSlot)
         {
             InventoryItems.TryGetValue((bag, slot), out var item);
@@ -247,82 +242,6 @@ namespace Imgeneus.World.Game.Player
                     _taskQueue.Enqueue(ActionType.UPDATE_GEM, Id, item.Bag, item.Slot, gem.Position, 0);
                 }
             }
-        }
-
-        public void GemRemovePossibility(byte bag, byte slot, bool shouldRemoveSpecificGem, byte gemPosition, byte hammerBag, byte hammerSlot)
-        {
-            InventoryItems.TryGetValue((bag, slot), out var item);
-            if (item is null)
-                return;
-
-            double rate = 0;
-            int gold = 0;
-
-            if (shouldRemoveSpecificGem)
-            {
-                Gem gem = null;
-                switch (gemPosition)
-                {
-                    case 0:
-                        gem = item.Gem1;
-                        break;
-
-                    case 1:
-                        gem = item.Gem2;
-                        break;
-
-                    case 2:
-                        gem = item.Gem3;
-                        break;
-
-                    case 3:
-                        gem = item.Gem4;
-                        break;
-
-                    case 4:
-                        gem = item.Gem5;
-                        break;
-
-                    case 5:
-                        gem = item.Gem6;
-                        break;
-                }
-
-                if (gem is null)
-                    return;
-
-                InventoryItems.TryGetValue((hammerBag, hammerSlot), out var hammer);
-
-                rate = LinkingManager.GetRemoveRate(gem, hammer);
-                gold = LinkingManager.GetRemoveGold(gem);
-            }
-            else
-            {
-                var gems = new List<Gem>();
-
-                if (item.Gem1 != null)
-                    gems.Add(item.Gem1);
-                if (item.Gem2 != null)
-                    gems.Add(item.Gem2);
-                if (item.Gem3 != null)
-                    gems.Add(item.Gem3);
-                if (item.Gem4 != null)
-                    gems.Add(item.Gem4);
-                if (item.Gem5 != null)
-                    gems.Add(item.Gem5);
-                if (item.Gem6 != null)
-                    gems.Add(item.Gem6);
-
-                foreach (var gem in gems)
-                {
-                    rate *= LinkingManager.GetRemoveRate(gem, null) / 100;
-                    gold += LinkingManager.GetRemoveGold(gem);
-                }
-
-                rate = rate * 100;
-            }
-
-            _packetsHelper.SendGemRemovePossibility(Client, rate, gold);
         }
     }
 }

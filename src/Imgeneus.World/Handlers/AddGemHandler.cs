@@ -1,12 +1,10 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Network.Packets;
+﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
-using System.Linq;
 
 namespace Imgeneus.World.Handlers
 {

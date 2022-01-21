@@ -70,10 +70,9 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Linking
-
         void SendGemPossibility(IWorldClient client, double rate, int gold);
         void SendAddGem(IWorldClient client, bool success, Item gem, Item item, byte slot, uint gold, Item hammer);
-
+        void SendGemRemovePossibility(IWorldClient client, double rate, int gold);
         #endregion
 
         #region GM
