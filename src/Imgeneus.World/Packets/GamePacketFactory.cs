@@ -24,6 +24,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Zone.Portals;
 
 namespace Imgeneus.World.Packets
 {
@@ -386,6 +387,14 @@ namespace Imgeneus.World.Packets
             packet.Write(gender);
             client.Send(packet);
         }
+
+        public void SendPortalTeleportNotAllowed(IWorldClient client, PortalTeleportNotAllowedReason reason)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ENTERED_PORTAL);
+            packet.Write(false); // success
+            packet.Write((byte)reason);
+            client.Send(packet);
+        }
         #endregion
 
         #region Linking
@@ -517,6 +526,38 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.GM_CMD_ERROR);
             packet.Write((ushort)error);
+            client.Send(packet);
+        }
+
+        public void SendCharacterPosition(IWorldClient client, Character player)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GM_FIND_PLAYER);
+            packet.Write(player.MapProvider.Map.Id);
+            packet.Write(player.PosX);
+            packet.Write(player.PosY);
+            packet.Write(player.PosZ);
+            client.Send(packet);
+        }
+
+        public void SendGmTeleportToPlayer(IWorldClient client, Character player)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GM_TELEPORT_TO_PLAYER);
+            packet.Write(player.Id);
+            packet.Write(player.MapProvider.NextMapId);
+            packet.Write(player.PosX);
+            packet.Write(player.PosY);
+            packet.Write(player.PosZ);
+            client.Send(packet);
+        }
+
+        public void SendGmSummon(IWorldClient client, Character player, PacketType type)
+        {
+            using var packet = new ImgeneusPacket(type);
+            packet.Write(player.Id);
+            packet.Write(player.MapProvider.NextMapId);
+            packet.Write(player.PosX);
+            packet.Write(player.PosY);
+            packet.Write(player.PosZ);
             client.Send(packet);
         }
         #endregion

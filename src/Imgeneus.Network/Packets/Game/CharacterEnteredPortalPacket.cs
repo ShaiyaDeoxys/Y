@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct CharacterEnteredPortalPacket : IDeserializedPacket
+    public record CharacterEnteredPortalPacket : IPacketDeserializer
     {
-        public byte PortalId;
+        public byte PortalId { get; private set; }
 
-        public CharacterEnteredPortalPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            PortalId = packet.Read<byte>();
+            PortalId = packetStream.Read<byte>();
         }
     }
 }

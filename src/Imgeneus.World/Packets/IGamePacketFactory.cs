@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Zone.Portals;
 using System.Collections.Generic;
 
 namespace Imgeneus.World.Packets
@@ -68,6 +69,7 @@ namespace Imgeneus.World.Packets
         void SendRecoverCharacter(IWorldClient client, int characterId, int hp, int mp, int sp);
         void SendMobRecover(IWorldClient client, int mobId, int hp);
         void SendAppearanceChanged(IWorldClient client, int characterId, byte hair, byte face, byte size, byte gender);
+        void SendPortalTeleportNotAllowed(IWorldClient client, PortalTeleportNotAllowedReason reason);
         #endregion
 
         #region Linking
@@ -80,6 +82,9 @@ namespace Imgeneus.World.Packets
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);
+        void SendCharacterPosition(IWorldClient client, Character player);
+        void SendGmTeleportToPlayer(IWorldClient client, Character player);
+        void SendGmSummon(IWorldClient client, Character player, PacketType type);
         #endregion
     }
 }

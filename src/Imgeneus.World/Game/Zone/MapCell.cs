@@ -204,7 +204,7 @@ namespace Imgeneus.World.Game.Zone
         private void AddListeners(Character character)
         {
             // Map with id is test map.
-            if (character.MapId == Map.TEST_MAP_ID)
+            if (character.MapProvider.NextMapId == Map.TEST_MAP_ID)
                 return;
             character.MovementManager.OnMove += Character_OnMove;
             character.OnMotion += Character_OnMotion;

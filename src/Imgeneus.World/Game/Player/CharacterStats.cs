@@ -11,7 +11,6 @@ namespace Imgeneus.World.Game.Player
         #region Character info
 
         public string Name { get; set; } = "";
-        public ushort MapId { get; private set; }
        
         public uint Exp { get; private set; }
         public bool IsAdmin { get; set; }

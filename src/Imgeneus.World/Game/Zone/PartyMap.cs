@@ -45,9 +45,9 @@ namespace Imgeneus.World.Game.Zone
                 OnAllMembersLeft?.Invoke(this);
         }
 
-        public override bool UnloadPlayer(Character character)
+        public override bool UnloadPlayer(int characterId)
         {
-            var result = base.UnloadPlayer(character);
+            var result = base.UnloadPlayer(characterId);
 
             if (_party is null || (_party.Members.Count <= 1 && Players.Count == 0))
             {

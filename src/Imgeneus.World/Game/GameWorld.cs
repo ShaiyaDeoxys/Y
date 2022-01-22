@@ -331,20 +331,20 @@ namespace Imgeneus.World.Game
         public void LoadPlayerInMap(int characterId)
         {
             var player = Players[characterId];
-            if (Maps.ContainsKey(player.MapId))
+            if (Maps.ContainsKey(player.MapProvider.NextMapId))
             {
-                Maps[player.MapId].LoadPlayer(player);
+                Maps[player.MapProvider.NextMapId].LoadPlayer(player);
             }
             else
             {
-                var mapDef = _mapDefinitions.Maps.FirstOrDefault(d => d.Id == player.MapId);
+                var mapDef = _mapDefinitions.Maps.FirstOrDefault(d => d.Id == player.MapProvider.NextMapId);
 
                 // Map is not found.
                 if (mapDef is null)
                 {
-                    _logger.LogWarning("Unknown map {id} for character {characterId}. Fallback to 0 map.", player.MapId, player.Id);
+                    _logger.LogWarning("Unknown map {id} for character {characterId}. Fallback to 0 map.", player.MapProvider.NextMapId, player.Id);
                     var town = Maps[0].GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.CountryProvider.Country);
-                    player.Teleport(0, town.X, town.Y, town.Z);
+                    player.TeleportationManager.Teleport(0, town.X, town.Y, town.Z);
                     return;
                 }
 
@@ -439,8 +439,8 @@ namespace Imgeneus.World.Game
                 IMap map = null;
 
                 // Try find player's map.
-                if (Maps.ContainsKey(player.MapId))
-                    map = Maps[player.MapId];
+                if (Maps.ContainsKey(player.MapProvider.Map.Id))
+                    map = Maps[player.MapProvider.Map.Id];
                 else if (player.Party != null && PartyMaps.ContainsKey(player.Party.Id))
                     map = PartyMaps[player.Party.Id];
                 else if (PartyMaps.ContainsKey(player.PreviousPartyId))
@@ -451,9 +451,9 @@ namespace Imgeneus.World.Game
                     map = GRBMaps[(int)player.GuildId];
 
                 if (map is null)
-                    _logger.LogError("Couldn't find character's {characterId} map {mapId}.", characterId, player.MapId);
+                    _logger.LogError("Couldn't find character's {characterId} map {mapId}.", characterId, player.MapProvider.Map.Id);
                 else
-                    map.UnloadPlayer(player);
+                    map.UnloadPlayer(player.Id);
 
                 player.Dispose();
             }

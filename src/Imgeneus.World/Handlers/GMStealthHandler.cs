@@ -1,6 +1,5 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
-using Imgeneus.World.Game;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Packets;

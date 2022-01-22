@@ -73,7 +73,7 @@ namespace Imgeneus.World.Serialization
             SP = character.HealthManager.CurrentSP;
             MaxMP = character.HealthManager.MaxMP;
             MP = character.HealthManager.CurrentMP;
-            Map = character.MapId;
+            Map = character.MapProvider.Map.Id;
             X = character.PosX;
             Y = character.PosY;
             Z = character.PosZ;

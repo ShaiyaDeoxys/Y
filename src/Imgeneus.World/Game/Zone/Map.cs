@@ -84,12 +84,13 @@ namespace Imgeneus.World.Game.Zone
         {
             CalculateCells(_config.Size, _config.CellSize);
 
-#if !DEBUG
             InitWeather();
+            InitPortals();
+#if !DEBUG
+            
             InitNPCs();
             InitMobs();
             InitObelisks();
-            InitPortals();
             InitOpenCloseTimers();
 #endif
         }
@@ -264,11 +265,11 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Unloads player from map.
         /// </summary>
-        /// <param name="character">player, that we need to unload</param>
+        /// <param name="characterId">player, that we need to unload</param>
         /// <returns>returns true if we could unload player to map, otherwise false</returns>
-        public virtual bool UnloadPlayer(Character character)
+        public virtual bool UnloadPlayer(int characterId)
         {
-            var success = Players.TryRemove(character.Id, out var removedCharacter);
+            var success = Players.TryRemove(characterId, out var character);
 
             if (success)
             {
@@ -793,7 +794,7 @@ namespace Imgeneus.World.Game.Zone
             foreach (var player in Players.Values.ToList())
             {
                 var map = GetRebirthMap(player);
-                player.Teleport(map.MapId, map.X, map.Y, map.Z);
+                player.TeleportationManager.Teleport(map.MapId, map.X, map.Y, map.Z);
             }
         }
 

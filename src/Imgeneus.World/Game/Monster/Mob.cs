@@ -41,7 +41,8 @@ namespace Imgeneus.World.Game.Monster
                    ISkillsManager skillsManager,
                    IBuffsManager buffsManager,
                    IElementProvider elementProvider,
-                   IMovementManager movementManager) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager)
+                   IMovementManager movementManager,
+                   IMapProvider mapProvider) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -131,7 +132,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, MapProvider);
         }
 
         public void Dispose()

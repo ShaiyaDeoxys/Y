@@ -1,21 +1,18 @@
 ﻿using Imgeneus.Database;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Movement
 {
     public class MovementManager : IMovementManager
     {
         private readonly ILogger<MovementManager> _logger;
-        private readonly IDatabase _database;
 
         private int _ownerId;
 
-        public MovementManager(ILogger<MovementManager> logger, IDatabase database)
+        public MovementManager(ILogger<MovementManager> logger)
         {
             _logger = logger;
-            _database = database;
 #if DEBUG
             _logger.LogDebug("MovementManager {hashcode} created", GetHashCode());
 #endif
@@ -39,20 +36,6 @@ namespace Imgeneus.World.Game.Movement
             PosZ = z;
             Angle = angle;
             MoveMotion = motion;
-        }
-
-        public async Task Clear()
-        {
-            var character = await _database.Characters.FindAsync(_ownerId);
-            if (character is null)
-                _logger.LogError("Character {id} is not found in database.", _ownerId);
-
-            character.PosX = PosX;
-            character.PosY = PosY;
-            character.PosZ = PosZ;
-            character.Angle = Angle;
-
-            await _database.SaveChangesAsync();
         }
 
         #endregion

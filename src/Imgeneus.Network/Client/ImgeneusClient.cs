@@ -63,7 +63,8 @@ namespace Imgeneus.Network.Client
                                         ((ushort)packetType).ToString("X2"),
                                         Socket.RemoteEndPoint);
 
-                await InvokePacketAsync(packetType, decryptedPacket).ConfigureAwait(false);
+                if (!IsDisposed)
+                    await InvokePacketAsync(packetType, decryptedPacket).ConfigureAwait(false);
             }
             catch (ArgumentException)
             {

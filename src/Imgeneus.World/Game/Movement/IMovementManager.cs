@@ -1,9 +1,8 @@
-﻿using Imgeneus.World.Game.Session;
-using System;
+﻿using System;
 
 namespace Imgeneus.World.Game.Movement
 {
-    public interface IMovementManager : ISessionedService
+    public interface IMovementManager
     {
         void Init(int ownerId, float x, float y, float z, ushort angle, MoveMotion moveMotion);
 

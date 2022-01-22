@@ -120,7 +120,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(teleportedByAdmin ? PacketType.CHARACTER_MAP_TELEPORT : PacketType.GM_TELEPORT_MAP_COORDINATES);
             packet.Write(player.Id);
-            packet.Write(player.MapId);
+            packet.Write(player.MapProvider.NextMapId);
             packet.Write(player.PosX);
             packet.Write(player.PosY);
             packet.Write(player.PosZ);
@@ -237,14 +237,6 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.ADD_ITEM);
             packet.Write(new AddedInventoryItem(item).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendPortalTeleportNotAllowed(IWorldClient client, PortalTeleportNotAllowedReason reason)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ENTERED_PORTAL);
-            packet.Write(false); // success
-            packet.Write((byte)reason);
             client.Send(packet);
         }
 
@@ -845,31 +837,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCharacterPosition(IWorldClient client, Character player)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GM_FIND_PLAYER);
-            packet.Write(player.MapId);
-            packet.Write(player.PosX);
-            packet.Write(player.PosY);
-            packet.Write(player.PosZ);
-            client.Send(packet);
-        }
-
         internal void SendGetEtin(IWorldClient client, int etin)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_GET_ETIN);
             packet.Write(etin);
-            client.Send(packet);
-        }
-
-        internal void SendGmSummon(IWorldClient client, Character player)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GM_SUMMON_PLAYER);
-            packet.Write(player.Id);
-            packet.Write(player.MapId);
-            packet.Write(player.PosX);
-            packet.Write(player.PosY);
-            packet.Write(player.PosZ);
             client.Send(packet);
         }
 
@@ -886,17 +857,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_ACTION_ERR);
             packet.Write((byte)error);
             packet.Write(rank);
-            client.Send(packet);
-        }
-
-        internal void SendGmTeleportToPlayer(IWorldClient client, Character player)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GM_TELEPORT_TO_PLAYER);
-            packet.Write(player.Id);
-            packet.Write(player.MapId);
-            packet.Write(player.PosX);
-            packet.Write(player.PosY);
-            packet.Write(player.PosZ);
             client.Send(packet);
         }
 

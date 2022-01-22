@@ -1,5 +1,4 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Preload;
+﻿using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
@@ -9,7 +8,6 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
-using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using System;
@@ -32,8 +30,9 @@ namespace Imgeneus.World.Game
         public IBuffsManager BuffsManager { get; private set; }
         public IElementProvider ElementProvider { get; private set; }
         public IMovementManager MovementManager { get; private set; }
+        public IMapProvider MapProvider { get; private set; }
 
-        public BaseKillable(IDatabasePreloader databasePreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider, IMovementManager movementManager)
+        public BaseKillable(IDatabasePreloader databasePreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider, IMovementManager movementManager, IMapProvider mapProvider)
         {
             _databasePreloader = databasePreloader;
             CountryProvider = countryProvider;
@@ -43,6 +42,7 @@ namespace Imgeneus.World.Game
             BuffsManager = buffsManager;
             ElementProvider = elementProvider;
             MovementManager = movementManager;
+            MapProvider = mapProvider;
         }
 
         private int _id;
@@ -66,26 +66,7 @@ namespace Imgeneus.World.Game
 
         #region Map
 
-        private Map _map;
-        public Map Map
-        {
-            get => _map;
-
-            set
-            {
-                _map = value;
-
-                if (_map != null) // Map is set to null, when character is disposed.
-                    OnMapSet();
-            }
-        }
-
-        /// <summary>
-        /// Call it as soon as map set.
-        /// </summary>
-        protected virtual void OnMapSet()
-        {
-        }
+        public Map Map { get => MapProvider.Map; set => MapProvider.Map = value; }
 
         public int CellId { get; set; } = -1;
 
@@ -171,7 +152,7 @@ namespace Imgeneus.World.Game
                         {
                             foreach (var m in character.Party.Members)
                             {
-                                if (m.Map == character.Map)
+                                if (m.MapProvider.Map == character.MapProvider.Map)
                                     m.UpdateQuestMobCount(mob.MobId);
                             }
                         }
@@ -193,7 +174,7 @@ namespace Imgeneus.World.Game
             byte i = 0;
             foreach (var itm in dropItems)
             {
-                Map.AddItem(new MapItem(itm, owner, PosX + i, PosY, PosZ));
+                MapProvider.Map.AddItem(new MapItem(itm, owner, PosX + i, PosY, PosZ));
                 i++;
             }
         }
@@ -253,10 +234,10 @@ namespace Imgeneus.World.Game
 
             OnRebirthed?.Invoke(this);
 
-            if (mapId != Map.Id)
+            /*if (mapId != MapProvider.Map.Id)
             {
                 (this as Character).Teleport(mapId, x, y, z);
-            }
+            }*/
         }
 
         #endregion

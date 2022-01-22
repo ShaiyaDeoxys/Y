@@ -31,6 +31,8 @@ using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.Zone;
+using Imgeneus.World.Game.Teleport;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -69,6 +71,8 @@ namespace Imgeneus.World.Game.Player
         private readonly IShapeManager _shapeManager;
         private readonly IMovementManager _movementManager;
         private readonly IAdditionalInfoManager _additionalInfoManager;
+        private readonly IMapProvider _mapProvider;
+        private readonly ITeleportationManager _teleportationManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -102,7 +106,9 @@ namespace Imgeneus.World.Game.Player
                                 IVehicleManager vehicleManager,
                                 IShapeManager shapeManager,
                                 IMovementManager movementManager,
-                                IAdditionalInfoManager additionalInfoManager)
+                                IAdditionalInfoManager additionalInfoManager,
+                                IMapProvider mapProvider,
+                                ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _database = database;
@@ -137,6 +143,8 @@ namespace Imgeneus.World.Game.Player
             _shapeManager = shapeManager;
             _movementManager = movementManager;
             _additionalInfoManager = additionalInfoManager;
+            _mapProvider = mapProvider;
+            _teleportationManager = teleportationManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -195,6 +203,10 @@ namespace Imgeneus.World.Game.Player
 
             _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender);
 
+            _mapProvider.NextMapId = dbCharacter.Map;
+
+            _teleportationManager.Init(dbCharacter.Id);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -229,6 +241,8 @@ namespace Imgeneus.World.Game.Player
                                         _vehicleManager,
                                         _shapeManager,
                                         _movementManager,
+                                        _mapProvider,
+                                        _teleportationManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.

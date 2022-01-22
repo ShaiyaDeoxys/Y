@@ -1,14 +1,14 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMTeleportMapPacket : IDeserializedPacket
+    public record GMTeleportMapPacket : IPacketDeserializer
     {
-        public ushort MapId;
+        public ushort MapId { get; private set; }
 
-        public GMTeleportMapPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            MapId = packet.Read<ushort>();
+            MapId = packetStream.Read<ushort>();
         }
     }
 }

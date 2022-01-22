@@ -22,7 +22,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Removes player from the map.
         /// </summary>
-        public bool UnloadPlayer(Character player);
+        public bool UnloadPlayer(int playerId);
 
         /// <summary>
         /// Map portals.

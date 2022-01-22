@@ -31,6 +31,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
@@ -117,6 +118,8 @@ namespace Imgeneus.World
             services.AddScoped<IMovementManager, MovementManager>();
             services.AddScoped<ILinkingManager, LinkingManager>();
             services.AddScoped<IAdditionalInfoManager, AdditionalInfoManager>();
+            services.AddScoped<IMapProvider, MapProvider>();
+            services.AddScoped<ITeleportationManager, TeleportationManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

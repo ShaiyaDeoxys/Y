@@ -40,16 +40,6 @@ namespace Imgeneus.World.Game.Player
             OnMotion?.Invoke(this, packet.Motion);
         }
 
-        //private void HandleMove(MoveCharacterPacket packet)
-        //{
-        //    UpdatePosition(packet.X, packet.Y, packet.Z, packet.Angle, packet.MovementType == MovementType.Stopped);
-        //}
-
-        private void HandleLearnNewSkill(LearnNewSkillPacket learnNewSkillsPacket)
-        {
-            //LearnNewSkill(learnNewSkillsPacket.SkillId, learnNewSkillsPacket.SkillLevel);
-        }
-
         private void HandleSkillBarPacket(SkillBarPacket skillBarPacket)
         {
             _taskQueue.Enqueue(ActionType.SAVE_QUICK_BAR, Id, skillBarPacket.QuickItems);
@@ -137,69 +127,6 @@ namespace Imgeneus.World.Game.Player
             var searchers = Map.PartySearchers.Where(s => s.CountryProvider.Country == CountryProvider.Country && s != this);
             if (searchers.Any())
                 _packetsHelper.SendPartySearchList(Client, searchers.Take(30));
-        }
-
-        private void HandleSummonPlayer(string playerName)
-        {
-            if (!IsAdmin)
-                return;
-
-            var player = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == playerName);
-
-            if (player is null)
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_SUMMON_PLAYER);
-            else
-            {
-                player.Teleport(MapId, PosX, PosY, PosZ);
-
-                _packetsHelper.SendGmCommandSuccess(Client);
-                _packetsHelper.SendGmSummon(player.Client, player);
-            }
-        }
-
-        private void HandleFindPlayerPacket(string playerName)
-        {
-            if (!IsAdmin)
-                return;
-
-            var player = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == playerName);
-            if (player is null)
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_FIND_PLAYER);
-            else
-            {
-                _packetsHelper.SendGmCommandSuccess(Client);
-                _packetsHelper.SendCharacterPosition(Client, player);
-            }
-        }
-
-        private void HandleTeleportToPlayer(string playerName)
-        {
-            if (!IsAdmin)
-                return;
-
-            var player = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == playerName);
-            if (player is null)
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_TELEPORT_TO_PLAYER);
-            else
-            {
-                // Teleport to party instance map.
-                if (player.Map is IPartyMap)
-                {
-                    SetParty(null);
-                    var mapId = _gameWorld.PartyMaps.FirstOrDefault(m => m.Value == player.Map).Key;
-                    PreviousPartyId = mapId;
-                }
-
-                if (player.Map is IGuildMap)
-                {
-                    GuildId = player.GuildId;
-                }
-
-                Teleport(player.MapId, player.PosX, player.PosY, player.PosZ);
-
-                _packetsHelper.SendGmCommandSuccess(Client);
-                _packetsHelper.SendGmTeleportToPlayer(Client, player);
-            }
         }
 
         private void HandleDyeSelectItem(byte dyeItemBag, byte dyeItemSlot, byte targetItemBag, byte targetItemSlot)
@@ -522,14 +449,6 @@ namespace Imgeneus.World.Game.Player
             }
         }
 
-        private void HandleEnterPortalPacket(CharacterEnteredPortalPacket enterPortalPacket)
-        {
-            var success = TryTeleport(enterPortalPacket.PortalId, out var reason);
-
-            if (!success)
-                SendPortalTeleportNotAllowed(reason);
-        }
-
 
         private void HandleTeleportViaNpc(CharacterTeleportViaNpcPacket teleportViaNpcPacket)
         {
@@ -588,7 +507,7 @@ namespace Imgeneus.World.Game.Player
 
             InventoryManager.Gold = (uint)(InventoryManager.Gold - gate.Cost);
             SendTeleportViaNpc(NpcTeleportNotAllowedReason.Success);
-            Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
+            TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
 
         private void HandleGMCreateMob(GMCreateMobPacket gmCreateMobPacket)
@@ -644,68 +563,6 @@ namespace Imgeneus.World.Game.Player
             target?.SendWarning(gmWarningPacket.Message);
 
             _packetsHelper.SendGmCommandSuccess(Client);
-        }
-
-        private void HandleGMTeleportToMap(GMTeleportMapPacket gmTeleportMapPacket)
-        {
-            var mapId = gmTeleportMapPacket.MapId;
-
-            if (!_gameWorld.AvailableMapIds.Contains(mapId))
-            {
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_TELEPORT_MAP);
-                return;
-            }
-
-            float x = 100;
-            float z = 100;
-            var spawn = _mapLoader.LoadMapConfiguration(mapId).Spawns.FirstOrDefault(s => (s.Faction == 1 && CountryProvider.Country == CountryType.Light) || (s.Faction == 2 && CountryProvider.Country == CountryType.Dark));
-            if (spawn != null)
-            {
-                x = spawn.X1;
-                z = spawn.Z1;
-            }
-
-            _packetsHelper.SendGmCommandSuccess(Client);
-
-            Teleport(mapId, x, PosY, z, true);
-        }
-
-        private void HandleGMTeleportToMapCoordinates(GMTeleportMapCoordinatesPacket gmTeleportMapCoordinatesPacket)
-        {
-            var (newPosX, newPosZ, mapId) = gmTeleportMapCoordinatesPacket;
-
-            if (!_gameWorld.AvailableMapIds.Contains(mapId))
-            {
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_TELEPORT_MAP_COORDINATES);
-                return;
-            }
-
-            _packetsHelper.SendGmCommandSuccess(Client);
-
-            Teleport(mapId, newPosX, PosY, newPosZ, true);
-        }
-
-        private void HandleGMTeleportPlayer(GMTeleportPlayerPacket gmTeleportPlayerPacket)
-        {
-            var (name, newPosX, newPosZ, mapId) = gmTeleportPlayerPacket;
-
-            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == name).Value;
-
-            if (target == null)
-            {
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_TELEPORT_PLAYER);
-                return;
-            }
-
-            if (!_gameWorld.Maps.ContainsKey(mapId))
-            {
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_TELEPORT_MAP_COORDINATES);
-                return;
-            }
-
-            _packetsHelper.SendGmCommandSuccess(Client);
-
-            target?.Teleport(mapId, newPosX, PosY, newPosZ, true);
         }
 
         private async void HandleCreateGuild(string name, string message)

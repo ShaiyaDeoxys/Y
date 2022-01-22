@@ -4,6 +4,7 @@ using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
@@ -15,18 +16,20 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IBuffsManager _buffsManager;
         private readonly IMovementManager _movementManager;
+        private readonly ITeleportationManager _teleportationManager;
 
-        public MoveCharacterHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IBuffsManager buffsManager, IMovementManager movementManager) : base(packetFactory, gameSession)
+        public MoveCharacterHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IBuffsManager buffsManager, IMovementManager movementManager, ITeleportationManager teleportationManager) : base(packetFactory, gameSession)
         {
             _buffsManager = buffsManager;
             _movementManager = movementManager;
+            _teleportationManager = teleportationManager;
         }
 
         [HandlerAction(PacketType.CHARACTER_MOVE)]
         public void Handle(WorldClient client, MoveCharacterPacket packet)
         {
-            //if (IsTeleporting)
-            //    return;
+            if (_teleportationManager.IsTeleporting)
+                return;
 
             if (_buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Immobilize || b.StateType == StateType.Sleep || b.StateType == StateType.Stun))
                 return;

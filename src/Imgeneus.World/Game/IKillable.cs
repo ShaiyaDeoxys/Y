@@ -5,6 +5,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Zone;
 using System;
 
 namespace Imgeneus.World.Game
@@ -25,6 +26,8 @@ namespace Imgeneus.World.Game
         public IElementProvider ElementProvider { get; }
 
         public IMovementManager MovementManager { get; }
+
+        public IMapProvider MapProvider { get; }
 
         /// <summary>
         /// Indicator, that shows if entity is dead or not.

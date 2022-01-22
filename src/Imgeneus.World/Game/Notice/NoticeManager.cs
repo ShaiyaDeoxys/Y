@@ -46,7 +46,7 @@ namespace Imgeneus.World.Game.Notice
         // TODO: Implement notice timer with time interval
         public void SendMapNotice(string message, ushort mapId, short timeInterval = 0)
         {
-            var mapPlayers = _gameWorld.Players.Values.Where(p => p.MapId == mapId);
+            var mapPlayers = _gameWorld.Players.Values.Where(p => p.Map.Id == mapId);
 
             foreach (var player in mapPlayers)
             {

@@ -1,23 +1,23 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMTeleportPlayerPacket : IDeserializedPacket
+    public record GMTeleportPlayerPacket : IPacketDeserializer
     {
-        public string Name;
+        public string Name { get; private set; }
 
-        public float X;
+        public float X { get; private set; }
 
-        public float Z;
+        public float Z { get; private set; }
 
-        public ushort MapId;
+        public ushort MapId { get; private set; }
 
-        public GMTeleportPlayerPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Name = packet.ReadString(21);
-            X = packet.Read<float>();
-            Z = packet.Read<float>();
-            MapId = packet.Read<ushort>();
+            Name = packetStream.ReadString(21);
+            X = packetStream.Read<float>();
+            Z = packetStream.Read<float>();
+            MapId = packetStream.Read<ushort>();
         }
 
         public void Deconstruct(out string name, out float x, out float z, out ushort mapId)
