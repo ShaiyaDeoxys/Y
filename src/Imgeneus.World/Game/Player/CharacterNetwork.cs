@@ -53,25 +53,6 @@ namespace Imgeneus.World.Game.Player
         {
             switch (packet)
             {
-                case ChangeEncryptionPacket changeEcryptionPacket:
-                    Client.CryptoManager.UseExpandedKey = true;
-                    break;
-
-                case LearnNewSkillPacket learnNewSkillPacket:
-                    HandleLearnNewSkill(learnNewSkillPacket);
-                    break;
-
-                case MoveItemInInventoryPacket itemInInventoryPacket:
-                    HandleMoveItem(itemInInventoryPacket);
-                    break;
-
-                case MoveCharacterPacket moveCharacterPacket:
-                    HandleMove(moveCharacterPacket);
-                    break;
-
-                case MotionPacket motionPacket:
-                    HandleMotion(motionPacket);
-                    break;
 
                 case MobInTargetPacket mobInTargetPacket:
                     HandleMobInTarget(mobInTargetPacket);
@@ -79,32 +60,6 @@ namespace Imgeneus.World.Game.Player
 
                 case PlayerInTargetPacket playerInTargetPacket:
                     HandlePlayerInTarget(playerInTargetPacket);
-                    break;
-
-                case GMGetItemPacket gMGetItemPacket:
-                    HandleGMGetItemPacket(gMGetItemPacket);
-                    break;
-
-                case GMCharacterOnPacket gMCharacterOnPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    if (IsAdminStealth) // Already in admin stealth.
-                        _packetsHelper.SendGmCommandError(Client, PacketType.GM_CHAR_ON);
-
-                    IsAdminStealth = true;
-                    _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
-
-                case GMCharacterOffPacket gMCharacterOffPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    if (!IsAdminStealth) // Alredy not in stealth.
-                        _packetsHelper.SendGmCommandError(Client, PacketType.GM_CHAR_OFF);
-
-                    IsAdminStealth = false;
-                    _packetsHelper.SendGmCommandSuccess(Client);
                     break;
 
                 case SkillBarPacket skillBarPacket:
@@ -204,16 +159,6 @@ namespace Imgeneus.World.Game.Player
                     DeleteFriend(friendDeletePacket.CharacterId);
                     break;
 
-                case RemoveItemPacket removeItemPacket:
-                    InventoryItems.TryGetValue((removeItemPacket.Bag, removeItemPacket.Slot), out var item);
-                    if (item is null || item.AccountRestriction == ItemAccountRestrictionType.AccountRestricted || item.AccountRestriction == ItemAccountRestrictionType.CharacterRestricted)
-                        return;
-                    item.TradeQuantity = removeItemPacket.Count <= item.Count ? removeItemPacket.Count : item.Count;
-                    var removedItem = RemoveItemFromInventory(item);
-                    _packetsHelper.SendRemoveItem(Client, item, removedItem.Count == item.Count);
-                    Map.AddItem(new MapItem(removedItem, this, PosX, PosY, PosZ));
-                    break;
-
                 case MapPickUpItemPacket mapPickUpItemPacket:
                     var mapItem = Map.GetItem(mapPickUpItemPacket.ItemId, this);
                     if (mapItem is null)
@@ -303,13 +248,6 @@ namespace Imgeneus.World.Game.Player
                     HandleSearchParty();
                     break;
 
-                case UseVehiclePacket useVehiclePacket:
-                    if (IsOnVehicle)
-                        RemoveVehicle();
-                    else
-                        CallVehicle();
-                    break;
-
                 case VehicleRequestPacket vehicleRequestPacket:
                     HandleVehicleRequestPacket(vehicleRequestPacket.CharacterId);
                     break;
@@ -320,22 +258,6 @@ namespace Imgeneus.World.Game.Player
 
                 case UseVehicle2Packet useVehicle2Packet:
                     HandleUseVehicle2Packet();
-                    break;
-
-                case GemAddPacket gemAddPacket:
-                    AddGem(gemAddPacket.Bag, gemAddPacket.Slot, gemAddPacket.DestinationBag, gemAddPacket.DestinationSlot, gemAddPacket.HammerBag, gemAddPacket.HammerSlot);
-                    break;
-
-                case GemAddPossibilityPacket gemPossibilityPacket:
-                    AddGemPossibility(gemPossibilityPacket.GemBag, gemPossibilityPacket.GemSlot, gemPossibilityPacket.DestinationBag, gemPossibilityPacket.DestinationSlot, gemPossibilityPacket.HammerBag, gemPossibilityPacket.HammerSlot);
-                    break;
-
-                case GemRemovePacket gemRemovePacket:
-                    RemoveGem(gemRemovePacket.Bag, gemRemovePacket.Slot, gemRemovePacket.ShouldRemoveSpecificGem, gemRemovePacket.GemPosition, gemRemovePacket.HammerBag, gemRemovePacket.HammerSlot);
-                    break;
-
-                case GemRemovePossibilityPacket gemRemovePossibilityPacket:
-                    GemRemovePossibility(gemRemovePossibilityPacket.Bag, gemRemovePossibilityPacket.Slot, gemRemovePossibilityPacket.ShouldRemoveSpecificGem, gemRemovePossibilityPacket.GemPosition, gemRemovePossibilityPacket.HammerBag, gemRemovePossibilityPacket.HammerSlot);
                     break;
 
                 case DyeSelectItemPacket dyeSelectItemPacket:
@@ -360,10 +282,6 @@ namespace Imgeneus.World.Game.Player
 
                 case UpdateStatsPacket updateStatsPacket:
                     HandleUpdateStats(updateStatsPacket.Str, updateStatsPacket.Dex, updateStatsPacket.Rec, updateStatsPacket.Int, updateStatsPacket.Wis, updateStatsPacket.Luc);
-                    break;
-
-                case AutoStatsSettingsPacket autoStatsSettingsPacket:
-                    HandleAutoStatsSettings(autoStatsSettingsPacket.Str, autoStatsSettingsPacket.Dex, autoStatsSettingsPacket.Rec, autoStatsSettingsPacket.Int, autoStatsSettingsPacket.Wis, autoStatsSettingsPacket.Luc);
                     break;
 
                 case GuildCreatePacket guildCreatePacket:
@@ -421,20 +339,6 @@ namespace Imgeneus.World.Game.Player
                     HandleGMCreateMob(gMCreateMobPacket);
                     break;
 
-                case GMTeleportMapCoordinatesPacket gmTeleportMapCoordinatesPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    HandleGMTeleportToMapCoordinates(gmTeleportMapCoordinatesPacket);
-                    break;
-
-                case GMTeleportMapPacket gmTeleportMapPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    HandleGMTeleportToMap(gmTeleportMapPacket);
-                    break;
-
                 case GMCreateNpcPacket gMCreateNpcPacket:
                     if (!IsAdmin)
                         return;
@@ -459,20 +363,6 @@ namespace Imgeneus.World.Game.Player
                         return;
                     Map.RemoveNPC(CellId, gMRemoveNpcPacket.Type, gMRemoveNpcPacket.TypeId, gMRemoveNpcPacket.Count);
                     _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
-
-                case GMFindPlayerPacket gMFindPlayerPacket:
-                    HandleFindPlayerPacket(gMFindPlayerPacket.Name);
-                    break;
-
-                case GMSummonPlayerPacket gMSummonPlayerPacket:
-                    HandleSummonPlayer(gMSummonPlayerPacket.Name);
-                    break;
-
-                case GMSetAttributePacket gmSetAttributePacket:
-                    if (!IsAdmin)
-                        return;
-                    HandleGMSetAttributePacket(gmSetAttributePacket);
                     break;
 
                 case GMNoticeWorldPacket gmNoticeWorldPacket:
