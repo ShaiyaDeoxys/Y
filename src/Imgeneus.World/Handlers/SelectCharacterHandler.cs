@@ -3,6 +3,7 @@ using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
@@ -15,14 +16,17 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IGameWorld _gameWorld;
         private readonly ICharacterFactory _characterFactory;
+        private readonly IStatsManager _statsManager;
 
         public SelectCharacterHandler(IGamePacketFactory packetFactory,
                                       IGameSession gameSession,
                                       IGameWorld gameWorld,
-                                      ICharacterFactory characterFactory) : base(packetFactory, gameSession)
+                                      ICharacterFactory characterFactory,
+                                      IStatsManager statsManager) : base(packetFactory, gameSession)
         {
             _gameWorld = gameWorld;
             _characterFactory = characterFactory;
+            _statsManager = statsManager;
         }
 
         [HandlerAction(PacketType.SELECT_CHARACTER)]
@@ -62,7 +66,7 @@ namespace Imgeneus.World.Handlers
             //SendBlessAmount();
             //SendBankItems();
             //SendGuildNpcLvlList();
-            //SendAutoStats();
+            _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
 
 #if !EP8_V2
             //SendAccountPoints(); // WARNING: This is necessary if you have an in-game item mall.

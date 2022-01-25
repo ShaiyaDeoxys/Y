@@ -216,6 +216,18 @@ namespace Imgeneus.World.Packets
             packet.Write(new CharacterActiveBuffs(activeBuffs).Serialize());
             client.Send(packet);
         }
+
+        public void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc)
+        {
+            using var packet = new ImgeneusPacket(PacketType.AUTO_STATS_LIST);
+            packet.Write(str);
+            packet.Write(dex);
+            packet.Write(rec);
+            packet.Write(intl);
+            packet.Write(wis);
+            packet.Write(luc);
+            client.Send(packet);
+        }
         #endregion
 
         #region Inventory

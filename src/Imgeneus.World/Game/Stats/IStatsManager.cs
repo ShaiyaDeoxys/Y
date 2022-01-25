@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Stats
         /// <summary>
         /// Inits constant stats.
         /// </summary>
-        void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0);
+        void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0, byte autoStr = 0, byte autoDex = 0, byte autoRec = 0, byte autoInt = 0, byte autoWis = 0, byte autoLuc = 0);
 
         /// <summary>
         /// Str value, needed for attack calculation.
@@ -120,6 +120,41 @@ namespace Imgeneus.World.Game.Stats
         /// Magical resistance from equipment and buffs.
         /// </summary>
         int ExtraResistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets strength stat, that is set automatically, when player selects auto settings.
+        /// </summary>
+        byte AutoStr { get; }
+
+        /// <summary>
+        /// Gets or sets dexterity stat, that is set automatically, when player selects auto settings.
+        /// </summary>
+        byte AutoDex { get; }
+
+        /// <summary>
+        /// Gets or sets rec stat, that is set automatically, when player selects auto settings.
+        /// </summary>
+        byte AutoRec { get; }
+
+        /// <summary>
+        /// Gets or sets intelligence stat, that is set automatically, when player selects auto settings.
+        /// </summary>
+        byte AutoInt { get; }
+
+        /// <summary>
+        /// Gets or sets luck stat, that is set automatically, when player selects auto settings.
+        /// </summary>
+        byte AutoLuc { get; }
+
+        /// <summary>
+        /// Gets or sets wisdom stat, that is set automatically, when player selects auto settings.
+        /// </summary>
+        byte AutoWis { get; }
+
+        /// <summary>
+        /// Saves autostats to db.
+        /// </summary>
+        Task<bool> TrySetAutoStats(byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
 
         /// <summary>
         /// Possibility to hit enemy.

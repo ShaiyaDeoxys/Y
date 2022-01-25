@@ -39,7 +39,7 @@ namespace Imgeneus.World.Game.Player
             SendBlessAmount();
             SendBankItems();
             SendGuildNpcLvlList();
-            SendAutoStats();
+            //SendAutoStats();
 #if !EP8_V2
             SendAccountPoints(); // WARNING: This is necessary if you have an in-game item mall.
 #endif
@@ -93,8 +93,6 @@ namespace Imgeneus.World.Game.Player
         private void SendAddBuff(Buff buff) => _packetsHelper.SendAddBuff(Client, buff);
 
         private void SendRemoveBuff(Buff buff) => _packetsHelper.SendRemoveBuff(Client, buff);
-
-        private void SendAutoStats() => _packetsHelper.SendAutoStats(Client, this);
 
         //private void SendMaxHP() => _packetsHelper.SendMaxHitpoints(Client, this, HitpointType.HP);
 

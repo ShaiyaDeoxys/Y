@@ -41,6 +41,7 @@ namespace Imgeneus.World.Packets
         void SendLearnedNewSkill(IWorldClient client, bool ok, Skill skill);
         void SendLearnedSkills(IWorldClient client, Character character);
         void SendActiveBuffs(IWorldClient client, ICollection<Buff> activeBuffs);
+        void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
         #endregion
 
         #region Inventory

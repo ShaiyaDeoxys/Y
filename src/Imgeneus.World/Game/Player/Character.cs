@@ -368,12 +368,6 @@ namespace Imgeneus.World.Game.Player
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
-                AutoStr = dbCharacter.AutoStr,
-                AutoDex = dbCharacter.AutoDex,
-                AutoInt = dbCharacter.AutoInt,
-                AutoRec = dbCharacter.AutoRec,
-                AutoWis = dbCharacter.AutoWis,
-                AutoLuc = dbCharacter.AutoLuc,
                 Exp = dbCharacter.Exp,
                 IsAdmin = dbCharacter.User.Authority == 0,
                 Points = dbCharacter.User.Points,

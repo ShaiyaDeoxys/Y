@@ -334,25 +334,6 @@ namespace Imgeneus.World.Game.Player
             SendAdditionalStats();
         }*/
 
-        private void HandleAutoStatsSettings(byte str, byte dex, byte rec, byte @int, byte wis, byte luc)
-        {
-            if (str + dex + rec + @int + wis + luc > _characterConfig.GetLevelStatSkillPoints(LevelingManager.Grow).StatPoint)
-            {
-                return;
-            }
-
-            AutoStr = str;
-            AutoDex = dex;
-            AutoRec = rec;
-            AutoInt = @int;
-            AutoWis = wis;
-            AutoLuc = luc;
-
-            _taskQueue.Enqueue(ActionType.UPDATE_AUTO_STATS, Id, AutoStr, AutoDex, AutoRec, AutoInt, AutoWis, AutoLuc);
-
-            SendAutoStats();
-        }
-
         private async void HandleGMSetAttributePacket(GMSetAttributePacket gmSetAttributePacket)
         {
             var (attribute, attributeValue, player) = gmSetAttributePacket;

@@ -177,7 +177,21 @@ namespace Imgeneus.World.Game.Player
 
             _speedManager.Init(dbCharacter.Id);
 
-            _statsManager.Init(dbCharacter.Id, dbCharacter.Strength, dbCharacter.Dexterity, dbCharacter.Rec, dbCharacter.Intelligence, dbCharacter.Wisdom, dbCharacter.Luck, dbCharacter.StatPoint, dbCharacter.Class);
+            _statsManager.Init(dbCharacter.Id,
+                               dbCharacter.Strength,
+                               dbCharacter.Dexterity,
+                               dbCharacter.Rec,
+                               dbCharacter.Intelligence,
+                               dbCharacter.Wisdom,
+                               dbCharacter.Luck,
+                               dbCharacter.StatPoint,
+                               dbCharacter.Class,
+                               autoStr: dbCharacter.AutoStr,
+                               autoDex: dbCharacter.AutoDex,
+                               autoRec: dbCharacter.AutoRec,
+                               autoInt: dbCharacter.AutoInt,
+                               autoWis: dbCharacter.AutoWis,
+                               autoLuc: dbCharacter.AutoLuc);
 
             _levelProvider.Level = dbCharacter.Level;
 

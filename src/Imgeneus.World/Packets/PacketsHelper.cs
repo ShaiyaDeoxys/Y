@@ -392,18 +392,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendAutoStats(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.AUTO_STATS_LIST);
-            packet.Write(character.AutoStr);
-            packet.Write(character.AutoDex);
-            packet.Write(character.AutoRec);
-            packet.Write(character.AutoInt);
-            packet.Write(character.AutoWis);
-            packet.Write(character.AutoLuc);
-            client.Send(packet);
-        }
-
         internal void SendGuildCreateRequest(IWorldClient client, int creatorId, string guildName, string guildMessage)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE_AGREE);

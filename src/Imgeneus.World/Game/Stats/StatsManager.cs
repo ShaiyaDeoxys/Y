@@ -30,7 +30,7 @@ namespace Imgeneus.World.Game.Stats
         }
 #endif
 
-        public void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0)
+        public void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0, byte autoStr = 0, byte autoDex = 0, byte autoRec = 0, byte autoInt = 0, byte autoWis = 0, byte autoLuc = 0)
         {
             _ownerId = ownerId;
 
@@ -52,6 +52,13 @@ namespace Imgeneus.World.Game.Stats
             _extraIntl = 0;
             _extraLuc = 0;
             _extraWis = 0;
+
+            AutoStr = autoStr;
+            AutoDex = autoDex;
+            AutoRec = autoRec;
+            AutoInt = autoInt;
+            AutoWis = autoWis;
+            AutoLuc = autoLuc;
 
             ExtraDefense = 0;
             ExtraResistance = 0;
@@ -131,6 +138,54 @@ namespace Imgeneus.World.Game.Stats
         public int TotalLuc => Luck + ExtraLuc;
         public int TotalDefense => _def + TotalRec + ExtraDefense;
         public int TotalResistance => _res + TotalWis + ExtraResistance;
+        #endregion
+
+        #region Auto stats
+
+        public byte AutoStr { get; private set; }
+
+        public byte AutoDex { get; private set; }
+
+        public byte AutoRec { get; private set; }
+
+        public byte AutoInt { get; private set; }
+
+        public byte AutoLuc { get; private set; }
+
+        public byte AutoWis { get; private set; }
+
+        public async Task<bool> TrySetAutoStats(byte str, byte dex, byte rec, byte intl, byte wis, byte luc)
+        {
+            var character = await _database.Characters.FindAsync(_ownerId);
+            if (character is null)
+                return false;
+
+            character.AutoStr = str;
+            character.AutoDex = dex;
+            character.AutoRec = rec;
+            character.AutoInt = intl;
+            character.AutoWis = wis;
+            character.AutoLuc = luc;
+
+            var count = await _database.SaveChangesAsync();
+
+            if (count > 0)
+            {
+                AutoStr = character.AutoStr;
+                AutoDex = character.AutoDex;
+                AutoRec = character.AutoRec;
+                AutoInt = character.AutoInt;
+                AutoWis = character.AutoWis;
+                AutoLuc = character.AutoLuc;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         #endregion
 
         #region Hitting chances
