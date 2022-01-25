@@ -132,7 +132,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                         {
                             if (item.Type != Item.MONEY_ITEM_TYPE)
                             {
-                                var inventoryItem = dropReceiver.AddItemToInventory(item);
+                                var inventoryItem = dropReceiver.InventoryManager.AddItem(item);
                                 if (inventoryItem != null)
                                 {
                                     itemAdded = true;

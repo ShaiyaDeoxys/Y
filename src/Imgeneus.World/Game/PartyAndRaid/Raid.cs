@@ -143,7 +143,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 {
                     if (item.Type != Item.MONEY_ITEM_TYPE)
                     {
-                        var inventoryItem = Leader.AddItemToInventory(item);
+                        var inventoryItem = Leader.InventoryManager.AddItem(item);
                         if (inventoryItem != null)
                         {
                             Leader.SendAddItemToInventory(inventoryItem);
@@ -191,7 +191,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     {
                         if (item.Type != Item.MONEY_ITEM_TYPE)
                         {
-                            var inventoryItem = dropReceiver.AddItemToInventory(item);
+                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item);
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;
@@ -243,7 +243,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     {
                         if (item.Type != Item.MONEY_ITEM_TYPE)
                         {
-                            var inventoryItem = dropReceiver.AddItemToInventory(item);
+                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item);
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;

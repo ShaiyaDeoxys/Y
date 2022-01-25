@@ -131,14 +131,14 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleDyeSelectItem(byte dyeItemBag, byte dyeItemSlot, byte targetItemBag, byte targetItemSlot)
         {
-            InventoryItems.TryGetValue((dyeItemBag, dyeItemSlot), out var dyeItem);
+            InventoryManager.InventoryItems.TryGetValue((dyeItemBag, dyeItemSlot), out var dyeItem);
             if (dyeItem is null || dyeItem.Special != SpecialEffect.Dye)
             {
                 _packetsHelper.SendSelectDyeItem(Client, false);
                 return;
             }
 
-            InventoryItems.TryGetValue((targetItemBag, targetItemSlot), out var item);
+            InventoryManager.InventoryItems.TryGetValue((targetItemBag, targetItemSlot), out var item);
             if (item is null)
             {
                 _packetsHelper.SendSelectDyeItem(Client, false);
@@ -190,14 +190,14 @@ namespace Imgeneus.World.Game.Player
 
             var color = _dyeingManager.AvailableColors[new Random().Next(0, 5)];
 
-            InventoryItems.TryGetValue((dyeItemBag, dyeItemSlot), out var dyeItem);
+            InventoryManager.InventoryItems.TryGetValue((dyeItemBag, dyeItemSlot), out var dyeItem);
             if (dyeItem is null || dyeItem.Special != SpecialEffect.Dye || _dyeingManager.DyeingItem is null)
             {
                 _packetsHelper.SendDyeConfirm(Client, false, color);
                 return;
             }
 
-            InventoryItems.TryGetValue((targetItemBag, targetItemSlot), out var item);
+            InventoryManager.InventoryItems.TryGetValue((targetItemBag, targetItemSlot), out var item);
             if (item is null)
             {
                 _packetsHelper.SendDyeConfirm(Client, false, color);
@@ -235,8 +235,8 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleAbsoluteCompose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot)
         {
-            InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);
-            InventoryItems.TryGetValue((itemBag, itemSlot), out var item);
+            InventoryManager.InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);
+            InventoryManager.InventoryItems.TryGetValue((itemBag, itemSlot), out var item);
 
             if (rune is null || item is null || rune.Special != SpecialEffect.AbsoluteRecreationRune || !item.IsComposable)
             {
@@ -257,8 +257,8 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleItemComposePacket(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot)
         {
-            InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);
-            InventoryItems.TryGetValue((itemBag, itemSlot), out var item);
+            InventoryManager.InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);
+            InventoryManager.InventoryItems.TryGetValue((itemBag, itemSlot), out var item);
 
             if (rune is null || item is null ||
                    (rune.Special != SpecialEffect.RecreationRune &&

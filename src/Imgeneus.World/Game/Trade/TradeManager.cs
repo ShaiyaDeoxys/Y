@@ -336,10 +336,10 @@ namespace Imgeneus.World.Game.Trade
             {
                 var tradeItem = item.Value;
                 var removedItem = tradeItem.Clone();
-                var resultItm = trader.RemoveItemFromInventory(tradeItem);
-                if (partner.AddItemToInventory(resultItm) is null) // No place for this item.
+                var resultItm = trader.InventoryManager.RemoveItem(tradeItem);
+                if (partner.InventoryManager.AddItem(resultItm) is null) // No place for this item.
                 {
-                    trader.AddItemToInventory(resultItm);
+                    trader.InventoryManager.AddItem(resultItm);
                 }
                 else
                 {
@@ -353,10 +353,10 @@ namespace Imgeneus.World.Game.Trade
             {
                 var tradeItem = item.Value;
                 var removedItem = tradeItem.Clone();
-                var resultItm = partner.RemoveItemFromInventory(tradeItem);
-                if (trader.AddItemToInventory(resultItm) is null) // No place for this item.
+                var resultItm = partner.InventoryManager.RemoveItem(tradeItem);
+                if (trader.InventoryManager.AddItem(resultItm) is null) // No place for this item.
                 {
-                    partner.AddItemToInventory(resultItm);
+                    partner.InventoryManager.AddItem(resultItm);
                 }
                 else
                 {

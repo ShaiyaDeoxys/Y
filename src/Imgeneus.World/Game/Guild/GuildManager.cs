@@ -715,10 +715,10 @@ namespace Imgeneus.World.Game.Guild
 
             var totalEtin = 0;
 
-            var etins = character.InventoryItems.Select(x => x.Value).Where(itm => itm.Special == SpecialEffect.Etin_1 || itm.Special == SpecialEffect.Etin_10 || itm.Special == SpecialEffect.Etin_100 || itm.Special == SpecialEffect.Etin_1000).ToList();
+            var etins = character.InventoryManager.InventoryItems.Select(x => x.Value).Where(itm => itm.Special == SpecialEffect.Etin_1 || itm.Special == SpecialEffect.Etin_10 || itm.Special == SpecialEffect.Etin_100 || itm.Special == SpecialEffect.Etin_1000).ToList();
             foreach (var etin in etins)
             {
-                character.RemoveItemFromInventory(etin);
+                character.InventoryManager.RemoveItem(etin);
 
                 var etinNumber = 0;
                 switch (etin.Special)

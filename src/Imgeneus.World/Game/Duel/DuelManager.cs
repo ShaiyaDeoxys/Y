@@ -131,7 +131,7 @@ namespace Imgeneus.World.Game.Duel
         /// <param name="slotInTradeWindow">slot in trade window</param>
         private void HandleAddItem(byte bag, byte slot, byte quantity, byte slotInTradeWindow)
         {
-            Sender.InventoryItems.TryGetValue((bag, slot), out var tradeItem);
+            Sender.InventoryManager.InventoryItems.TryGetValue((bag, slot), out var tradeItem);
             if (tradeItem is null)
             {
                 // Possible cheating, maybe log it?

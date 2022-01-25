@@ -97,7 +97,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
 
             for (byte i = 0; i < 17; i++)
             {
-                character.InventoryItems.TryGetValue((0, i), out var item);
+                character.InventoryManager.InventoryItems.TryGetValue((0, i), out var item);
                 EquipmentItems[i] = new EquipmentItem(item);
 
                 if (item != null)

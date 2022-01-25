@@ -46,7 +46,7 @@ namespace Imgeneus.World.Game.Player
             if (!BankItems.TryGetValue(slot, out var bankItem))
                 return false;
 
-            var item = AddItemToInventory(new Item(_databasePreloader, bankItem));
+            var item = InventoryManager.AddItem(new Item(_databasePreloader, bankItem));
 
             if (item == null)
                 return false;
