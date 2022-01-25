@@ -2,7 +2,6 @@
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
@@ -23,7 +22,7 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.GM_COMMAND_GET_ITEM)]
-        public async Task Handle(WorldClient client, GMGetItemPacket packet)
+        public void Handle(WorldClient client, GMGetItemPacket packet)
         {
             if (!_gameSession.IsAdmin)
                 return;

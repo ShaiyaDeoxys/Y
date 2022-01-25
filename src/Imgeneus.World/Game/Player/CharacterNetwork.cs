@@ -339,32 +339,6 @@ namespace Imgeneus.World.Game.Player
                     HandleGMCreateMob(gMCreateMobPacket);
                     break;
 
-                case GMCreateNpcPacket gMCreateNpcPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    if (_databasePreloader.NPCs.TryGetValue((gMCreateNpcPacket.Type, gMCreateNpcPacket.TypeId), out var dbNpc))
-                    {
-                        var moveCoordinates = new List<(float, float, float, ushort)>()
-                        {
-                            (PosX, PosY, PosZ, Angle)
-                        };
-                        Map.AddNPC(CellId, _npcFactory.CreateNpc((gMCreateNpcPacket.Type, gMCreateNpcPacket.TypeId), moveCoordinates, Map));
-                        _packetsHelper.SendGmCommandSuccess(Client);
-                    }
-                    else
-                    {
-                        _packetsHelper.SendGmCommandError(Client, PacketType.GM_CREATE_NPC);
-                    }
-                    break;
-
-                case GMRemoveNpcPacket gMRemoveNpcPacket:
-                    if (!IsAdmin)
-                        return;
-                    Map.RemoveNPC(CellId, gMRemoveNpcPacket.Type, gMRemoveNpcPacket.TypeId, gMRemoveNpcPacket.Count);
-                    _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
-
                 case GMNoticeWorldPacket gmNoticeWorldPacket:
                     if (!IsAdmin)
                         return;
