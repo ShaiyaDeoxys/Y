@@ -187,6 +187,19 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        internal void SendItemExpired(IWorldClient client, Item item, ExpireType expireType)
+        {
+            // This is from UZC, but seems to be different in US version.
+            using var packet = new ImgeneusPacket(PacketType.ITEM_EXPIRED);
+            packet.Write(item.Bag);
+            packet.Write(item.Slot);
+            packet.Write(item.Type);
+            packet.Write(item.TypeId);
+            packet.WriteByte(0); // remaining mins
+            packet.Write((ushort)expireType);
+            client.Send(packet);
+        }
+
         internal void SetMobInTarget(IWorldClient client, Mob target)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_MOB);

@@ -103,15 +103,5 @@ namespace Imgeneus.World.Game.Player
         }
 
         #endregion
-
-        #region Item Expiration
-
-        public void CharacterItem_OnExpiration(Item item)
-        {
-            RemoveItemFromInventory(item);
-            SendRemoveItemFromInventory(item, true);
-        }
-
-        #endregion
     }
 }

@@ -31,7 +31,6 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ILogger _logger;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IDatabase _database;
-        private readonly IGameSession _gameSession;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
         private readonly ISpeedManager _speedManager;
@@ -47,12 +46,11 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ICharacterConfiguration _characterConfig;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IGameSession gameSession, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
             _database = database;
-            _gameSession = gameSession;
             _statsManager = statsManager;
             _healthManager = healthManager;
             _speedManager = speedManager;
@@ -87,7 +85,12 @@ namespace Imgeneus.World.Game.Inventory
             _ownerId = ownerId;
 
             foreach (var item in items.Select(i => new Item(_databasePreloader, i)))
+            {
                 InventoryItems.TryAdd((item.Bag, item.Slot), item);
+
+                if (item.IsExpirable)
+                    item.OnExpiration += Item_OnExpiration;
+            }
 
             Gold = gold;
 
@@ -191,6 +194,8 @@ namespace Imgeneus.World.Game.Inventory
                 };
 
                 _database.CharacterItems.Add(dbItem);
+
+                item.OnExpiration -= Item_OnExpiration;
             }
 
             await _database.SaveChangesAsync();
@@ -633,7 +638,7 @@ namespace Imgeneus.World.Game.Inventory
 
             if (item.ExpirationTime != null)
             {
-                //item.OnExpiration += CharacterItem_OnExpiration;
+                item.OnExpiration += Item_OnExpiration;
             }
 
             _logger.LogDebug("Character {characterId} got item {type} {typeId}", _ownerId, item.Type, item.TypeId);
@@ -665,7 +670,7 @@ namespace Imgeneus.World.Game.Inventory
             if (item.ExpirationTime != null)
             {
                 item.StopExpirationTimer();
-                //item.OnExpiration -= CharacterItem_OnExpiration;
+                item.OnExpiration -= Item_OnExpiration;
             }
 
             _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _ownerId, item.Type, item.TypeId);
@@ -1302,6 +1307,18 @@ namespace Imgeneus.World.Game.Inventory
             item.TradeQuantity = count > item.Count ? item.Count : count;
             Gold = (uint)(Gold + item.Sell * item.TradeQuantity);
             return RemoveItem(item);
+        }
+
+        #endregion
+
+        #region Expiration
+
+        public event Action<Item> OnItemExpired;
+
+        private void Item_OnExpiration(Item item)
+        {
+            OnItemExpired?.Invoke(item);
+            RemoveItem(item);
         }
 
         #endregion

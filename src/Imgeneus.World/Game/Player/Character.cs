@@ -142,6 +142,7 @@ namespace Imgeneus.World.Game.Player
             SkillsManager.OnResetSkills += SendResetSkills;
             InventoryManager.OnAddItem += SendAddItemToInventory;
             InventoryManager.OnRemoveItem += SendRemoveItemFromInventory;
+            InventoryManager.OnItemExpired += SendItemExpired;
 
             _packetsHelper = new PacketsHelper();
 
@@ -179,6 +180,7 @@ namespace Imgeneus.World.Game.Player
             SkillsManager.OnResetSkills -= SendResetSkills;
             InventoryManager.OnAddItem -= SendAddItemToInventory;
             InventoryManager.OnRemoveItem -= SendRemoveItemFromInventory;
+            InventoryManager.OnItemExpired -= SendItemExpired;
 
             OnDead -= Character_OnDead;
 

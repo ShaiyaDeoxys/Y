@@ -179,5 +179,10 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="item">item to sell</param>
         /// <param name="count">how many item player want to sell</param>
         Item SellItem(Item item, byte count);
+
+        /// <summary>
+        /// Event, that is fired, when item expires.
+        /// </summary>
+        event Action<Item> OnItemExpired;
     }
 }

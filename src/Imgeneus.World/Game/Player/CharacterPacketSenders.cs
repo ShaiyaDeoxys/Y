@@ -142,6 +142,8 @@ namespace Imgeneus.World.Game.Player
 
         public void SendRemoveItemFromInventory(Item item, bool fullRemove) => _packetsHelper.SendRemoveItem(Client, item, fullRemove);
 
+        public void SendItemExpired(Item item) => _packetsHelper.SendItemExpired(Client, item, ExpireType.ExpireItemDuration);
+
         public void SendObelisks() => _packetsHelper.SendObelisks(Client, Map.Obelisks.Values);
 
         public void SendObeliskBroken(Obelisk obelisk) => _packetsHelper.SendObeliskBroken(Client, obelisk);
