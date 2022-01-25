@@ -104,38 +104,6 @@ namespace Imgeneus.World.Game.Player
 
         #endregion
 
-        #region Use Item
-
-          
-
-
-
-
-        
-
-        #endregion
-
-        #region Buy/sell Item
-
-        /// <summary>
-        /// Sells item.
-        /// </summary>
-        /// <param name="item">item to sell</param>
-        /// <param name="count">how many item player want to sell</param>
-        public Item SellItem(Item item, byte count)
-        {
-            if (!InventoryItems.ContainsKey((item.Bag, item.Slot)))
-            {
-                return null;
-            }
-
-            item.TradeQuantity = count > item.Count ? item.Count : count;
-            InventoryManager.Gold = (uint)(InventoryManager.Gold + item.Sell * item.TradeQuantity);
-            return RemoveItemFromInventory(item);
-        }
-
-        #endregion
-
         #region Item Expiration
 
         public void CharacterItem_OnExpiration(Item item)
@@ -143,55 +111,6 @@ namespace Imgeneus.World.Game.Player
             RemoveItemFromInventory(item);
             SendRemoveItemFromInventory(item, true);
         }
-
-        #endregion
-
-        #region Helpers
-
-        /// <summary>
-        /// Tries to find free slot in inventory.
-        /// </summary>
-        /// <returns>tuple of bag and slot; slot is -1 if there is no free slot</returns>
-        private (byte Bag, int Slot) FindFreeSlotInInventory()
-        {
-            byte bagSlot = 0;
-            int freeSlot = -1;
-
-            if (InventoryItems.Count > 0)
-            {
-                var maxBag = 5;
-                var maxSlots = 24;
-
-                // Go though all bags and try to find any free slot.
-                // Start with 1, because 0 is worn items.
-                for (byte i = 1; i <= maxBag; i++)
-                {
-                    var bagItems = InventoryItems.Where(itm => itm.Value.Bag == i).OrderBy(b => b.Value.Slot);
-                    for (var j = 0; j < maxSlots; j++)
-                    {
-                        if (!bagItems.Any(b => b.Value.Slot == j))
-                        {
-                            freeSlot = j;
-                            break;
-                        }
-                    }
-
-                    if (freeSlot != -1)
-                    {
-                        bagSlot = i;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                bagSlot = 1; // Start with 1, because 0 is worn items.
-                freeSlot = 0;
-            }
-
-            return (bagSlot, freeSlot);
-        }
-
 
         #endregion
     }

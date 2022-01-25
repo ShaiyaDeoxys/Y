@@ -190,29 +190,6 @@ namespace Imgeneus.World.Game.Player
                     }
                     break;
 
-                case NpcBuyItemPacket npcBuyItemPacket:
-                    HandleNpcBuyItem(npcBuyItemPacket.NpcId, npcBuyItemPacket.ItemIndex, npcBuyItemPacket.Count);
-                    break;
-
-                case NpcSellItemPacket npcSellItemPacket:
-                    if (npcSellItemPacket.Bag == 0) // Worn item can not be sold, player should take it off first.
-                        return;
-
-                    InventoryItems.TryGetValue((npcSellItemPacket.Bag, npcSellItemPacket.Slot), out var itemToSell);
-                    if (itemToSell is null) // Item for sale not found.
-                        return;
-
-                    var fullSold = itemToSell.Count <= npcSellItemPacket.Count;
-
-                    var soldItem = SellItem(itemToSell, npcSellItemPacket.Count);
-                    if (soldItem != null)
-                    {
-                        if (fullSold)
-                            itemToSell.Count = 0;
-                        _packetsHelper.SendSoldItem(Client, itemToSell, Gold);
-                    }
-                    break;
-
                 case QuestStartPacket questStartPacket:
                     var npcQuestGiver = Map.GetNPC(CellId, questStartPacket.NpcId);
                     if (npcQuestGiver is null || !npcQuestGiver.StartQuestIds.Contains(questStartPacket.QuestId))

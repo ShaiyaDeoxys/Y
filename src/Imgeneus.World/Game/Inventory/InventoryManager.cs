@@ -1294,6 +1294,16 @@ namespace Imgeneus.World.Game.Inventory
             return AddItem(item);
         }
 
+        public Item SellItem(Item item, byte count)
+        {
+            if (!InventoryItems.ContainsKey((item.Bag, item.Slot)))
+                return null;
+
+            item.TradeQuantity = count > item.Count ? item.Count : count;
+            Gold = (uint)(Gold + item.Sell * item.TradeQuantity);
+            return RemoveItem(item);
+        }
+
         #endregion
 
         #region Helpers

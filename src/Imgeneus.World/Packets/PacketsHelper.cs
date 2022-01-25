@@ -489,19 +489,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendSoldItem(IWorldClient client, Item soldItem, uint gold)
-        {
-            using var packet = new ImgeneusPacket(PacketType.NPC_SELL_ITEM);
-            packet.WriteByte(0); // success
-            packet.Write(soldItem.Bag);
-            packet.Write(soldItem.Slot);
-            packet.Write(soldItem.Type);
-            packet.Write(soldItem.TypeId);
-            packet.Write(soldItem.Count);
-            packet.Write(gold);
-            client.Send(packet);
-        }
-
         internal void VehiclePassengerChanged(IWorldClient client, int passengerId, int vehicleCharId)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_2);

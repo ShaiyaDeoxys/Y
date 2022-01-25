@@ -55,6 +55,7 @@ namespace Imgeneus.World.Packets
         void SendFullInventory(IWorldClient client);
         void SendCanNotUseItem(IWorldClient client, int characterId);
         void SendBoughtItem(IWorldClient client, BuyResult result, Item boughtItem, uint gold);
+        void SendSoldItem(IWorldClient client, bool success, Item itemToSell, uint gold);
         #endregion
 
         #region Vehicle

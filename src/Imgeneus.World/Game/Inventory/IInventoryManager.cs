@@ -172,5 +172,12 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="product">product to buy</param>
         /// <param name="count">how many items player want to buy</param>
         Item BuyItem(NpcProduct product, byte count, out BuyResult result);
+
+        /// <summary>
+        /// Sells item.
+        /// </summary>
+        /// <param name="item">item to sell</param>
+        /// <param name="count">how many item player want to sell</param>
+        Item SellItem(Item item, byte count);
     }
 }
