@@ -1,9 +1,11 @@
-﻿using Imgeneus.Database.Entities;
+﻿using Imgeneus.Database;
+using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Health
 {
@@ -13,15 +15,16 @@ namespace Imgeneus.World.Game.Health
         private readonly IStatsManager _statsManager;
         private readonly ILevelProvider _levelProvider;
         private readonly ICharacterConfiguration _characterConfiguration;
+        private readonly IDatabase _database;
         private int _ownerId;
 
-        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration)
+        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration, IDatabase database)
         {
             _logger = logger;
             _statsManager = statsManager;
             _levelProvider = levelProvider;
             _characterConfiguration = characterConfiguration;
-
+            _database = database;
             _statsManager.OnRecUpdate += StatsManager_OnRecUpdate;
             _statsManager.OnDexUpdate += StatsManager_OnDexUpdate;
             _statsManager.OnWisUpdate += StatsManager_OnWisUpdate;
@@ -59,6 +62,18 @@ namespace Imgeneus.World.Game.Health
             ExtraMP = 0;
         }
 
+        public async Task Clear()
+        {
+            var character = await _database.Characters.FindAsync(_ownerId);
+            if (character is null)
+                return;
+
+            character.HealthPoints = (ushort)CurrentHP;
+            character.ManaPoints = (ushort)CurrentMP;
+            character.StaminaPoints = (ushort)CurrentSP;
+
+            await _database.SaveChangesAsync();
+        } 
 
         public void Dispose()
         {
