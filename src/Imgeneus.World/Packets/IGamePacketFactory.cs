@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Portals;
 using System.Collections.Generic;
 
@@ -71,6 +72,7 @@ namespace Imgeneus.World.Packets
         void SendMobRecover(IWorldClient client, int mobId, int hp);
         void SendAppearanceChanged(IWorldClient client, int characterId, byte hair, byte face, byte size, byte gender);
         void SendPortalTeleportNotAllowed(IWorldClient client, PortalTeleportNotAllowedReason reason);
+        void SendWeather(IWorldClient client, Map map);
         #endregion
 
         #region Linking

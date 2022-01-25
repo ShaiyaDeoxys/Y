@@ -25,6 +25,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Zone.Portals;
+using Imgeneus.World.Game.Zone;
 
 namespace Imgeneus.World.Packets
 {
@@ -405,6 +406,13 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_ENTERED_PORTAL);
             packet.Write(false); // success
             packet.Write((byte)reason);
+            client.Send(packet);
+        }
+
+        public void SendWeather(IWorldClient client, Map map)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MAP_WEATHER);
+            packet.Write(new MapWeather(map).Serialize());
             client.Send(packet);
         }
         #endregion

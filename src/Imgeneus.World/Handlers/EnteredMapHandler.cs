@@ -3,6 +3,7 @@ using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Teleport;
+using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
 
@@ -13,11 +14,13 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IGameWorld _gameWorld;
         private readonly ITeleportationManager _teleportationManager;
+        private readonly IMapProvider _mapProvider;
 
-        public EnteredMapHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, ITeleportationManager teleportationManager) : base(packetFactory, gameSession)
+        public EnteredMapHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, ITeleportationManager teleportationManager, IMapProvider mapProvider) : base(packetFactory, gameSession)
         {
             _gameWorld = gameWorld;
             _teleportationManager = teleportationManager;
+            _mapProvider = mapProvider;
         }
 
         [HandlerAction(PacketType.CHARACTER_ENTERED_MAP)]
@@ -27,7 +30,7 @@ namespace Imgeneus.World.Handlers
             _teleportationManager.IsTeleporting = false;
 
             // Send map values.
-            //SendWeather();
+            _packetFactory.SendWeather(client, _mapProvider.Map);
             //SendObelisks();
             _packetFactory.SendCharacterShape(client, _gameWorld.Players[_gameSession.CharId]); // Should fix the issue with dye color, when first connection.
         }

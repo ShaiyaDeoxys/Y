@@ -695,7 +695,7 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogDebug($"Map {Id} changed weather to {_weatherState}.");
 
             foreach (var player in Players.Values)
-                player.SendWeather();
+                PacketFactory.SendWeather(player.GameSession.Client, this);
 
             _weatherTimer.Start();
         }

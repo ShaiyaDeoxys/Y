@@ -439,8 +439,8 @@ namespace Imgeneus.World.Game
                 IMap map = null;
 
                 // Try find player's map.
-                if (Maps.ContainsKey(player.MapProvider.Map.Id))
-                    map = Maps[player.MapProvider.Map.Id];
+                if (Maps.ContainsKey(player.MapProvider.NextMapId))
+                    map = Maps[player.MapProvider.NextMapId];
                 else if (player.Party != null && PartyMaps.ContainsKey(player.Party.Id))
                     map = PartyMaps[player.Party.Id];
                 else if (PartyMaps.ContainsKey(player.PreviousPartyId))

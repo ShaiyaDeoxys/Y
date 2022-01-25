@@ -789,13 +789,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendWeather(IWorldClient client, Map map)
-        {
-            using var packet = new ImgeneusPacket(PacketType.MAP_WEATHER);
-            packet.Write(new MapWeather(map).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendObelisks(IWorldClient client, IEnumerable<Obelisk> obelisks)
         {
             using var packet = new ImgeneusPacket(PacketType.OBELISK_LIST);
