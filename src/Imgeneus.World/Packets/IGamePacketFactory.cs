@@ -54,6 +54,7 @@ namespace Imgeneus.World.Packets
         void SendItemDoesNotBelong(IWorldClient client);
         void SendFullInventory(IWorldClient client);
         void SendCanNotUseItem(IWorldClient client, int characterId);
+        void SendBoughtItem(IWorldClient client, BuyResult result, Item boughtItem, uint gold);
         #endregion
 
         #region Vehicle

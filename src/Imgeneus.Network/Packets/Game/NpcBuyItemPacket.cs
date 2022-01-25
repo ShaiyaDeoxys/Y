@@ -1,20 +1,21 @@
 ﻿using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct NpcBuyItemPacket : IDeserializedPacket
+    public record NpcBuyItemPacket : IPacketDeserializer
     {
-        public int NpcId;
+        public int NpcId { get; private set; }
 
-        public byte ItemIndex;
+        public byte ItemIndex { get; private set; }
 
-        public byte Count;
+        public byte Count { get; private set; }
 
-        public NpcBuyItemPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            NpcId = packet.Read<int>();
-            ItemIndex = packet.Read<byte>();
-            Count = packet.Read<byte>();
+            NpcId = packetStream.Read<int>();
+            ItemIndex = packetStream.Read<byte>();
+            Count = packetStream.Read<byte>();
         }
     }
 }

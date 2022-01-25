@@ -9,6 +9,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
@@ -1253,6 +1254,44 @@ namespace Imgeneus.World.Game.Inventory
 
             _statsManager.RaiseResetStats();
             return ok;
+        }
+
+        #endregion
+
+        #region Buy/sell
+
+        public Item BuyItem(NpcProduct product, byte count, out BuyResult result)
+        {
+            result = BuyResult.Unknown;
+
+            _databasePreloader.Items.TryGetValue((product.Type, product.TypeId), out var dbItem);
+            if (dbItem is null)
+            {
+                _logger.LogError($"Trying to buy not presented item(type={product.Type},typeId={product.TypeId}).");
+                return null;
+            }
+
+            if (dbItem.Buy * count > Gold) // Not enough money.
+            {
+                result = BuyResult.NotEnoughMoney;
+                return null;
+            }
+
+            var freeSlot = FindFreeSlotInInventory();
+            if (freeSlot.Slot == -1) // No free slot.
+            {
+                result = BuyResult.NoFreeSlot;
+                return null;
+            }
+
+            Gold = (uint)(Gold - dbItem.Buy * count);
+
+            var item = new Item(_databasePreloader, dbItem.Type, dbItem.TypeId);
+            item.Count = count;
+
+            result = BuyResult.Success;
+
+            return AddItem(item);
         }
 
         #endregion

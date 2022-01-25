@@ -771,7 +771,7 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleNpcBuyItem(int npcId, byte itemIndex, byte count)
         {
-            var npc = Map.GetNPC(CellId, npcId);
+            /*var npc = Map.GetNPC(CellId, npcId);
             if (npc is null || !npc.ContainsProduct(itemIndex))
             {
                 _logger.LogWarning($"NPC with id {npcId} doesn't contain item at index: {itemIndex}.");
@@ -804,7 +804,7 @@ namespace Imgeneus.World.Game.Player
             var buyItem = npc.Products[itemIndex];
             var boughtItem = BuyItem(buyItem, count);
             if (boughtItem != null)
-                _packetsHelper.SendBoughtItem(Client, boughtItem, InventoryManager.Gold);
+                _packetsHelper.SendBoughtItem(Client, boughtItem, InventoryManager.Gold);*/
         }
 
         private async void HandleGuildUpgradeNpc(byte npcType, byte npcGroup, byte npcLevel)

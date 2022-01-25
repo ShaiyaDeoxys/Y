@@ -310,6 +310,19 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
 
         }
+
+        public void SendBoughtItem(IWorldClient client, BuyResult result, Item boughtItem, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.NPC_BUY_ITEM);
+            packet.Write((byte)result);
+            packet.Write(boughtItem is null ? (byte)0 : boughtItem.Bag);
+            packet.Write(boughtItem is null ? (byte)0 : boughtItem.Slot);
+            packet.Write(boughtItem is null ? (byte)0 : boughtItem.Type);
+            packet.Write(boughtItem is null ? (byte)0 : boughtItem.TypeId);
+            packet.Write(boughtItem is null ? (byte)0 : boughtItem.Count);
+            packet.Write(gold);
+            client.Send(packet);
+        }
         #endregion
 
         #region Vehicle

@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Session;
 using System;
 using System.Collections.Concurrent;
@@ -164,5 +165,12 @@ namespace Imgeneus.World.Game.Inventory
         /// Checks if item can be used on another player.
         /// </summary>
         bool CanUseItemOnTarget(Item item, int targetId);
+
+        /// <summary>
+        /// Buys item from npc store.
+        /// </summary>
+        /// <param name="product">product to buy</param>
+        /// <param name="count">how many items player want to buy</param>
+        Item BuyItem(NpcProduct product, byte count, out BuyResult result);
     }
 }
