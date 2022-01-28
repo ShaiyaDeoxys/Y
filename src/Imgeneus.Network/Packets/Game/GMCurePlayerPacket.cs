@@ -1,14 +1,14 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMCurePlayerPacket : IDeserializedPacket
+    public record GMCurePlayerPacket : IPacketDeserializer
     {
-        public string Name;
+        public string Name { get;private set; }
 
-        public GMCurePlayerPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Name = packet.ReadString(21);
+            Name = packetStream.ReadString(21);
         }
     }
 }

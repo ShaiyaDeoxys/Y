@@ -387,21 +387,6 @@ namespace Imgeneus.World.Game.Player
             TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
 
-        private void HandleGMCurePlayerPacket(GMCurePlayerPacket gmCurePlayerPacket)
-        {
-            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == gmCurePlayerPacket.Name).Value;
-
-            if (target == null)
-            {
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_CURE_PLAYER);
-                return;
-            }
-
-            target?.HealthManager.FullRecover();
-
-            _packetsHelper.SendGmCommandSuccess(Client);
-        }
-
         private void HandleGMWarningPlayer(GMWarningPacket gmWarningPacket)
         {
             var target = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == gmWarningPacket.Name).Value;

@@ -348,13 +348,6 @@ namespace Imgeneus.World.Game.Player
                     _packetsHelper.SendGmCommandSuccess(Client);
                     break;
 
-                case GMCurePlayerPacket gmCurePlayerPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    HandleGMCurePlayerPacket(gmCurePlayerPacket);
-                    break;
-
                 case GMWarningPacket gmWarningPacket:
                     if (!IsAdmin)
                         return;
