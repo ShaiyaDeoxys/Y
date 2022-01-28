@@ -2,7 +2,7 @@
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game.Inventory;
 
-namespace Imgeneus.World.Serialization
+namespace Imgeneus.World.Serialization.EP_8_V1
 {
     public class CharacterEquipmentChange : BaseSerializable
     {

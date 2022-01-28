@@ -237,10 +237,6 @@ namespace Imgeneus.World.Game.Player
                     HandleUseVehicle2Packet();
                     break;
 
-                case DyeSelectItemPacket dyeSelectItemPacket:
-                    HandleDyeSelectItem(dyeSelectItemPacket.DyeItemBag, dyeSelectItemPacket.DyeItemSlot, dyeSelectItemPacket.TargetItemBag, dyeSelectItemPacket.TargetItemSlot);
-                    break;
-
                 case DyeRerollPacket dyeRerollPacket:
                     HandleDyeReroll();
                     break;

@@ -245,9 +245,8 @@ namespace Imgeneus.World.Game.Inventory
                 _helmet = value;
                 TakeOnItem(_helmet);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _helmet, 0);
+                RaiseEquipmentChanged(0);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 0", _ownerId);
             }
         }
 
@@ -271,9 +270,8 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_armor);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _armor, 1);
+                RaiseEquipmentChanged(1);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 1", _ownerId);
             }
         }
 
@@ -287,9 +285,8 @@ namespace Imgeneus.World.Game.Inventory
                 _pants = value;
                 TakeOnItem(_pants);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _pants, 2);
+                RaiseEquipmentChanged(2);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 2", _ownerId);
             }
         }
 
@@ -303,9 +300,8 @@ namespace Imgeneus.World.Game.Inventory
                 _gauntlet = value;
                 TakeOnItem(_gauntlet);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _gauntlet, 3);
+                RaiseEquipmentChanged(3);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 3", _ownerId);
             }
         }
 
@@ -319,9 +315,8 @@ namespace Imgeneus.World.Game.Inventory
                 _boots = value;
                 TakeOnItem(_boots);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _boots, 4);
+                RaiseEquipmentChanged(4);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 4", _ownerId);
             }
         }
 
@@ -350,9 +345,8 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_weapon);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _weapon, 5);
+                RaiseEquipmentChanged(5);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 5", _ownerId);
             }
         }
 
@@ -366,9 +360,8 @@ namespace Imgeneus.World.Game.Inventory
                 _shield = value;
                 TakeOnItem(_shield);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _shield, 6);
+                RaiseEquipmentChanged(6);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 6", _ownerId);
             }
         }
 
@@ -382,9 +375,8 @@ namespace Imgeneus.World.Game.Inventory
                 _cape = value;
                 TakeOnItem(_cape);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _cape, 7);
+                RaiseEquipmentChanged(7);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 7", _ownerId);
             }
         }
 
@@ -398,9 +390,8 @@ namespace Imgeneus.World.Game.Inventory
                 _amulet = value;
                 TakeOnItem(_amulet);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _amulet, 8);
+                RaiseEquipmentChanged(8);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 8", _ownerId);
             }
         }
 
@@ -414,9 +405,8 @@ namespace Imgeneus.World.Game.Inventory
                 _ring1 = value;
                 TakeOnItem(_ring1);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _ring1, 9);
+                RaiseEquipmentChanged(9);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 9", _ownerId);
             }
         }
 
@@ -430,9 +420,8 @@ namespace Imgeneus.World.Game.Inventory
                 _ring2 = value;
                 TakeOnItem(_ring2);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _ring2, 10);
+                RaiseEquipmentChanged(10);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 10", _ownerId);
             }
         }
 
@@ -446,9 +435,8 @@ namespace Imgeneus.World.Game.Inventory
                 _bracelet1 = value;
                 TakeOnItem(_bracelet1);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _bracelet1, 11);
+                RaiseEquipmentChanged(11);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 11", _ownerId);
             }
         }
 
@@ -462,9 +450,8 @@ namespace Imgeneus.World.Game.Inventory
                 _bracelet2 = value;
                 TakeOnItem(_bracelet2);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _bracelet2, 12);
+                RaiseEquipmentChanged(12);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 12", _ownerId);
             }
         }
 
@@ -487,9 +474,8 @@ namespace Imgeneus.World.Game.Inventory
 
                 TakeOnItem(_mount);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _mount, 13);
+                RaiseEquipmentChanged(13);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 13", _ownerId);
             }
         }
 
@@ -503,9 +489,8 @@ namespace Imgeneus.World.Game.Inventory
                 _pet = value;
                 TakeOnItem(_pet);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _pet, 14);
+                RaiseEquipmentChanged(14);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 14", _ownerId);
             }
         }
 
@@ -519,9 +504,8 @@ namespace Imgeneus.World.Game.Inventory
                 _costume = value;
                 TakeOnItem(_costume);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _costume, 15);
+                RaiseEquipmentChanged(15);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 15", _ownerId);
             }
         }
 
@@ -535,9 +519,8 @@ namespace Imgeneus.World.Game.Inventory
                 _wings = value;
                 TakeOnItem(_wings);
 
-                OnEquipmentChanged?.Invoke(_ownerId, _wings, 16);
+                RaiseEquipmentChanged(16);
                 _statsManager.RaiseAdditionalStatsUpdate();
-                _logger.LogDebug("Character {characterId} changed equipment on slot 16", _ownerId);
             }
         }
 
@@ -607,6 +590,82 @@ namespace Imgeneus.World.Game.Inventory
 
             if (item != Mount)
                 _speedManager.ExtraMoveSpeed += item.MoveSpeed;
+        }
+
+        public void RaiseEquipmentChanged(byte slot)
+        {
+            switch (slot)
+            {
+                case 0:
+                    OnEquipmentChanged?.Invoke(_ownerId, _helmet, slot);
+                    break;
+
+                case 1:
+                    OnEquipmentChanged?.Invoke(_ownerId, _armor, slot);
+                    break;
+
+                case 2:
+                    OnEquipmentChanged?.Invoke(_ownerId, _pants, slot);
+                    break;
+
+                case 3:
+                    OnEquipmentChanged?.Invoke(_ownerId, _gauntlet, slot);
+                    break;
+
+                case 4:
+                    OnEquipmentChanged?.Invoke(_ownerId, _boots, slot);
+                    break;
+
+                case 5:
+                    OnEquipmentChanged?.Invoke(_ownerId, _weapon, slot);
+                    break;
+
+                case 6:
+                    OnEquipmentChanged?.Invoke(_ownerId, _shield, slot);
+                    break;
+
+                case 7:
+                    OnEquipmentChanged?.Invoke(_ownerId, _cape, slot);
+                    break;
+
+                case 8:
+                    OnEquipmentChanged?.Invoke(_ownerId, _amulet, slot);
+                    break;
+
+                case 9:
+                    OnEquipmentChanged?.Invoke(_ownerId, _ring1, slot);
+                    break;
+
+                case 10:
+                    OnEquipmentChanged?.Invoke(_ownerId, _ring2, slot);
+                    break;
+
+                case 11:
+                    OnEquipmentChanged?.Invoke(_ownerId, _bracelet1, slot);
+                    break;
+
+                case 12:
+                    OnEquipmentChanged?.Invoke(_ownerId, _bracelet2, slot);
+                    break;
+
+                case 13:
+                    OnEquipmentChanged?.Invoke(_ownerId, _mount, slot);
+                    break;
+
+                case 14:
+                    OnEquipmentChanged?.Invoke(_ownerId, _pet, slot);
+                    break;
+
+                case 15:
+                    OnEquipmentChanged?.Invoke(_ownerId, _costume, slot);
+                    break;
+
+                case 16:
+                    OnEquipmentChanged?.Invoke(_ownerId, _wings, slot);
+                    break;
+            }
+
+            _logger.LogDebug("Character {characterId} changed equipment on slot {slot}", _ownerId, slot);
         }
 
         #endregion

@@ -875,54 +875,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendSelectDyeItem(IWorldClient client, bool success)
-        {
-            using var packet = new ImgeneusPacket(PacketType.DYE_SELECT_ITEM);
-            packet.Write(success);
-            client.Send(packet);
-        }
-
-        internal void SendDyeColors(IWorldClient client, IEnumerable<DyeColor> availableColors)
-        {
-            using var packet = new ImgeneusPacket(PacketType.DYE_REROLL);
-            foreach (var color in availableColors)
-            {
-                packet.Write(color.IsEnabled);
-                packet.Write(color.Alpha);
-                packet.Write(color.Saturation);
-                packet.Write(color.R);
-                packet.Write(color.G);
-                packet.Write(color.B);
-
-                for (var i = 0; i < 21; i++)
-                    packet.WriteByte(0); // unknown bytes.
-            }
-            client.Send(packet);
-        }
-
-        internal void SendDyeConfirm(IWorldClient client, bool success, DyeColor color)
-        {
-            using var packet = new ImgeneusPacket(PacketType.DYE_CONFIRM);
-            packet.Write(success);
-            if (success)
-            {
-                packet.Write(color.Alpha);
-                packet.Write(color.Saturation);
-                packet.Write(color.R);
-                packet.Write(color.G);
-                packet.Write(color.B);
-            }
-            else
-            {
-                packet.WriteByte(0);
-                packet.WriteByte(0);
-                packet.WriteByte(0);
-                packet.WriteByte(0);
-                packet.WriteByte(0);
-            }
-            client.Send(packet);
-        }
-
         internal void SendAbsoluteComposition(IWorldClient client, bool isFailure, string craftName)
         {
             using var packet = new ImgeneusPacket(PacketType.ITEM_COMPOSE_ABSOLUTE);

@@ -21,6 +21,11 @@ namespace Imgeneus.World.Game.Inventory
         event Action<int, Item, byte> OnEquipmentChanged;
 
         /// <summary>
+        /// Fires <see cref="OnEquipmentChanged"/>
+        /// </summary>
+        void RaiseEquipmentChanged(byte slot);
+
+        /// <summary>
         /// Worm helmet.
         /// </summary>
         Item Helmet { get; set; }

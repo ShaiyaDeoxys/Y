@@ -80,13 +80,13 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
         public bool[] EquipmentItemHasColor = new bool[17];
 
         [FieldOrder(23)]
-        public int UnknownInt = 0;
+        public byte[] UnknownBytes1 = new byte[3];
 
         [FieldOrder(24)]
         public DyeColorSerialized[] Colors = new DyeColorSerialized[17];
 
         [FieldOrder(25)]
-        public byte[] UnknownBytes = new byte[445];
+        public byte[] UnknownBytes = new byte[446];
 
         [FieldOrder(26)]
         public byte[] CloakInfo = new byte[6];
@@ -136,7 +136,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
                     EquipmentItemsTypeId[i] = item.TypeId;
                     EquipmentItemHasColor[i] = item.HasDyeColor;
                     if (item.HasDyeColor)
-                        Colors[i] = new DyeColorSerialized(item.DyeColorSaturation, item.DyeColorR, item.DyeColorG, item.DyeColorB);
+                        Colors[i] = new DyeColorSerialized(item.DyeColorAlpha, item.DyeColorR, item.DyeColorG, item.DyeColorB, item.DyeColorSaturation);
                     else
                         Colors[i] = new DyeColorSerialized();
                 }

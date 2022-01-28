@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
@@ -82,6 +83,14 @@ namespace Imgeneus.World.Packets
         void SendAddGem(IWorldClient client, bool success, Item gem, Item item, byte slot, uint gold, Item hammer);
         void SendGemRemovePossibility(IWorldClient client, double rate, int gold);
         void SendRemoveGem(IWorldClient client, bool success, Item item, byte slot, List<Item> savedGems, uint gold);
+        #endregion
+
+        #region Dyeing
+
+        void SendSelectDyeItem(IWorldClient client, bool success);
+        void SendDyeColors(IWorldClient client, IEnumerable<DyeColor> availableColors);
+        void SendDyeConfirm(IWorldClient client, bool ok, DyeColor color);
+
         #endregion
 
         #region GM

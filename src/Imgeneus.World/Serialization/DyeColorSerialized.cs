@@ -5,7 +5,7 @@ namespace Imgeneus.World.Serialization
     public class DyeColorSerialized
     {
         [FieldOrder(0)]
-        public byte Saturation;
+        public byte Alpha;
 
         [FieldOrder(1)]
         public byte R;
@@ -18,16 +18,21 @@ namespace Imgeneus.World.Serialization
 
         public DyeColorSerialized()
         {
-            Saturation = 0;
+            Alpha = 0;
             R = 0;
             G = 0;
             B = 0;
         }
 
-        public DyeColorSerialized(byte s, byte r, byte g, byte b)
+        public DyeColorSerialized(byte a, byte r, byte g, byte b, byte s = 0)
         {
-            Saturation = s;
+            Alpha = a;
             R = r;
+
+#if SHAIYA_US || DEBUG
+            if (r < 20) // Pay attention in shaiya us there is bug, that saturation is saved as red color.
+                r = s;
+#endif
             G = g;
             B = b;
         }

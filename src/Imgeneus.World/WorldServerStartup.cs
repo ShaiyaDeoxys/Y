@@ -120,11 +120,11 @@ namespace Imgeneus.World
             services.AddScoped<IAdditionalInfoManager, AdditionalInfoManager>();
             services.AddScoped<IMapProvider, MapProvider>();
             services.AddScoped<ITeleportationManager, TeleportationManager>();
+            services.AddScoped<IDyeingManager, DyeingManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
             
-            services.AddTransient<IDyeingManager, DyeingManager>();
             services.AddTransient<IGuildManager, GuildManager>();
             services.AddTransient<ITimeService, TimeService>();
 
