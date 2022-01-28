@@ -1,24 +1,24 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using System.Text;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMNoticePlayerPacket : IDeserializedPacket
+    public record GMNoticePlayerPacket : IPacketDeserializer
     {
-        public string TargetName;
-        public short TimeInterval;
-        public string Message;
+        public string TargetName { get; private set; }
+        public short TimeInterval { get; private set; }
+        public string Message { get; private set; }
 
-        public GMNoticePlayerPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            TargetName = packet.ReadString(21);
-            TimeInterval = packet.Read<short>();
-            var messageLength = packet.Read<byte>();
+            TargetName = packetStream.ReadString(21);
+            TimeInterval = packetStream.Read<short>();
+            var messageLength = packetStream.Read<byte>();
             // Message always ends with an empty character
 #if EP8_V2
-            Message = packet.ReadString(messageLength, Encoding.Unicode);
+            Message = packetStream.ReadString(messageLength, Encoding.Unicode);
 #else
-            Message = packet.ReadString(messageLength);
+            Message = packetStream.ReadString(messageLength);
 #endif
         }
     }

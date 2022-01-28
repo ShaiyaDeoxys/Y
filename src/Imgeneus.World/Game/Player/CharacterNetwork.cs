@@ -303,34 +303,7 @@ namespace Imgeneus.World.Game.Player
 
                 case GuildEtinReturnPacket guildEtinReturnPacket:
                     HandleEtinReturn();
-                    break;
-
-                case GMNoticeWorldPacket gmNoticeWorldPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    _noticeManager.SendWorldNotice(gmNoticeWorldPacket.Message, gmNoticeWorldPacket.TimeInterval);
-                    _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
-
-                case GMNoticePlayerPacket gmNoticePlayerPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    if (_noticeManager.TrySendPlayerNotice(gmNoticePlayerPacket.Message, gmNoticePlayerPacket.TargetName,
-                        gmNoticePlayerPacket.TimeInterval))
-                        _packetsHelper.SendGmCommandSuccess(Client);
-                    else
-                        _packetsHelper.SendGmCommandError(Client, PacketType.NOTICE_PLAYER);
-                    break;
-
-                case GMNoticeFactionPacket gmNoticeFactionPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    _noticeManager.SendFactionNotice(gmNoticeFactionPacket.Message, this.Country, gmNoticeFactionPacket.TimeInterval);
-                    _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
+                    break;                    
 
                 case GMNoticeMapPacket gmNoticeMapPacket:
                     if (!IsAdmin)
@@ -338,21 +311,6 @@ namespace Imgeneus.World.Game.Player
 
                     _noticeManager.SendMapNotice(gmNoticeMapPacket.Message, this.MapId, gmNoticeMapPacket.TimeInterval);
                     _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
-
-                case GMNoticeAdminsPacket gmNoticeAdminsPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    _noticeManager.SendAdminNotice(gmNoticeAdminsPacket.Message);
-                    _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
-
-                case GMWarningPacket gmWarningPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    HandleGMWarningPlayer(gmWarningPacket);
                     break;
 
                 case GMTeleportPlayerPacket gmTeleportPlayerPacket:
