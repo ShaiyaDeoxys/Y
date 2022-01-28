@@ -305,13 +305,6 @@ namespace Imgeneus.World.Game.Player
                     HandleEtinReturn();
                     break;
 
-                case GMCreateMobPacket gMCreateMobPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    HandleGMCreateMob(gMCreateMobPacket);
-                    break;
-
                 case GMNoticeWorldPacket gmNoticeWorldPacket:
                     if (!IsAdmin)
                         return;

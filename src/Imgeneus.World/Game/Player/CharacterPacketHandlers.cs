@@ -387,31 +387,6 @@ namespace Imgeneus.World.Game.Player
             TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
 
-        private void HandleGMCreateMob(GMCreateMobPacket gmCreateMobPacket)
-        {
-            if (!_databasePreloader.Mobs.ContainsKey(gmCreateMobPacket.MobId))
-            {
-#if SHAIYA_US
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_SHAIYA_US_CREATE_MOB);
-#else
-                _packetsHelper.SendGmCommandError(Client, PacketType.GM_CREATE_MOB);
-#endif
-                return;
-            }
-
-            for (int i = 0; i < gmCreateMobPacket.NumberOfMobs; i++)
-            {
-                // TODO: calculate move area.
-                var moveArea = new MoveArea(PosX > 10 ? PosX - 10 : 1, PosX + 10, PosY > 10 ? PosY - 10 : PosY, PosY + 10, PosZ > 10 ? PosZ - 10 : 1, PosZ + 10);
-
-                var mob = _mobFactory.CreateMob(gmCreateMobPacket.MobId, false, moveArea, Map);
-
-                Map.AddMob(mob);
-            }
-
-            _packetsHelper.SendGmCommandSuccess(Client);
-        }
-
         private void HandleGMCurePlayerPacket(GMCurePlayerPacket gmCurePlayerPacket)
         {
             var target = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == gmCurePlayerPacket.Name).Value;

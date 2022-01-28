@@ -56,8 +56,6 @@ namespace Imgeneus.World.Game.Player
         private readonly IChatManager _chatManager;
         private readonly ILinkingManager _linkingManager;
         private readonly IDyeingManager _dyeingManager;
-        private readonly IMobFactory _mobFactory;
-        private readonly INpcFactory _npcFactory;
         private readonly INoticeManager _noticeManager;
         private readonly IGuildManager _guildManager;
         private readonly IGameSession _gameSession;
@@ -92,8 +90,6 @@ namespace Imgeneus.World.Game.Player
                                 IChatManager chatManager,
                                 ILinkingManager linkingManager,
                                 IDyeingManager dyeingManager,
-                                IMobFactory mobFactory,
-                                INpcFactory npcFactory,
                                 INoticeManager noticeManager,
                                 IGuildManager guildManager,
                                 IGameSession gameSession,
@@ -128,8 +124,6 @@ namespace Imgeneus.World.Game.Player
             _chatManager = chatManager;
             _linkingManager = linkingManager;
             _dyeingManager = dyeingManager;
-            _mobFactory = mobFactory;
-            _npcFactory = npcFactory;
             _noticeManager = noticeManager;
             _guildManager = guildManager;
             _gameSession = gameSession;
@@ -242,8 +236,6 @@ namespace Imgeneus.World.Game.Player
                                         _chatManager,
                                         _linkingManager,
                                         _dyeingManager,
-                                        _mobFactory,
-                                        _npcFactory,
                                         _noticeManager,
                                         _guildManager,
                                         _stealthManager,
