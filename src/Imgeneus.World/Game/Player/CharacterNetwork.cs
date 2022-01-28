@@ -103,16 +103,8 @@ namespace Imgeneus.World.Game.Player
                     HandleCharacterShape(characterShapePacket.CharacterId);
                     break;
 
-                case CharacterEnteredPortalPacket enterPortalPacket:
-                    HandleEnterPortalPacket(enterPortalPacket);
-                    break;
-
                 case CharacterTeleportViaNpcPacket teleportViaNpcPacket:
                     HandleTeleportViaNpc(teleportViaNpcPacket);
-                    break;
-
-                case UseItemPacket useItemPacket:
-                    TryUseItem(useItemPacket.Bag, useItemPacket.Slot);
                     break;
 
                 case UseItem2Packet useItem2Packet:
@@ -237,24 +229,12 @@ namespace Imgeneus.World.Game.Player
                     HandleUseVehicle2Packet();
                     break;
 
-                case DyeRerollPacket dyeRerollPacket:
-                    HandleDyeReroll();
-                    break;
-
-                case DyeConfirmPacket dyeConfirmPacket:
-                    HandleDyeConfirm(dyeConfirmPacket.DyeItemBag, dyeConfirmPacket.DyeItemSlot, dyeConfirmPacket.TargetItemBag, dyeConfirmPacket.TargetItemSlot);
-                    break;
-
                 case ItemComposeAbsolutePacket itemComposeAbsolutePacket:
                     HandleAbsoluteCompose(itemComposeAbsolutePacket.RuneBag, itemComposeAbsolutePacket.RuneSlot, itemComposeAbsolutePacket.ItemBag, itemComposeAbsolutePacket.ItemSlot);
                     break;
 
                 case ItemComposePacket itemComposePacket:
                     HandleItemComposePacket(itemComposePacket.RuneBag, itemComposePacket.RuneSlot, itemComposePacket.ItemBag, itemComposePacket.ItemSlot);
-                    break;
-
-                case UpdateStatsPacket updateStatsPacket:
-                    HandleUpdateStats(updateStatsPacket.Str, updateStatsPacket.Dex, updateStatsPacket.Rec, updateStatsPacket.Int, updateStatsPacket.Wis, updateStatsPacket.Luc);
                     break;
 
                 case GuildCreatePacket guildCreatePacket:
