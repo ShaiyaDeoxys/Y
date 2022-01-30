@@ -23,6 +23,7 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Notice;
 using Imgeneus.World.Game.NPCs;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
@@ -121,6 +122,7 @@ namespace Imgeneus.World
             services.AddScoped<IMapProvider, MapProvider>();
             services.AddScoped<ITeleportationManager, TeleportationManager>();
             services.AddScoped<IDyeingManager, DyeingManager>();
+            services.AddScoped<IPartyManager, PartyManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

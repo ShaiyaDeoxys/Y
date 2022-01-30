@@ -75,11 +75,6 @@ namespace Imgeneus.World.Game.Player
         }
 
         /// <summary>
-        /// Id of character, that invites to the party.
-        /// </summary>
-        public int PartyInviterId;
-
-        /// <summary>
         /// Bool indicator, shows if player is in party/raid.
         /// </summary>
         public bool HasParty { get => Party != null; }

@@ -93,6 +93,12 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Party
+
+        void SendPartyRequest(IWorldClient client, int requesterId);
+
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

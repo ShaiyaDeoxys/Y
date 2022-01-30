@@ -615,6 +615,17 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Party
+
+        public void SendPartyRequest(IWorldClient client, int requesterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_REQUEST);
+            packet.Write(requesterId);
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {

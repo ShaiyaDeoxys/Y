@@ -1,32 +1,32 @@
 ﻿using Imgeneus.Network.Data;
 using Imgeneus.Network.Packets;
-using Imgeneus.Network.Packets.Game;
-using Imgeneus.Network.Server;
-using Imgeneus.World.Game.Player;
-using System;
-using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Imgeneus.World.Game.PartyAndRaid
 {
     /// <summary>
     /// Party manager handles all party packets.
     /// </summary>
-    public class PartyManager : IDisposable
+    public class PartyManager : IPartyManager
     {
+        private readonly ILogger<PartyManager> _logger;
         private readonly IGameWorld _gameWorld;
-        private readonly Character _player;
 
-        public PartyManager(IGameWorld gameWorld, Character player)
+        public PartyManager(ILogger<PartyManager> logger, IGameWorld gameWorld)
         {
+            _logger = logger;
             _gameWorld = gameWorld;
-            _player = player;
-            //_player.Client.OnPacketArrived += Client_OnPacketArrived;
+#if DEBUG
+            _logger.LogDebug("PartyManager {hashcode} created", GetHashCode());
+#endif
         }
 
-        public void Dispose()
+#if DEBUG
+        ~PartyManager()
         {
-            //_player.Client.OnPacketArrived -= Client_OnPacketArrived;
+            _logger.LogDebug("PartyManager {hashcode} collected by GC", GetHashCode());
         }
+#endif
 
         /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
@@ -34,10 +34,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             switch (packet)
             {
-                case PartyRequestPacket partyRequestPacket:
-                    RequestParty(worldSender.CharID, partyRequestPacket.CharacterId);
-                    break;
-
                 case PartyResponsePacket responsePartyPacket:
                     if (_gameWorld.Players.TryGetValue(responsePartyPacket.CharacterId, out var partyResponser))
                     {
@@ -204,27 +200,17 @@ namespace Imgeneus.World.Game.PartyAndRaid
             }
         }*/
 
-        private void RequestParty(int requesterId, int requestedId)
-        {
-            if (_gameWorld.Players.TryGetValue(requestedId, out var requestedPlayer))
-            {
-                requestedPlayer.PartyInviterId = requesterId;
-                SendPartyRequest(requestedPlayer.Client, requesterId);
-            }
-        }
+        #region Party creation
+
+        public int InviterId { get; set; }
+
+        #endregion
 
         private void SendPartyError(IWorldClient client, PartyErrorType partyError, int id = 0)
         {
             using var packet = new Packet(PacketType.RAID_PARTY_ERROR);
             packet.Write((int)partyError);
             packet.Write(id);
-            //client.SendPacket(packet);
-        }
-
-        private void SendPartyRequest(IWorldClient client, int requesterId)
-        {
-            using var packet = new Packet(PacketType.PARTY_REQUEST);
-            packet.Write(requesterId);
             //client.SendPacket(packet);
         }
 

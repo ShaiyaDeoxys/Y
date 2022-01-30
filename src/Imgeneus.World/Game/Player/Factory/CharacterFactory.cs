@@ -33,6 +33,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Teleport;
+using Imgeneus.World.Game.PartyAndRaid;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -71,6 +72,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IMapProvider _mapProvider;
         private readonly ITeleportationManager _teleportationManager;
+        private readonly IPartyManager _partyManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -104,7 +106,8 @@ namespace Imgeneus.World.Game.Player
                                 IMovementManager movementManager,
                                 IAdditionalInfoManager additionalInfoManager,
                                 IMapProvider mapProvider,
-                                ITeleportationManager teleportationManager)
+                                ITeleportationManager teleportationManager,
+                                IPartyManager partyManager)
         {
             _logger = logger;
             _database = database;
@@ -139,6 +142,7 @@ namespace Imgeneus.World.Game.Player
             _additionalInfoManager = additionalInfoManager;
             _mapProvider = mapProvider;
             _teleportationManager = teleportationManager;
+            _partyManager = partyManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -249,6 +253,7 @@ namespace Imgeneus.World.Game.Player
                                         _movementManager,
                                         _mapProvider,
                                         _teleportationManager,
+                                        _partyManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.

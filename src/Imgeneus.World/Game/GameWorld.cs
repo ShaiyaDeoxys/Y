@@ -305,19 +305,10 @@ namespace Imgeneus.World.Game
         /// <inheritdoc />
         public ConcurrentDictionary<int, Character> Players { get; private set; } = new ConcurrentDictionary<int, Character>();
 
-        public ConcurrentDictionary<int, TradeManager> TradeManagers { get; private set; } = new ConcurrentDictionary<int, TradeManager>();
-
-        public ConcurrentDictionary<int, PartyManager> PartyManagers { get; private set; } = new ConcurrentDictionary<int, PartyManager>();
-
-        public ConcurrentDictionary<int, DuelManager> DuelManagers { get; private set; } = new ConcurrentDictionary<int, DuelManager>();
-
         /// <inheritdoc />
         public bool TryLoadPlayer(Character newPlayer)
         {
             var result = Players.TryAdd(newPlayer.Id, newPlayer);
-            //TradeManagers.TryAdd(newPlayer.Id, new TradeManager(this, newPlayer));
-            //PartyManagers.TryAdd(newPlayer.Id, new PartyManager(this, newPlayer));
-            //DuelManagers.TryAdd(newPlayer.Id, new DuelManager(this, newPlayer));
 
             if(result)
                 _logger.LogDebug("Player {id} connected to game world", newPlayer.Id);
@@ -426,15 +417,6 @@ namespace Imgeneus.World.Game
             if (Players.TryRemove(characterId, out player))
             {
                 _logger.LogDebug("Player {characterId} left game world", characterId);
-
-                /*TradeManagers.TryRemove(characterId, out var tradeManager);
-                tradeManager.Dispose();
-
-                PartyManagers.TryRemove(characterId, out var partyManager);
-                partyManager.Dispose();
-
-                DuelManagers.TryRemove(characterId, out var duelManager);
-                duelManager.Dispose();*/
 
                 IMap map = null;
 
