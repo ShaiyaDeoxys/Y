@@ -103,6 +103,15 @@ namespace Imgeneus.World.Packets
         void SendPartyKickMember(IWorldClient client, Character character);
         void SendRegisteredInPartySearch(IWorldClient client, bool isSuccess);
         void SendPartySearchList(IWorldClient client, IEnumerable<Character> partySearchers);
+        void SendNewPartyLeader(IWorldClient client, Character character);
+        void SendAddPartyBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel);
+        void SendRemovePartyBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel);
+        void SendPartySingle_HP_SP_MP(IWorldClient client, int id, int value, byte type);
+        void SendPartySingle_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type);
+        void SendParty_HP_SP_MP(IWorldClient client, Character partyMember);
+        void SendParty_Max_HP_SP_MP(IWorldClient client, Character partyMember);
+        void SendPartyMemberGetItem(IWorldClient client, int characterId, Item item);
+        void SendPartyLevel(IWorldClient client, Character sender);
         #endregion
 
         #region Raid

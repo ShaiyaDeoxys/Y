@@ -675,6 +675,78 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendNewPartyLeader(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_CHANGE_LEADER);
+            packet.Write(character.Id);
+            client.Send(packet);
+        }
+
+        public void SendAddPartyBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_ADDED_BUFF);
+            packet.Write(senderId);
+            packet.Write(skillId);
+            packet.Write(skillLevel);
+            client.Send(packet);
+        }
+
+        public void SendRemovePartyBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_REMOVED_BUFF);
+            packet.Write(senderId);
+            packet.Write(skillId);
+            packet.Write(skillLevel);
+            client.Send(packet);
+        }
+
+        public void SendPartySingle_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_CHARACTER_SP_MP);
+            packet.Write(id);
+            packet.Write(type);
+            packet.Write(value);
+            client.Send(packet);
+        }
+
+        public void SendPartySingle_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_SET_MAX);
+            packet.Write(id);
+            packet.Write(type);
+            packet.Write(value);
+            client.Send(packet);
+        }
+
+        public void SendParty_HP_SP_MP(IWorldClient client, Character partyMember)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_HP_SP_MP);
+            packet.Write(new PartyMember_HP_SP_MP(partyMember).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendParty_Max_HP_SP_MP(IWorldClient client, Character partyMember)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_MAX_HP_SP_MP);
+            packet.Write(new PartyMemberMax_HP_SP_MP(partyMember).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendPartyMemberGetItem(IWorldClient client, int characterId, Item item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_GET_ITEM);
+            packet.Write(characterId);
+            packet.Write(item.Type);
+            packet.Write(item.TypeId);
+            client.Send(packet);
+        }
+
+        public void SendPartyLevel(IWorldClient client, Character sender)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_LEVEL);
+            packet.Write(new PartyMemberLevelChange(sender).Serialize());
+            client.Send(packet);
+        }
         #endregion
 
         #region Raid
