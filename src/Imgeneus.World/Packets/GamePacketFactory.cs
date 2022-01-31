@@ -747,6 +747,14 @@ namespace Imgeneus.World.Packets
             packet.Write(new PartyMemberLevelChange(sender).Serialize());
             client.Send(packet);
         }
+
+        public void SendPartyError(IWorldClient client, PartyErrorType partyError, int id = 0)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_PARTY_ERROR);
+            packet.Write((int)partyError);
+            packet.Write(id);
+            client.Send(packet);
+        }
         #endregion
 
         #region Raid
@@ -759,6 +767,12 @@ namespace Imgeneus.World.Packets
             packet.Write((int)raid.DropType);
             packet.Write(raid.GetIndex(raid.Leader));
             packet.Write(raid.GetIndex(raid.SubLeader));
+            client.Send(packet);
+        }
+
+        public void SendRaidDismantle(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_DISMANTLE);
             client.Send(packet);
         }
 

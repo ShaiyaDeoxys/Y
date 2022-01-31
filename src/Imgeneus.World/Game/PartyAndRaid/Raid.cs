@@ -400,7 +400,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 foreach (var m in members)
                 {
                     m.PartyManager.Party = null;
-                    SendRaidDismantle(m.Client);
+                    _packetFactory.SendRaidDismantle(m.GameSession.Client);
                 }
             }
         }
@@ -472,12 +472,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_ENTER);
             packet.Write(new RaidMember(character, (ushort)GetIndex(character)).Serialize());
-            client.Send(packet);
-        }
-
-        private void SendRaidDismantle(IWorldClient client)
-        {
-            using var packet = new ImgeneusPacket(PacketType.RAID_DISMANTLE);
             client.Send(packet);
         }
 

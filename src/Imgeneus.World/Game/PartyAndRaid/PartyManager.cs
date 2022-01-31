@@ -56,12 +56,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             switch (packet)
             {
-                case RaidDismantlePacket raidDismantlePacket:
-                    if (!_player.IsPartyLead || !(_player.Party is Raid))
-                        return;
-                    _player.Party.Dismantle();
-                    break;
-
                 case RaidLeavePacket raidLeavePacket:
                     _player.SetParty(null);
                     break;
@@ -212,13 +206,5 @@ namespace Imgeneus.World.Game.PartyAndRaid
         public bool IsPartySubLeader { get => Party != null && Party.SubLeader == Player; }
 
         #endregion
-
-        private void SendPartyError(IWorldClient client, PartyErrorType partyError, int id = 0)
-        {
-            using var packet = new Packet(PacketType.RAID_PARTY_ERROR);
-            packet.Write((int)partyError);
-            packet.Write(id);
-            //client.SendPacket(packet);
-        }
     }
 }
