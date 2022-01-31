@@ -56,22 +56,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             switch (packet)
             {
-                case RaidCreatePacket raidCreatePacket:
-                    if (!_player.IsPartyLead)
-                        return;
-                    var raid = new Raid(raidCreatePacket.AutoJoin, (RaidDropType)raidCreatePacket.DropType);
-                    var members = _player.Party.Members.ToList();
-                    foreach (var member in members)
-                    {
-                        member.SetParty(raid, true);
-                    }
-                    raid.Leader = _player;
-                    foreach (var m in members)
-                    {
-                        SendRaidCreated(m.Client, raid);
-                    }
-                    break;
-
                 case RaidDismantlePacket raidDismantlePacket:
                     if (!_player.IsPartyLead || !(_player.Party is Raid))
                         return;
@@ -234,17 +218,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
             using var packet = new Packet(PacketType.RAID_PARTY_ERROR);
             packet.Write((int)partyError);
             packet.Write(id);
-            //client.SendPacket(packet);
-        }
-
-        private void SendRaidCreated(IWorldClient client, Raid raid)
-        {
-            using var packet = new Packet(PacketType.RAID_CREATE);
-            packet.Write(true); // raid type ?
-            packet.Write(raid.AutoJoin);
-            packet.Write((int)raid.DropType);
-            packet.Write(raid.GetIndex(raid.Leader));
-            packet.Write(raid.GetIndex(raid.SubLeader));
             //client.SendPacket(packet);
         }
     }

@@ -27,6 +27,7 @@ using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Dyeing;
+using Imgeneus.World.Game.PartyAndRaid;
 
 namespace Imgeneus.World.Packets
 {
@@ -671,6 +672,21 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_SEARCH_LIST);
             packet.Write(new PartySearchList(partySearchers).Serialize());
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Raid
+
+        public void SendRaidCreated(IWorldClient client, Raid raid)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_CREATE);
+            packet.Write(true); // raid type ?
+            packet.Write(raid.AutoJoin);
+            packet.Write((int)raid.DropType);
+            packet.Write(raid.GetIndex(raid.Leader));
+            packet.Write(raid.GetIndex(raid.SubLeader));
             client.Send(packet);
         }
 

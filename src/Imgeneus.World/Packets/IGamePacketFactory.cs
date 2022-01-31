@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
@@ -94,7 +95,6 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Party
-
         void SendPartyRequest(IWorldClient client, int requesterId);
         void SendDeclineParty(IWorldClient client, int charId);
         void SendPartyInfo(IWorldClient client, IEnumerable<Character> partyMembers, byte leaderIndex);
@@ -103,6 +103,10 @@ namespace Imgeneus.World.Packets
         void SendPartyKickMember(IWorldClient client, Character character);
         void SendRegisteredInPartySearch(IWorldClient client, bool isSuccess);
         void SendPartySearchList(IWorldClient client, IEnumerable<Character> partySearchers);
+        #endregion
+
+        #region Raid
+        void SendRaidCreated(IWorldClient client, Raid raid);
         #endregion
 
         #region GM
