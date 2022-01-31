@@ -56,15 +56,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             switch (packet)
             {
-                case PartyChangeLeaderPacket changeLeaderPacket:
-                    if (!_player.IsPartyLead)
-                        return;
-
-                    var newLeader = _player.Party.Members.FirstOrDefault(m => m.Id == changeLeaderPacket.CharacterId);
-                    if (newLeader != null)
-                        _player.Party.Leader = newLeader;
-                    break;
-
                 case PartySearchInvitePacket partySearchInvitePacket:
                     var requestedPlayer = _player.Map.PartySearchers.FirstOrDefault(p => p.Name == partySearchInvitePacket.Name);
                     if (requestedPlayer != null && requestedPlayer.Party is null)
