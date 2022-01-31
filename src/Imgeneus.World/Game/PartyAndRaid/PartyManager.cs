@@ -56,10 +56,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             switch (packet)
             {
-                case RaidLeavePacket raidLeavePacket:
-                    _player.SetParty(null);
-                    break;
-
                 case RaidChangeAutoInvitePacket raidChangeAutoInvitePacket:
                     if (!_player.IsPartyLead || !(_player.Party is Raid))
                         return;
