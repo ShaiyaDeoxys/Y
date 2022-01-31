@@ -116,19 +116,6 @@ namespace Imgeneus.World.Game.Player
             character.RequestFriendship(this);
         }
 
-        private void HandleSearchParty()
-        {
-            if (PartyManager.Party != null)
-                return;
-
-            Map.RegisterSearchForParty(this);
-            _packetsHelper.SendRegisteredInPartySearch(Client, true);
-
-            var searchers = Map.PartySearchers.Where(s => s.CountryProvider.Country == CountryProvider.Country && s != this);
-            if (searchers.Any())
-                _packetsHelper.SendPartySearchList(Client, searchers.Take(30));
-        }
-
         private void HandleAbsoluteCompose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot)
         {
             InventoryManager.InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);

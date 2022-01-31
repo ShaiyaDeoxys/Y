@@ -56,12 +56,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             switch (packet)
             {
-                case PartySearchInvitePacket partySearchInvitePacket:
-                    var requestedPlayer = _player.Map.PartySearchers.FirstOrDefault(p => p.Name == partySearchInvitePacket.Name);
-                    if (requestedPlayer != null && requestedPlayer.Party is null)
-                        RequestParty(worldSender.CharID, requestedPlayer.Id);
-                    break;
-
                 case RaidCreatePacket raidCreatePacket:
                     if (!_player.IsPartyLead)
                         return;

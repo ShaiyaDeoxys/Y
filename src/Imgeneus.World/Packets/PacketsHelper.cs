@@ -783,20 +783,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendRegisteredInPartySearch(IWorldClient client, bool isSuccess)
-        {
-            using var packet = new ImgeneusPacket(PacketType.PARTY_SEARCH_REGISTRATION);
-            packet.Write(isSuccess);
-            client.Send(packet);
-        }
-
-        internal void SendPartySearchList(IWorldClient client, IEnumerable<Character> partySearchers)
-        {
-            using var packet = new ImgeneusPacket(PacketType.PARTY_SEARCH_LIST);
-            packet.Write(new PartySearchList(partySearchers).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendGetEtin(IWorldClient client, int etin)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_GET_ETIN);

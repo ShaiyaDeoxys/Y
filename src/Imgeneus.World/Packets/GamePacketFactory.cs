@@ -660,6 +660,20 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendRegisteredInPartySearch(IWorldClient client, bool isSuccess)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_SEARCH_REGISTRATION);
+            packet.Write(isSuccess);
+            client.Send(packet);
+        }
+
+        public void SendPartySearchList(IWorldClient client, IEnumerable<Character> partySearchers)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_SEARCH_LIST);
+            packet.Write(new PartySearchList(partySearchers).Serialize());
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

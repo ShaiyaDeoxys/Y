@@ -389,7 +389,8 @@ namespace Imgeneus.World.Game.Zone
         {
             lock (_partySearchSync)
             {
-                PartySearchers.Add(character);
+                if (!PartySearchers.Contains(character))
+                    PartySearchers.Add(character);
             }
         }
 

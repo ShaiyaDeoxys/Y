@@ -213,10 +213,6 @@ namespace Imgeneus.World.Game.Player
                     Rebirth(rebirthCoordinate.MapId, rebirthCoordinate.X, rebirthCoordinate.Y, rebirthCoordinate.Z);
                     break;
 
-                case PartySearchRegistrationPacket searchPartyPacket:
-                    HandleSearchParty();
-                    break;
-
                 case VehicleRequestPacket vehicleRequestPacket:
                     HandleVehicleRequestPacket(vehicleRequestPacket.CharacterId);
                     break;

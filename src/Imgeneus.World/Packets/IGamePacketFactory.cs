@@ -101,7 +101,8 @@ namespace Imgeneus.World.Packets
         void SendPlayerJoinedParty(IWorldClient client, Character character);
         void SendPlayerLeftParty(IWorldClient client, Character character);
         void SendPartyKickMember(IWorldClient client, Character character);
-
+        void SendRegisteredInPartySearch(IWorldClient client, bool isSuccess);
+        void SendPartySearchList(IWorldClient client, IEnumerable<Character> partySearchers);
         #endregion
 
         #region GM
