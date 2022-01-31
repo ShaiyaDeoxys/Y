@@ -389,8 +389,8 @@ namespace Imgeneus.World.Game.Skills
 
                     case TargetType.PartyMembers:
                         var t = skillOwner as Character;
-                        if (t.Party != null)
-                            foreach (var member in t.Party.Members.Where(m => m.Map == t.Map && MathExtensions.Distance(t.PosX, m.PosX, t.PosZ, m.PosZ) < skill.ApplyRange).ToList())
+                        if (t.PartyManager.Party != null)
+                            foreach (var member in t.PartyManager.Party.Members.Where(m => m.Map == t.Map && MathExtensions.Distance(t.PosX, m.PosX, t.PosZ, m.PosZ) < skill.ApplyRange).ToList())
                                 targets.Add(member);
                         else
                             targets.Add(skillOwner as IKillable);

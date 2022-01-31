@@ -112,9 +112,9 @@ namespace Imgeneus.World.Serialization.EP_8_V2
                     EquipmentItemColor[i] = new DyeColorSerialized();
             }
 
-            if (character.HasParty)
+            if (character.PartyManager.HasParty)
             {
-                if (character.IsPartyLead)
+                if (character.PartyManager.IsPartyLead)
                 {
                     PartyDefinition = 2;
                 }

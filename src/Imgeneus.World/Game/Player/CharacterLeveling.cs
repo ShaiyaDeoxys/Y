@@ -262,13 +262,13 @@ namespace Imgeneus.World.Game.Player
         /// <param name="mobExp">Killed mob's experience</param>
         public void AddPartyMobExperience(ushort mobLevel, ushort mobExp)
         {
-            if (!HasParty)
+            if (!PartyManager.HasParty)
             {
                 _logger.LogWarning($"Attempted to add party exp to player {Id} who isn't a member of a party.");
                 return;
             }
 
-            var partyMemberCount = Party.Members.Count;
+            var partyMemberCount = PartyManager.Party.Members.Count;
 
             ushort memberExp = 0;
 
@@ -279,7 +279,7 @@ namespace Imgeneus.World.Game.Player
                 memberExp = (ushort)(mobExp / partyMemberCount);
 
             // Get party members who are near the player who got experience
-            var nearbyPartyMembers = Party.Members.Where(m => m.Map == Map &&
+            var nearbyPartyMembers = PartyManager.Party.Members.Where(m => m.Map == Map &&
                                                              MathExtensions.Distance(PosX, m.PosX, PosZ, m.PosZ) < 50);
 
             // Give experience to every party member

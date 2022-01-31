@@ -166,9 +166,6 @@ namespace Imgeneus.World.Game.Player
 
         public void Dispose()
         {
-            if (Party != null)
-                SetParty(null);
-
             StatsManager.OnAdditionalStatsUpdate -= SendAdditionalStats;
             StatsManager.OnResetStats -= SendResetStats;
             BuffsManager.OnBuffAdded -= OnBuffAdded;

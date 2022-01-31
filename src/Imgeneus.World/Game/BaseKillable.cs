@@ -127,13 +127,13 @@ namespace Imgeneus.World.Game
                     if (dropItems.Count > 0 && killer is Character)
                     {
                         var dropOwner = killer as Character;
-                        if (dropOwner.Party is null)
+                        if (dropOwner.PartyManager.Party is null)
                         {
                             AddItemsDropOnMap(dropItems, dropOwner);
                         }
                         else
                         {
-                            var notDistributedItems = dropOwner.Party.DistributeDrop(dropItems, dropOwner);
+                            var notDistributedItems = dropOwner.PartyManager.Party.DistributeDrop(dropItems, dropOwner);
                             AddItemsDropOnMap(notDistributedItems, dropOwner);
 
                         }
@@ -144,13 +144,13 @@ namespace Imgeneus.World.Game
                     {
                         var character = killer as Character;
                         var mob = this as Mob;
-                        if (character.Party is null)
+                        if (character.PartyManager.Party is null)
                         {
                             character.UpdateQuestMobCount(mob.MobId);
                         }
                         else
                         {
-                            foreach (var m in character.Party.Members)
+                            foreach (var m in character.PartyManager.Party.Members)
                             {
                                 if (m.MapProvider.Map == character.MapProvider.Map)
                                     m.UpdateQuestMobCount(mob.MobId);

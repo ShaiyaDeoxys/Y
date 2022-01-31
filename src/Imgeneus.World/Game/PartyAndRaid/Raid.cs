@@ -1,9 +1,9 @@
 ﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Network.Data;
 using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Packets;
 using Imgeneus.World.Serialization;
 using System;
 using System.Collections.Concurrent;
@@ -23,7 +23,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         protected override IList<Character> _members { get => _membersDict.Keys.ToList(); set => throw new NotImplementedException(); }
 
-        public Raid(bool autoJoin, RaidDropType dropType)
+        public Raid(bool autoJoin, RaidDropType dropType, IGamePacketFactory packetFactory) : base(packetFactory)
         {
             _autoJoin = autoJoin;
             _dropType = dropType;
@@ -399,7 +399,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 _membersDict.Clear();
                 foreach (var m in members)
                 {
-                    m.SetParty(null);
+                    m.PartyManager.Party = null;
                     SendRaidDismantle(m.Client);
                 }
             }
@@ -418,7 +418,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             {
                 var lastMember = Members[0];
                 _membersDict.Clear();
-                lastMember.SetParty(null);
+                lastMember.PartyManager.Party = null;
                 SendPlayerLeftRaid(lastMember.Client, lastMember);
                 CallAllMembersLeft();
             }

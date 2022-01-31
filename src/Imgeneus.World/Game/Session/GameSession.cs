@@ -71,6 +71,8 @@ namespace Imgeneus.World.Game.Session
 
         private async void LogoutTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            await Client.ClearSession(_quitGame);
+
             _gameWorld.RemovePlayer(CharId);
             CharId = 0;
             IsLoggingOff = false;
@@ -78,14 +80,11 @@ namespace Imgeneus.World.Game.Session
             if (_quitGame)
             {
                 _packetFactory.SendQuitGame(Client);
-                await Client.ClearSession(_quitGame);
             }
             else
             {
                 _packetFactory.SendLogout(Client);
                 (Client as WorldClient).CryptoManager.UseExpandedKey = false;
-
-                await Client.ClearSession(_quitGame);
 
                 _packetFactory.SendCharacterList(Client, await _selectionScreenManager.GetCharacters(Client.UserId));
                 _packetFactory.SendFaction(Client, await _selectionScreenManager.GetFaction(Client.UserId), await _selectionScreenManager.GetMaxMode(Client.UserId));

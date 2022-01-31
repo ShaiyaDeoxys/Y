@@ -624,6 +624,28 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendDeclineParty(IWorldClient client, int charId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_RESPONSE);
+            packet.Write(false);
+            packet.Write(charId);
+            client.Send(packet);
+        }
+
+        public void SendPartyInfo(IWorldClient client, IEnumerable<Character> partyMembers, byte leaderIndex)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_LIST);
+            packet.Write(new UsualParty(partyMembers, leaderIndex).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendPlayerJoinedParty(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_ENTER);
+            packet.Write(new PartyMember(character).Serialize());
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

@@ -118,7 +118,7 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleSearchParty()
         {
-            if (Party != null)
+            if (PartyManager.Party != null)
                 return;
 
             Map.RegisterSearchForParty(this);

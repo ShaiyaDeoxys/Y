@@ -2,6 +2,7 @@
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Packets;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,11 +15,14 @@ namespace Imgeneus.World.Game.PartyAndRaid
     /// </summary>
     public abstract class BaseParty : IParty
     {
+        protected readonly IGamePacketFactory _packetFactory;
+
         public Guid Id { get; private set; }
 
-        public BaseParty()
+        public BaseParty(IGamePacketFactory packetFactory)
         {
             Id = Guid.NewGuid();
+            _packetFactory = packetFactory;
         }
 
         #region Leader

@@ -49,9 +49,9 @@ namespace Imgeneus.World.Game.Chat
                     break;
 
                 case MessageType.Party:
-                    if (sender.Party != null)
+                    if (sender.PartyManager.Party != null)
                     {
-                        foreach (var player in sender.Party.Members.ToList())
+                        foreach (var player in sender.PartyManager.Party.Members.ToList())
                         {
                             SendParty(player, sender.Id, message);
                         }

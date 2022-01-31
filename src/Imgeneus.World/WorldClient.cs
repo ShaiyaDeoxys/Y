@@ -5,6 +5,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Kills;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Teleport;
@@ -58,6 +59,7 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<IKillsManager>().Clear());
             tasks.Add(x.GetService<ITeleportationManager>().Clear());
             tasks.Add(x.GetService<IHealthManager>().Clear());
+            tasks.Add(x.GetService<IPartyManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

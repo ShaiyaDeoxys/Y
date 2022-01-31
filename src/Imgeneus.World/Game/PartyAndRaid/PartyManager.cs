@@ -1,6 +1,10 @@
 ﻿using Imgeneus.Network.Data;
 using Imgeneus.Network.Packets;
+using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.PartyAndRaid
 {
@@ -11,11 +15,15 @@ namespace Imgeneus.World.Game.PartyAndRaid
     {
         private readonly ILogger<PartyManager> _logger;
         private readonly IGameWorld _gameWorld;
+        private readonly IMapProvider _mapProvider;
 
-        public PartyManager(ILogger<PartyManager> logger, IGameWorld gameWorld)
+        private int _ownerId;
+
+        public PartyManager(ILogger<PartyManager> logger, IGameWorld gameWorld, IMapProvider mapProvider)
         {
             _logger = logger;
             _gameWorld = gameWorld;
+            _mapProvider = mapProvider;
 #if DEBUG
             _logger.LogDebug("PartyManager {hashcode} created", GetHashCode());
 #endif
@@ -28,42 +36,26 @@ namespace Imgeneus.World.Game.PartyAndRaid
         }
 #endif
 
+        #region Init & Clear
+
+        public void Init(int ownerId)
+        {
+            _ownerId = ownerId;
+        }
+
+        public async Task Clear()
+        {
+            Party = null;
+        }
+
+        #endregion
+
         /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
             var worldSender = (IWorldClient)sender;
 
             switch (packet)
             {
-                case PartyResponsePacket responsePartyPacket:
-                    if (_gameWorld.Players.TryGetValue(responsePartyPacket.CharacterId, out var partyResponser))
-                    {
-                        if (responsePartyPacket.IsDeclined)
-                        {
-                            if (_gameWorld.Players.TryGetValue(partyResponser.PartyInviterId, out var partyRequester))
-                            {
-                                SendDeclineParty(partyRequester.Client, worldSender.CharID);
-                            }
-                        }
-                        else
-                        {
-                            if (_gameWorld.Players.TryGetValue(partyResponser.PartyInviterId, out var partyRequester))
-                            {
-                                if (partyRequester.Party is null)
-                                {
-                                    var party = new Party();
-                                    partyRequester.SetParty(party);
-                                    partyResponser.SetParty(party);
-                                }
-                                else
-                                {
-                                    partyResponser.SetParty(partyRequester.Party);
-                                }
-                            }
-                        }
-
-                        partyResponser.PartyInviterId = 0;
-                    }
-                    break;
 
                 case PartyLeavePacket partyLeavePacket:
                     _player.SetParty(null);
@@ -204,6 +196,69 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         public int InviterId { get; set; }
 
+        private IParty _party;
+
+        public IParty Party
+        {
+            get => _party;
+            set
+            {
+                if (_party != null)
+                    _party.OnLeaderChanged -= Party_OnLeaderChanged;
+
+                // Leave party.
+                if (_party != null && value is null)
+                {
+                    if (_party.Members.Contains(Player)) // When the player is kicked of the party, the party doesn't contain him.
+                        _party.LeaveParty(Player);
+                    //PreviousPartyId = _party.Id;
+                    _party = value;
+                }
+                // Enter party
+                else if (value != null)
+                {
+                    if (value.EnterParty(Player))
+                    {
+                        _party = value;
+
+                        //if (_party is Raid)
+                        //    _packetsHelper.SendRaidInfo(Client, Party as Raid);
+
+                        _party.OnLeaderChanged += Party_OnLeaderChanged;
+                        _mapProvider.Map.UnregisterSearchForParty(Player);
+                    }
+                }
+
+                OnPartyChanged?.Invoke(Player);
+            }
+        }
+
+        public Guid PreviousPartyId { get; private set; } = Guid.NewGuid();
+
+        #endregion
+
+        #region Party change
+
+        public event Action<Character> OnPartyChanged;
+
+        private void Party_OnLeaderChanged(Character oldLeader, Character newLeader)
+        {
+            if (Player == oldLeader || Player == newLeader)
+                OnPartyChanged?.Invoke(Player);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private Character Player { get => _gameWorld.Players[_ownerId]; }
+
+        public bool HasParty { get => Party != null; }
+
+        public bool IsPartyLead { get => Party != null && Party.Leader == Player; }
+
+        public bool IsPartySubLeader { get => Party != null && Party.SubLeader == Player; }
+
         #endregion
 
         private void SendPartyError(IWorldClient client, PartyErrorType partyError, int id = 0)
@@ -211,14 +266,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
             using var packet = new Packet(PacketType.RAID_PARTY_ERROR);
             packet.Write((int)partyError);
             packet.Write(id);
-            //client.SendPacket(packet);
-        }
-
-        private void SendDeclineParty(IWorldClient client, int charID)
-        {
-            using var packet = new Packet(PacketType.PARTY_RESPONSE);
-            packet.Write(false);
-            packet.Write(charID);
             //client.SendPacket(packet);
         }
 

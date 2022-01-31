@@ -1,9 +1,9 @@
 ﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Network.Data;
 using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Packets;
 using Imgeneus.World.Serialization;
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,10 @@ namespace Imgeneus.World.Game.PartyAndRaid
     public class Party : BaseParty
     {
         public const byte MAX_PARTY_MEMBERS_COUNT = 7;
+
+        public Party(IGamePacketFactory packetFactory) : base(packetFactory)
+        {
+        }
 
         protected override IList<Character> _members { get; set; } = new List<Character>();
 
@@ -42,7 +46,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
                 // Notify others, that new party member joined.
                 foreach (var member in Members.Where(m => m != newPartyMember))
-                    SendPlayerJoinedParty(member.Client, newPartyMember);
+                    _packetFactory.SendPlayerJoinedParty(member.Client, newPartyMember);
 
                 return true;
             }
@@ -92,7 +96,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             {
                 var lastMember = Members[0];
                 _members.Clear();
-                lastMember.SetParty(null);
+                lastMember.PartyManager.Party = null;
                 SendPlayerLeftParty(lastMember.Client, lastMember);
                 CallAllMembersLeft();
             }
@@ -175,13 +179,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
         #endregion
 
         #region Senders
-
-        private void SendPlayerJoinedParty(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.PARTY_ENTER);
-            packet.Write(new PartyMember(character).Serialize());
-            client.Send(packet);
-        }
 
         private void SendPlayerLeftParty(IWorldClient client, Character character)
         {

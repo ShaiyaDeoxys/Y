@@ -51,21 +51,21 @@ namespace Imgeneus.World.Game.Guild
                 if (guildCreator.InventoryManager.Gold < _config.MinGold)
                     return GuildCreateFailedReason.NotEnoughGold;
 
-                if (!guildCreator.HasParty || !(guildCreator.Party is Party) || guildCreator.Party.Members.Count != _config.MinMembers)
+                if (!guildCreator.PartyManager.HasParty || !(guildCreator.PartyManager.Party is Party) || guildCreator.PartyManager.Party.Members.Count != _config.MinMembers)
                     return GuildCreateFailedReason.NotEnoughMembers;
 
-                if (!guildCreator.Party.Members.All(x => x.LevelProvider.Level > _config.MinLevel))
+                if (!guildCreator.PartyManager.Party.Members.All(x => x.LevelProvider.Level > _config.MinLevel))
                     return GuildCreateFailedReason.LevelLimit;
 
                 // TODO: banned words?
                 // if(guildName.Contains(bannedWords))
                 // return GuildCreateFailedReason.WrongName;
 
-                if (guildCreator.Party.Members.Any(x => x.HasGuild))
+                if (guildCreator.PartyManager.Party.Members.Any(x => x.HasGuild))
                     return GuildCreateFailedReason.PartyMemberInAnotherGuild;
 
                 var penalty = false;
-                foreach (var m in guildCreator.Party.Members)
+                foreach (var m in guildCreator.PartyManager.Party.Members)
                 {
                     if (await CheckPenalty(m.Id))
                     {
@@ -110,16 +110,16 @@ namespace Imgeneus.World.Game.Guild
         /// <inheritdoc/>
         public void SendGuildRequest(Character guildCreator, string guildName, string guildMessage)
         {
-            var request = new GuildCreateRequest(guildCreator, guildCreator.Party.Members, guildName, guildMessage);
-            var success = CreationRequests.TryAdd(guildCreator.Party, request);
+            var request = new GuildCreateRequest(guildCreator, guildCreator.PartyManager.Party.Members, guildName, guildMessage);
+            var success = CreationRequests.TryAdd(guildCreator.PartyManager.Party, request);
 
             if (!success)
                 guildCreator.SendGuildCreateFailed(GuildCreateFailedReason.Unknown);
 
-            guildCreator.Party.OnMemberEnter += Party_OnMemberChange;
-            guildCreator.Party.OnMemberLeft += Party_OnMemberChange;
+            guildCreator.PartyManager.Party.OnMemberEnter += Party_OnMemberChange;
+            guildCreator.PartyManager.Party.OnMemberLeft += Party_OnMemberChange;
 
-            foreach (var member in guildCreator.Party.Members)
+            foreach (var member in guildCreator.PartyManager.Party.Members)
                 member.SendGuildCreateRequest(guildCreator.Id, guildName, guildMessage);
         }
 
@@ -140,10 +140,10 @@ namespace Imgeneus.World.Game.Guild
         /// <inheritdoc/>
         public async void SetAgreeRequest(Character character, bool agree)
         {
-            if (character.Party is null)
+            if (character.PartyManager.Party is null)
                 return;
 
-            CreationRequests.TryGetValue(character.Party, out var request);
+            CreationRequests.TryGetValue(character.PartyManager.Party, out var request);
 
             if (request is null)
                 return;
@@ -155,7 +155,7 @@ namespace Imgeneus.World.Game.Guild
 
             if (!agree)
             {
-                CreationRequests.TryRemove(character.Party, out request);
+                CreationRequests.TryRemove(character.PartyManager.Party, out request);
                 foreach (var m in request.Members)
                     m.SendGuildCreateFailed(GuildCreateFailedReason.PartyMemberRejected);
                 request.Dispose();
@@ -166,7 +166,7 @@ namespace Imgeneus.World.Game.Guild
             if (!allAgree)
                 return;
 
-            CreationRequests.TryRemove(character.Party, out request);
+            CreationRequests.TryRemove(character.PartyManager.Party, out request);
 
             if (request is null) // is it possible?
             {

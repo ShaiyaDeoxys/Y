@@ -421,13 +421,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendPartyInfo(IWorldClient client, IEnumerable<Character> partyMembers, byte leaderIndex)
-        {
-            using var packet = new ImgeneusPacket(PacketType.PARTY_LIST);
-            packet.Write(new UsualParty(partyMembers, leaderIndex).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendRaidInfo(IWorldClient client, Raid raid)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_LIST);

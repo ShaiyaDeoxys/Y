@@ -49,8 +49,8 @@ namespace Imgeneus.World.Handlers
                 {
                     player.Map.RemoveItem(player.CellId, mapItem.Id);
 
-                    if (player.Party != null)
-                        player.Party.MemberGetItem(player, inventoryItem);
+                    if (player.PartyManager.Party != null)
+                        player.PartyManager.Party.MemberGetItem(player, inventoryItem);
                 }
             }
         }

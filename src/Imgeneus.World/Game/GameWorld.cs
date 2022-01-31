@@ -96,13 +96,13 @@ namespace Imgeneus.World.Game
 
                 if (destinationMapDef.CreateType == CreateType.Party)
                 {
-                    if (player.Party is null)
+                    if (player.PartyManager.Party is null)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyForParty;
                         return false;
                     }
 
-                    if (player.Party != null && (player.Party.Members.Count < destinationMapDef.MinMembersCount || (destinationMapDef.MaxMembersCount != 0 && player.Party.Members.Count > destinationMapDef.MaxMembersCount)))
+                    if (player.PartyManager.Party != null && (player.PartyManager.Party.Members.Count < destinationMapDef.MinMembersCount || (destinationMapDef.MaxMembersCount != 0 && player.PartyManager.Party.Members.Count > destinationMapDef.MaxMembersCount)))
                     {
                         reason = PortalTeleportNotAllowedReason.NotEnoughPartyMembers;
                         return false;
@@ -344,22 +344,22 @@ namespace Imgeneus.World.Game
                     IPartyMap map;
                     Guid partyId;
 
-                    if (player.Party is null)
+                    if (player.PartyManager.Party is null)
                     // This is very uncommon, but if:
                     // * player is an admin he can load into map even without party.
                     // * player entered portal, while being in party, but while he was loading, all party members left.
                     {
-                        partyId = player.PreviousPartyId;
+                        partyId = player.PartyManager.PreviousPartyId;
                     }
                     else
                     {
-                        partyId = player.Party.Id;
+                        partyId = player.PartyManager.Party.Id;
                     }
 
                     PartyMaps.TryGetValue(partyId, out map);
                     if (map is null)
                     {
-                        map = _mapFactory.CreatePartyMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), player.Party);
+                        map = _mapFactory.CreatePartyMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), player.PartyManager.Party);
                         map.OnAllMembersLeft += PartyMap_OnAllMembersLeft;
                         PartyMaps.TryAdd(partyId, map);
                     }
@@ -423,10 +423,10 @@ namespace Imgeneus.World.Game
                 // Try find player's map.
                 if (Maps.ContainsKey(player.MapProvider.NextMapId))
                     map = Maps[player.MapProvider.NextMapId];
-                else if (player.Party != null && PartyMaps.ContainsKey(player.Party.Id))
-                    map = PartyMaps[player.Party.Id];
-                else if (PartyMaps.ContainsKey(player.PreviousPartyId))
-                    map = PartyMaps[player.PreviousPartyId];
+                else if (player.PartyManager.Party != null && PartyMaps.ContainsKey(player.PartyManager.Party.Id))
+                    map = PartyMaps[player.PartyManager.Party.Id];
+                else if (PartyMaps.ContainsKey(player.PartyManager.PreviousPartyId))
+                    map = PartyMaps[player.PartyManager.PreviousPartyId];
                 else if (player.HasGuild && GuildHouseMaps.ContainsKey((int)player.GuildId))
                     map = GuildHouseMaps[(int)player.GuildId];
                 else if (player.HasGuild && GRBMaps.ContainsKey((int)player.GuildId))

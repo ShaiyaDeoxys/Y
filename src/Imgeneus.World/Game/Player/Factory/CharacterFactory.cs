@@ -219,6 +219,8 @@ namespace Imgeneus.World.Game.Player
 
             _teleportationManager.Init(dbCharacter.Id);
 
+            _partyManager.Init(dbCharacter.Id);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 

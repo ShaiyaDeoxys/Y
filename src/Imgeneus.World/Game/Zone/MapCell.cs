@@ -209,7 +209,7 @@ namespace Imgeneus.World.Game.Zone
             character.MovementManager.OnMove += Character_OnMove;
             character.OnMotion += Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged += Character_OnEquipmentChanged;
-            character.OnPartyChanged += Character_OnPartyChanged;
+            character.PartyManager.OnPartyChanged += Character_OnPartyChanged;
             character.SpeedManager.OnAttackOrMoveChanged += Character_OnAttackOrMoveChanged;
             character.SkillsManager.OnUsedSkill += Character_OnUsedSkill;
             character.SkillsManager.OnUsedRangeSkill += Character_OnUsedRangeSkill;
@@ -240,7 +240,7 @@ namespace Imgeneus.World.Game.Zone
             character.MovementManager.OnMove -= Character_OnMove;
             character.OnMotion -= Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged -= Character_OnEquipmentChanged;
-            character.OnPartyChanged -= Character_OnPartyChanged;
+            character.PartyManager.OnPartyChanged -= Character_OnPartyChanged;
             character.SpeedManager.OnAttackOrMoveChanged -= Character_OnAttackOrMoveChanged;
             character.SkillsManager.OnUsedSkill -= Character_OnUsedSkill;
             character.SkillsManager.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
@@ -305,9 +305,9 @@ namespace Imgeneus.World.Game.Zone
             {
                 PartyMemberType type = PartyMemberType.NoParty;
 
-                if (sender.IsPartyLead)
+                if (sender.PartyManager.IsPartyLead)
                     type = PartyMemberType.Leader;
-                else if (sender.HasParty)
+                else if (sender.PartyManager.HasParty)
                     type = PartyMemberType.Member;
 
                 _packetsHelper.SendCharacterPartyChanged(player.Client, sender.Id, type);
@@ -463,7 +463,7 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 // If sender has party, send admin level up
-                _packetsHelper.SendLevelUp(player.Client, sender, sender.HasParty);
+                _packetsHelper.SendLevelUp(player.Client, sender, sender.PartyManager.HasParty);
         }
 
         /// <summary>
@@ -591,7 +591,7 @@ namespace Imgeneus.World.Game.Zone
 
             // Add experience to killer character/party
             if (killer is Character killerCharacter)
-                if (killerCharacter.HasParty)
+                if (killerCharacter.PartyManager.HasParty)
                     killerCharacter.AddPartyMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
                 else
                     killerCharacter.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
