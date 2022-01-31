@@ -3,6 +3,7 @@ using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
@@ -21,14 +22,16 @@ namespace Imgeneus.World.Handlers
         private readonly ICountryProvider _countryProvider;
         private readonly ITeleportationManager _teleportationManager;
         private readonly IMovementManager _movementManager;
+        private readonly IPartyManager _partyManager;
 
-        public GMTeleportHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IMapsLoader mapLoader, ICountryProvider countryProvider, ITeleportationManager teleportationManager, IMovementManager movementManager) : base(packetFactory, gameSession)
+        public GMTeleportHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IMapsLoader mapLoader, ICountryProvider countryProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IPartyManager partyManager) : base(packetFactory, gameSession)
         {
             _gameWorld = gameWorld;
             _mapLoader = mapLoader;
             _countryProvider = countryProvider;
             _teleportationManager = teleportationManager;
             _movementManager = movementManager;
+            _partyManager = partyManager;
         }
 
         [HandlerAction(PacketType.GM_TELEPORT_MAP)]
@@ -90,12 +93,12 @@ namespace Imgeneus.World.Handlers
             else
             {
                 // Teleport to party instance map.
-                //if (player.Map is IPartyMap)
-                //{
-                //    SetParty(null);
-                //    var mapId = _gameWorld.PartyMaps.FirstOrDefault(m => m.Value == player.Map).Key;
-                //    PreviousPartyId = mapId;
-                //}
+                if (player.Map is IPartyMap)
+                {
+                    _partyManager.Party = null;
+                    var mapId = _gameWorld.PartyMaps.FirstOrDefault(m => m.Value == player.Map).Key;
+                    _partyManager.PreviousPartyId = mapId;
+                }
 
                 //if (player.Map is IGuildMap)
                 //{

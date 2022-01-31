@@ -60,7 +60,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    SendPlayerLeftParty(member.Client, leftPartyMember);
+                    _packetFactory.SendPlayerLeftParty(member.Client, leftPartyMember);
 
                 RemoveMember(leftPartyMember);
                 CallMemberLeft();
@@ -75,7 +75,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    SendKickMember(member.Client, playerToKick);
+                    _packetFactory.SendPartyKickMember(member.Client, playerToKick);
 
                 RemoveMember(playerToKick);
             }
@@ -96,8 +96,10 @@ namespace Imgeneus.World.Game.PartyAndRaid
             {
                 var lastMember = Members[0];
                 _members.Clear();
+
                 lastMember.PartyManager.Party = null;
-                SendPlayerLeftParty(lastMember.Client, lastMember);
+                _packetFactory.SendPlayerLeftParty(lastMember.Client, lastMember);
+
                 CallAllMembersLeft();
             }
             else if (character == Leader)
@@ -179,20 +181,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
         #endregion
 
         #region Senders
-
-        private void SendPlayerLeftParty(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.PARTY_LEAVE);
-            packet.Write(character.Id);
-            client.Send(packet);
-        }
-
-        private void SendKickMember(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.PARTY_KICK);
-            packet.Write(character.Id);
-            client.Send(packet);
-        }
 
         protected override void SendNewLeader(IWorldClient client, Character character)
         {

@@ -21,7 +21,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Party Id, where player used to be.
         /// </summary>
-        Guid PreviousPartyId { get; }
+        Guid PreviousPartyId { get; set; }
 
         /// <summary>
         /// Bool indicator, shows if player is in party/raid.

@@ -1,10 +1,10 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct PartyLeavePacket : IDeserializedPacket
+    public record PartyLeavePacket : IPacketDeserializer
     {
-        public PartyLeavePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
         }
     }

@@ -99,6 +99,8 @@ namespace Imgeneus.World.Packets
         void SendDeclineParty(IWorldClient client, int charId);
         void SendPartyInfo(IWorldClient client, IEnumerable<Character> partyMembers, byte leaderIndex);
         void SendPlayerJoinedParty(IWorldClient client, Character character);
+        void SendPlayerLeftParty(IWorldClient client, Character character);
+        void SendPartyKickMember(IWorldClient client, Character character);
 
         #endregion
 

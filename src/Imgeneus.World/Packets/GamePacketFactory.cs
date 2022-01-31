@@ -646,6 +646,20 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendPlayerLeftParty(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_LEAVE);
+            packet.Write(character.Id);
+            client.Send(packet);
+        }
+
+        public void SendPartyKickMember(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.PARTY_KICK);
+            packet.Write(character.Id);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

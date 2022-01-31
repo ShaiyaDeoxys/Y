@@ -56,23 +56,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             switch (packet)
             {
-
-                case PartyLeavePacket partyLeavePacket:
-                    _player.SetParty(null);
-                    break;
-
-                case PartyKickPacket partyKickPacket:
-                    if (!_player.IsPartyLead)
-                        return;
-
-                    var playerToKick = _player.Party.Members.FirstOrDefault(m => m.Id == partyKickPacket.CharacterId);
-                    if (playerToKick != null)
-                    {
-                        _player.Party.KickMember(playerToKick);
-                        playerToKick.SetParty(null, true);
-                    }
-                    break;
-
                 case PartyChangeLeaderPacket changeLeaderPacket:
                     if (!_player.IsPartyLead)
                         return;
@@ -211,7 +194,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 {
                     if (_party.Members.Contains(Player)) // When the player is kicked of the party, the party doesn't contain him.
                         _party.LeaveParty(Player);
-                    //PreviousPartyId = _party.Id;
+                    PreviousPartyId = _party.Id;
                     _party = value;
                 }
                 // Enter party
@@ -233,7 +216,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             }
         }
 
-        public Guid PreviousPartyId { get; private set; } = Guid.NewGuid();
+        public Guid PreviousPartyId { get; set; } = Guid.NewGuid();
 
         #endregion
 
