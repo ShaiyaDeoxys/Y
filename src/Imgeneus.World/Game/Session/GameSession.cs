@@ -71,7 +71,14 @@ namespace Imgeneus.World.Game.Session
 
         private async void LogoutTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            await Client.ClearSession(_quitGame);
+            try
+            {
+                await Client.ClearSession(_quitGame);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed clear session for {characterId}. Reason: {message}. Stack trace: {trace}", CharId, ex.Message, ex.StackTrace);
+            }
 
             _gameWorld.RemovePlayer(CharId);
             CharId = 0;
