@@ -52,15 +52,15 @@ namespace Imgeneus.World.Game.Trade
 
         #region Trade start
 
-        public int TradePartnerId { get; set; }
+        public int PartnerId { get; set; }
 
-        public TradeRequest TradeRequest { get; set; }
+        public TradeRequest Request { get; set; }
 
         public void Start(Character player1, Character player2)
         {
             var request = new TradeRequest();
-            player1.TradeManager.TradeRequest = request;
-            player2.TradeManager.TradeRequest = request;
+            player1.TradeManager.Request = request;
+            player2.TradeManager.Request = request;
         }
 
         #endregion
@@ -80,41 +80,41 @@ namespace Imgeneus.World.Game.Trade
 
         private void ClearTrade(out Character parther)
         {
-            if (_gameWorld.Players.ContainsKey(TradePartnerId))
-                parther = _gameWorld.Players[TradePartnerId];
+            if (_gameWorld.Players.ContainsKey(PartnerId))
+                parther = _gameWorld.Players[PartnerId];
             else
                 parther = null;
 
-            TradePartnerId = 0;
-            TradeRequest.TradeItems.Clear();
-            TradeRequest.TradeMoney.Clear();
+            PartnerId = 0;
+            Request.TradeItems.Clear();
+            Request.TradeMoney.Clear();
 
-            TradeRequest = null;
+            Request = null;
         }
 
         public void FinishSuccessful(bool clearTradeSession = false)
         {
-            foreach (var item in TradeRequest.TradeItems.Where(x => x.Key.CharacterId == _ownerId))
+            foreach (var item in Request.TradeItems.Where(x => x.Key.CharacterId == _ownerId))
             {
                 var tradeItem = item.Value;
                 var resultItm = _inventoryManager.RemoveItem(tradeItem);
 
-                if (_gameWorld.Players[TradePartnerId].InventoryManager.AddItem(resultItm) is null) // No place for this item.
+                if (_gameWorld.Players[PartnerId].InventoryManager.AddItem(resultItm) is null) // No place for this item.
                 {
                     _inventoryManager.AddItem(resultItm);
                 }
             }
 
-            if (TradeRequest.TradeMoney.ContainsKey(_ownerId) && TradeRequest.TradeMoney[_ownerId] > 0)
+            if (Request.TradeMoney.ContainsKey(_ownerId) && Request.TradeMoney[_ownerId] > 0)
             {
-                _inventoryManager.Gold = _inventoryManager.Gold - TradeRequest.TradeMoney[_ownerId];
-                _gameWorld.Players[TradePartnerId].InventoryManager.Gold = _gameWorld.Players[TradePartnerId].InventoryManager.Gold + TradeRequest.TradeMoney[_ownerId];
+                _inventoryManager.Gold = _inventoryManager.Gold - Request.TradeMoney[_ownerId];
+                _gameWorld.Players[PartnerId].InventoryManager.Gold = _gameWorld.Players[PartnerId].InventoryManager.Gold + Request.TradeMoney[_ownerId];
             }
 
             if (clearTradeSession)
                 ClearTrade(out var p);
             else
-                _gameWorld.Players[TradePartnerId].TradeManager.FinishSuccessful(true);
+                _gameWorld.Players[PartnerId].TradeManager.FinishSuccessful(true);
         }
 
         #endregion
@@ -131,20 +131,20 @@ namespace Imgeneus.World.Game.Trade
                 return false;
             }
 
-            if (TradeRequest.TradeItems.Any(x => x.Value == item))
+            if (Request.TradeItems.Any(x => x.Value == item))
             {
                 _logger.LogWarning("Player {id} tries add item to trade twice", _ownerId);
                 return false;
             }
 
             item.TradeQuantity = item.Count > quantity ? quantity : item.Count;
-            TradeRequest.TradeItems.TryAdd((_ownerId, slotInWindow), item);
+            Request.TradeItems.TryAdd((_ownerId, slotInWindow), item);
             return true;
         }
 
         public bool TryRemoveItem(byte slotInWindow)
         {
-            TradeRequest.TradeItems.TryRemove((_ownerId, slotInWindow), out var removed);
+            Request.TradeItems.TryRemove((_ownerId, slotInWindow), out var removed);
             if (removed is null)
             {
                 _logger.LogWarning("Player {id} has no item at this slot", _ownerId);
@@ -159,12 +159,12 @@ namespace Imgeneus.World.Game.Trade
         {
             if (money < _inventoryManager.Gold)
             {
-                TradeRequest.TradeMoney[_ownerId] = money;
+                Request.TradeMoney[_ownerId] = money;
             }
             else
             {
                 _logger.LogWarning("Player {id} tries to add more money that he has in inventory", _ownerId);
-                TradeRequest.TradeMoney[_ownerId] = _inventoryManager.Gold;
+                Request.TradeMoney[_ownerId] = _inventoryManager.Gold;
             }
 
             return true;
@@ -176,31 +176,31 @@ namespace Imgeneus.World.Game.Trade
 
         public void TraderDecideConfirm()
         {
-            if (TradeRequest.IsDecided_1)
-                TradeRequest.IsDecided_2 = true;
+            if (Request.IsDecided_1)
+                Request.IsDecided_2 = true;
             else
-                TradeRequest.IsDecided_1 = true;
+                Request.IsDecided_1 = true;
         }
 
         public void TradeDecideDecline()
         {
-            TradeRequest.IsDecided_1 = false;
-            TradeRequest.IsDecided_2 = false;
+            Request.IsDecided_1 = false;
+            Request.IsDecided_2 = false;
         }
 
 
         public void Confirmed()
         {
-            if (TradeRequest.IsConfirmed_1)
-                TradeRequest.IsConfirmed_2 = true;
+            if (Request.IsConfirmed_1)
+                Request.IsConfirmed_2 = true;
             else
-                TradeRequest.IsConfirmed_1 = true;
+                Request.IsConfirmed_1 = true;
         }
 
         public void ConfirmDeclined()
         {
-            TradeRequest.IsConfirmed_1 = false;
-            TradeRequest.IsConfirmed_2 = false;
+            Request.IsConfirmed_1 = false;
+            Request.IsConfirmed_2 = false;
         }
 
         #endregion

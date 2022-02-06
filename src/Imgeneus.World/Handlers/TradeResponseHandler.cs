@@ -30,14 +30,14 @@ namespace Imgeneus.World.Handlers
             else
             {
                 var tradeReceiver = _gameWorld.Players[_gameSession.CharId];
-                var tradeRequester = _gameWorld.Players[tradeReceiver.TradeManager.TradePartnerId];
+                var tradeRequester = _gameWorld.Players[tradeReceiver.TradeManager.PartnerId];
                 if (tradeReceiver is null || tradeRequester is null)
                     return;
 
                 _tradeManager.Start(tradeRequester, tradeReceiver);
 
-                _packetFactory.SendTradeStart(tradeReceiver.GameSession.Client, tradeReceiver.TradeManager.TradePartnerId);
-                _packetFactory.SendTradeStart(tradeRequester.GameSession.Client, tradeRequester.TradeManager.TradePartnerId);
+                _packetFactory.SendTradeStart(tradeReceiver.GameSession.Client, tradeReceiver.TradeManager.PartnerId);
+                _packetFactory.SendTradeStart(tradeRequester.GameSession.Client, tradeRequester.TradeManager.PartnerId);
             }
         }
     }

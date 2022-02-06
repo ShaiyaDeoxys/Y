@@ -23,8 +23,8 @@ namespace Imgeneus.World.Handlers
             var tradeRequester = _gameWorld.Players[_gameSession.CharId];
             var tradeReceiver = _gameWorld.Players[packet.TradeToWhomId];
 
-            tradeRequester.TradeManager.TradePartnerId = tradeReceiver.Id;
-            tradeReceiver.TradeManager.TradePartnerId = tradeRequester.Id;
+            tradeRequester.TradeManager.PartnerId = tradeReceiver.Id;
+            tradeReceiver.TradeManager.PartnerId = tradeRequester.Id;
 
             _packetFactory.SendTradeRequest(tradeReceiver.GameSession.Client, tradeRequester.Id);
         }

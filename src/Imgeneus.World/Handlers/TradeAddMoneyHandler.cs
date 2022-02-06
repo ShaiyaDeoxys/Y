@@ -26,8 +26,8 @@ namespace Imgeneus.World.Handlers
             var ok = _tradeManager.TryAddMoney(packet.Money);
             if (ok)
             {
-                _packetFactory.SendAddedMoneyToTrade(client, 1, _tradeManager.TradeRequest.TradeMoney[_gameSession.CharId]);
-                _packetFactory.SendAddedMoneyToTrade(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 2, _tradeManager.TradeRequest.TradeMoney[_gameSession.CharId]);
+                _packetFactory.SendAddedMoneyToTrade(client, 1, _tradeManager.Request.TradeMoney[_gameSession.CharId]);
+                _packetFactory.SendAddedMoneyToTrade(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, _tradeManager.Request.TradeMoney[_gameSession.CharId]);
             }
         }
     }

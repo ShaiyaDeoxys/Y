@@ -34,8 +34,8 @@ namespace Imgeneus.World.Handlers
                 // Decline both.
                 _packetFactory.SendTradeConfirm(client, 1, true);
                 _packetFactory.SendTradeConfirm(client, 2, true);
-                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 1, true);
-                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 2, true);
+                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 1, true);
+                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, true);
                 
             }
             else if (packet.Result == 0)
@@ -44,14 +44,14 @@ namespace Imgeneus.World.Handlers
 
                 // 1 means sender, 2 means partner.
                 _packetFactory.SendTradeConfirm(client, 1, false);
-                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 2, false);
+                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, false);
 
-                if (_tradeManager.TradeRequest.IsConfirmed_1 && _tradeManager.TradeRequest.IsConfirmed_2)
+                if (_tradeManager.Request.IsConfirmed_1 && _tradeManager.Request.IsConfirmed_2)
                 {
                     _tradeManager.FinishSuccessful();
 
                     _packetFactory.SendTradeFinished(client);
-                    _packetFactory.SendTradeFinished(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client);
+                    _packetFactory.SendTradeFinished(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client);
                 }
             }
         }

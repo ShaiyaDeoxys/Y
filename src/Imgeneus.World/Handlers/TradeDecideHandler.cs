@@ -29,7 +29,7 @@ namespace Imgeneus.World.Handlers
 
                 // 1 means sender, 2 means partner.
                 _packetFactory.SendTradeDecide(client, 1, true);
-                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 2, true);
+                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, true);
             }
             else
             {
@@ -38,8 +38,8 @@ namespace Imgeneus.World.Handlers
                 // Decline both.
                 _packetFactory.SendTradeDecide(client, 1, false);
                 _packetFactory.SendTradeDecide(client, 2, false);
-                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 1, false);
-                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 2, false);
+                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 1, false);
+                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, false);
             }
         }
     }

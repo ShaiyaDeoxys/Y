@@ -27,13 +27,13 @@ namespace Imgeneus.World.Handlers
             if (ok)
             {
                 _packetFactory.SendRemovedItemFromTrade(client, 1);
-                _packetFactory.SendRemovedItemFromTrade(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 2);
+                _packetFactory.SendRemovedItemFromTrade(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2);
 
                 // Decline both.
                 _packetFactory.SendTradeDecide(client, 1, false);
                 _packetFactory.SendTradeDecide(client, 2, false);
-                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 1, false);
-                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, 2, false);
+                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 1, false);
+                _packetFactory.SendTradeDecide(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, false);
             }
         }
     }

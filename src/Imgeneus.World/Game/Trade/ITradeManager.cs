@@ -12,12 +12,12 @@ namespace Imgeneus.World.Game.Trade
         /// <summary>
         /// With whom player is currently trading.
         /// </summary>
-        int TradePartnerId { get; set; }
+        int PartnerId { get; set; }
 
         /// <summary>
         /// Represents currently open trade window.
         /// </summary>
-        TradeRequest TradeRequest { get; set; }
+        TradeRequest Request { get; set; }
 
         /// <summary>
         /// Starts trade between 2 players.

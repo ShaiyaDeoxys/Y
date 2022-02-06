@@ -28,7 +28,7 @@ namespace Imgeneus.World.Handlers
             if (ok)
             {
                 _packetFactory.SendAddedItemToTrade(client, packet.Bag, packet.Slot, packet.Quantity, packet.SlotInTradeWindow);
-                _packetFactory.SendAddedItemToTrade(_gameWorld.Players[_tradeManager.TradePartnerId].GameSession.Client, tradeItem, packet.Quantity, packet.SlotInTradeWindow);
+                _packetFactory.SendAddedItemToTrade(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, tradeItem, packet.Quantity, packet.SlotInTradeWindow);
             }
         }
     }
