@@ -190,7 +190,8 @@ namespace Imgeneus.World.Game.Inventory
                     DyeColorG = item.DyeColor.G,
                     DyeColorB = item.DyeColor.B,
                     CreationTime = item.CreationTime,
-                    ExpirationTime = item.ExpirationTime
+                    ExpirationTime = item.ExpirationTime,
+                    Craftname = item.GetCraftName()
                 };
 
                 _database.CharacterItems.Add(dbItem);

@@ -86,6 +86,11 @@ namespace Imgeneus.World.Packets
         void SendRemoveGem(IWorldClient client, bool success, Item item, byte slot, List<Item> savedGems, uint gold);
         #endregion
 
+        #region Composition
+        void SendComposition(IWorldClient client, bool ok, Item item);
+        void SendAbsoluteComposition(IWorldClient client, bool ok, Item item);
+        #endregion
+
         #region Dyeing
 
         void SendSelectDyeItem(IWorldClient client, bool success);

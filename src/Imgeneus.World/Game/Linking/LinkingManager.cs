@@ -43,7 +43,7 @@ namespace Imgeneus.World.Game.Linking
         }
 #endif
 
-        public Item Item { get; set; }
+        #region Gem linking
 
         public (bool Success, byte Slot, Item Gem, Item Item, Item Hammer) AddGem(byte bag, byte slot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot)
         {
@@ -448,7 +448,6 @@ namespace Imgeneus.World.Game.Linking
             return rate;
         }
 
-
         /// <summary>
         /// Extra rate is made of guild house blacksmith rate + bless rate.
         /// </summary>
@@ -628,36 +627,93 @@ namespace Imgeneus.World.Game.Linking
             return gold;
         }
 
-        public void Compose(Item recRune)
+        #endregion
+
+        #region Rec rune composition
+
+        public (bool Success, Item Item) Compose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot)
+        {
+            _inventoryManager.InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);
+            _inventoryManager.InventoryItems.TryGetValue((itemBag, itemSlot), out var item);
+
+            if (rune is null || item is null ||
+                   (rune.Special != SpecialEffect.RecreationRune &&
+                    rune.Special != SpecialEffect.RecreationRune_STR &&
+                    rune.Special != SpecialEffect.RecreationRune_DEX &&
+                    rune.Special != SpecialEffect.RecreationRune_REC &&
+                    rune.Special != SpecialEffect.RecreationRune_INT &&
+                    rune.Special != SpecialEffect.RecreationRune_WIS &&
+                    rune.Special != SpecialEffect.RecreationRune_LUC) ||
+                !item.IsComposable)
+            {
+                return (false, item);
+            }
+
+            if (item.Bag == 0)
+            {
+                _statsManager.ExtraStr -= item.ComposedStr;
+                _statsManager.ExtraDex -= item.ComposedDex;
+                _statsManager.ExtraRec -= item.ComposedRec;
+                _statsManager.ExtraInt -= item.ComposedInt;
+                _statsManager.ExtraWis -= item.ComposedWis;
+                _statsManager.ExtraLuc -= item.ComposedLuc;
+                _healthManager.ExtraHP -= item.ComposedHP;
+                _healthManager.ExtraMP -= item.ComposedMP;
+                _healthManager.ExtraSP -= item.ComposedSP;
+            }
+
+            Compose(item, rune);
+
+            if (item.Bag == 0)
+            {
+                _statsManager.ExtraStr += item.ComposedStr;
+                _statsManager.ExtraDex += item.ComposedDex;
+                _statsManager.ExtraRec += item.ComposedRec;
+                _statsManager.ExtraInt += item.ComposedInt;
+                _statsManager.ExtraWis += item.ComposedWis;
+                _statsManager.ExtraLuc += item.ComposedLuc;
+                _healthManager.ExtraHP += item.ComposedHP;
+                _healthManager.ExtraMP += item.ComposedMP;
+                _healthManager.ExtraSP += item.ComposedSP;
+
+                _statsManager.RaiseAdditionalStatsUpdate();
+            }
+
+            _inventoryManager.TryUseItem(rune.Bag, rune.Slot);
+
+            return (true, item);
+        }
+
+        private void Compose(Item item, Item recRune)
         {
             switch (recRune.Special)
             {
                 case SpecialEffect.RecreationRune:
-                    RandomCompose();
+                    RandomCompose(item);
                     break;
 
                 case SpecialEffect.RecreationRune_STR:
-                    ComposeStr();
+                    ComposeStr(item);
                     break;
 
                 case SpecialEffect.RecreationRune_DEX:
-                    ComposeDex();
+                    ComposeDex(item);
                     break;
 
                 case SpecialEffect.RecreationRune_REC:
-                    ComposeRec();
+                    ComposeRec(item);
                     break;
 
                 case SpecialEffect.RecreationRune_INT:
-                    ComposeInt();
+                    ComposeInt(item);
                     break;
 
                 case SpecialEffect.RecreationRune_WIS:
-                    ComposeWis();
+                    ComposeWis(item);
                     break;
 
                 case SpecialEffect.RecreationRune_LUC:
-                    ComposeLuc();
+                    ComposeLuc(item);
                     break;
 
                 default:
@@ -665,67 +721,67 @@ namespace Imgeneus.World.Game.Linking
             }
         }
 
-        private void ComposeStr()
+        private void ComposeStr(Item item)
         {
-            if (Item.ComposedStr == 0)
+            if (item.ComposedStr == 0)
                 return;
 
-            Item.ComposedStr = _random.Next(1, Item.ReqWis + 1);
+            item.ComposedStr = _random.Next(1, item.ReqWis + 1);
         }
 
-        private void ComposeDex()
+        private void ComposeDex(Item item)
         {
-            if (Item.ComposedDex == 0)
+            if (item.ComposedDex == 0)
                 return;
 
-            Item.ComposedDex = _random.Next(1, Item.ReqWis + 1);
+            item.ComposedDex = _random.Next(1, item.ReqWis + 1);
         }
 
-        private void ComposeRec()
+        private void ComposeRec(Item item)
         {
-            if (Item.ComposedRec == 0)
+            if (item.ComposedRec == 0)
                 return;
 
-            Item.ComposedRec = _random.Next(1, Item.ReqWis + 1);
+            item.ComposedRec = _random.Next(1, item.ReqWis + 1);
         }
 
-        private void ComposeInt()
+        private void ComposeInt(Item item)
         {
-            if (Item.ComposedInt == 0)
+            if (item.ComposedInt == 0)
                 return;
 
-            Item.ComposedInt = _random.Next(1, Item.ReqWis + 1);
+            item.ComposedInt = _random.Next(1, item.ReqWis + 1);
         }
 
-        private void ComposeWis()
+        private void ComposeWis(Item item)
         {
-            if (Item.ComposedWis == 0)
+            if (item.ComposedWis == 0)
                 return;
 
-            Item.ComposedWis = _random.Next(1, Item.ReqWis + 1);
+            item.ComposedWis = _random.Next(1, item.ReqWis + 1);
         }
 
-        private void ComposeLuc()
+        private void ComposeLuc(Item item)
         {
-            if (Item.ComposedLuc == 0)
+            if (item.ComposedLuc == 0)
                 return;
 
-            Item.ComposedLuc = _random.Next(1, Item.ReqWis + 1);
+            item.ComposedLuc = _random.Next(1, item.ReqWis + 1);
         }
 
-        private void RandomCompose()
+        private void RandomCompose(Item item)
         {
-            Item.ComposedStr = 0;
-            Item.ComposedDex = 0;
-            Item.ComposedRec = 0;
-            Item.ComposedInt = 0;
-            Item.ComposedWis = 0;
-            Item.ComposedLuc = 0;
-            Item.ComposedHP = 0;
-            Item.ComposedMP = 0;
-            Item.ComposedSP = 0;
+            item.ComposedStr = 0;
+            item.ComposedDex = 0;
+            item.ComposedRec = 0;
+            item.ComposedInt = 0;
+            item.ComposedWis = 0;
+            item.ComposedLuc = 0;
+            item.ComposedHP = 0;
+            item.ComposedMP = 0;
+            item.ComposedSP = 0;
 
-            var maxIndex = Item.IsWeapon ? 6 : 9; // Weapons can not have hp, mp or sp recreated.
+            var maxIndex = item.IsWeapon ? 6 : 9; // Weapons can not have hp, mp or sp recreated.
             var indexes = new List<int>();
             do
             {
@@ -740,39 +796,39 @@ namespace Imgeneus.World.Game.Linking
                 switch (i)
                 {
                     case 0:
-                        Item.ComposedStr = _random.Next(1, Item.ReqWis + 1);
+                        item.ComposedStr = _random.Next(1, item.ReqWis + 1);
                         break;
 
                     case 1:
-                        Item.ComposedDex = _random.Next(1, Item.ReqWis + 1);
+                        item.ComposedDex = _random.Next(1, item.ReqWis + 1);
                         break;
 
                     case 2:
-                        Item.ComposedRec = _random.Next(1, Item.ReqWis + 1);
+                        item.ComposedRec = _random.Next(1, item.ReqWis + 1);
                         break;
 
                     case 3:
-                        Item.ComposedInt = _random.Next(1, Item.ReqWis + 1);
+                        item.ComposedInt = _random.Next(1, item.ReqWis + 1);
                         break;
 
                     case 4:
-                        Item.ComposedWis = _random.Next(1, Item.ReqWis + 1);
+                        item.ComposedWis = _random.Next(1, item.ReqWis + 1);
                         break;
 
                     case 5:
-                        Item.ComposedLuc = _random.Next(1, Item.ReqWis + 1);
+                        item.ComposedLuc = _random.Next(1, item.ReqWis + 1);
                         break;
 
                     case 6:
-                        Item.ComposedHP = _random.Next(1, Item.ReqWis + 1) * 100;
+                        item.ComposedHP = _random.Next(1, item.ReqWis + 1) * 100;
                         break;
 
                     case 7:
-                        Item.ComposedMP = _random.Next(1, Item.ReqWis + 1) * 100;
+                        item.ComposedMP = _random.Next(1, item.ReqWis + 1) * 100;
                         break;
 
                     case 8:
-                        Item.ComposedSP = _random.Next(1, Item.ReqWis + 1) * 100;
+                        item.ComposedSP = _random.Next(1, item.ReqWis + 1) * 100;
                         break;
 
                     default:
@@ -780,5 +836,25 @@ namespace Imgeneus.World.Game.Linking
                 }
             }
         }
+
+        public (bool Success, Item Item) AbsoluteCompose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot)
+        {
+            _inventoryManager.InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);
+            _inventoryManager.InventoryItems.TryGetValue((itemBag, itemSlot), out var item);
+
+            if (rune is null || item is null || rune.Special != SpecialEffect.AbsoluteRecreationRune || !item.IsComposable)
+            {
+                return (false, item);
+            }
+
+            var itemClone = item.Clone();
+            Compose(itemClone, rune);
+
+            // TODO: I'm not sure how absolute composite works and what to do next.
+
+            return (true, itemClone);
+        }
+
+        #endregion
     }
 }

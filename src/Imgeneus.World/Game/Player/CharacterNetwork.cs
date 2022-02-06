@@ -225,14 +225,6 @@ namespace Imgeneus.World.Game.Player
                     HandleUseVehicle2Packet();
                     break;
 
-                case ItemComposeAbsolutePacket itemComposeAbsolutePacket:
-                    HandleAbsoluteCompose(itemComposeAbsolutePacket.RuneBag, itemComposeAbsolutePacket.RuneSlot, itemComposeAbsolutePacket.ItemBag, itemComposeAbsolutePacket.ItemSlot);
-                    break;
-
-                case ItemComposePacket itemComposePacket:
-                    HandleItemComposePacket(itemComposePacket.RuneBag, itemComposePacket.RuneSlot, itemComposePacket.ItemBag, itemComposePacket.ItemSlot);
-                    break;
-
                 case GuildCreatePacket guildCreatePacket:
                     HandleCreateGuild(guildCreatePacket.Name, guildCreatePacket.Message);
                     break;

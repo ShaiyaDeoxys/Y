@@ -9,11 +9,6 @@ namespace Imgeneus.World.Game.Linking
     public interface ILinkingManager
     {
         /// <summary>
-        /// Selected item.
-        /// </summary>
-        public Item Item { get; set; }
-
-        /// <summary>
         /// Tries to add gem to item.
         /// </summary>
         /// <returns>true, if gem was successfully linked, otherwise false; also returns slot, where gem was linked</returns>
@@ -48,6 +43,11 @@ namespace Imgeneus.World.Game.Linking
         /// <summary>
         /// 3 random stats.
         /// </summary>
-        public void Compose(Item recRune);
+        public (bool Success, Item Item) Compose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot);
+
+        /// <summary>
+        /// ?
+        /// </summary>
+        public (bool Success, Item Item) AbsoluteCompose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot);
     }
 }

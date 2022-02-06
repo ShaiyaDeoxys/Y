@@ -86,8 +86,12 @@ namespace Imgeneus.World.Game.Trade
                 parther = null;
 
             PartnerId = 0;
-            Request.TradeItems.Clear();
-            Request.TradeMoney.Clear();
+
+            if (Request is not null)
+            {
+                Request.TradeItems.Clear();
+                Request.TradeMoney.Clear();
+            }
 
             Request = null;
         }

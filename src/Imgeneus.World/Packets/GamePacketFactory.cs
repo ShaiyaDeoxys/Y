@@ -563,6 +563,31 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Composition
+
+        public void SendComposition(IWorldClient client, bool ok, Item item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.ITEM_COMPOSE);
+            packet.Write(ok ? (byte)0 : (byte)1);
+            packet.Write(item.Bag);
+            packet.Write(item.Slot);
+            packet.Write(new CraftName(item.GetCraftName()).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendAbsoluteComposition(IWorldClient client, bool ok, Item item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.ITEM_COMPOSE_ABSOLUTE);
+            packet.Write(ok ? (byte)0 : (byte)1);
+            packet.Write(new CraftName(item.GetCraftName()).Serialize());
+            packet.Write(true); // ?
+
+            client.Send(packet);
+        }
+
+
+        #endregion
+
         #region Dyeing
 
         public void SendSelectDyeItem(IWorldClient client, bool success)
