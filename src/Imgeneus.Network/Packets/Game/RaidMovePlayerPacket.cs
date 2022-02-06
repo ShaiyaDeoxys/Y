@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RaidMovePlayerPacket : IDeserializedPacket
+    public record RaidMovePlayerPacket : IPacketDeserializer
     {
-        public int SourceIndex;
+        public int SourceIndex { get; private set; }
 
-        public int DestinationIndex;
+        public int DestinationIndex { get; private set; }
 
-        public RaidMovePlayerPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            SourceIndex = packet.Read<int>();
-            DestinationIndex = packet.Read<int>();
+            SourceIndex = packetStream.Read<int>();
+            DestinationIndex = packetStream.Read<int>();
         }
     }
 }

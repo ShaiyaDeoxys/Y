@@ -1,6 +1,4 @@
-﻿using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets;
-using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
@@ -43,96 +41,14 @@ namespace Imgeneus.World.Game.PartyAndRaid
             _ownerId = ownerId;
         }
 
-        public async Task Clear()
+        public Task Clear()
         {
             Party = null;
+
+            return Task.CompletedTask;
         }
 
         #endregion
-
-        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
-        {
-            var worldSender = (IWorldClient)sender;
-
-            switch (packet)
-            {
-                case RaidChangeAutoInvitePacket raidChangeAutoInvitePacket:
-                    if (!_player.IsPartyLead || !(_player.Party is Raid))
-                        return;
-                    (_player.Party as Raid).ChangeAutoJoin(raidChangeAutoInvitePacket.IsAutoInvite);
-                    break;
-
-                case RaidChangeLootPacket raidChangeLootPacket:
-                    if (!_player.IsPartyLead || !(_player.Party is Raid))
-                        return;
-                    (_player.Party as Raid).ChangeDropType((RaidDropType)raidChangeLootPacket.LootType);
-                    break;
-
-                case RaidJoinPacket raidJoinPacket:
-                    if (_player.Party != null) // Player is already in party.
-                    {
-                        SendPartyError(_player.Client, PartyErrorType.RaidNotFound);
-                        return;
-                    }
-
-                    var raidMember = _gameWorld.Players.Values.FirstOrDefault(m => m.Name == raidJoinPacket.CharacterName);
-                    if (raidMember is null || raidMember.Country != _player.Country || !(raidMember.Party is Raid))
-                        SendPartyError(_player.Client, PartyErrorType.RaidNotFound);
-                    else
-                    {
-                        if ((raidMember.Party as Raid).AutoJoin)
-                        {
-                            _player.SetParty(raidMember.Party);
-                            if (_player.Party is null)
-                            {
-                                SendPartyError(_player.Client, PartyErrorType.RaidNoFreePlace);
-                            }
-                        }
-                        else
-                        {
-                            SendPartyError(_player.Client, PartyErrorType.RaidNoAutoJoin);
-                        }
-                    }
-                    break;
-
-                case RaidChangeLeaderPacket raidChangeLeaderPacket:
-                    if (!_player.IsPartyLead || !(_player.Party is Raid))
-                        return;
-                    if (!_gameWorld.Players.TryGetValue(raidChangeLeaderPacket.CharacterId, out var newRaidLeader))
-                        return;
-                    if (newRaidLeader.Party != _player.Party)
-                        return;
-                    _player.Party.Leader = newRaidLeader;
-                    break;
-
-                case RaidChangeSubLeaderPacket raidChangeSubLeaderPacket:
-                    if (!_player.IsPartyLead || !(_player.Party is Raid))
-                        return;
-                    if (!_gameWorld.Players.TryGetValue(raidChangeSubLeaderPacket.CharacterId, out var newRaidSubLeader))
-                        return;
-                    if (newRaidSubLeader.Party != _player.Party)
-                        return;
-                    _player.Party.SubLeader = newRaidSubLeader;
-                    break;
-
-                case RaidKickPacket raidKickPacket:
-                    if (!_player.IsPartyLead || !(_player.Party is Raid))
-                        return;
-                    if (!_gameWorld.Players.TryGetValue(raidKickPacket.CharacterId, out var kickMember))
-                        return;
-                    if (kickMember.Party != _player.Party)
-                        return;
-                    _player.Party.KickMember(kickMember);
-                    kickMember.SetParty(null, true);
-                    break;
-
-                case RaidMovePlayerPacket raidMovePlayerPacket:
-                    if (!(_player.Party is Raid) || (!_player.IsPartyLead && !_player.IsPartySubLeader))
-                        return;
-                    (_player.Party as Raid).MoveCharacter(raidMovePlayerPacket.SourceIndex, raidMovePlayerPacket.DestinationIndex);
-                    break;
-            }
-        }*/
 
         #region Party creation
 
@@ -162,9 +78,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     if (value.EnterParty(Player))
                     {
                         _party = value;
-
-                        //if (_party is Raid)
-                        //    _packetsHelper.SendRaidInfo(Client, Party as Raid);
 
                         _party.OnLeaderChanged += Party_OnLeaderChanged;
                         _mapProvider.Map.UnregisterSearchForParty(Player);

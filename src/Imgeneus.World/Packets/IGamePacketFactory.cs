@@ -118,6 +118,22 @@ namespace Imgeneus.World.Packets
 
         #region Raid
         void SendRaidCreated(IWorldClient client, Raid raid);
+        void SendRaidInfo(IWorldClient client, Raid raid);
+        void SendPlayerJoinedRaid(IWorldClient client, Character character, ushort position);
+        void SendPlayerLeftRaid(IWorldClient client, Character character);
+        void SendAutoJoinChanged(IWorldClient client, bool autoJoin);
+        void SendDropType(IWorldClient client, RaidDropType dropType);
+        void SendAddRaidBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel);
+        void SendRemoveRaidBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel);
+        void SendRaid_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type);
+        void SendRaid_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type);
+        void SendRaidNewLeader(IWorldClient client, Character character);
+        void SendNewRaidSubLeader(IWorldClient client, Character character);
+        void SendRaidKickMember(IWorldClient client, Character character);
+        void SendPlayerMove(IWorldClient client, int sourceIndex, int destinationIndex, int leaderIndex, int subLeaderIndex);
+        void SendMemberGetItem(IWorldClient client, int characterId, Item item);
+        void SendRaidInvite(IWorldClient client, int charId);
+        void SendDeclineRaid(IWorldClient client, int charId);
         #endregion
 
         #region GM

@@ -2,13 +2,13 @@
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public record RaidChangeLootPacket : IPacketDeserializer
+    public record RaidInvitePacket : IPacketDeserializer
     {
-        public int LootType { get; private set; }
+        public int CharacterId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            LootType = packetStream.Read<int>();
+            CharacterId = packetStream.Read<int>();
         }
     }
 }

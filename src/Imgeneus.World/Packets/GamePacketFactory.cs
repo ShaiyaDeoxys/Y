@@ -776,6 +776,131 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendRaidInfo(IWorldClient client, Raid raid)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_LIST);
+            packet.Write(new RaidParty(raid).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendPlayerJoinedRaid(IWorldClient client, Character character, ushort position)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_ENTER);
+            packet.Write(new RaidMember(character, position).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendPlayerLeftRaid(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_LEAVE);
+            packet.Write(character.Id);
+            client.Send(packet);
+        }
+
+        public void SendAutoJoinChanged(IWorldClient client, bool autoJoin)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_AUTOINVITE);
+            packet.Write(autoJoin);
+            client.Send(packet);
+        }
+
+        public void SendDropType(IWorldClient client, RaidDropType dropType)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_LOOT);
+            packet.Write((int)dropType);
+            client.Send(packet);
+        }
+
+        public void SendAddRaidBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_ADDED_BUFF);
+            packet.Write(senderId);
+            packet.Write(skillId);
+            packet.Write(skillLevel);
+            client.Send(packet);
+        }
+
+        public void SendRemoveRaidBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_REMOVED_BUFF);
+            packet.Write(senderId);
+            packet.Write(skillId);
+            packet.Write(skillLevel);
+            client.Send(packet);
+        }
+
+        public void SendRaid_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHARACTER_SP_MP);
+            packet.Write(id);
+            packet.Write(type);
+            packet.Write(value);
+            client.Send(packet);
+        }
+
+        public void SendRaid_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_SET_MAX);
+            packet.Write(id);
+            packet.Write(type);
+            packet.Write(value);
+            client.Send(packet);
+        }
+
+        public void SendRaidNewLeader(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_LEADER);
+            packet.Write(character.Id);
+            client.Send(packet);
+        }
+
+        public void SendNewRaidSubLeader(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_CHANGE_SUBLEADER);
+            packet.Write(character.Id);
+            client.Send(packet);
+        }
+
+        public void SendRaidKickMember(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_KICK);
+            packet.Write(character.Id);
+            client.Send(packet);
+        }
+
+        public void SendPlayerMove(IWorldClient client, int sourceIndex, int destinationIndex, int leaderIndex, int subLeaderIndex)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_MOVE_PLAYER);
+            packet.Write(sourceIndex);
+            packet.Write(destinationIndex);
+            packet.Write(leaderIndex);
+            packet.Write(subLeaderIndex);
+            client.Send(packet);
+        }
+
+        public void SendMemberGetItem(IWorldClient client, int characterId, Item item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_MEMBER_GET_ITEM);
+            packet.Write(characterId);
+            packet.Write(item.Type);
+            packet.Write(item.TypeId);
+            client.Send(packet);
+        }
+
+        public void SendRaidInvite(IWorldClient client, int requesterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_INVITE);
+            packet.Write(requesterId);
+            client.Send(packet);
+        }
+
+        public void SendDeclineRaid(IWorldClient client, int charId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RAID_RESPONSE);
+            packet.Write(false);
+            packet.Write(charId);
+            client.Send(packet);
+        }
         #endregion
 
         #region GM

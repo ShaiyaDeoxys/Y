@@ -421,13 +421,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendRaidInfo(IWorldClient client, Raid raid)
-        {
-            using var packet = new ImgeneusPacket(PacketType.RAID_LIST);
-            packet.Write(new RaidParty(raid).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendResetSkills(IWorldClient client, ushort skillPoint)
         {
             using var packet = new ImgeneusPacket(PacketType.RESET_SKILLS);
