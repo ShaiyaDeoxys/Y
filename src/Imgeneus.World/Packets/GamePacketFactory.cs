@@ -903,6 +903,86 @@ namespace Imgeneus.World.Packets
         }
         #endregion
 
+        #region Trade
+
+        public void SendTradeRequest(IWorldClient client, int tradeRequesterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_REQUEST);
+            packet.Write(tradeRequesterId);
+            client.Send(packet);
+        }
+
+        public void SendTradeStart(IWorldClient client, int traderId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_START);
+            packet.Write(traderId);
+            client.Send(packet);
+        }
+
+        public void SendAddedItemToTrade(IWorldClient client, byte bag, byte slot, byte quantity, byte slotInTradeWindow)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_OWNER_ADD_ITEM);
+            packet.Write(bag);
+            packet.Write(slot);
+            packet.Write(quantity);
+            packet.Write(slotInTradeWindow);
+            client.Send(packet);
+        }
+
+        public void SendAddedItemToTrade(IWorldClient client, Item tradeItem, byte quantity, byte slotInTradeWindow)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_RECEIVER_ADD_ITEM);
+            packet.Write(new TradeItem(slotInTradeWindow, quantity, tradeItem).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendTradeCanceled(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_STOP);
+            packet.WriteByte(2);
+            client.Send(packet);
+        }
+
+        public void SendRemovedItemFromTrade(IWorldClient client, byte byWho)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_REMOVE_ITEM);
+            packet.Write(byWho);
+            client.Send(packet);
+        }
+
+        public void SendAddedMoneyToTrade(IWorldClient client, byte byWho, uint tradeMoney)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_ADD_MONEY);
+            packet.Write(byWho);
+            packet.Write(tradeMoney);
+            client.Send(packet);
+        }
+
+        public void SendTradeDecide(IWorldClient client, byte byWho, bool isDecided)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_DECIDE);
+            packet.WriteByte(byWho);
+            packet.Write(isDecided);
+            client.Send(packet);
+        }
+
+        public void SendTradeConfirm(IWorldClient client, byte byWho, bool isDeclined)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_FINISH);
+            packet.WriteByte(byWho);
+            packet.Write(isDeclined);
+            client.Send(packet);
+        }
+
+        public void SendTradeFinished(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_STOP);
+            packet.WriteByte(0);
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {

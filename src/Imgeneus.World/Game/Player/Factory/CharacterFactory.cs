@@ -34,6 +34,7 @@ using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Trade;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -73,6 +74,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IMapProvider _mapProvider;
         private readonly ITeleportationManager _teleportationManager;
         private readonly IPartyManager _partyManager;
+        private readonly ITradeManager _tradeManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -107,7 +109,8 @@ namespace Imgeneus.World.Game.Player
                                 IAdditionalInfoManager additionalInfoManager,
                                 IMapProvider mapProvider,
                                 ITeleportationManager teleportationManager,
-                                IPartyManager partyManager)
+                                IPartyManager partyManager,
+                                ITradeManager tradeManager)
         {
             _logger = logger;
             _database = database;
@@ -143,6 +146,7 @@ namespace Imgeneus.World.Game.Player
             _mapProvider = mapProvider;
             _teleportationManager = teleportationManager;
             _partyManager = partyManager;
+            _tradeManager = tradeManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -221,6 +225,8 @@ namespace Imgeneus.World.Game.Player
 
             _partyManager.Init(dbCharacter.Id);
 
+            _tradeManager.Init(dbCharacter.Id);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -256,6 +262,7 @@ namespace Imgeneus.World.Game.Player
                                         _mapProvider,
                                         _teleportationManager,
                                         _partyManager,
+                                        _tradeManager,
                                         _gameSession);
 
             player.Client = _gameSession.Client; // TODO: remove it.

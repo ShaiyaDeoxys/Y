@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct TradeAddMoneyPacket : IDeserializedPacket
+    public record TradeAddMoneyPacket : IPacketDeserializer
     {
-        public uint Money { get; }
+        public uint Money { get; private set; }
 
-        public TradeAddMoneyPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Money = packet.Read<uint>();
+            Money = packetStream.Read<uint>();
         }
     }
 }

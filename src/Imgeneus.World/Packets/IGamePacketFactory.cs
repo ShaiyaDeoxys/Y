@@ -136,6 +136,19 @@ namespace Imgeneus.World.Packets
         void SendDeclineRaid(IWorldClient client, int charId);
         #endregion
 
+        #region Trade
+        void SendTradeRequest(IWorldClient client, int tradeRequesterId);
+        void SendTradeStart(IWorldClient client, int traderId);
+        void SendAddedItemToTrade(IWorldClient client, byte bag, byte slot, byte quantity, byte slotInTradeWindow);
+        void SendAddedItemToTrade(IWorldClient client, Item tradeItem, byte quantity, byte slotInTradeWindow);
+        void SendTradeCanceled(IWorldClient client);
+        void SendRemovedItemFromTrade(IWorldClient client, byte byWho);
+        void SendAddedMoneyToTrade(IWorldClient client, byte byWho, uint tradeMoney);
+        void SendTradeDecide(IWorldClient client, byte byWho, bool isDecided);
+        void SendTradeConfirm(IWorldClient client, byte byWho, bool isDeclined);
+        void SendTradeFinished(IWorldClient client);
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

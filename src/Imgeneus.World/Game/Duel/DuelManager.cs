@@ -131,17 +131,17 @@ namespace Imgeneus.World.Game.Duel
         /// <param name="slotInTradeWindow">slot in trade window</param>
         private void HandleAddItem(byte bag, byte slot, byte quantity, byte slotInTradeWindow)
         {
-            Sender.InventoryManager.InventoryItems.TryGetValue((bag, slot), out var tradeItem);
+            /*Sender.InventoryManager.InventoryItems.TryGetValue((bag, slot), out var tradeItem);
             if (tradeItem is null)
             {
                 // Possible cheating, maybe log it?
                 return;
             }
             tradeItem.TradeQuantity = tradeItem.Count > quantity ? quantity : tradeItem.Count;
-            Sender.TradeItems.TryAdd(slotInTradeWindow, tradeItem);
+            Sender.TradeManager..TradeItems.TryAdd(slotInTradeWindow, tradeItem);
 
             SendAddedItemToTrade(Sender.Client, bag, slot, quantity, slotInTradeWindow);
-            SendAddedItemToTrade(Sender.DuelOpponent.Client, tradeItem, quantity, slotInTradeWindow);
+            SendAddedItemToTrade(Sender.DuelOpponent.Client, tradeItem, quantity, slotInTradeWindow);*/
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Imgeneus.World.Game.Duel
         /// <param name="slotInTradeWindow">slot in trade window</param>
         private void HandleRemoveItem(byte slotInTradeWindow)
         {
-            if (Sender.TradeItems.ContainsKey(slotInTradeWindow))
+            /*if (Sender.TradeItems.ContainsKey(slotInTradeWindow))
                 Sender.TradeItems.TryRemove(slotInTradeWindow, out var removed);
             else
             {
@@ -159,7 +159,7 @@ namespace Imgeneus.World.Game.Duel
             }
 
             SendRemovedItemFromTrade(Sender.Client, slotInTradeWindow, 1);
-            SendRemovedItemFromTrade(Sender.DuelOpponent.Client, slotInTradeWindow, 2);
+            SendRemovedItemFromTrade(Sender.DuelOpponent.Client, slotInTradeWindow, 2);*/
         }
 
         /// <summary>
@@ -167,9 +167,9 @@ namespace Imgeneus.World.Game.Duel
         /// </summary>
         private void HandleAddMoney(uint money)
         {
-            Sender.TradeMoney = money < Sender.InventoryManager.Gold ? money : Sender.InventoryManager.Gold;
+            /*Sender.TradeMoney = money < Sender.InventoryManager.Gold ? money : Sender.InventoryManager.Gold;
             SendAddedMoneyToTrade(Sender.Client, 1, Sender.TradeMoney);
-            SendAddedMoneyToTrade(Sender.DuelOpponent.Client, 2, Sender.TradeMoney);
+            SendAddedMoneyToTrade(Sender.DuelOpponent.Client, 2, Sender.TradeMoney);*/
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Imgeneus.World.Game.Duel
             }
             else if (result == 2) // close window was clicked.
             {
-                Sender.TradeItems.Clear();
+                /*Sender.TradeItems.Clear();
                 Sender.DuelOpponent.TradeItems.Clear();
                 Sender.TradeMoney = 0;
                 Sender.DuelOpponent.TradeMoney = 0;
@@ -208,7 +208,7 @@ namespace Imgeneus.World.Game.Duel
                 SendCloseDuelTrade(Sender.Client, DuelCloseWindowReason.SenderClosedWindow);
                 SendCloseDuelTrade(Sender.DuelOpponent.Client, DuelCloseWindowReason.OpponentClosedWindow);
 
-                StopDuel();
+                StopDuel();*/
             }
         }
 
@@ -445,8 +445,8 @@ namespace Imgeneus.World.Game.Duel
         {
             // TODO: drop loser's items on the floor.
 
-            winner.ClearTrade();
-            loser.ClearTrade();
+            //winner.ClearTrade();
+            //loser.ClearTrade();
         }
 
         private void StopDuel()

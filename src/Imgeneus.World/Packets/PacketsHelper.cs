@@ -200,6 +200,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendTradeCanceled(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRADE_STOP);
+            packet.WriteByte(2);
+            client.Send(packet);
+        }
+
         internal void SetMobInTarget(IWorldClient client, Mob target)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_MOB);

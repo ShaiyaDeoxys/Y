@@ -9,6 +9,7 @@ using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Teleport;
+using Imgeneus.World.Game.Trade;
 using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -60,6 +61,7 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<ITeleportationManager>().Clear());
             tasks.Add(x.GetService<IHealthManager>().Clear());
             tasks.Add(x.GetService<IPartyManager>().Clear());
+            tasks.Add(x.GetService<ITradeManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

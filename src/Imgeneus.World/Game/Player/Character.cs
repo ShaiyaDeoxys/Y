@@ -71,6 +71,7 @@ namespace Imgeneus.World.Game.Player
         public ILinkingManager LinkingManager { get; private set; }
         public ITeleportationManager TeleportationManager { get; private set; }
         public IPartyManager PartyManager { get; private set; }
+        public ITradeManager TradeManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -104,6 +105,7 @@ namespace Imgeneus.World.Game.Player
                          IMapProvider mapProvider,
                          ITeleportationManager teleportationManager,
                          IPartyManager partyManager,
+                         ITradeManager tradeManager,
                          IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
         {
             _logger = logger;
@@ -129,6 +131,7 @@ namespace Imgeneus.World.Game.Player
             LinkingManager = linkinManager;
             TeleportationManager = teleportationManager;
             PartyManager = partyManager;
+            TradeManager = tradeManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
@@ -141,6 +144,7 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnAddItem += SendAddItemToInventory;
             InventoryManager.OnRemoveItem += SendRemoveItemFromInventory;
             InventoryManager.OnItemExpired += SendItemExpired;
+            TradeManager.OnCanceled += SendTradeCanceled;
 
             _packetsHelper = new PacketsHelper();
 
@@ -176,6 +180,7 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnAddItem -= SendAddItemToInventory;
             InventoryManager.OnRemoveItem -= SendRemoveItemFromInventory;
             InventoryManager.OnItemExpired -= SendItemExpired;
+            TradeManager.OnCanceled -= SendTradeCanceled;
 
             OnDead -= Character_OnDead;
 
@@ -247,41 +252,6 @@ namespace Imgeneus.World.Game.Player
         /// Quick items, i.e. skill bars. Not sure if I need to store it as DbQuickSkillBarItem or need another connector helper class here?
         /// </summary>
         public IEnumerable<DbQuickSkillBarItem> QuickItems;
-
-        #endregion
-
-        #region Trade
-
-        /// <summary>
-        /// With whom player is currently trading.
-        /// </summary>
-        public Character TradePartner;
-
-        /// <summary>
-        /// Represents currently open trade window.
-        /// </summary>
-        public TradeRequest TradeRequest;
-
-        /// <summary>
-        /// Items, that are currently in trade window.
-        /// </summary>
-        public ConcurrentDictionary<byte, Item> TradeItems = new ConcurrentDictionary<byte, Item>();
-
-        /// <summary>
-        /// Money in trade window.
-        /// </summary>
-        public uint TradeMoney;
-
-        /// <summary>
-        /// Clears trade items and gold.
-        /// </summary>
-        public void ClearTrade()
-        {
-            TradeItems.Clear();
-            TradeMoney = 0;
-            TradeRequest = null;
-            TradePartner = null;
-        }
 
         #endregion
 
@@ -359,9 +329,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, noticeManager, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, noticeManager, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
