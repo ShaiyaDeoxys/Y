@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Skills;
 using System;
 
@@ -24,7 +25,11 @@ namespace Imgeneus.World.Game.Attack
         /// <summary>
         /// Current enemy in target.
         /// </summary>
-        IKillable Target { get; }
+        IKillable Target { get; set; }
+
+        event Action<IKillable, Buff> TargetOnBuffAdded;
+
+        event Action<IKillable, Buff> TargetOnBuffRemoved;
 
         /// <summary>
         /// Checks if it's possible to attack target. (or use skill)

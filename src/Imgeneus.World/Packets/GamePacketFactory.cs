@@ -28,6 +28,9 @@ using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game;
+using Imgeneus.World.Game.Movement;
 
 namespace Imgeneus.World.Packets
 {
@@ -1003,6 +1006,52 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.TRADE_STOP);
             packet.WriteByte(0);
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Attack
+
+        public void SendMobInTarget(IWorldClient client, Mob target)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_MOB);
+            packet.Write(new MobInTarget(target).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendPlayerInTarget(IWorldClient client, Character target)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_CHARACTER);
+            packet.Write(new CharacterInTarget(target).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendCurrentBuffs(IWorldClient client, IKillable target)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TARGET_BUFFS);
+            packet.Write(new TargetBuffs(target).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendMobState(IWorldClient client, Mob target)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_GET_STATE);
+            packet.Write(target.Id);
+            packet.Write(target.HealthManager.CurrentHP);
+            packet.Write((byte)target.SpeedManager.TotalAttackSpeed);
+            packet.Write((byte)target.SpeedManager.TotalMoveSpeed);
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Mobs
+
+        public void SendMobPosition(IWorldClient client, int senderId, float x, float z, MoveMotion motion)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
+            packet.Write(new MobMove(senderId, x, z, motion).Serialize());
             client.Send(packet);
         }
 

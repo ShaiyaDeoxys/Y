@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public class TargetGetMobStatePacket : IDeserializedPacket
+    public class TargetGetMobStatePacket : IPacketDeserializer
     {
-        public int MobId { get; }
+        public int MobId { get; private set; }
 
-        public TargetGetMobStatePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            MobId = packet.Read<int>();
+            MobId = packetStream.Read<int>();
         }
     }
 }

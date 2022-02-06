@@ -19,16 +19,6 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {
-        private void HandlePlayerInTarget(PlayerInTargetPacket packet)
-        {
-            Target = Map.GetPlayer(packet.TargetId);
-        }
-
-        private void HandleMobInTarget(MobInTargetPacket packet)
-        {
-            Target = Map.GetMob(CellId, packet.TargetId);
-        }
-
         private void HandleMotion(MotionPacket packet)
         {
             if (packet.Motion == Motion.None || packet.Motion == Motion.Sit)
@@ -67,32 +57,6 @@ namespace Imgeneus.World.Game.Player
         {
             IKillable target = Map.GetPlayer(targetId);
             Attack(number, target);
-        }
-
-        private void HandleGetCharacterBuffs(int targetId)
-        {
-            var target = Map.GetPlayer(targetId);
-            if (target != null)
-                _packetsHelper.SendCurrentBuffs(Client, target);
-        }
-
-        private void HandleGetMobBuffs(int targetId)
-        {
-            var target = Map.GetMob(CellId, targetId);
-            if (target != null)
-                _packetsHelper.SendCurrentBuffs(Client, target);
-        }
-
-        private void HandleGetMobState(int targetId)
-        {
-            var target = Map.GetMob(CellId, targetId);
-            if (target != null)
-            {
-                _packetsHelper.SendMobPosition(Client, target.Id, target.MovementManager.PosX, target.MovementManager.PosZ, target.MovementManager.MoveMotion);
-                _packetsHelper.SendMobState(Client, target);
-            }
-            else
-                _logger.LogWarning($"Coudn't find mob {targetId} state.");
         }
 
         private void HandleCharacterShape(int characterId)

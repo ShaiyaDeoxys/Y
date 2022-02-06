@@ -9,42 +9,6 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character : IKillable, IKiller
     {
-        #region Target
-
-        private BaseKillable _target;
-        public BaseKillable Target
-        {
-            get => _target; set
-            {
-                if (_target != null)
-                {
-                    _target.BuffsManager.OnBuffAdded -= Target_OnBuffAdded;
-                    _target.BuffsManager.OnBuffRemoved -= Target_OnBuffRemoved;
-                }
-
-                _target = value;
-
-                if (_target != null)
-                {
-                    _target.BuffsManager.OnBuffAdded += Target_OnBuffAdded;
-                    _target.BuffsManager.OnBuffRemoved += Target_OnBuffRemoved;
-                    TargetChanged(Target);
-                }
-            }
-        }
-
-        private void Target_OnBuffAdded(int senderId, Buff buff)
-        {
-            SendTargetAddBuff(senderId, buff, Target is Mob);
-        }
-
-        private void Target_OnBuffRemoved(int senderId, Buff buff)
-        {
-            SendTargetRemoveBuff(senderId, buff, Target is Mob);
-        }
-
-        #endregion
-
         #region Damage calculation
 
         /// <summary>

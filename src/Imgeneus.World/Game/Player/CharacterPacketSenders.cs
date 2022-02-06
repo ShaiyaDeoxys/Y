@@ -34,7 +34,7 @@ namespace Imgeneus.World.Game.Player
             SendOpenQuests();
             SendFinishedQuests();
             //SendActiveBuffs();
-            SendMoveAndAttackSpeed();
+            //SendMoveAndAttackSpeed();
             SendFriends();
             SendBlessAmount();
             SendBankItems();
@@ -121,16 +121,11 @@ namespace Imgeneus.World.Game.Player
 
         private void SendCooldownNotOver(IKillable target, Skill skill) => _packetsHelper.SendCooldownNotOver(Client, this, target, skill);
 
-        protected void SendMoveAndAttackSpeed()
-        {
-            //if (Client != null) _packetsHelper.SendMoveAndAttackSpeed(Client, this);
-        }
-
         private void SendRunMode() => _packetsHelper.SendRunMode(Client, this);
 
-        private void SendTargetAddBuff(int targetId, Buff buff, bool isMob) => _packetsHelper.SendTargetAddBuff(Client, targetId, buff, isMob);
+        private void SendTargetAddBuff(IKillable target, Buff buff) => _packetsHelper.SendTargetAddBuff(Client, target.Id, buff, target is Mob);
 
-        private void SendTargetRemoveBuff(int targetId, Buff buff, bool isMob) => _packetsHelper.SendTargetRemoveBuff(Client, targetId, buff, isMob);
+        private void SendTargetRemoveBuff(IKillable target, Buff buff) => _packetsHelper.SendTargetRemoveBuff(Client, target.Id, buff, target is Mob);
 
         public void SendAddItemToInventory(Item item)
         {
@@ -159,18 +154,6 @@ namespace Imgeneus.World.Game.Player
         public void SendVehicleRequest(int requesterId) => _packetsHelper.SendVehicleRequest(Client, requesterId);
 
         public void SendMyShape() => _packetsHelper.SendCharacterShape(Client, this);
-
-        private void TargetChanged(IKillable target)
-        {
-            if (target is Mob)
-            {
-                _packetsHelper.SetMobInTarget(Client, (Mob)target);
-            }
-            else
-            {
-                _packetsHelper.SetPlayerInTarget(Client, (Character)target);
-            }
-        }
 
         public void SendAttribute(CharacterAttributeEnum attribute) =>
             _packetsHelper.SendAttribute(Client, attribute, GetAttributeValue(attribute));

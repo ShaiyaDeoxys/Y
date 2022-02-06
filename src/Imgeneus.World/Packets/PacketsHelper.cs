@@ -207,20 +207,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SetMobInTarget(IWorldClient client, Mob target)
-        {
-            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_MOB);
-            packet.Write(new MobInTarget(target).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SetPlayerInTarget(IWorldClient client, Character target)
-        {
-            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_CHARACTER);
-            packet.Write(new CharacterInTarget(target).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendVehicleRequest(IWorldClient client, int requesterId)
         {
             using var packet = new ImgeneusPacket(PacketType.VEHICLE_REQUEST);
@@ -585,13 +571,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCurrentBuffs(IWorldClient client, IKillable target)
-        {
-            using var packet = new ImgeneusPacket(PacketType.TARGET_BUFFS);
-            packet.Write(new TargetBuffs(target).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendCharacterShape(IWorldClient client, Character character)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE);
@@ -639,23 +618,6 @@ namespace Imgeneus.World.Packets
             packet.Write(buff.SkillId);
             packet.Write(buff.SkillLevel);
 
-            client.Send(packet);
-        }
-
-        internal void SendMobPosition(IWorldClient client, int senderId, float x, float z, MoveMotion motion)
-        {
-            using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
-            packet.Write(new MobMove(senderId, x, z, motion).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendMobState(IWorldClient client, Mob target)
-        {
-            using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_GET_STATE);
-            packet.Write(target.Id);
-            packet.Write(target.HealthManager.CurrentHP);
-            packet.Write((byte)target.SpeedManager.TotalAttackSpeed);
-            packet.Write((byte)target.SpeedManager.TotalMoveSpeed);
             client.Send(packet);
         }
 

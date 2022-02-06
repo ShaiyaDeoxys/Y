@@ -145,6 +145,8 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnRemoveItem += SendRemoveItemFromInventory;
             InventoryManager.OnItemExpired += SendItemExpired;
             TradeManager.OnCanceled += SendTradeCanceled;
+            AttackManager.TargetOnBuffAdded += SendTargetAddBuff;
+            AttackManager.TargetOnBuffRemoved += SendTargetRemoveBuff;
 
             _packetsHelper = new PacketsHelper();
 
@@ -181,6 +183,8 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnRemoveItem -= SendRemoveItemFromInventory;
             InventoryManager.OnItemExpired -= SendItemExpired;
             TradeManager.OnCanceled -= SendTradeCanceled;
+            AttackManager.TargetOnBuffAdded -= SendTargetAddBuff;
+            AttackManager.TargetOnBuffRemoved -= SendTargetRemoveBuff;
 
             OnDead -= Character_OnDead;
 

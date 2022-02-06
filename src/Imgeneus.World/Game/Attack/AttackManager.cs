@@ -57,7 +57,40 @@ namespace Imgeneus.World.Game.Attack
 
         #region Target
 
-        public IKillable Target { get; set; }
+        private IKillable _target;
+        public IKillable Target
+        {
+            get => _target;
+            set
+            {
+                if (_target != null)
+                {
+                    _target.BuffsManager.OnBuffAdded -= Target_OnBuffAdded;
+                    _target.BuffsManager.OnBuffRemoved -= Target_OnBuffRemoved;
+                }
+
+                _target = value;
+
+                if (_target != null)
+                {
+                    _target.BuffsManager.OnBuffAdded += Target_OnBuffAdded;
+                    _target.BuffsManager.OnBuffRemoved += Target_OnBuffRemoved;
+                }
+            }
+        }
+
+        public event Action<IKillable, Buff> TargetOnBuffAdded;
+
+        private void Target_OnBuffAdded(int senderId, Buff buff)
+        {
+            TargetOnBuffAdded?.Invoke(Target, buff);
+        }
+
+        public event Action<IKillable, Buff> TargetOnBuffRemoved;
+        private void Target_OnBuffRemoved(int senderId, Buff buff)
+        {
+            TargetOnBuffRemoved?.Invoke(Target, buff);
+        }
 
         #endregion
 

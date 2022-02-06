@@ -53,15 +53,6 @@ namespace Imgeneus.World.Game.Player
         {
             switch (packet)
             {
-
-                case MobInTargetPacket mobInTargetPacket:
-                    HandleMobInTarget(mobInTargetPacket);
-                    break;
-
-                case PlayerInTargetPacket playerInTargetPacket:
-                    HandlePlayerInTarget(playerInTargetPacket);
-                    break;
-
                 case SkillBarPacket skillBarPacket:
                     HandleSkillBarPacket(skillBarPacket);
                     break;
@@ -85,18 +76,6 @@ namespace Imgeneus.World.Game.Player
 
                 case CharacterSkillAttackPacket usedSkillPlayerAttackPacket:
                     HandleUseSkillOnPlayer(usedSkillPlayerAttackPacket.Number, usedSkillPlayerAttackPacket.TargetId);
-                    break;
-
-                case TargetCharacterGetBuffs targetCharacterGetBuffsPacket:
-                    HandleGetCharacterBuffs(targetCharacterGetBuffsPacket.TargetId);
-                    break;
-
-                case TargetMobGetBuffs targetMobGetBuffsPacket:
-                    HandleGetMobBuffs(targetMobGetBuffsPacket.TargetId);
-                    break;
-
-                case TargetGetMobStatePacket targetGetMobStatePacket:
-                    HandleGetMobState(targetGetMobStatePacket.MobId);
                     break;
 
                 case CharacterShapePacket characterShapePacket:

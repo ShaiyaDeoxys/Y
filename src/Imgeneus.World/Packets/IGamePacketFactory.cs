@@ -2,10 +2,13 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
@@ -152,6 +155,17 @@ namespace Imgeneus.World.Packets
         void SendTradeDecide(IWorldClient client, byte byWho, bool isDecided);
         void SendTradeConfirm(IWorldClient client, byte byWho, bool isDeclined);
         void SendTradeFinished(IWorldClient client);
+        #endregion
+
+        #region Attack
+        void SendMobInTarget(IWorldClient client, Mob target);
+        void SendPlayerInTarget(IWorldClient client, Character target);
+        void SendCurrentBuffs(IWorldClient client, IKillable target);
+        void SendMobState(IWorldClient client, Mob target);
+        #endregion
+
+        #region Mobs
+        void SendMobPosition(IWorldClient client, int senderId, float x, float z, MoveMotion motion);
         #endregion
 
         #region GM
