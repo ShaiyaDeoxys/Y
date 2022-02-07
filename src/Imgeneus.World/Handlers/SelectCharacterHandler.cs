@@ -62,7 +62,7 @@ namespace Imgeneus.World.Handlers
             //SendFinishedQuests();
             _packetFactory.SendActiveBuffs(client, character.BuffsManager.ActiveBuffs);
             //SendMoveAndAttackSpeed();
-            //SendFriends();
+            _packetFactory.SendFriends(client, character.FriendsManager.Friends.Values);
             //SendBlessAmount();
             //SendBankItems();
             //SendGuildNpcLvlList();

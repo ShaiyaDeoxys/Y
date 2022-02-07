@@ -1,9 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Friends
 {
     public class Friend
     {

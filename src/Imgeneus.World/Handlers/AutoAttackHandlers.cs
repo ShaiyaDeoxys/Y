@@ -23,6 +23,12 @@ namespace Imgeneus.World.Handlers
             _gameWorld = gameWorld;
         }
 
+        [HandlerAction(PacketType.ATTACK_START)]
+        public void HandleAttackStart(WorldClient client, AttackStartPacket packet)
+        {
+            // Not sure, but maybe I should not permit any attack start?
+        }
+
         [HandlerAction(PacketType.CHARACTER_CHARACTER_AUTO_ATTACK)]
         public void HandleAutoAttackOnPlayer(WorldClient client, CharacterAutoAttackPacket packet)
         {

@@ -14,6 +14,7 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
+using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
@@ -598,36 +599,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendFriendRequest(IWorldClient client, Character requester)
-        {
-            using var packet = new ImgeneusPacket(PacketType.FRIEND_REQUEST);
-            packet.WriteString(requester.Name, 21);
-            client.Send(packet);
-        }
-
-        internal void SendFriendAdded(IWorldClient client, Character friend)
-        {
-            using var packet = new ImgeneusPacket(PacketType.FRIEND_ADD);
-            packet.Write(friend.Id);
-            packet.Write((byte)friend.AdditionalInfoManager.Class);
-            packet.WriteString(friend.Name);
-            client.Send(packet);
-        }
-
-        internal void SendFriendDelete(IWorldClient client, int id)
-        {
-            using var packet = new ImgeneusPacket(PacketType.FRIEND_DELETE);
-            packet.Write(id);
-            client.Send(packet);
-        }
-
-        internal void SendFriends(IWorldClient client, IEnumerable<Friend> friends)
-        {
-            using var packet = new ImgeneusPacket(PacketType.FRIEND_LIST);
-            packet.Write(new FriendsList(friends).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendFriendOnline(IWorldClient client, int id, bool isOnline)
         {
             using var packet = new ImgeneusPacket(PacketType.FRIEND_ONLINE);
@@ -635,14 +606,6 @@ namespace Imgeneus.World.Packets
             packet.Write(isOnline);
             client.Send(packet);
         }
-
-        internal void SendFriendResponse(IWorldClient client, bool accepted)
-        {
-            using var packet = new ImgeneusPacket(PacketType.FRIEND_RESPONSE);
-            packet.Write(accepted);
-            client.Send(packet);
-        }
-
         internal void SendGuildJoinRequest(IWorldClient client, bool ok)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_REQUEST);

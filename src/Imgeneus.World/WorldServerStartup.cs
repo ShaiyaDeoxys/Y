@@ -13,6 +13,7 @@ using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
@@ -125,6 +126,7 @@ namespace Imgeneus.World
             services.AddScoped<IDyeingManager, DyeingManager>();
             services.AddScoped<IPartyManager, PartyManager>();
             services.AddScoped<ITradeManager, TradeManager>();
+            services.AddScoped<IFriendsManager, FriendsManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

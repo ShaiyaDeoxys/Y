@@ -13,7 +13,6 @@ namespace Imgeneus.World.Game.Elements
 
 #if DEBUG
             _logger.LogDebug("ElementProvider {hashcode} created", GetHashCode());
-            _logger = logger;
 #endif
         }
 

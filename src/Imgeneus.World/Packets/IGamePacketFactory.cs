@@ -6,6 +6,7 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
+using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Monster;
@@ -169,6 +170,15 @@ namespace Imgeneus.World.Packets
 
         #region Mobs
         void SendMobPosition(IWorldClient client, int senderId, float x, float z, MoveMotion motion);
+        #endregion
+
+        #region Friends
+        void SendFriendRequest(IWorldClient client, string name);
+        void SendFriendResponse(IWorldClient client, bool accepted);
+        void SendFriendAdded(IWorldClient client, Friend friend);
+        void SendFriendDeleted(IWorldClient client, int id);
+        void SendFriends(IWorldClient client, IEnumerable<Friend> friends);
+        void SendFriendOnline(IWorldClient client, int id, bool isOnline);
         #endregion
 
         #region GM

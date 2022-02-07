@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct FriendDeletePacket : IDeserializedPacket
+    public record FriendDeletePacket : IPacketDeserializer
     {
-        public int CharacterId;
+        public int CharacterId { get; private set; }
 
-        public FriendDeletePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            CharacterId = packet.Read<int>();
+            CharacterId = packetStream.Read<int>();
         }
     }
 }

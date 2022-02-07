@@ -53,10 +53,6 @@ namespace Imgeneus.World.Game.Player
         {
             switch (packet)
             {
-                case AttackStart attackStartPacket:
-                    // Not sure, but maybe I should not permit any attack start?
-                    sender.SendPacket(new Packet(PacketType.ATTACK_START));
-                    break;
 
                 case CharacterShapePacket characterShapePacket:
                     HandleCharacterShape(characterShapePacket.CharacterId);
@@ -96,18 +92,6 @@ namespace Imgeneus.World.Game.Player
 
                 case DuelDefeatPacket duelDefeatPacket:
                     FinishDuel(Duel.DuelCancelReason.AdmitDefeat);
-                    break;
-
-                case FriendRequestPacket friendRequestPacket:
-                    HandleFriendRequest(friendRequestPacket.CharacterName);
-                    break;
-
-                case FriendResponsePacket friendResponsePacket:
-                    ClearFriend(friendResponsePacket.Accepted);
-                    break;
-
-                case FriendDeletePacket friendDeletePacket:
-                    DeleteFriend(friendDeletePacket.CharacterId);
                     break;
 
                 case MapPickUpItemPacket mapPickUpItemPacket:

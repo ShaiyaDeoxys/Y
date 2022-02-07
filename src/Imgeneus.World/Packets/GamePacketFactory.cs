@@ -32,6 +32,7 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Friends;
 
 namespace Imgeneus.World.Packets
 {
@@ -1075,7 +1076,56 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
-        #region GM
+        #region Friends
+
+        public void SendFriendRequest(IWorldClient client, string name)
+        {
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_REQUEST);
+            packet.WriteString(name, 21);
+            client.Send(packet);
+        }
+
+        public void SendFriendResponse(IWorldClient client, bool accepted)
+        {
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_RESPONSE);
+            packet.Write(accepted);
+            client.Send(packet);
+        }
+
+        public void SendFriendAdded(IWorldClient client, Friend friend)
+        {
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_ADD);
+            packet.Write(friend.Id);
+            packet.Write((byte)friend.Job);
+            packet.WriteString(friend.Name, 21);
+            client.Send(packet);
+        }
+
+        public void SendFriendDeleted(IWorldClient client, int id)
+        {
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_DELETE);
+            packet.Write(id);
+            client.Send(packet);
+        }
+
+        public void SendFriends(IWorldClient client, IEnumerable<Friend> friends)
+        {
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_LIST);
+            packet.Write(new FriendsList(friends).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendFriendOnline(IWorldClient client, int id, bool isOnline)
+        {
+            using var packet = new ImgeneusPacket(PacketType.FRIEND_ONLINE);
+            packet.Write(id);
+            packet.Write(isOnline);
+            client.Send(packet);
+        }
+
+#endregion
+
+#region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {
             using var packet = new ImgeneusPacket(PacketType.GM_CMD_ERROR);
@@ -1120,6 +1170,6 @@ namespace Imgeneus.World.Packets
             packet.Write(player.PosZ);
             client.Send(packet);
         }
-        #endregion
+#endregion
     }
 }

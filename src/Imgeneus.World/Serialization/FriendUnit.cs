@@ -1,7 +1,7 @@
 ﻿using BinarySerialization;
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Serialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Friends;
 
 namespace Imgeneus.World.Serialization
 {

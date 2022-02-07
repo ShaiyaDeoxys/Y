@@ -47,15 +47,6 @@ namespace Imgeneus.World.Game.Player
             _packetsHelper.SendCharacterShape(Client, character);
         }
 
-        private void HandleFriendRequest(string characterName)
-        {
-            var character = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == characterName).Value;
-            if (character is null || character.CountryProvider.Country != CountryProvider.Country)
-                return;
-
-            character.RequestFriendship(this);
-        }
-
         /*private void HandleUpdateStats(ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
         {
             var fullStat = str + dex + rec + intl + wis + luc;

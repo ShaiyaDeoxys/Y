@@ -42,6 +42,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Friends;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -72,6 +73,7 @@ namespace Imgeneus.World.Game.Player
         public ITeleportationManager TeleportationManager { get; private set; }
         public IPartyManager PartyManager { get; private set; }
         public ITradeManager TradeManager { get; private set; }
+        public IFriendsManager FriendsManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -106,6 +108,7 @@ namespace Imgeneus.World.Game.Player
                          ITeleportationManager teleportationManager,
                          IPartyManager partyManager,
                          ITradeManager tradeManager,
+                         IFriendsManager friendsManager,
                          IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
         {
             _logger = logger;
@@ -132,6 +135,7 @@ namespace Imgeneus.World.Game.Player
             TeleportationManager = teleportationManager;
             PartyManager = partyManager;
             TradeManager = tradeManager;
+            FriendsManager = friendsManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
@@ -158,15 +162,6 @@ namespace Imgeneus.World.Game.Player
         private void Init()
         {
             InitQuests();
-
-            // Send notification to friends.
-            foreach (var friend in Friends.Values)
-            {
-                _gameWorld.Players.TryGetValue(friend.Id, out var player);
-
-                if (player != null)
-                    player.FriendOnline(this);
-            }
         }
 
         public void Dispose()
@@ -188,14 +183,6 @@ namespace Imgeneus.World.Game.Player
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
-
-            // Notify friends, that player is offline.
-            foreach (var friend in Friends.Values)
-            {
-                _gameWorld.Players.TryGetValue(friend.Id, out var friendPlayer);
-                if (friendPlayer != null)
-                    friendPlayer.FriendOffline(this);
-            }
 
             // Notify guild members, that player is offline.
             NotifyGuildMembersOffline();
@@ -321,9 +308,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IGameSession gameSession)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, noticeManager, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, noticeManager, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, gameSession)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
@@ -337,9 +324,6 @@ namespace Imgeneus.World.Game.Player
             character.Quests.AddRange(quests);
 
             character.QuickItems = dbCharacter.QuickItems;
-
-            //foreach (var friend in dbCharacter.Friends.Select(f => f.Friend))
-            //    character.Friends.TryAdd(friend.Id, new Friend(friend.Id, friend.Name, friend.Class, gameWorld.Players.ContainsKey(friend.Id)));
 
             foreach (var bankItem in dbCharacter.User.BankItems.Where(bi => !bi.IsClaimed).Select(bi => new BankItem(bi)))
                 character.BankItems.TryAdd(bankItem.Slot, bankItem);
