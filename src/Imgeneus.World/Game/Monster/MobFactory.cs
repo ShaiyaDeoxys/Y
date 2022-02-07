@@ -21,7 +21,9 @@ namespace Imgeneus.World.Game.Monster
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private readonly Dictionary<Mob, IServiceScope> _mobScopes = new Dictionary<Mob, IServiceScope>(); 
+        private readonly Dictionary<int, IServiceScope> _mobScopes = new Dictionary<int, IServiceScope>();
+
+        private readonly Dictionary<int, Mob> _mobs = new Dictionary<int, Mob>();
 
         public MobFactory(IServiceProvider serviceProvider)
         {
@@ -50,21 +52,24 @@ namespace Imgeneus.World.Game.Monster
                               scope.ServiceProvider.GetRequiredService<IElementProvider>(),
                               scope.ServiceProvider.GetRequiredService<IMovementManager>(),
                               scope.ServiceProvider.GetRequiredService<IMapProvider>());
-            mob.OnDead += Mob_OnDead;
+            mob.HealthManager.OnDead += Mob_OnDead;
 
-            _mobScopes.Add(mob, scope);
+            _mobScopes.Add(mob.Id, scope);
+            _mobs.Add(mob.Id, mob);
 
             return mob;
         }
 
-        private void Mob_OnDead(IKillable sender, IKiller killer)
+        private void Mob_OnDead(int senderId, IKiller killer)
         {
-            var mob = sender as Mob;
+            _mobs.TryGetValue(senderId, out var mob);
             if (mob.ShouldRebirth)
                 return;
 
-            mob.OnDead -= Mob_OnDead;
-            _mobScopes.Remove(mob, out var scope);
+            mob.HealthManager.OnDead -= Mob_OnDead;
+            _mobs.Remove(senderId);
+
+            _mobScopes.Remove(senderId, out var scope);
             scope.Dispose();
             scope = null;
         }

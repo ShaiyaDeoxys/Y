@@ -81,7 +81,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
         public CharacterShape(Character character)
         {
             CharId = character.Id;
-            IsDead = character.IsDead;
+            IsDead = character.HealthManager.IsDead;
             Motion = character.Motion;
             Country = character.CountryProvider.Country;
             Race = character.AdditionalInfoManager.Race;

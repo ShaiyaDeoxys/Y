@@ -152,7 +152,7 @@ namespace Imgeneus.World.Game.Zone
         public IEnumerable<IKillable> GetPlayers(float x, float z, byte range, CountryType country = CountryType.None, bool includeDead = false, bool includeNeighborCells = true)
         {
             var myPlayers = Players.Values.Where(
-                     p => (includeDead || !p.IsDead) && // filter by death
+                     p => (includeDead || !p.HealthManager.IsDead) && // filter by death
                      (p.CountryProvider.Country == country || country == CountryType.None) && // filter by fraction
                      (range == 0 || MathExtensions.Distance(x, p.PosX, z, p.PosZ) <= range)); // filter by range
             if (includeNeighborCells)
@@ -165,8 +165,8 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         public IEnumerable<IKillable> GetEnemies(Character sender, IKillable target, byte range)
         {
-            IEnumerable<IKillable> mobs = GetAllMobs(true).Where(m => !m.IsDead && MathExtensions.Distance(target.MovementManager.PosX, m.PosX, target.MovementManager.PosZ, m.PosZ) <= range);
-            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(target.MovementManager.PosX, p.PosX, target.MovementManager.PosZ, p.PosZ) <= range);
+            IEnumerable<IKillable> mobs = GetAllMobs(true).Where(m => !m.HealthManager.IsDead && MathExtensions.Distance(target.MovementManager.PosX, m.PosX, target.MovementManager.PosZ, m.PosZ) <= range);
+            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.HealthManager.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(target.MovementManager.PosX, p.PosX, target.MovementManager.PosZ, p.PosZ) <= range);
 
             return mobs.Concat(chars);
         }
@@ -214,7 +214,7 @@ namespace Imgeneus.World.Game.Zone
             character.SkillsManager.OnUsedSkill += Character_OnUsedSkill;
             character.SkillsManager.OnUsedRangeSkill += Character_OnUsedRangeSkill;
             character.AttackManager.OnAttack += Character_OnAttack;
-            character.OnDead += Character_OnDead;
+            character.HealthManager.OnDead += Character_OnDead;
             character.SkillsManager.OnSkillCastStarted += Character_OnSkillCastStarted;
             character.InventoryManager.OnUsedItem += Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged += Character_OnMaxHPChanged;
@@ -224,7 +224,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRecover += Character_OnRecover;
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange += Character_OnShapeChange;
-            character.OnRebirthed += Character_OnRebirthed;
+            character.HealthManager.OnRebirthed += Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged += Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle += Character_OnStartSummonVehicle;
             character.OnLevelUp += Character_OnLevelUp;
@@ -245,7 +245,7 @@ namespace Imgeneus.World.Game.Zone
             character.SkillsManager.OnUsedSkill -= Character_OnUsedSkill;
             character.SkillsManager.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
             character.AttackManager.OnAttack -= Character_OnAttack;
-            character.OnDead -= Character_OnDead;
+            character.HealthManager.OnDead -= Character_OnDead;
             character.SkillsManager.OnSkillCastStarted -= Character_OnSkillCastStarted;
             character.InventoryManager.OnUsedItem -= Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged -= Character_OnMaxHPChanged;
@@ -255,7 +255,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRecover -= Character_OnRecover;
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange -= Character_OnShapeChange;
-            character.OnRebirthed -= Character_OnRebirthed;
+            character.HealthManager.OnRebirthed -= Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged -= Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
             character.OnLevelUp -= Character_OnLevelUp;
@@ -354,10 +354,10 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player is dead.
         /// </summary>
-        private void Character_OnDead(IKillable sender, IKiller killer)
+        private void Character_OnDead(int senderId, IKiller killer)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendCharacterKilled(player.Client, (Character)sender, killer);
+                _packetsHelper.SendCharacterKilled(player.Client, senderId, killer);
         }
 
         /// <summary>
@@ -434,13 +434,12 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Character_OnRebirthed(IKillable sender)
+        private void Character_OnRebirthed(int senderId)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendCharacterRebirth(player.Client, sender);
-                _packetsHelper.SendDeadRebirth(player.Client, (Character)sender);
-                _packetsHelper.SendRecoverCharacter(player.Client, sender, sender.HealthManager.CurrentHP, sender.HealthManager.CurrentMP, sender.HealthManager.CurrentSP);
+                _packetsHelper.SendCharacterRebirth(player.Client, senderId);
+                _packetsHelper.SendDeadRebirth(player.Client, Players[senderId]);
             }
         }
 
@@ -543,6 +542,25 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <summary>
+        /// Called, when mob respawns.
+        /// </summary>
+        /// <param name="sender">respawned mob</param>
+        public void RebirthMob(Mob sender)
+        {
+            sender.TimeToRebirth -= RebirthMob;
+
+            // Create mob clone, because we can not reuse the same id.
+            var mob = sender.Clone();
+
+            // TODO: generate rebirth coordinates based on the spawn area.
+            mob.MovementManager.PosX = sender.PosX;
+            mob.MovementManager.PosY = sender.PosY;
+            mob.MovementManager.PosZ = sender.PosZ;
+
+            AddMob(mob);
+        }
+
+        /// <summary>
         /// Gets all mobs from map cell.
         /// </summary>
         /// /// <param name="includeNeighborCells">if set to true includes mobs fom neighbor cells</param>
@@ -560,7 +578,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="mob">mob, that we listen</param>
         private void AddListeners(Mob mob)
         {
-            mob.OnDead += Mob_OnDead;
+            mob.HealthManager.OnDead += Mob_OnDead;
             mob.MovementManager.OnMove += Mob_OnMove;
             mob.OnAttack += Mob_OnAttack;
             mob.OnUsedSkill += Mob_OnUsedSkill;
@@ -573,21 +591,21 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="mob">mob, that we listen</param>
         private void RemoveListeners(Mob mob)
         {
-            mob.OnDead -= Mob_OnDead;
+            mob.HealthManager.OnDead -= Mob_OnDead;
             mob.MovementManager.OnMove -= Mob_OnMove;
             mob.OnAttack -= Mob_OnAttack;
             mob.OnUsedSkill -= Mob_OnUsedSkill;
             mob.HealthManager.OnRecover -= Mob_OnRecover;
+            mob.TimeToRebirth -= RebirthMob;
         }
 
-        private void Mob_OnDead(IKillable sender, IKiller killer)
+        private void Mob_OnDead(int senderId, IKiller killer)
         {
-            var mob = (Mob)sender;
+            Mobs.TryRemove(senderId, out var mob);
             RemoveListeners(mob);
-            Mobs.TryRemove(mob.Id, out var removedMob);
 
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMobDead(player.Client, sender, killer);
+                _packetsHelper.SendMobDead(player.Client, senderId, killer);
 
             // Add experience to killer character/party
             if (killer is Character killerCharacter)
@@ -596,6 +614,13 @@ namespace Imgeneus.World.Game.Zone
                 else
                     killerCharacter.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
 
+            if (Map is GRBMap)
+                (Map as GRBMap).AddPoints(mob.GuildPoints);
+
+            if (mob.ShouldRebirth)
+                mob.TimeToRebirth += RebirthMob;
+
+            mob.Dispose();
         }
 
         private void Mob_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)

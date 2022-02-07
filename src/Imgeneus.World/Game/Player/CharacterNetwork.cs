@@ -167,11 +167,6 @@ namespace Imgeneus.World.Game.Player
                     QuitQuest(questQuitPacket.QuestId);
                     break;
 
-                case RebirthPacket rebirthPacket:
-                    var rebirthCoordinate = Map.GetRebirthMap(this);
-                    Rebirth(rebirthCoordinate.MapId, rebirthCoordinate.X, rebirthCoordinate.Y, rebirthCoordinate.Z);
-                    break;
-
                 case VehicleRequestPacket vehicleRequestPacket:
                     HandleVehicleRequestPacket(vehicleRequestPacket.CharacterId);
                     break;

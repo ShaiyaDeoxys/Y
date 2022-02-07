@@ -105,6 +105,26 @@ namespace Imgeneus.World.Game.Health
         public void IncreaseHP(int hp);
 
         /// <summary>
+        /// Indicator, that shows if entity is dead or not.
+        /// </summary>
+        public bool IsDead { get; }
+
+        /// <summary>
+        /// Event, that is fired, when entity is killed.
+        /// </summary>
+        public event Action<int, IKiller> OnDead;
+
+        /// <summary>
+        /// Event, that is fired, when killable is resurrected.
+        /// </summary>
+        public event Action<int> OnRebirthed;
+
+        /// <summary>
+        /// Resurrects killable.
+        /// </summary>
+        public void Rebirth();
+
+        /// <summary>
         /// Recoves all 3 stats at once.
         /// </summary>
         public void Recover(int hp, int mp, int sp);

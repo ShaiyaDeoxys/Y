@@ -309,7 +309,7 @@ namespace Imgeneus.World.Game.Skills
                 skill.TargetType == TargetType.AnyEnemy ||
                 skill.TargetType == TargetType.EnemiesNearTarget)
                 &&
-                (target is null || target.IsDead || (target is Mob && (target as Mob).CountryProvider.Country == _countryProvider.Country)))
+                (target is null || target.HealthManager.IsDead || (target is Mob && (target as Mob).CountryProvider.Country == _countryProvider.Country)))
             {
                 success = AttackSuccess.WrongTarget;
                 return false;

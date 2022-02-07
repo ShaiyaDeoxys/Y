@@ -2,7 +2,7 @@
 
 namespace Imgeneus.World.Game.Stealth
 {
-    public interface IStealthManager
+    public interface IStealthManager : IDisposable
     {
         void Init(int ownerId);
 

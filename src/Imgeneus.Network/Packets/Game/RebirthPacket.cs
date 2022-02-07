@@ -1,18 +1,15 @@
 ﻿using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RebirthPacket : IDeserializedPacket
+    public record RebirthPacket : IPacketDeserializer
     {
-        // 2 - KillSoul
-        // 3 - To party leader?
-        // 4 - KillSoulByItem
-        // 5 - KillSoulByItemNoMove
         public byte RebirthType;
 
-        public RebirthPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            RebirthType = packet.Read<byte>();
+            RebirthType = packetStream.Read<byte>();
         }
     }
 }

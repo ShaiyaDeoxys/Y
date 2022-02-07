@@ -149,8 +149,7 @@ namespace Imgeneus.World.Game.Player
             AttackManager.TargetOnBuffRemoved += SendTargetRemoveBuff;
 
             _packetsHelper = new PacketsHelper();
-
-            OnDead += Character_OnDead;
+            HealthManager.OnDead += Character_OnDead;
 
             Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;
@@ -185,8 +184,7 @@ namespace Imgeneus.World.Game.Player
             TradeManager.OnCanceled -= SendTradeCanceled;
             AttackManager.TargetOnBuffAdded -= SendTargetAddBuff;
             AttackManager.TargetOnBuffRemoved -= SendTargetRemoveBuff;
-
-            OnDead -= Character_OnDead;
+            HealthManager.OnDead -= Character_OnDead;
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
@@ -312,21 +310,11 @@ namespace Imgeneus.World.Game.Player
 
         #region Death
 
-        private void Character_OnDead(IKillable sender, IKiller killer)
+        private void Character_OnDead(int senderId, IKiller killer)
         {
             if (IsDuelApproved && killer == DuelOpponent)
                 FinishDuel(DuelCancelReason.Lose);
         }
-
-        #endregion
-
-        #region Overrides
-
-        /*protected override void DecreaseHP(IKiller damageMaker)
-        {
-            StealthManager.IsStealth = false;
-            IsOnVehicle = false;
-        }*/
 
         #endregion
 

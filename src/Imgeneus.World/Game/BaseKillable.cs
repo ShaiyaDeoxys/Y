@@ -5,15 +5,12 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
-using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Imgeneus.World.Game
 {
@@ -76,96 +73,6 @@ namespace Imgeneus.World.Game
 
         #region Death
 
-        /// <inheritdoc />
-        public event Action<IKillable, IKiller> OnDead;
-
-        /// <summary>
-        /// Collection of entities, that made damage to this killable.
-        /// </summary>
-        public ConcurrentDictionary<IKiller, int> DamageMakers { get; private set; } = new ConcurrentDictionary<IKiller, int>();
-
-        /// <summary>
-        /// IKiller, that made max damage.
-        /// </summary>
-        protected IKiller MaxDamageMaker
-        {
-            get
-            {
-                IKiller maxDamageMaker = DamageMakers.First().Key;
-                int damage = DamageMakers.First().Value;
-                foreach (var dmg in DamageMakers)
-                {
-                    if (dmg.Value > damage)
-                    {
-                        damage = dmg.Value;
-                        maxDamageMaker = dmg.Key;
-                    }
-                }
-
-                return maxDamageMaker;
-            }
-        }
-
-        protected bool _isDead;
-
-        /// <inheritdoc />
-        public bool IsDead
-        {
-            get => _isDead;
-            protected set
-            {
-                _isDead = value;
-
-                if (_isDead)
-                {
-                    var killer = MaxDamageMaker;
-                    OnDead?.Invoke(this, killer);
-                    DamageMakers.Clear();
-
-                    // Generate drop.
-                    var dropItems = GenerateDrop(killer);
-                    if (dropItems.Count > 0 && killer is Character)
-                    {
-                        var dropOwner = killer as Character;
-                        if (dropOwner.PartyManager.Party is null)
-                        {
-                            AddItemsDropOnMap(dropItems, dropOwner);
-                        }
-                        else
-                        {
-                            var notDistributedItems = dropOwner.PartyManager.Party.DistributeDrop(dropItems, dropOwner);
-                            AddItemsDropOnMap(notDistributedItems, dropOwner);
-
-                        }
-                    }
-
-                    // Update quest.
-                    if (this is Mob && killer is Character)
-                    {
-                        var character = killer as Character;
-                        var mob = this as Mob;
-                        if (character.PartyManager.Party is null)
-                        {
-                            character.UpdateQuestMobCount(mob.MobId);
-                        }
-                        else
-                        {
-                            foreach (var m in character.PartyManager.Party.Members)
-                            {
-                                if (m.MapProvider.Map == character.MapProvider.Map)
-                                    m.UpdateQuestMobCount(mob.MobId);
-                            }
-                        }
-                    }
-
-                    // Clear buffs.
-                    var buffs = BuffsManager.ActiveBuffs.Where(b => b.ShouldClearAfterDeath).ToList();
-                    foreach (var b in buffs)
-                        b.CancelBuff();
-                }
-            }
-        }
-
         /// <summary>
         /// Add items on map.
         /// </summary>
@@ -212,33 +119,6 @@ namespace Imgeneus.World.Game
         #region Absorption
 
         public ushort Absorption { get => StatsManager.Absorption; }
-
-        #endregion
-
-        #region Resurrect
-
-        /// <inheritdoc />
-        public event Action<IKillable> OnRebirthed;
-
-        /// <inheritdoc />
-        public void Rebirth(ushort mapId, float x, float y, float z)
-        {
-            HealthManager.IncreaseHP(HealthManager.MaxHP);
-            HealthManager.CurrentMP = HealthManager.MaxMP;
-            HealthManager.CurrentSP = HealthManager.MaxSP;
-            IsDead = false;
-
-            MovementManager.PosX = x;
-            MovementManager.PosY = y;
-            MovementManager.PosZ = z;
-
-            OnRebirthed?.Invoke(this);
-
-            /*if (mapId != MapProvider.Map.Id)
-            {
-                (this as Character).Teleport(mapId, x, y, z);
-            }*/
-        }
 
         #endregion
     }

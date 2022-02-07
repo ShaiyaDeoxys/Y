@@ -2,7 +2,6 @@
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
-using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Skills;
@@ -187,7 +186,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && (target is null || target.IsDead))
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && (target is null || target.HealthManager.IsDead))
             {
                 success = AttackSuccess.WrongTarget;
                 return false;
@@ -226,7 +225,7 @@ namespace Imgeneus.World.Game.Attack
         /// <summary>
         /// Usual physical attack, "auto attack".
         /// </summary>
-        public void AutoAttack()
+        public void AutoAttack(IKiller sender)
         {
             StartAttack();
 
@@ -245,9 +244,9 @@ namespace Imgeneus.World.Game.Attack
                                              _statsManager.MinMagicAttack,
                                              _statsManager.MaxMagicAttack);
 
-            /*Target.HealthManager.DecreaseHP(result.Damage.HP, this);
+            Target.HealthManager.DecreaseHP(result.Damage.HP, sender);
             Target.HealthManager.CurrentSP -= result.Damage.SP;
-            Target.HealthManager.CurrentMP -= result.Damage.MP;*/
+            Target.HealthManager.CurrentMP -= result.Damage.MP;
 
             OnAttack?.Invoke(_ownerId, Target, result);
         }

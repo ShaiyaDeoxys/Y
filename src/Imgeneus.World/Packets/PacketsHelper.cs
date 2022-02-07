@@ -902,10 +902,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCharacterKilled(IWorldClient client, Character character, IKiller killer)
+        internal void SendCharacterKilled(IWorldClient client, int characterId, IKiller killer)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_DEATH);
-            packet.Write(character.Id);
+            packet.Write(characterId);
             packet.WriteByte(1); // killer type. 1 - another player.
             packet.Write(killer.Id);
             client.Send(packet);
@@ -997,7 +997,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.DEAD_REBIRTH);
             packet.Write(sender.Id);
-            packet.WriteByte(4); // rebirth type.
+            packet.Write((byte)RebirthType.KillSoulByItem);
             packet.Write(sender.Exp);
             packet.Write(sender.PosX);
             packet.Write(sender.PosY);
@@ -1005,17 +1005,17 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCharacterRebirth(IWorldClient client, IKillable sender)
+        internal void SendCharacterRebirth(IWorldClient client, int senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_LEAVE_DEAD);
-            packet.Write(sender.Id);
+            packet.Write(senderId);
             client.Send(packet);
         }
 
-        internal void SendMobDead(IWorldClient client, IKillable sender, IKiller killer)
+        internal void SendMobDead(IWorldClient client, int senderId, IKiller killer)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_DEATH);
-            packet.Write(sender.Id);
+            packet.Write(senderId);
             packet.WriteByte(1); // killer type. Always 1, since only player can kill the mob.
             packet.Write(killer.Id);
             client.Send(packet);

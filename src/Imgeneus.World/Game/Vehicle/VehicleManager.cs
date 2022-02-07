@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Speed;
+﻿using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,19 +12,23 @@ namespace Imgeneus.World.Game.Vehicle
         private readonly ILogger<VehicleManager> _logger;
         private readonly IStealthManager _stealthManager;
         private readonly ISpeedManager _speedManager;
+        private readonly IHealthManager _healthManager;
         private int _ownerId;
 
-        public VehicleManager(ILogger<VehicleManager> logger, IStealthManager stealthManager, ISpeedManager speedManager)
+        public VehicleManager(ILogger<VehicleManager> logger, IStealthManager stealthManager, ISpeedManager speedManager, IHealthManager healthManager)
         {
             _logger = logger;
             _stealthManager = stealthManager;
             _speedManager = speedManager;
+            _healthManager = healthManager;
 
+            _healthManager.HP_Changed += HealthManager_HP_Changed;
             _summonVehicleTimer.Elapsed += SummonVehicleTimer_Elapsed;
 #if DEBUG
             _logger.LogDebug("VehicleManager {hashcode} created", GetHashCode());
 #endif
         }
+
 
 #if DEBUG
         ~VehicleManager()
@@ -40,6 +45,7 @@ namespace Imgeneus.World.Game.Vehicle
 
         public void Dispose()
         {
+            _healthManager.HP_Changed -= HealthManager_HP_Changed;
             _summonVehicleTimer.Elapsed -= SummonVehicleTimer_Elapsed;
         }
 
@@ -133,6 +139,12 @@ namespace Imgeneus.World.Game.Vehicle
             IsOnVehicle = false;
             Vehicle2CharacterID = 0;
             return true;
+        }
+
+        private void HealthManager_HP_Changed(int senderId, HitpointArgs args)
+        {
+            if (args.OldValue > args.NewValue)
+                RemoveVehicle();
         }
 
         #endregion

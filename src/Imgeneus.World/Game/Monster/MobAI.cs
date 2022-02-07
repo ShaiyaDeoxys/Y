@@ -487,14 +487,14 @@ namespace Imgeneus.World.Game.Monster
             {
                 if (_target != null)
                 {
-                    _target.OnDead -= Target_OnDead;
+                    _target.HealthManager.OnDead -= Target_OnDead;
                     (_target as Character).StealthManager.OnStealthChange -= Target_OnStealth;
                 }
                 _target = value;
 
                 if (_target != null)
                 {
-                    _target.OnDead += Target_OnDead;
+                    _target.HealthManager.OnDead += Target_OnDead;
                     (_target as Character).StealthManager.OnStealthChange += Target_OnStealth;
                 }
             }
@@ -512,9 +512,9 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// When target is dead, mob returns to its' original place.
         /// </summary>
-        /// <param name="sender">player, that is dead</param>
+        /// <param name="senderId">player, that is dead</param>
         /// <param name="killer">player's killer</param>
-        private void Target_OnDead(IKillable sender, IKiller killer)
+        private void Target_OnDead(int senderId, IKiller killer)
         {
             ClearTarget();
         }

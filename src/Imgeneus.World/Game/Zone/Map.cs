@@ -275,10 +275,11 @@ namespace Imgeneus.World.Game.Zone
             {
                 character.VehicleManager.RemoveVehicle();
 
-                if (character.IsDead)
+                if (character.HealthManager.IsDead)
                 {
                     var rebirthMap = GetRebirthMap(character);
-                    character.Rebirth(rebirthMap.MapId, rebirthMap.X, rebirthMap.Y, rebirthMap.Z);
+                    character.TeleportationManager.Teleport(rebirthMap.MapId, rebirthMap.X, rebirthMap.Y, rebirthMap.Z);
+                    character.HealthManager.Rebirth();
                 }
 
                 Cells[character.CellId].RemovePlayer(character, true);
@@ -346,7 +347,8 @@ namespace Imgeneus.World.Game.Zone
 
             if (nearestSpawn is null)
             {
-                _logger.LogError($"Spawn for map {Id} is not found.");
+                _logger.LogError($"Spawn for map {Id} is not found. Rebirth at the same coordinate.");
+                return (currentX, currentY, currentZ);
             }
 
             var random = new Random();
@@ -436,9 +438,10 @@ namespace Imgeneus.World.Game.Zone
                 throw new ObjectDisposedException(nameof(Map));
 
             Cells[GetCellIndex(mob)].AddMob(mob);
-            //_logger.LogDebug($"Mob {mob.MobId} with global id {mob.Id} entered map {Id}");
 
-            mob.OnDead += Mob_OnDead;
+#if DEBUG
+            _logger.LogDebug("Mob {mobId} with global id {id} entered map {mapId}", mob.MobId, mob.Id, Id);
+#endif
         }
 
         /// <summary>
@@ -448,11 +451,6 @@ namespace Imgeneus.World.Game.Zone
         public void RemoveMob(Mob mob)
         {
             Cells[mob.CellId].RemoveMob(mob);
-
-            mob.OnDead -= Mob_OnDead;
-            mob.TimeToRebirth -= RebirthMob;
-
-            mob.Dispose();
         }
 
         /// <summary>
@@ -467,40 +465,6 @@ namespace Imgeneus.World.Game.Zone
                 throw new ObjectDisposedException(nameof(Map));
 
             return Cells[cellId].GetMob(mobId, true);
-        }
-
-        /// <summary>
-        /// Rebirth mob if needed.
-        /// </summary>
-        /// <param name="sender">mob</param>
-        /// <param name="killer">mob's killer</param>
-        protected virtual void Mob_OnDead(IKillable sender, IKiller killer)
-        {
-            var mob = (Mob)sender;
-            mob.OnDead -= Mob_OnDead;
-            mob.Dispose();
-
-            if (mob.ShouldRebirth)
-                mob.TimeToRebirth += RebirthMob;
-        }
-
-        /// <summary>
-        /// Called, when mob respawns.
-        /// </summary>
-        /// <param name="sender">respawned mob</param>
-        public void RebirthMob(Mob sender)
-        {
-            sender.TimeToRebirth -= RebirthMob;
-
-            // Create mob clone, because we can not reuse the same id.
-            var mob = sender.Clone();
-
-            // TODO: generate rebirth coordinates based on the spawn area.
-            mob.MovementManager.PosX = sender.PosX;
-            mob.MovementManager.PosY = sender.PosY;
-            mob.MovementManager.PosZ = sender.PosZ;
-
-            AddMob(mob);
         }
 
         private void InitMobs()

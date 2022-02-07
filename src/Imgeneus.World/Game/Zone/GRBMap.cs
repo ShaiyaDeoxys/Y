@@ -29,12 +29,9 @@ namespace Imgeneus.World.Game.Zone
                 player.SendGBRPoints(myPoints, topGuildPoints, topGuild);
         }
 
-        protected override void Mob_OnDead(IKillable sender, IKiller killer)
+        public void AddPoints(short points)
         {
-            var mob = sender as Mob;
-            _guildRankingManager.AddPoints(GuildId, mob.GuildPoints);
-
-            base.Mob_OnDead(sender, killer);
+            _guildRankingManager.AddPoints(GuildId, points);
         }
 
         public override bool LoadPlayer(Player.Character character)

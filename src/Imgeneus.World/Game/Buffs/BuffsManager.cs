@@ -38,8 +38,13 @@ namespace Imgeneus.World.Game.Buffs
             _healthManager = healthManager;
             _speedManager = speedManager;
             _elementProvider = elementProvider;
+
+            _healthManager.OnDead += HealthManager_OnDead;
+            _healthManager.HP_Changed += HealthManager_HP_Changed;
+
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
+
 #if DEBUG
             _logger.LogDebug("BuffsManager {hashcode} created", GetHashCode());
 #endif
@@ -98,6 +103,8 @@ namespace Imgeneus.World.Game.Buffs
         {
             ActiveBuffs.CollectionChanged -= ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged -= PassiveBuffs_CollectionChanged;
+            _healthManager.OnDead -= HealthManager_OnDead;
+            _healthManager.HP_Changed -= HealthManager_HP_Changed;
         }
 
         #endregion
@@ -654,6 +661,24 @@ namespace Imgeneus.World.Game.Buffs
             _healthManager.CurrentSP -= damage.SP;
 
             OnSkillKeep?.Invoke(_ownerId, buff, new AttackResult(AttackSuccess.Normal, damage));
+        }
+
+        #endregion
+
+        #region Clear buffs on some condition
+
+        private void HealthManager_OnDead(int senderId, IKiller killer)
+        {
+            var buffs = ActiveBuffs.Where(b => b.ShouldClearAfterDeath).ToList();
+            foreach (var b in buffs)
+                b.CancelBuff();
+        }
+
+        private void HealthManager_HP_Changed(int senderId, HitpointArgs args)
+        {
+            var buffs = ActiveBuffs.Where(b => b.IsStealth).ToList();
+            foreach (var b in buffs)
+                b.CancelBuff();
         }
 
         #endregion

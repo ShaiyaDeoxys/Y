@@ -88,7 +88,7 @@ namespace Imgeneus.World.Game.Monster
                 _rebirthTimer.Interval = RespawnTimeInMilliseconds;
                 _rebirthTimer.Elapsed += RebirthTimer_Elapsed;
 
-                OnDead += MobRebirth_OnDead;
+                HealthManager.OnDead += MobRebirth_OnDead;
             }
 
             SetupAITimers();

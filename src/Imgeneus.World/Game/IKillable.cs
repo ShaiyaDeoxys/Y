@@ -30,33 +30,9 @@ namespace Imgeneus.World.Game
         public IMapProvider MapProvider { get; }
 
         /// <summary>
-        /// Indicator, that shows if entity is dead or not.
-        /// </summary>
-        public bool IsDead { get; }
-
-        /// <summary>
-        /// Event, that is fired, when entity is killed.
-        /// </summary>
-        public event Action<IKillable, IKiller> OnDead;
-
-        /// <summary>
         /// Absorbs damage regardless of REC value.
         /// </summary>
         public ushort Absorption { get; }
-
-        /// <summary>
-        /// Event, that is fired, when killable is resurrected.
-        /// </summary>
-        public event Action<IKillable> OnRebirthed;
-
-        /// <summary>
-        /// Resurrects killable to some coordinate.
-        /// </summary>
-        /// <param name="mapId">map id</param>
-        /// <param name="x">x coordinate</param>
-        /// <param name="y">y coordinate</param>
-        /// <param name="z">z coordinate</param>
-        public void Rebirth(ushort mapId, float x, float y, float z);
 
         /// <summary>
         /// Indicator, that shows if the entity cannot be damaged.

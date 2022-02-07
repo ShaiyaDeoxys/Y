@@ -54,7 +54,7 @@ namespace Imgeneus.World.Game.Attack
         /// <summary>
         /// Usual physical attack, "auto attack".
         /// </summary>
-        void AutoAttack();
+        void AutoAttack(IKiller sender);
 
         /// <summary>
         /// Event before each attack.

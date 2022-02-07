@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Imgeneus.World.Game.Health;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Imgeneus.World.Game.Stealth
@@ -25,10 +26,17 @@ namespace Imgeneus.World.Game.Stealth
         }
 #endif
 
+        #region Init & Clear
         public void Init(int ownerId)
         {
-            _ownerId  = ownerId;
+            _ownerId = ownerId;
         }
+
+        public void Dispose()
+        {
+        }
+
+        #endregion
 
         public event Action<int> OnStealthChange;
 

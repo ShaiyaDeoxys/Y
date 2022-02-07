@@ -31,7 +31,7 @@ namespace Imgeneus.World.Handlers
                 return;
 
             if (_attackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, target, out var success))
-                _attackManager.AutoAttack();
+                _attackManager.AutoAttack(_gameWorld.Players[_gameSession.CharId]);
             else
                 _packetFactory.SendAutoAttackFailed(client, _gameSession.CharId, target, success);
         }
@@ -44,7 +44,7 @@ namespace Imgeneus.World.Handlers
                 return;
 
             if (_attackManager.CanAttack(255, target, out var success))
-                _attackManager.AutoAttack();
+                _attackManager.AutoAttack(_gameWorld.Players[_gameSession.CharId]);
             else
                 _packetFactory.SendAutoAttackFailed(client, _gameSession.CharId, target, success);
         }

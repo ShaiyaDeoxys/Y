@@ -1,10 +1,15 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Health
@@ -14,15 +19,17 @@ namespace Imgeneus.World.Game.Health
         private readonly ILogger<HealthManager> _logger;
         private readonly IStatsManager _statsManager;
         private readonly ILevelProvider _levelProvider;
+        private readonly IMapProvider _mapProvider;
         private readonly ICharacterConfiguration _characterConfiguration;
         private readonly IDatabase _database;
         private int _ownerId;
 
-        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration, IDatabase database)
+        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IMapProvider mapProvider, ICharacterConfiguration characterConfiguration, IDatabase database)
         {
             _logger = logger;
             _statsManager = statsManager;
             _levelProvider = levelProvider;
+            _mapProvider = mapProvider;
             _characterConfiguration = characterConfiguration;
             _database = database;
             _statsManager.OnRecUpdate += StatsManager_OnRecUpdate;
@@ -111,14 +118,35 @@ namespace Imgeneus.World.Game.Health
                 if (_currentHP <= 0)
                 {
                     _currentHP = 0;
-                    //IsDead = true;
+                    IsDead = true;
                 }
 
-                //if (_currentHP == MaxHP)
-                //DamageMakers.Clear();
+                if (_currentHP == MaxHP)
+                    DamageMakers.Clear();
 
                 HP_Changed?.Invoke(_ownerId, new HitpointArgs(oldHP, _currentHP));
             }
+        }
+
+        public void DecreaseHP(int hp, IKiller damageMaker)
+        {
+            if (hp == 0)
+                return;
+
+            if (DamageMakers.ContainsKey(damageMaker))
+                DamageMakers[damageMaker] += hp;
+            else
+                DamageMakers.TryAdd(damageMaker, hp);
+
+            CurrentHP -= hp;
+        }
+
+        public void IncreaseHP(int hp)
+        {
+            if (hp == 0)
+                return;
+
+            CurrentHP += hp;
         }
 
         private int _currentSP;
@@ -314,27 +342,107 @@ namespace Imgeneus.World.Game.Health
 
         #endregion
 
-        public void DecreaseHP(int hp, IKiller damageMaker)
+        #region Death
+
+        public event Action<int, IKiller> OnDead;
+
+        private bool _isDead;
+
+        public bool IsDead
         {
-            if (hp == 0)
-                return;
+            get => _isDead;
+            protected set
+            {
+                _isDead = value;
 
-            /*if (DamageMakers.ContainsKey(damageMaker))
-                DamageMakers[damageMaker] += hp;
-            else
-                DamageMakers.TryAdd(damageMaker, hp);
+                if (_isDead)
+                {
+                    var killer = MaxDamageMaker;
+                    OnDead?.Invoke(_ownerId, killer);
+                    DamageMakers.Clear();
 
-            CurrentHP -= hp;
-            DecreaseHP(damageMaker);*/
+                    // Generate drop.
+                    /*var dropItems = GenerateDrop(killer);
+                    if (dropItems.Count > 0 && killer is Character)
+                    {
+                        var dropOwner = killer as Character;
+                        if (dropOwner.PartyManager.Party is null)
+                        {
+                            AddItemsDropOnMap(dropItems, dropOwner);
+                        }
+                        else
+                        {
+                            var notDistributedItems = dropOwner.PartyManager.Party.DistributeDrop(dropItems, dropOwner);
+                            AddItemsDropOnMap(notDistributedItems, dropOwner);
+
+                        }
+                    }
+
+                    // Update quest.
+                    if (this is Mob && killer is Character)
+                    {
+                        var character = killer as Character;
+                        var mob = this as Mob;
+                        if (character.PartyManager.Party is null)
+                        {
+                            character.UpdateQuestMobCount(mob.MobId);
+                        }
+                        else
+                        {
+                            foreach (var m in character.PartyManager.Party.Members)
+                            {
+                                if (m.MapProvider.Map == character.MapProvider.Map)
+                                    m.UpdateQuestMobCount(mob.MobId);
+                            }
+                        }
+                    }*/
+                }
+            }
         }
 
-        public void IncreaseHP(int hp)
-        {
-            if (hp == 0)
-                return;
 
-            CurrentHP += hp;
+        /// <summary>
+        /// Collection of entities, that made damage to this killable.
+        /// </summary>
+        public ConcurrentDictionary<IKiller, int> DamageMakers { get; private set; } = new ConcurrentDictionary<IKiller, int>();
+
+        /// <summary>
+        /// IKiller, that made max damage.
+        /// </summary>
+        public IKiller MaxDamageMaker
+        {
+            get
+            {
+                IKiller maxDamageMaker = null;
+                int damage = 0;
+                foreach (var dmg in DamageMakers)
+                {
+                    if (dmg.Value > damage)
+                    {
+                        damage = dmg.Value;
+                        maxDamageMaker = dmg.Key;
+                    }
+                }
+
+                return maxDamageMaker;
+            }
         }
+
+        #endregion
+
+        #region Rebirth
+
+        public event Action<int> OnRebirthed;
+
+        public void Rebirth()
+        {
+            FullRecover();
+            IsDead = false;
+
+            OnRebirthed?.Invoke(_ownerId);
+        }
+
+        #endregion
 
         /// <summary>
         /// Event, that is fired, when hp changes.
