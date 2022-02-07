@@ -3,6 +3,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
@@ -44,9 +45,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ISkillsManager _skillsManager;
         private readonly IBuffsManager _buffsManager;
         private readonly ICharacterConfiguration _characterConfig;
+        private readonly IAttackManager _attackManager;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -64,6 +66,7 @@ namespace Imgeneus.World.Game.Inventory
             _skillsManager = skillsManager;
             _buffsManager = buffsManager;
             _characterConfig = characterConfiguration;
+            _attackManager = attackManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
 
 #if DEBUG
@@ -336,12 +339,18 @@ namespace Imgeneus.World.Game.Inventory
                     _speedManager.ConstAttackSpeed = _weapon.AttackSpeed + passiveSkillModifier;
 
                     _elementProvider.ConstAttackElement = _weapon.Element;
+
+                    _attackManager.IsWeaponAvailable = true;
+                    _attackManager.WeaponType = _weapon.Type;
                 }
                 else
                 {
                     _speedManager.ConstAttackSpeed = 0;
 
                     _elementProvider.ConstAttackElement = Element.None;
+
+                    _attackManager.IsWeaponAvailable = false;
+                    _attackManager.WeaponType = 0;
                 }
 
                 TakeOnItem(_weapon);
@@ -359,6 +368,16 @@ namespace Imgeneus.World.Game.Inventory
             {
                 TakeOffItem(_shield);
                 _shield = value;
+
+                if (_shield != null)
+                {
+                    _attackManager.IsShieldAvailable = true;
+                }
+                else
+                {
+                    _attackManager.IsShieldAvailable = false;
+                }
+
                 TakeOnItem(_shield);
 
                 RaiseEquipmentChanged(6);
@@ -1105,7 +1124,13 @@ namespace Imgeneus.World.Game.Inventory
                         UseHealingPotion(item);
 
                     if (item.SkillId != 0)
-                        _skillsManager.UseSkill(new Skill(_databasePreloader.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0), _gameWorld.Players[_ownerId]);
+                    {
+                        var skill = new Skill(_databasePreloader.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0);
+                        var target = _gameWorld.Players[_ownerId];
+
+                        if (_skillsManager.CanUseSkill(skill, target, out var s))
+                            _skillsManager.UseSkill(skill, target);
+                    }
 
                     break;
 

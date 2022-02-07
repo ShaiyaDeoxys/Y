@@ -35,30 +35,6 @@ namespace Imgeneus.World.Game.Player
             _taskQueue.Enqueue(ActionType.SAVE_QUICK_BAR, Id, skillBarPacket.QuickItems);
         }
 
-        private void HandleAutoAttackOnMob(int targetId)
-        {
-            var target = Map.GetMob(CellId, targetId);
-            Attack(255, target);
-        }
-
-        private void HandleAutoAttackOnPlayer(int targetId)
-        {
-            var target = Map.GetPlayer(targetId);
-            Attack(255, target);
-        }
-
-        private void HandleUseSkillOnMob(byte number, int targetId)
-        {
-            var target = Map.GetMob(CellId, targetId);
-            Attack(number, target);
-        }
-
-        private void HandleUseSkillOnPlayer(byte number, int targetId)
-        {
-            IKillable target = Map.GetPlayer(targetId);
-            Attack(number, target);
-        }
-
         private void HandleCharacterShape(int characterId)
         {
             var character = _gameWorld.Players[characterId];
@@ -107,13 +83,13 @@ namespace Imgeneus.World.Game.Player
 
             void SendCommandError()
             {
-                _packetsHelper.SendGmCommandError(Client, PacketType.CHARACTER_ATTRIBUTE_SET);
+                //_packetsHelper.SendGmCommandError(Client, PacketType.CHARACTER_ATTRIBUTE_SET);
             }
 
             void SetAttributeAndSendCommandSuccess()
             {
                 SendAttribute(attribute);
-                _packetsHelper.SendGmCommandSuccess(Client);
+                //_packetsHelper.SendGmCommandSuccess(Client);
             }
 
             // TODO: This should get player from player dictionary when implemented
@@ -192,7 +168,7 @@ namespace Imgeneus.World.Game.Player
                     break;
 
                 default:
-                    _packetsHelper.SendGmCommandError(Client, PacketType.CHARACTER_ATTRIBUTE_SET);
+                    //_packetsHelper.SendGmCommandError(Client, PacketType.CHARACTER_ATTRIBUTE_SET);
                     return;
             }
         }

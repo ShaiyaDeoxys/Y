@@ -19,7 +19,7 @@ namespace Imgeneus.World.Game.Buffs
 
         /// <summary>
         /// Active buffs, that increase character characteristic, attack, defense etc.
-        /// Don't update it directly, use <see cref="AddActiveBuff"/>.
+        /// Don't update it directly, use <see cref="AddBuff"/>.
         /// </summary>
         ObservableRangeCollection<Buff> ActiveBuffs { get; }
 
@@ -39,12 +39,12 @@ namespace Imgeneus.World.Game.Buffs
         public event Action<int, Buff, AttackResult> OnSkillKeep;
 
         /// <summary>
-        /// Updates collection of active buffs.
+        /// Updates collection of buffs.
         /// </summary>
         /// <param name="skill">skill, that client sends</param>
         /// <param name="creator">buff creator</param>
         /// <returns>Newly added or updated active buff</returns>
-        public Buff AddActiveBuff(Skill skill, IKiller creator);
+        public Buff AddBuff(Skill skill, IKiller creator);
 
         #endregion
 

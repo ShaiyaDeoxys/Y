@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Health;
@@ -162,6 +163,8 @@ namespace Imgeneus.World.Packets
         void SendPlayerInTarget(IWorldClient client, Character target);
         void SendCurrentBuffs(IWorldClient client, IKillable target);
         void SendMobState(IWorldClient client, Mob target);
+        void SendAutoAttackFailed(IWorldClient client, int senderId, IKillable target, AttackSuccess reason);
+        void SendUseSkillFailed(IWorldClient client, int senderId, Skill skill, IKillable target, AttackSuccess reason);
         #endregion
 
         #region Mobs

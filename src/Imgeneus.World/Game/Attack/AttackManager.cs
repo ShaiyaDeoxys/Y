@@ -2,11 +2,13 @@
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -22,9 +24,10 @@ namespace Imgeneus.World.Game.Attack
         private readonly IElementProvider _elementManager;
         private readonly ICountryProvider _countryProvider;
         private readonly ISpeedManager _speedManager;
+        private readonly IStealthManager _stealthManager;
         private int _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IBuffsManager buffsManager, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager)
+        public AttackManager(ILogger<AttackManager> logger, IBuffsManager buffsManager, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager)
         {
             _logger = logger;
             _buffsManager = buffsManager;
@@ -33,6 +36,7 @@ namespace Imgeneus.World.Game.Attack
             _elementManager = elementManager;
             _countryProvider = countryProvider;
             _speedManager = speedManager;
+            _stealthManager = stealthManager;
 
 #if DEBUG
             _logger.LogDebug("AttackManager {hashcode} created", GetHashCode());
@@ -143,14 +147,32 @@ namespace Imgeneus.World.Game.Attack
         {
             _nextAttackTime = DateTime.UtcNow.AddMilliseconds(NextAttackTime);
             OnStartAttack?.Invoke();
+
+            if (_stealthManager.IsStealth && !_stealthManager.IsAdminStealth)
+            {
+                var stealthBuff = _buffsManager.ActiveBuffs.FirstOrDefault(b => b.IsStealth);
+                stealthBuff.CancelBuff();
+            }
         }
 
         public event Action OnStartAttack;
 
         public event Action<int, IKillable, AttackResult> OnAttack;
 
+        public bool IsWeaponAvailable { get; set; } = true;
+
+        public byte WeaponType { get; set; }
+
+        public bool IsShieldAvailable { get; set; } = true;
+
         public bool CanAttack(byte skillNumber, IKillable target, out AttackSuccess success)
         {
+            if (!IsWeaponAvailable)
+            {
+                success = AttackSuccess.WrongEquipment;
+                return false;
+            }
+
             if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && DateTime.UtcNow < _nextAttackTime)
             {
                 // TODO: send not enough elapsed time?
@@ -197,12 +219,6 @@ namespace Imgeneus.World.Game.Attack
                 return true;
             }
 
-            /*if (InventoryManager.Weapon is null)
-            {
-                SendAutoAttackWrongEquipment(target);
-                return false;
-            }*/
-
             success = AttackSuccess.Normal;
             return true;
         }
@@ -212,9 +228,6 @@ namespace Imgeneus.World.Game.Attack
         /// </summary>
         public void AutoAttack()
         {
-            if (!CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, Target, out var success))
-                return;
-
             StartAttack();
 
             AttackResult result;

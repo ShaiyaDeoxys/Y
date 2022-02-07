@@ -117,6 +117,17 @@ namespace Imgeneus.World.Game.Buffs
             }
         }
 
+        /// <summary>
+        /// Is skill makes invisible?
+        /// </summary>
+        public bool IsStealth
+        {
+            get
+            {
+                return _skill.Type == TypeDetail.Stealth;
+            }
+        }
+
         #endregion
 
         #region Buff reset

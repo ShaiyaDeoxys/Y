@@ -185,7 +185,7 @@ namespace Imgeneus.World.Game.Buffs
 
         #region Add/Remove buff
 
-        public Buff AddActiveBuff(Skill skill, IKiller creator)
+        public Buff AddBuff(Skill skill, IKiller creator)
         {
             var resetTime = skill.KeepTime == 0 ? DateTime.UtcNow.AddDays(10) : DateTime.UtcNow.AddSeconds(skill.KeepTime);
             Buff buff;

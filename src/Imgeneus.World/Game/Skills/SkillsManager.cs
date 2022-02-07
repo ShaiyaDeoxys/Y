@@ -78,12 +78,13 @@ namespace Imgeneus.World.Game.Skills
                 Skills.TryAdd(skill.Number, skill);
 
             foreach (var skill in Skills.Values.Where(s => s.IsPassive && s.Type != TypeDetail.Stealth))
-                _buffsManager.AddActiveBuff(skill, null);
+                _buffsManager.AddBuff(skill, null);
         }
 
-        public async Task Clear()
+        public Task Clear()
         {
             Skills.Clear();
+            return Task.CompletedTask;
         }
 
         public void Dispose()
@@ -219,7 +220,7 @@ namespace Imgeneus.World.Game.Skills
 
             // Activate passive skill as soon as it's learned.
             if (skill.IsPassive)
-                _buffsManager.AddActiveBuff(skill, null);
+                _buffsManager.AddBuff(skill, null);
 
             return (true, skill);
         }
@@ -314,17 +315,17 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            /*if (InventoryManager.Weapon is null || (!skill.RequiredWeapons.Contains(InventoryManager.Weapon.Type) && skill.RequiredWeapons.Count != 0))
+            if (!_attackManager.IsWeaponAvailable || (!skill.RequiredWeapons.Contains(_attackManager.WeaponType) && skill.RequiredWeapons.Count != 0))
             {
-                SendSkillWrongEquipment(target, skill);
+                success = AttackSuccess.WrongEquipment;
                 return false;
-            }*/
+            }
 
-            /*if (skill.Number != ITEM_SKILL_NUMBER && skill.NeedShield && InventoryManager.Shield is null)
+            if (skill.NeedShield && !_attackManager.IsShieldAvailable)
             {
-                SendSkillWrongEquipment(target, skill);
+                success = AttackSuccess.WrongEquipment;
                 return false;
-            }*/
+            }
 
             if (_healthManager.CurrentMP < skill.NeedMP || _healthManager.CurrentSP < skill.NeedSP)
             {
@@ -354,19 +355,11 @@ namespace Imgeneus.World.Game.Skills
         {
             if (!skill.IsPassive)
                 _attackManager.StartAttack();
-            //SendAttackStart();
-
-            //if (!skill.IsPassive && !CanAttack(skill.Number, target))
-            //  return;
-
-            //if (skill.Number == ITEM_SKILL_NUMBER && !CanUseSkill(skill, target))
-            // return;
 
             if (skill.NeedMP > 0 || skill.NeedSP > 0)
             {
                 _healthManager.CurrentMP -= skill.NeedMP;
                 _healthManager.CurrentSP -= skill.NeedSP;
-                //SendUseSMMP(skill.NeedMP, skill.NeedSP);
             }
 
             int n = 0;
@@ -462,7 +455,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.ElementalAttack:
                 case TypeDetail.ElementalProtection:
                 case TypeDetail.Untouchable:
-                    target.BuffsManager.AddActiveBuff(skill, skillOwner);
+                    target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
                 case TypeDetail.Healing:
@@ -483,7 +476,7 @@ namespace Imgeneus.World.Game.Skills
 
                 case TypeDetail.PassiveDefence:
                 case TypeDetail.WeaponMastery:
-                    target.BuffsManager.AddActiveBuff(skill, skillOwner);
+                    target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
                 default:

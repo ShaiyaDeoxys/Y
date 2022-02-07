@@ -428,30 +428,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendAutoAttackWrongTarget(IWorldClient client, Character sender, IKillable target)
-        {
-            PacketType type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(new UsualAttack(sender.Id, 0, new AttackResult() { Success = AttackSuccess.WrongTarget }).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendAutoAttackWrongEquipment(IWorldClient client, Character sender, IKillable target)
-        {
-            PacketType type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(new UsualAttack(sender.Id, 0, new AttackResult() { Success = AttackSuccess.WrongEquipment }).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendAutoAttackCanNotAttack(IWorldClient client, Character sender, IKillable target)
-        {
-            PacketType type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(new UsualAttack(sender.Id, 0, new AttackResult() { Success = AttackSuccess.CanNotAttack }).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendItemDoesNotBelong(IWorldClient client)
         {
             using var packet = new ImgeneusPacket(PacketType.ADD_ITEM);
@@ -486,52 +462,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_2);
             packet.Write(passengerId);
             packet.Write(vehicleCharId);
-            client.Send(packet);
-        }
-
-        internal void SendSkillWrongTarget(IWorldClient client, Character sender, Skill skill, IKillable target)
-        {
-            PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.WrongTarget }).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendSkillAttackCanNotAttack(IWorldClient client, Character sender, Skill skill, IKillable target)
-        {
-            PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.CanNotAttack }).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendGmCommandSuccess(IWorldClient client)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GM_CMD_ERROR);
-            packet.Write<ushort>(0); // 0 == no error
-            client.Send(packet);
-        }
-
-        internal void SendGmCommandError(IWorldClient client, PacketType error)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GM_CMD_ERROR);
-            packet.Write((ushort)error);
-            client.Send(packet);
-        }
-
-        internal void SendSkillWrongEquipment(IWorldClient client, Character sender, IKillable target, Skill skill)
-        {
-            PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.WrongEquipment }).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendNotEnoughMPSP(IWorldClient client, Character sender, IKillable target, Skill skill)
-        {
-            PacketType type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillRange(sender.Id, 0, skill, new AttackResult() { Success = AttackSuccess.NotEnoughMPSP }).Serialize());
             client.Send(packet);
         }
 

@@ -31,6 +31,7 @@ using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.Attack;
 
 namespace Imgeneus.World.Packets
 {
@@ -1043,6 +1044,23 @@ namespace Imgeneus.World.Packets
             packet.Write((byte)target.SpeedManager.TotalMoveSpeed);
             client.Send(packet);
         }
+
+        public void SendAutoAttackFailed(IWorldClient client, int senderId, IKillable target, AttackSuccess reason)
+        {
+            var type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
+            using var packet = new ImgeneusPacket(type);
+            packet.Write(new UsualAttack(senderId, 0, new AttackResult() { Success = reason }).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendUseSkillFailed(IWorldClient client, int senderId, Skill skill, IKillable target, AttackSuccess reason)
+        {
+            var type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
+            using var packet = new ImgeneusPacket(type);
+            packet.Write(new SkillRange(senderId, 0, skill, new AttackResult() { Success = reason }).Serialize());
+            client.Send(packet);
+        }
+
 
         #endregion
 

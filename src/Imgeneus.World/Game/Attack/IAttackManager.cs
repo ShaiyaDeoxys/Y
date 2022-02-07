@@ -32,6 +32,21 @@ namespace Imgeneus.World.Game.Attack
         event Action<IKillable, Buff> TargetOnBuffRemoved;
 
         /// <summary>
+        /// Set by inventory weapon.
+        /// </summary>
+        bool IsWeaponAvailable { get; set; }
+
+        /// <summary>
+        /// Set by inventory weapon.
+        /// </summary>
+        byte WeaponType { get; set; }
+
+        /// <summary>
+        /// Set by inventory shield.
+        /// </summary>
+        bool IsShieldAvailable { get; set; }
+
+        /// <summary>
         /// Checks if it's possible to attack target. (or use skill)
         /// </summary>
         bool CanAttack(byte skillNumber, IKillable target, out AttackSuccess success);

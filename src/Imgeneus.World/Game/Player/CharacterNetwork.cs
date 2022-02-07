@@ -53,29 +53,9 @@ namespace Imgeneus.World.Game.Player
         {
             switch (packet)
             {
-                case SkillBarPacket skillBarPacket:
-                    HandleSkillBarPacket(skillBarPacket);
-                    break;
-
                 case AttackStart attackStartPacket:
                     // Not sure, but maybe I should not permit any attack start?
                     sender.SendPacket(new Packet(PacketType.ATTACK_START));
-                    break;
-
-                case MobAutoAttackPacket attackPacket:
-                    HandleAutoAttackOnMob(attackPacket.TargetId);
-                    break;
-
-                case CharacterAutoAttackPacket attackPacket:
-                    HandleAutoAttackOnPlayer(attackPacket.TargetId);
-                    break;
-
-                case MobSkillAttackPacket usedSkillMobAttackPacket:
-                    HandleUseSkillOnMob(usedSkillMobAttackPacket.Number, usedSkillMobAttackPacket.TargetId);
-                    break;
-
-                case CharacterSkillAttackPacket usedSkillPlayerAttackPacket:
-                    HandleUseSkillOnPlayer(usedSkillPlayerAttackPacket.Number, usedSkillPlayerAttackPacket.TargetId);
                     break;
 
                 case CharacterShapePacket characterShapePacket:
