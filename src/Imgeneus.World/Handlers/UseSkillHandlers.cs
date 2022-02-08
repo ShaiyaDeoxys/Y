@@ -1,5 +1,4 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Preload;
+﻿using Imgeneus.Database.Preload;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
@@ -12,7 +11,6 @@ using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
-using System.Linq;
 
 namespace Imgeneus.World.Handlers
 {
@@ -45,7 +43,7 @@ namespace Imgeneus.World.Handlers
             if (player is null)
                 return;
 
-            var target = _mapProvider.Map.GetPlayer(packet.TargetId);
+            var target = packet.TargetId == 0 ? player : _mapProvider.Map.GetPlayer(packet.TargetId);
             if (target is null)
                 return;
 

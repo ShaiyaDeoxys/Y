@@ -41,7 +41,9 @@ namespace Imgeneus.World.Handlers
             }
 
             _healthManager.Rebirth();
-            _teleportationManager.Teleport(rebirthCoordinate.MapId, rebirthCoordinate.X, rebirthCoordinate.Y, rebirthCoordinate.Z);
+
+            if (_mapProvider.Map.Id != rebirthCoordinate.MapId)
+                _teleportationManager.Teleport(rebirthCoordinate.MapId, rebirthCoordinate.X, rebirthCoordinate.Y, rebirthCoordinate.Z);
         }
     }
 }

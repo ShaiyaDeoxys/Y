@@ -119,6 +119,7 @@
         // GM commands
         GM_COMMAND_GET_ITEM = 0xF702,
         GM_CREATE_MOB = 0xF704, // 63236
+        GM_ATTACK_ON_OFF = 0xFA06, //64006
         GM_TELEPORT_MAP_COORDINATES = 0xFA0A, // 64010
         GM_TELEPORT_MAP = 0xFA11, // 64017
         GM_CMD_ERROR = 0xF501, // -2815
