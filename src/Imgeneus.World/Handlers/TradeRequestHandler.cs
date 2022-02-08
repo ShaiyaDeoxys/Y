@@ -20,13 +20,16 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.TRADE_REQUEST)]
         public void Handle(WorldClient client, TradeRequestPacket packet)
         {
-            var tradeRequester = _gameWorld.Players[_gameSession.CharId];
-            var tradeReceiver = _gameWorld.Players[packet.TradeToWhomId];
+            if (!_gameWorld.Players.ContainsKey(_gameSession.CharId) || !_gameWorld.Players.ContainsKey(packet.TradeToWhomId))
+                return;
 
-            tradeRequester.TradeManager.PartnerId = tradeReceiver.Id;
-            tradeReceiver.TradeManager.PartnerId = tradeRequester.Id;
+            var requester = _gameWorld.Players[_gameSession.CharId];
+            var receiver = _gameWorld.Players[packet.TradeToWhomId];
 
-            _packetFactory.SendTradeRequest(tradeReceiver.GameSession.Client, tradeRequester.Id);
+            requester.TradeManager.PartnerId = receiver.Id;
+            receiver.TradeManager.PartnerId = requester.Id;
+
+            _packetFactory.SendTradeRequest(receiver.GameSession.Client, requester.Id);
         }
     }
 }

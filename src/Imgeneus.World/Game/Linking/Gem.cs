@@ -21,22 +21,6 @@ namespace Imgeneus.World.Game.Linking
             _item = _databasePreloader.Items[(Item.GEM_ITEM_TYPE, (byte)TypeId)];
         }
 
-        /// <summary>
-        /// ONLY USED FOR MONEY GENERATION! DON'T USE IT UNLESS YOU GENERATE MONEY DROP.
-        /// </summary>
-        public Gem(int moneyAmount)
-        {
-            TypeId = moneyAmount;
-        }
-
-        /// <summary>
-        /// ONLY USED FOR MONEY GENERATION! DON'T USE IT UNLESS YOU GENERATE MONEY DROP.
-        /// </summary>
-        public void SetTypeId(int typeId)
-        {
-            TypeId = typeId;
-        }
-
         public byte Position { get; private set; }
 
         public ushort Str => _item.ConstStr;

@@ -11,6 +11,7 @@ using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Friends;
@@ -127,6 +128,7 @@ namespace Imgeneus.World
             services.AddScoped<IPartyManager, PartyManager>();
             services.AddScoped<ITradeManager, TradeManager>();
             services.AddScoped<IFriendsManager, FriendsManager>();
+            services.AddScoped<IDuelManager, DuelManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

@@ -303,6 +303,7 @@ namespace Imgeneus.World.Game.Zone
             if (!Players.ContainsKey(playerId))
             {
                 _logger.LogError("Trying to get player, that is not presented on the map.");
+                return;
             }
 
             var player = Players[playerId];

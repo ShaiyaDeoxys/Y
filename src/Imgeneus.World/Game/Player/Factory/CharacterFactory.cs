@@ -36,6 +36,8 @@ using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Trade;
 using Imgeneus.World.Game.Friends;
+using Imgeneus.World.Game.Duel;
+using Imgeneus.World.Packets;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -77,6 +79,8 @@ namespace Imgeneus.World.Game.Player
         private readonly IPartyManager _partyManager;
         private readonly ITradeManager _tradeManager;
         private readonly IFriendsManager _friendsManager;
+        private readonly IDuelManager _duelManager;
+        private readonly IGamePacketFactory _packetFactory;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -113,7 +117,9 @@ namespace Imgeneus.World.Game.Player
                                 ITeleportationManager teleportationManager,
                                 IPartyManager partyManager,
                                 ITradeManager tradeManager,
-                                IFriendsManager friendsManager)
+                                IFriendsManager friendsManager,
+                                IDuelManager duelManager,
+                                IGamePacketFactory packetFactory)
         {
             _logger = logger;
             _database = database;
@@ -151,6 +157,8 @@ namespace Imgeneus.World.Game.Player
             _partyManager = partyManager;
             _tradeManager = tradeManager;
             _friendsManager = friendsManager;
+            _duelManager = duelManager;
+            _packetFactory = packetFactory;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -160,7 +168,7 @@ namespace Imgeneus.World.Game.Player
             var dbCharacter = await _database.Characters
                                              .AsNoTracking()
                                              .Include(c => c.Skills)
-                                             .Include(c => c.Items).ThenInclude(ci => ci.Item)
+                                             .Include(c => c.Items)
                                              .Include(c => c.ActiveBuffs)
                                              //.Include(c => c.Guild).ThenInclude(g => g.Members)
                                              .Include(c => c.Quests)
@@ -232,6 +240,8 @@ namespace Imgeneus.World.Game.Player
 
             _friendsManager.Init(dbCharacter.Id, _database.Friends.AsNoTracking().Include(x => x.Friend).Where(x => x.CharacterId == characterId).Select(x => x.Friend));
 
+            _duelManager.Init(dbCharacter.Id);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -269,7 +279,9 @@ namespace Imgeneus.World.Game.Player
                                         _partyManager,
                                         _tradeManager,
                                         _friendsManager,
-                                        _gameSession);
+                                        _duelManager,
+                                        _gameSession,
+                                        _packetFactory);
 
             player.Client = _gameSession.Client; // TODO: remove it.
 

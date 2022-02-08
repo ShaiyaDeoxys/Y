@@ -13,6 +13,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Duel;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -102,6 +103,18 @@ namespace Imgeneus.World.Game.Player
 
         private void SendTargetRemoveBuff(IKillable target, Buff buff) => _packetsHelper.SendTargetRemoveBuff(Client, target.Id, buff, target is Mob);
 
+        private void SendDuelResponse(int senderId, DuelResponse response) => _packetFactory.SendDuelResponse(GameSession.Client, response, senderId);
+
+        private void SendDuelStart() => _packetFactory.SendDuelStart(GameSession.Client);
+
+        private void SendDuelCancel(int senderId, DuelCancelReason reason)
+        {
+            if (reason != DuelCancelReason.Other)
+                _packetFactory.SendDuelCancel(GameSession.Client, reason, senderId);
+        }
+
+        private void SendDuelFinish(bool isWin) => _packetFactory.SendDuelFinish(GameSession.Client, isWin);
+
         public void SendAddItemToInventory(Item item)
         {
             _packetsHelper.SendAddItem(Client, item);
@@ -190,6 +203,6 @@ namespace Imgeneus.World.Game.Player
 
         public void SendGuildRanksCalculated(IEnumerable<(int GuildId, int Points, byte Rank)> results) => _packetsHelper.SendGuildRanksCalculated(Client, results);
 
-        public void SendGoldUpdate() => _packetsHelper.SendGoldUpdate(Client, InventoryManager.Gold);
+        public void SendGoldUpdate() => _packetFactory.SendGoldUpdate(GameSession.Client, InventoryManager.Gold);
     }
 }

@@ -40,11 +40,6 @@ namespace Imgeneus.World.Handlers
             _movementManager.Angle = packet.Angle;
 
             _movementManager.RaisePositionChanged();
-
-            //if (IsDuelApproved && MathExtensions.Distance(PosX, DuelX, PosZ, DuelZ) >= 45)
-            //{
-            //    FinishDuel(DuelCancelReason.TooFarAway);
-            //}
         }
     }
 }

@@ -4,45 +4,42 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.DatabaseBackgroundService.Handlers;
+using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Chat;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Dyeing;
+using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Friends;
+using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Kills;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
-using Imgeneus.World.Game.Monster;
-using Imgeneus.World.Game.NPCs;
+using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.Notice;
+using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Player.Config;
+using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
+using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
+using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Imgeneus.World.Game.Notice;
-using Imgeneus.World.Game.Zone.MapConfig;
-using System.Collections.Concurrent;
-using Imgeneus.World.Game.Guild;
-using Imgeneus.World.Game.Player.Config;
-using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Stats;
-using Imgeneus.World.Game.Stealth;
-using Imgeneus.World.Game.Health;
-using Imgeneus.World.Game.Levelling;
-using Imgeneus.World.Game.Session;
-using Imgeneus.World.Game.Skills;
-using Imgeneus.World.Game.Buffs;
-using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Elements;
-using Imgeneus.World.Game.Country;
-using Imgeneus.World.Game.Speed;
-using Imgeneus.World.Game.Kills;
-using Imgeneus.World.Game.Vehicle;
-using Imgeneus.World.Game.Shape;
-using Imgeneus.World.Game.Movement;
-using Imgeneus.World.Game.AdditionalInfo;
-using Imgeneus.World.Game.Teleport;
-using Imgeneus.World.Game.PartyAndRaid;
-using Imgeneus.World.Game.Friends;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -58,6 +55,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IDyeingManager _dyeingManager;
         private readonly INoticeManager _noticeManager;
         private readonly IGuildManager _guildManager;
+        private readonly IGamePacketFactory _packetFactory;
 
         public IAdditionalInfoManager AdditionalInfoManager { get; private set; }
         public IInventoryManager InventoryManager { get; private set; }
@@ -74,6 +72,7 @@ namespace Imgeneus.World.Game.Player
         public IPartyManager PartyManager { get; private set; }
         public ITradeManager TradeManager { get; private set; }
         public IFriendsManager FriendsManager { get; private set; }
+        public IDuelManager DuelManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -109,7 +108,9 @@ namespace Imgeneus.World.Game.Player
                          IPartyManager partyManager,
                          ITradeManager tradeManager,
                          IFriendsManager friendsManager,
-                         IGameSession gameSession) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
+                         IDuelManager duelManager,
+                         IGameSession gameSession,
+                         IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -120,6 +121,7 @@ namespace Imgeneus.World.Game.Player
             _dyeingManager = dyeingManager;
             _noticeManager = noticeManager;
             _guildManager = guildManager;
+            _packetFactory = packetFactory;
 
             AdditionalInfoManager = additionalInfoManager;
             InventoryManager = inventoryManager;
@@ -136,6 +138,7 @@ namespace Imgeneus.World.Game.Player
             PartyManager = partyManager;
             TradeManager = tradeManager;
             FriendsManager = friendsManager;
+            DuelManager = duelManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
@@ -148,12 +151,14 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnAddItem += SendAddItemToInventory;
             InventoryManager.OnRemoveItem += SendRemoveItemFromInventory;
             InventoryManager.OnItemExpired += SendItemExpired;
-            TradeManager.OnCanceled += SendTradeCanceled;
             AttackManager.TargetOnBuffAdded += SendTargetAddBuff;
             AttackManager.TargetOnBuffRemoved += SendTargetRemoveBuff;
+            DuelManager.OnDuelResponse += SendDuelResponse;
+            DuelManager.OnStart += SendDuelStart;
+            DuelManager.OnCanceled += SendDuelCancel;
+            DuelManager.OnFinish += SendDuelFinish;
 
             _packetsHelper = new PacketsHelper();
-            HealthManager.OnDead += Character_OnDead;
 
             Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;
@@ -176,10 +181,12 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnAddItem -= SendAddItemToInventory;
             InventoryManager.OnRemoveItem -= SendRemoveItemFromInventory;
             InventoryManager.OnItemExpired -= SendItemExpired;
-            TradeManager.OnCanceled -= SendTradeCanceled;
             AttackManager.TargetOnBuffAdded -= SendTargetAddBuff;
             AttackManager.TargetOnBuffRemoved -= SendTargetRemoveBuff;
-            HealthManager.OnDead -= Character_OnDead;
+            DuelManager.OnDuelResponse -= SendDuelResponse;
+            DuelManager.OnStart -= SendDuelStart;
+            DuelManager.OnCanceled -= SendDuelCancel;
+            DuelManager.OnFinish -= SendDuelFinish;
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
@@ -244,73 +251,12 @@ namespace Imgeneus.World.Game.Player
 
         #endregion
 
-        #region Duel
-
-        /// <summary>
-        /// Duel opponent.
-        /// </summary>
-        public Character DuelOpponent;
-
-        /// <summary>
-        /// Indicator, that shows if a player has answered duel request.
-        /// </summary>
-        public bool AnsweredDuelRequest;
-
-        /// <summary>
-        /// Indicator, that shows if a player has clicked "ok" in trade window of duel.
-        /// </summary>
-        public bool IsDuelApproved;
-
-        /// <summary>
-        /// Duel x position start.
-        /// </summary>
-        public float DuelX;
-
-        /// <summary>
-        /// Duel z position start.
-        /// </summary>
-        public float DuelZ;
-
-        /// <summary>
-        /// Finishes duel, because of any reason.
-        /// </summary>
-        public event Action<DuelCancelReason> OnDuelFinish;
-
-        /// <summary>
-        /// Finishes duel.
-        /// </summary>
-        /// <param name="reason">Reason why duel was finished.</param>
-        private void FinishDuel(DuelCancelReason reason)
-        {
-            if (IsDuelApproved)
-            {
-                if (reason == DuelCancelReason.Lose || reason == DuelCancelReason.AdmitDefeat)
-                {
-                    KillsManager.Defeats++;
-                    DuelOpponent.KillsManager.Victories++;
-                }
-                OnDuelFinish?.Invoke(reason);
-            }
-        }
-
-        #endregion
-
-        #region Death
-
-        private void Character_OnDead(int senderId, IKiller killer)
-        {
-            if (IsDuelApproved && killer == DuelOpponent)
-                FinishDuel(DuelCancelReason.Lose);
-        }
-
-        #endregion
-
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IGameSession gameSession)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IGameSession gameSession, IGamePacketFactory packetFactory)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, noticeManager, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, gameSession)
+            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, noticeManager, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, gameSession, packetFactory)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,

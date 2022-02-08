@@ -9,42 +9,42 @@ namespace Imgeneus.World.Game.Health
     /// </summary>
     public interface IHealthManager : ISessionedService, IDisposable
     {
-        public void Init(int ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null, CharacterProfession? profession = null);
+        void Init(int ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null, CharacterProfession? profession = null);
 
         /// <summary>
         /// Max health.
         /// </summary>
-        public int MaxHP { get; }
+        int MaxHP { get; }
 
         /// <summary>
         /// Max stamina.
         /// </summary>
-        public int MaxSP { get; }
+        int MaxSP { get; }
 
         /// <summary>
         /// Max mana.
         /// </summary>
-        public int MaxMP { get; }
+        int MaxMP { get; }
 
         /// <summary>
         /// Event, that is fired, when max hp changes.
         /// </summary>
-        public event Action<int, int> OnMaxHPChanged;
+        event Action<int, int> OnMaxHPChanged;
 
         /// <summary>
         /// Event, that is fired, when max sp changes.
         /// </summary>
-        public event Action<int, int> OnMaxSPChanged;
+        event Action<int, int> OnMaxSPChanged;
 
         /// <summary>
         /// Event, that is fired, when max mp changes.
         /// </summary>
-        public event Action<int, int> OnMaxMPChanged;
+        event Action<int, int> OnMaxMPChanged;
 
         /// <summary>
         /// Only for players.
         /// </summary>
-        public CharacterProfession? Class { get; }
+        CharacterProfession? Class { get; }
 
         /// <summary>
         /// Health points based on level.
@@ -79,60 +79,65 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Current health.
         /// </summary>
-        public int CurrentHP { get; }
+        int CurrentHP { get; }
 
         /// <summary>
         /// Current stamina.
         /// </summary>
-        public int CurrentSP { get; set; }
+        int CurrentSP { get; set; }
 
         /// <summary>
         /// Current mana.
         /// </summary>
-        public int CurrentMP { get; set; }
+        int CurrentMP { get; set; }
+
+        /// <summary>
+        /// Fires event, when there is some damage got from some killer.
+        /// </summary>
+        event Action<int, IKiller> OnGotDamage;
 
         /// <summary>
         /// Decreases health and calculates how much damage was done in order to get who was killer later on.
         /// </summary>
         /// <param name="hp">damage hp</param>
         /// <param name="damageMaker">who has made damage</param>
-        public void DecreaseHP(int hp, IKiller damageMaker);
+        void DecreaseHP(int hp, IKiller damageMaker);
 
         /// <summary>
         /// Heals target hp.
         /// </summary>
         /// <param name="hp">hp healed</param>
-        public void IncreaseHP(int hp);
+        void IncreaseHP(int hp);
 
         /// <summary>
         /// Indicator, that shows if entity is dead or not.
         /// </summary>
-        public bool IsDead { get; }
+        bool IsDead { get; }
 
         /// <summary>
         /// Event, that is fired, when entity is killed.
         /// </summary>
-        public event Action<int, IKiller> OnDead;
+        event Action<int, IKiller> OnDead;
 
         /// <summary>
         /// Event, that is fired, when killable is resurrected.
         /// </summary>
-        public event Action<int> OnRebirthed;
+        event Action<int> OnRebirthed;
 
         /// <summary>
         /// Resurrects killable.
         /// </summary>
-        public void Rebirth();
+        void Rebirth();
 
         /// <summary>
         /// Recoves all 3 stats at once.
         /// </summary>
-        public void Recover(int hp, int mp, int sp);
+        void Recover(int hp, int mp, int sp);
 
         /// <summary>
         /// Fully recovers all hitpoints.
         /// </summary>
-        public void FullRecover();
+        void FullRecover();
 
         /// <summary>
         /// Event, that is fired, when hp changes.

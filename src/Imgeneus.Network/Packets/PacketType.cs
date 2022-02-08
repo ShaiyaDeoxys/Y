@@ -229,11 +229,11 @@
         CHAT_MAP = 0x1111, // 4369
 
         // Notice
-        NOTICE_WORLD = 0xF90B, // 63755
+        NOTICE_ADMINS = 0xF906, // 63750
         NOTICE_FACTION = 0xF907, // 63751
         NOTICE_PLAYER = 0xF908, // 63752
         NOTICE_MAP = 0xF909, // 63753
-        NOTICE_ADMINS = 0xF906, // 63750
+        NOTICE_WORLD = 0xF90B, // 63755
 
         // Duel
         DUEL_REQUEST = 0x2401, // 9217

@@ -67,36 +67,28 @@ namespace Imgeneus.World.Game.Trade
 
         #region Trade finish
 
-        public event Action OnCanceled;
-
         public void Cancel()
         {
-            ClearTrade(out var partner);
-            if (partner != null)
-                partner.TradeManager.Cancel();
-
-            OnCanceled?.Invoke();
+            ClearTrade();
         }
 
-        private void ClearTrade(out Character parther)
+        private void ClearTrade()
         {
-            if (_gameWorld.Players.ContainsKey(PartnerId))
-                parther = _gameWorld.Players[PartnerId];
-            else
-                parther = null;
-
             PartnerId = 0;
 
-            if (Request is not null)
-            {
-                Request.TradeItems.Clear();
-                Request.TradeMoney.Clear();
-            }
+            if (Request is null)
+                return;
 
-            Request = null;
+            foreach (var key in Request.TradeItems.Keys.Where(x => x.CharacterId == _ownerId).ToList())
+                Request.TradeItems.TryRemove(key, out var itm);
+
+            Request.TradeMoney.TryRemove(_ownerId, out var m);
+
+            if (Request.TradeItems.IsEmpty && Request.TradeMoney.IsEmpty)
+                Request = null;
         }
 
-        public void FinishSuccessful(bool clearTradeSession = false)
+        public void FinishSuccessful()
         {
             foreach (var item in Request.TradeItems.Where(x => x.Key.CharacterId == _ownerId))
             {
@@ -115,10 +107,7 @@ namespace Imgeneus.World.Game.Trade
                 _gameWorld.Players[PartnerId].InventoryManager.Gold = _gameWorld.Players[PartnerId].InventoryManager.Gold + Request.TradeMoney[_ownerId];
             }
 
-            if (clearTradeSession)
-                ClearTrade(out var p);
-            else
-                _gameWorld.Players[PartnerId].TradeManager.FinishSuccessful(true);
+            ClearTrade();
         }
 
         #endregion
@@ -159,7 +148,7 @@ namespace Imgeneus.World.Game.Trade
             return true;
         }
 
-        public bool TryAddMoney(uint money)
+        public bool TryAddMoney(uint money, out uint resultMoney)
         {
             if (money < _inventoryManager.Gold)
             {
@@ -171,6 +160,7 @@ namespace Imgeneus.World.Game.Trade
                 Request.TradeMoney[_ownerId] = _inventoryManager.Gold;
             }
 
+            resultMoney = Request.TradeMoney[_ownerId];
             return true;
         }
 

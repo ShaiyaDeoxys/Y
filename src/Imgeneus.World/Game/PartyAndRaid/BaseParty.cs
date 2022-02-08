@@ -278,11 +278,11 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <param name="item">money, unique item with type 26</param>
         protected void DistributeMoney(Item item)
         {
-            var money = item.Gem1.TypeId / Members.Count;
-            item.Gem1.SetTypeId(money);
+            item.Gold /= Members.Count;
+
             foreach (var member in Members)
             {
-                member.InventoryManager.Gold = (uint)(member.InventoryManager.Gold + money);
+                member.InventoryManager.Gold = (uint)(member.InventoryManager.Gold + item.Gold);
                 member.SendAddItemToInventory(item);
             }
         }

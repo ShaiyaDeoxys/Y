@@ -40,8 +40,7 @@ namespace Imgeneus.World.Game.Monster
             if (_dbMob.MoneyMax > _dbMob.MoneyMin && _dropRandom.Next(1, 101) <= 40)
             {
                 var money = _dropRandom.Next(_dbMob.MoneyMin, _dbMob.MoneyMax);
-                var item = new Item(_databasePreloader, Item.MONEY_ITEM_TYPE, 0);
-                item.Gem1 = new Gem(money);
+                var item = new Item(money);
                 items.Add(item);
             }
 

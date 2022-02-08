@@ -2,6 +2,7 @@
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Kills;
@@ -62,6 +63,7 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<IHealthManager>().Clear());
             tasks.Add(x.GetService<IPartyManager>().Clear());
             tasks.Add(x.GetService<ITradeManager>().Clear());
+            tasks.Add(x.GetService<IDuelManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

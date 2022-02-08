@@ -33,6 +33,7 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Friends;
+using Imgeneus.World.Game.Duel;
 
 namespace Imgeneus.World.Packets
 {
@@ -343,6 +344,14 @@ namespace Imgeneus.World.Packets
             packet.Write(gold);
             client.Send(packet);
         }
+
+        public void SendGoldUpdate(IWorldClient client, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.SET_MONEY);
+            packet.Write(gold);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Vehicle
@@ -1123,9 +1132,114 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-#endregion
+        #endregion
 
-#region GM
+        #region Duel
+
+        public void SendWaitingDuel(IWorldClient client, int duelStarterId, int duelOpponentId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_REQUEST);
+            packet.Write(duelStarterId);
+            packet.Write(duelOpponentId);
+            client.Send(packet);
+        }
+
+        public void SendDuelResponse(IWorldClient client, DuelResponse response, int characterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_RESPONSE);
+            packet.Write((byte)response);
+            packet.Write(characterId);
+            client.Send(packet);
+        }
+
+        public void SendDuelStartTrade(IWorldClient client, int characterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE);
+            packet.Write(characterId);
+            packet.WriteByte(0); // ?
+            client.Send(packet);
+        }
+
+        public void SendDuelAddItem(IWorldClient client, Item tradeItem, byte quantity, byte slotInTradeWindow)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE_OPPONENT_ADD_ITEM);
+            packet.Write(new TradeItem(slotInTradeWindow, quantity, tradeItem).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendDuelAddItem(IWorldClient client, byte bag, byte slot, byte quantity, byte slotInTradeWindow)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE_ADD_ITEM);
+            packet.Write(bag);
+            packet.Write(slot);
+            packet.Write(quantity);
+            packet.Write(slotInTradeWindow);
+            client.Send(packet);
+        }
+
+        public void SendDuelRemoveItem(IWorldClient client, byte slotInTradeWindow, byte senderType)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE_REMOVE_ITEM);
+            packet.Write(senderType);
+            packet.Write(slotInTradeWindow);
+            client.Send(packet);
+        }
+
+        public void SendDuelAddMoney(IWorldClient client, byte senderType, uint tradeMoney)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE_ADD_MONEY);
+            packet.Write(senderType);
+            packet.Write(tradeMoney);
+            client.Send(packet);
+        }
+
+        public void SendDuelCloseTrade(IWorldClient client, DuelCloseWindowReason reason)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_CLOSE_TRADE);
+            packet.Write((byte)reason);
+            client.Send(packet);
+        }
+
+        public void SendDuelApprove(IWorldClient client, byte senderType, bool isApproved)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE_OK);
+            packet.Write(senderType);
+            packet.Write(isApproved ? (byte)0: (byte)1);
+            client.Send(packet);
+        }
+
+        public void SendDuelReady(IWorldClient client, float x, float z)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_READY);
+            packet.Write(x);
+            packet.Write(z);
+            client.Send(packet);
+        }
+
+        public void SendDuelStart(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_START);
+            client.Send(packet);
+        }
+
+        public void SendDuelCancel(IWorldClient client, DuelCancelReason cancelReason, int playerId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_CANCEL);
+            packet.Write((byte)cancelReason);
+            packet.Write(playerId);
+            client.Send(packet);
+        }
+
+        public void SendDuelFinish(IWorldClient client, bool isWin)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DUEL_WIN_LOSE);
+            packet.WriteByte(isWin ? (byte)1 : (byte)2); // 1 - win, 2 - lose
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {
             using var packet = new ImgeneusPacket(PacketType.GM_CMD_ERROR);
@@ -1170,6 +1284,6 @@ namespace Imgeneus.World.Packets
             packet.Write(player.PosZ);
             client.Send(packet);
         }
-#endregion
+        #endregion
     }
 }

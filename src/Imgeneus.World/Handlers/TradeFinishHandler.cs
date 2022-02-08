@@ -23,9 +23,17 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.TRADE_FINISH)]
         public void Handle(WorldClient client, TradeFinishPacket packet)
         {
+            _gameWorld.Players.TryGetValue(_tradeManager.PartnerId, out var patner);
+            if (patner is null)
+                return;
+
             if (packet.Result == 2)
             {
                 _tradeManager.Cancel();
+                patner.TradeManager.Cancel();
+
+                _packetFactory.SendTradeCanceled(client);
+                _packetFactory.SendTradeCanceled(patner.GameSession.Client);
             }
             else if (packet.Result == 1)
             {
@@ -34,8 +42,8 @@ namespace Imgeneus.World.Handlers
                 // Decline both.
                 _packetFactory.SendTradeConfirm(client, 1, true);
                 _packetFactory.SendTradeConfirm(client, 2, true);
-                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 1, true);
-                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, true);
+                _packetFactory.SendTradeConfirm(patner.GameSession.Client, 1, true);
+                _packetFactory.SendTradeConfirm(patner.GameSession.Client, 2, true);
                 
             }
             else if (packet.Result == 0)
@@ -44,14 +52,15 @@ namespace Imgeneus.World.Handlers
 
                 // 1 means sender, 2 means partner.
                 _packetFactory.SendTradeConfirm(client, 1, false);
-                _packetFactory.SendTradeConfirm(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client, 2, false);
+                _packetFactory.SendTradeConfirm(patner.GameSession.Client, 2, false);
 
                 if (_tradeManager.Request.IsConfirmed_1 && _tradeManager.Request.IsConfirmed_2)
                 {
                     _tradeManager.FinishSuccessful();
-
                     _packetFactory.SendTradeFinished(client);
-                    _packetFactory.SendTradeFinished(_gameWorld.Players[_tradeManager.PartnerId].GameSession.Client);
+
+                    patner.TradeManager.FinishSuccessful();
+                    _packetFactory.SendTradeFinished(patner.GameSession.Client);
                 }
             }
         }

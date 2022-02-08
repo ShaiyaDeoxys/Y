@@ -219,13 +219,6 @@ namespace Imgeneus.World.Game.Player
                     _packetsHelper.SendGmCommandSuccess(Client);
                     break;
 
-                case GMTeleportPlayerPacket gmTeleportPlayerPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    HandleGMTeleportPlayer(gmTeleportPlayerPacket);
-                    break;
-
                 case BankClaimItemPacket bankClaimItemPacket:
                     var result = TryClaimBankItem(bankClaimItemPacket.Slot, out _);
                     if (!result)

@@ -23,7 +23,6 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.TRADE_OWNER_ADD_ITEM)]
         public void Handle(WorldClient client, TradeAddItemPacket packet)
         {
-
             var ok = _tradeManager.TryAddItem(packet.Bag, packet.Slot, packet.Quantity, packet.SlotInTradeWindow, out var tradeItem);
             if (ok)
             {

@@ -408,13 +408,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGoldUpdate(IWorldClient client, uint gold)
-        {
-            using var packet = new ImgeneusPacket(PacketType.SET_MONEY);
-            packet.Write(gold);
-            client.Send(packet);
-        }
-
         internal void SendResetSkills(IWorldClient client, ushort skillPoint)
         {
             using var packet = new ImgeneusPacket(PacketType.RESET_SKILLS);

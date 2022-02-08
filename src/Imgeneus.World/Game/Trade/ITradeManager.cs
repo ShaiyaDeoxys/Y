@@ -30,11 +30,6 @@ namespace Imgeneus.World.Game.Trade
         void Cancel();
 
         /// <summary>
-        /// Event, that is fired when trade is canceled.
-        /// </summary>
-        event Action OnCanceled;
-
-        /// <summary>
         /// Adds item to trade window.
         /// </summary>
         /// <param name="bag">item bag in inventory</param>
@@ -54,7 +49,7 @@ namespace Imgeneus.World.Game.Trade
         /// <summary>
         /// Tries to add money to trade.
         /// </summary>
-        bool TryAddMoney(uint money);
+        bool TryAddMoney(uint money, out uint resultMoney);
 
         /// <summary>
         /// Called, when user clicks "Decide" button.
@@ -79,6 +74,6 @@ namespace Imgeneus.World.Game.Trade
         /// <summary>
         /// Finishes trade and assignes items to right players.
         /// </summary>
-        void FinishSuccessful(bool clearTradeSession = false);
+        void FinishSuccessful();
     }
 }

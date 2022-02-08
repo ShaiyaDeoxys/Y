@@ -5,6 +5,7 @@ using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Health;
@@ -63,6 +64,7 @@ namespace Imgeneus.World.Packets
         void SendCanNotUseItem(IWorldClient client, int characterId);
         void SendBoughtItem(IWorldClient client, BuyResult result, Item boughtItem, uint gold);
         void SendSoldItem(IWorldClient client, bool success, Item itemToSell, uint gold);
+        void SendGoldUpdate(IWorldClient client, uint gold);
         #endregion
 
         #region Vehicle
@@ -179,6 +181,22 @@ namespace Imgeneus.World.Packets
         void SendFriendDeleted(IWorldClient client, int id);
         void SendFriends(IWorldClient client, IEnumerable<Friend> friends);
         void SendFriendOnline(IWorldClient client, int id, bool isOnline);
+        #endregion
+
+        #region Duel
+        void SendWaitingDuel(IWorldClient client, int duelStarterId, int duelOpponentId);
+        void SendDuelResponse(IWorldClient client, DuelResponse response, int characterId);
+        void SendDuelStartTrade(IWorldClient client, int characterId);
+        void SendDuelAddItem(IWorldClient client, Item tradeItem, byte quantity, byte slotInTradeWindow);
+        void SendDuelAddItem(IWorldClient client, byte bag, byte slot, byte quantity, byte slotInTradeWindow);
+        void SendDuelRemoveItem(IWorldClient client, byte slotInTradeWindow, byte senderType);
+        void SendDuelAddMoney(IWorldClient client, byte senderType, uint tradeMoney);
+        void SendDuelCloseTrade(IWorldClient client, DuelCloseWindowReason reason);
+        void SendDuelApprove(IWorldClient client, byte senderType, bool isApproved);
+        void SendDuelReady(IWorldClient client, float x, float z);
+        void SendDuelStart(IWorldClient client);
+        void SendDuelCancel(IWorldClient client, DuelCancelReason cancelReason, int playerId);
+        void SendDuelFinish(IWorldClient client, bool isWin);
         #endregion
 
         #region GM

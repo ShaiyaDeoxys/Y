@@ -864,6 +864,18 @@ namespace Imgeneus.World.Game.Inventory
 
         #endregion
 
+        #region Gold item
+
+        public int Gold { get; set; }
+
+        public Item(int gold)
+        {
+            Type = MONEY_ITEM_TYPE;
+            Gold = gold;
+        }
+
+        #endregion
+
         #region Helpers
 
         /// <summary>

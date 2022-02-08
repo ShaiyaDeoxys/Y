@@ -87,7 +87,7 @@ namespace Imgeneus.World.Game.Inventory
         {
             _ownerId = ownerId;
 
-            foreach (var item in items.Select(i => new Item(_databasePreloader, i)))
+            foreach (var item in items.Select(x => new Item(_databasePreloader, x)))
             {
                 InventoryItems.TryAdd((item.Bag, item.Slot), item);
 

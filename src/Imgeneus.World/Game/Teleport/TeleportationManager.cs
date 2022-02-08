@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Zone;
@@ -17,10 +18,11 @@ namespace Imgeneus.World.Game.Teleport
         private readonly IDatabase _database;
         private readonly ICountryProvider _countryProvider;
         private readonly ILevelProvider _levelProvider;
+        private readonly IDuelManager _duelManager;
         private readonly IGameWorld _gameWorld;
         private int _ownerId;
 
-        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IGameWorld gameWorld)
+        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IDuelManager duelManager, IGameWorld gameWorld)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -28,6 +30,7 @@ namespace Imgeneus.World.Game.Teleport
             _database = database;
             _countryProvider = countryProvider;
             _levelProvider = levelProvider;
+            _duelManager = duelManager;
             _gameWorld = gameWorld;
 #if DEBUG
             _logger.LogDebug("TeleportationManager {hashcode} created", GetHashCode());
@@ -92,8 +95,7 @@ namespace Imgeneus.World.Game.Teleport
             }
             else
             {
-                //if (IsDuelApproved)
-                //    FinishDuel(DuelCancelReason.TooFarAway);
+                _duelManager.Cancel(_ownerId, DuelCancelReason.TooFarAway);
                 _mapProvider.Map.UnloadPlayer(_ownerId);
             }
         }

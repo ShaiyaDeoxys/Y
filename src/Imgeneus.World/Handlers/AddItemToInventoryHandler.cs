@@ -34,8 +34,7 @@ namespace Imgeneus.World.Handlers
             if (mapItem.Item.Type == Item.MONEY_ITEM_TYPE)
             {
                 player.Map.RemoveItem(player.CellId, mapItem.Id);
-                mapItem.Item.Bag = 1;
-                player.InventoryManager.Gold = player.InventoryManager.Gold + (uint)mapItem.Item.Gem1.TypeId;
+                player.InventoryManager.Gold += (uint)mapItem.Item.Gold;
                 _packetFactory.SendAddItem(client, mapItem.Item);
             }
             else
