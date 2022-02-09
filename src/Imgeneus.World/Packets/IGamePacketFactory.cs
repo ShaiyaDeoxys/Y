@@ -125,7 +125,7 @@ namespace Imgeneus.World.Packets
         void SendParty_HP_SP_MP(IWorldClient client, Character partyMember);
         void SendParty_Max_HP_SP_MP(IWorldClient client, Character partyMember);
         void SendPartyMemberGetItem(IWorldClient client, int characterId, Item item);
-        void SendPartyLevel(IWorldClient client, Character sender);
+        void SendPartyLevel(IWorldClient client, int senderId, ushort level);
         void SendPartyError(IWorldClient client, PartyErrorType partyError, int id = 0);
         void SendRaidDismantle(IWorldClient client);
         #endregion

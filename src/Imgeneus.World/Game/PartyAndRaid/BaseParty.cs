@@ -141,12 +141,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             character.HealthManager.OnMaxHPChanged += Member_MaxHP_Changed;
             character.HealthManager.OnMaxMPChanged += Member_MaxMP_Changed;
             character.HealthManager.OnMaxSPChanged += Member_MaxSP_Changed;
-            character.OnLevelUp += Member_OnLevelChange;
-            character.OnLevelUp += Member_Max_HP_SP_MP_Changed;
-            character.OnLevelUp += Member_HP_SP_MP_Changed;
-            character.OnAdminLevelChange += Member_OnLevelChange;
-            character.OnAdminLevelChange += Member_Max_HP_SP_MP_Changed;
-            character.OnAdminLevelChange += Member_HP_SP_MP_Changed;
+            character.LevelingManager.OnLevelUp += Member_OnLevelChange;
         }
 
         /// <summary>
@@ -162,12 +157,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             character.HealthManager.OnMaxHPChanged -= Member_MaxHP_Changed;
             character.HealthManager.OnMaxMPChanged -= Member_MaxMP_Changed;
             character.HealthManager.OnMaxSPChanged -= Member_MaxSP_Changed;
-            character.OnLevelUp -= Member_OnLevelChange;
-            character.OnLevelUp -= Member_Max_HP_SP_MP_Changed;
-            character.OnLevelUp -= Member_HP_SP_MP_Changed;
-            character.OnAdminLevelChange -= Member_OnLevelChange;
-            character.OnAdminLevelChange -= Member_Max_HP_SP_MP_Changed;
-            character.OnAdminLevelChange -= Member_HP_SP_MP_Changed;
+            character.LevelingManager.OnLevelUp -= Member_OnLevelChange;
         }
 
         #endregion
@@ -295,10 +285,10 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// Notifies party member that a member's level changed
         /// </summary>
         /// <param name="sender">Character whose level changed</param>
-        private void Member_OnLevelChange(Character sender)
+        private void Member_OnLevelChange(int senderId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
         {
-            foreach (var member in Members.Where(m => m != sender))
-                SendLevel(member.GameSession.Client, sender);
+            foreach (var member in Members.Where(m => m.Id != senderId))
+                SendLevel(member.GameSession.Client, senderId, level);
         }
 
         #endregion
@@ -333,7 +323,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         public abstract void MemberGetItem(Character player, Item item);
 
-        protected abstract void SendLevel(IWorldClient client, Character sender);
+        protected abstract void SendLevel(IWorldClient client, int senderId, ushort level);
 
         #endregion
     }

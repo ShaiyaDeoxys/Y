@@ -231,7 +231,7 @@ namespace Imgeneus.World.Game.Attack
             StartAttack();
 
             AttackResult result;
-            if (AttackSuccessRate(Target, TypeAttack.PhysicalAttack))
+            if (!AttackSuccessRate(Target, TypeAttack.PhysicalAttack))
             {
                 result = new AttackResult(AttackSuccess.Miss, new Damage());
                 OnAttack?.Invoke(_ownerId, Target, result);

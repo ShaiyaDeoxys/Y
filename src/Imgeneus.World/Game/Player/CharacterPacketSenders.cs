@@ -139,10 +139,7 @@ namespace Imgeneus.World.Game.Player
 
         public void SendMyShape() => _packetsHelper.SendCharacterShape(Client, this);
 
-        public void SendAttribute(CharacterAttributeEnum attribute) =>
-            _packetsHelper.SendAttribute(Client, attribute, GetAttributeValue(attribute));
-
-        public void SendExperienceGain(ushort expAmount) => _packetsHelper.SendExperienceGain(Client, expAmount);
+        public void SendExperienceGain(uint expAmount) => _packetsHelper.SendExperienceGain(Client, expAmount);
 
         public void SendWarning(string message) => _packetsHelper.SendWarning(Client, message);
 

@@ -3,6 +3,7 @@ using Imgeneus.Database;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
@@ -35,13 +36,13 @@ namespace Imgeneus.World.Game.Skills
         private readonly IElementProvider _elementProvider;
         private readonly ICountryProvider _countryProvider;
         private readonly ICharacterConfiguration _characterConfig;
-        private readonly ILevelingManager _levelingManager;
         private readonly ILevelProvider _levelProvider;
+        private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IGameWorld _gameWorld;
 
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelingManager levelingManager, ILevelProvider levelProvider, IGameWorld gameWorld)
+        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -53,8 +54,8 @@ namespace Imgeneus.World.Game.Skills
             _elementProvider = elementProvider;
             _countryProvider = countryProvider;
             _characterConfig = characterConfig;
-            _levelingManager = levelingManager;
             _levelProvider = levelProvider;
+            _additionalInfoManager = additionalInfoManager;
             _gameWorld = gameWorld;
             _castTimer.Elapsed += CastTimer_Elapsed;
 
@@ -84,10 +85,15 @@ namespace Imgeneus.World.Game.Skills
                 _buffsManager.AddBuff(skill, null);
         }
 
-        public Task Clear()
+        public async Task Clear()
         {
+            var character = await _database.Characters.FindAsync(_ownerId);
+
+            character.SkillPoint = SkillPoints;
+
+            await _database.SaveChangesAsync();
+
             Skills.Clear();
-            return Task.CompletedTask;
         }
 
         public void Dispose()
@@ -109,22 +115,10 @@ namespace Imgeneus.World.Game.Skills
 
         public ushort SkillPoints { get; private set; }
 
-        public async Task<bool> TrySetSkillPoints(ushort value)
+        public bool TrySetSkillPoints(ushort value)
         {
-            if (SkillPoints == value)
-                return true;
-
-            var character = await _database.Characters.FindAsync(_ownerId);
-            if (character is null)
-                return false;
-
-            character.SkillPoint = value;
-
-            var ok = (await _database.SaveChangesAsync()) > 0;
-            if (ok)
-                SkillPoints = value;
-
-            return ok;
+            SkillPoints = value;
+            return true;
         }
 
         #endregion
@@ -214,7 +208,7 @@ namespace Imgeneus.World.Game.Skills
             if (isSkillLearned != null)
                 Skills.TryRemove(skillNumber, out var removed);
 
-            await TrySetSkillPoints((ushort)(SkillPoints - dbSkill.SkillPoint));
+            SkillPoints -= dbSkill.SkillPoint;
 
             var skill = new Skill(dbSkill, skillNumber, 0);
             Skills.TryAdd(skillNumber, skill);
@@ -232,11 +226,9 @@ namespace Imgeneus.World.Game.Skills
 
         public async Task<bool> TryResetSkills()
         {
-            var skillFactor = _characterConfig.GetLevelStatSkillPoints(_levelingManager.Grow).SkillPoint;
+            var skillFactor = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow).SkillPoint;
 
-            var ok = await TrySetSkillPoints((ushort)(skillFactor * (_levelProvider.Level - 1)));
-            if (!ok)
-                return false;
+            SkillPoints = (ushort)(skillFactor * (_levelProvider.Level - 1));
 
             var skillsToRemove = _database.CharacterSkills.Where(s => s.CharacterId == _ownerId);
             _database.CharacterSkills.RemoveRange(skillsToRemove);

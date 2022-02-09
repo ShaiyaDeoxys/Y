@@ -8,10 +8,8 @@ using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Buffs;
-using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
-using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Guild;
@@ -21,9 +19,7 @@ using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Movement;
-using Imgeneus.World.Game.Notice;
 using Imgeneus.World.Game.PartyAndRaid;
-using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
@@ -47,13 +43,9 @@ namespace Imgeneus.World.Game.Player
     {
         private readonly ILogger<Character> _logger;
         private readonly IGameWorld _gameWorld;
-        private readonly ICharacterConfiguration _characterConfig;
         private readonly IBackgroundTaskQueue _taskQueue;
         private readonly IMapsLoader _mapLoader;
         private readonly PacketsHelper _packetsHelper;
-        private readonly IChatManager _chatManager;
-        private readonly IDyeingManager _dyeingManager;
-        private readonly INoticeManager _noticeManager;
         private readonly IGuildManager _guildManager;
         private readonly IGamePacketFactory _packetFactory;
 
@@ -77,13 +69,9 @@ namespace Imgeneus.World.Game.Player
 
         public Character(ILogger<Character> logger,
                          IGameWorld gameWorld,
-                         ICharacterConfiguration characterConfig,
                          IBackgroundTaskQueue taskQueue,
                          IDatabasePreloader databasePreloader,
                          IMapsLoader mapLoader,
-                         IChatManager chatManager,
-                         IDyeingManager dyeingManager,
-                         INoticeManager noticeManager,
                          IGuildManager guildManager,
                          ICountryProvider countryProvider,
                          ISpeedManager speedManager,
@@ -114,12 +102,8 @@ namespace Imgeneus.World.Game.Player
         {
             _logger = logger;
             _gameWorld = gameWorld;
-            _characterConfig = characterConfig;
             _taskQueue = taskQueue;
             _mapLoader = mapLoader;
-            _chatManager = chatManager;
-            _dyeingManager = dyeingManager;
-            _noticeManager = noticeManager;
             _guildManager = guildManager;
             _packetFactory = packetFactory;
 
@@ -157,6 +141,7 @@ namespace Imgeneus.World.Game.Player
             DuelManager.OnStart += SendDuelStart;
             DuelManager.OnCanceled += SendDuelCancel;
             DuelManager.OnFinish += SendDuelFinish;
+            LevelingManager.OnExpChanged += SendExperienceGain;
 
             _packetsHelper = new PacketsHelper();
 
@@ -187,6 +172,7 @@ namespace Imgeneus.World.Game.Player
             DuelManager.OnStart -= SendDuelStart;
             DuelManager.OnCanceled -= SendDuelCancel;
             DuelManager.OnFinish -= SendDuelFinish;
+            LevelingManager.OnExpChanged -= SendExperienceGain;
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
@@ -254,14 +240,12 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfig, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, IChatManager chatManager, ILinkingManager linkingManager, IDyeingManager dyeingManager, INoticeManager noticeManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IGameSession gameSession, IGamePacketFactory packetFactory)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, ILinkingManager linkingManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IGameSession gameSession, IGamePacketFactory packetFactory)
         {
-            var character = new Character(logger, gameWorld, characterConfig, taskQueue, databasePreloader, mapsLoader, chatManager, dyeingManager, noticeManager, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, gameSession, packetFactory)
+            var character = new Character(logger, gameWorld, taskQueue, databasePreloader, mapsLoader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, gameSession, packetFactory)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
-                Exp = dbCharacter.Exp,
-                IsAdmin = dbCharacter.User.Authority == 0,
                 Points = dbCharacter.User.Points,
                 GuildId = dbCharacter.GuildId
             };

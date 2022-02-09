@@ -56,7 +56,15 @@ namespace Imgeneus.World.Handlers
             switch (attribute)
             {
                 case CharacterAttributeEnum.Grow:
-                    ok = await targetPlayer.LevelingManager.TrySetGrow((Mode)attributeValue);
+                    ok = await targetPlayer.AdditionalInfoManager.TrySetGrow((Mode)attributeValue);
+                    break;
+
+                case CharacterAttributeEnum.Level:
+                    ok = targetPlayer.LevelingManager.TryChangeLevel((ushort)attributeValue, true);
+                    break;
+
+                case CharacterAttributeEnum.Exp:
+                    ok = targetPlayer.LevelingManager.TryChangeExperience((ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Money:
@@ -65,35 +73,35 @@ namespace Imgeneus.World.Handlers
                     break;
 
                 case CharacterAttributeEnum.StatPoint:
-                    ok = await targetPlayer.StatsManager.TrySetStats(statPoints: (ushort)attributeValue);
+                    ok = targetPlayer.StatsManager.TrySetStats(statPoints: (ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.SkillPoint:
-                    ok = await targetPlayer.SkillsManager.TrySetSkillPoints((ushort)attributeValue);
+                    ok = targetPlayer.SkillsManager.TrySetSkillPoints((ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Strength:
-                    ok = await targetPlayer.StatsManager.TrySetStats(str: (ushort)attributeValue);
+                    ok = targetPlayer.StatsManager.TrySetStats(str: (ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Dexterity:
-                    ok = await targetPlayer.StatsManager.TrySetStats(dex: (ushort)attributeValue);
+                    ok = targetPlayer.StatsManager.TrySetStats(dex: (ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Reaction:
-                    ok = await targetPlayer.StatsManager.TrySetStats(rec: (ushort)attributeValue);
+                    ok = targetPlayer.StatsManager.TrySetStats(rec: (ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Intelligence:
-                    ok = await targetPlayer.StatsManager.TrySetStats(intl: (ushort)attributeValue);
+                    ok = targetPlayer.StatsManager.TrySetStats(intl: (ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Luck:
-                    ok = await targetPlayer.StatsManager.TrySetStats(luc: (ushort)attributeValue);
+                    ok = targetPlayer.StatsManager.TrySetStats(luc: (ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Wisdom:
-                    ok = await targetPlayer.StatsManager.TrySetStats(wis: (ushort)attributeValue);
+                    ok = targetPlayer.StatsManager.TrySetStats(wis: (ushort)attributeValue);
                     break;
 
                 case CharacterAttributeEnum.Kills:

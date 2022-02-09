@@ -508,7 +508,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             _packetFactory.SendNewRaidSubLeader(client, character);
         }
 
-        protected override void SendLevel(IWorldClient client, Character sender)
+        protected override void SendLevel(IWorldClient client, int senderId, ushort level)
         {
             throw new NotImplementedException();
         }

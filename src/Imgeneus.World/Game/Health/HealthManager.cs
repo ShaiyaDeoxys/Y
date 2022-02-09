@@ -288,6 +288,13 @@ namespace Imgeneus.World.Game.Health
             private set => _constMP = value;
         }
 
+        public void RaiseMaxChange()
+        {
+            OnMaxHPChanged?.Invoke(_ownerId, MaxHP);
+            OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
+            OnMaxSPChanged?.Invoke(_ownerId, MaxSP);
+        }
+
         #endregion
 
         #region Recover

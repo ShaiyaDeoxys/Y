@@ -8,25 +8,30 @@ namespace Imgeneus.World.Serialization
     {
         [FieldOrder(0)]
         public int CharacterId { get; }
+
         [FieldOrder(1)]
         public ushort Level { get; }
+
         [FieldOrder(2)]
         public ushort StatPoint { get; }
+
         [FieldOrder(3)]
         public ushort SkillPoint { get; }
+
         [FieldOrder(4)]
         public uint MinLevelExp { get; }
+
         [FieldOrder(5)]
         public uint NextLevelExp { get; }
 
-        public CharacterLevelUp(Character character)
+        public CharacterLevelUp(int characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
         {
-            CharacterId = character.Id;
-            Level = character.LevelProvider.Level;
-            StatPoint = character.StatsManager.StatPoint;
-            SkillPoint = character.SkillsManager.SkillPoints;
-            MinLevelExp = character.MinLevelExp / 10; // Normalize experience for ep8 game
-            NextLevelExp = character.NextLevelExp / 10; // Normalize experience for ep8 game
+            CharacterId = characterId;
+            Level = level;
+            StatPoint = statPoint;
+            SkillPoint = skillPoint;
+            MinLevelExp = minExp / 10; // Normalize experience for ep8 game
+            NextLevelExp = nextExp / 10; // Normalize experience for ep8 game
         }
     }
 }

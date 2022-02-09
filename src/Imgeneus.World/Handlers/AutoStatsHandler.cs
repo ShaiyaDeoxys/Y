@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
@@ -15,13 +16,13 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IStatsManager _statsManager;
         private readonly ICharacterConfiguration _characterConfig;
-        private readonly ILevelingManager _levelingManager;
+        private readonly IAdditionalInfoManager _additionalInfoManager;
 
-        public AutoStatsHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IStatsManager statsManager, ICharacterConfiguration characterConfig, ILevelingManager levelingManager) : base(packetFactory, gameSession)
+        public AutoStatsHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IStatsManager statsManager, ICharacterConfiguration characterConfig, IAdditionalInfoManager additionalInfoManager) : base(packetFactory, gameSession)
         {
             _statsManager = statsManager;
             _characterConfig = characterConfig;
-            _levelingManager = levelingManager;
+            _additionalInfoManager = additionalInfoManager;
         }
 
         [HandlerAction(PacketType.AUTO_STATS_SET)]
@@ -29,7 +30,7 @@ namespace Imgeneus.World.Handlers
         {
             var (str, dex, rec, intl, wis, luc) = packet;
 
-            if (str + dex + rec + intl + wis + luc > _characterConfig.GetLevelStatSkillPoints(_levelingManager.Grow).StatPoint)
+            if (str + dex + rec + intl + wis + luc > _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow).StatPoint)
                 return;
 
             var ok = await _statsManager.TrySetAutoStats(str, dex, rec, intl, wis, luc);

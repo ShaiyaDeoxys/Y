@@ -62,6 +62,11 @@ namespace Imgeneus.World.Game.Health
         int ConstMP { get; }
 
         /// <summary>
+        /// Raise const HP, MP, SP change.
+        /// </summary>
+        void RaiseMaxChange();
+
+        /// <summary>
         /// Health points, that are provided by equipment and buffs.
         /// </summary>
         int ExtraHP { get; set; }

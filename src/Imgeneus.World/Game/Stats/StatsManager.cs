@@ -30,6 +30,8 @@ namespace Imgeneus.World.Game.Stats
         }
 #endif
 
+        #region Init & Clear
+
         public void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0, byte autoStr = 0, byte autoDex = 0, byte autoRec = 0, byte autoInt = 0, byte autoWis = 0, byte autoLuc = 0)
         {
             _ownerId = ownerId;
@@ -71,6 +73,23 @@ namespace Imgeneus.World.Game.Stats
             ExtraPhysicalAttackPower = 0;
             ExtraMagicAttackPower = 0;
         }
+
+        public async Task Clear()
+        {
+            var character = await _database.Characters.FindAsync(_ownerId);
+
+            character.Strength = Strength;
+            character.Dexterity = Dexterity;
+            character.Rec = Reaction;
+            character.Intelligence = Intelligence;
+            character.Wisdom = Wisdom;
+            character.Luck = Luck;
+            character.StatPoint = StatPoint;
+
+            await _database.SaveChangesAsync();
+        }
+
+        #endregion
 
         #region Constants
         public CharacterProfession? Class { get; private set; }
@@ -359,38 +378,17 @@ namespace Imgeneus.World.Game.Stats
 
         public ushort StatPoint { get; private set; }
 
-        public async Task<bool> TrySetStats(ushort? str = null, ushort? dex = null, ushort? rec = null, ushort? intl = null, ushort? wis = null, ushort? luc = null, ushort? statPoint = null)
+        public bool TrySetStats(ushort? str = null, ushort? dex = null, ushort? rec = null, ushort? intl = null, ushort? wis = null, ushort? luc = null, ushort? statPoint = null)
         {
-            var character = await _database.Characters.FindAsync(_ownerId);
-            if (character is null)
-                return false;
+            Strength = str ?? Strength;
+            Dexterity = dex ?? Dexterity;
+            Reaction = rec ?? Reaction;
+            Intelligence = intl ?? Intelligence;
+            Wisdom = wis ?? Wisdom;
+            Luck = luc ?? Luck;
+            StatPoint = statPoint ?? StatPoint;
 
-            character.Strength = str.HasValue ? str.Value : character.Strength;
-            character.Dexterity = dex.HasValue ? dex.Value : character.Dexterity;
-            character.Rec = rec.HasValue ? rec.Value : character.Rec;
-            character.Intelligence = intl.HasValue ? intl.Value : character.Intelligence;
-            character.Wisdom = wis.HasValue ? wis.Value : character.Wisdom;
-            character.Luck = luc.HasValue ? luc.Value : character.Luck;
-            character.StatPoint = statPoint.HasValue ? statPoint.Value : character.StatPoint;
-
-            var count = await _database.SaveChangesAsync();
-
-            if (count > 0)
-            {
-                Strength = character.Strength;
-                Dexterity = character.Dexterity;
-                Reaction = character.Rec;
-                Intelligence = character.Intelligence;
-                Wisdom = character.Wisdom;
-                Luck = character.Luck;
-                StatPoint = character.StatPoint;
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
         }
 
         #endregion

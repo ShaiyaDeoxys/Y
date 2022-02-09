@@ -70,7 +70,7 @@ namespace Imgeneus.World.Game.Notice
         /// <inheritdoc/>
         public void SendAdminNotice(string message)
         {
-            var admins = _gameWorld.Players.Values.Where(p => p.IsAdmin);
+            var admins = _gameWorld.Players.Values.Where(p => p.GameSession.IsAdmin);
 
             foreach (var player in admins)
             {

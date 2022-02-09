@@ -85,7 +85,7 @@ namespace Imgeneus.World.Game.Chat
                                 continue;
 
                             var player = _gameWorld.Players[guildMember.Id];
-                            _packetFactory.SendGuild(player.GameSession.Client, sender.Name, message, sender.IsAdmin);
+                            _packetFactory.SendGuild(player.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
                         }
                     }
 

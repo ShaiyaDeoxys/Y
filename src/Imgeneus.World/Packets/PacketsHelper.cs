@@ -929,7 +929,7 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.DEAD_REBIRTH);
             packet.Write(sender.Id);
             packet.Write((byte)RebirthType.KillSoulByItem);
-            packet.Write(sender.Exp);
+            packet.Write(sender.LevelingManager.Exp);
             packet.Write(sender.PosX);
             packet.Write(sender.PosY);
             packet.Write(sender.PosZ);
@@ -1038,11 +1038,11 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendLevelUp(IWorldClient client, Character character, bool isAdminLevelUp = false)
+        internal void SendLevelUp(IWorldClient client, int characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp, bool hasParty = false)
         {
-            var type = isAdminLevelUp ? PacketType.GM_CHARACTER_LEVEL_UP : PacketType.CHARACTER_LEVEL_UP;
+            var type = hasParty ? PacketType.GM_CHARACTER_LEVEL_UP : PacketType.CHARACTER_LEVEL_UP;
             using var packet = new ImgeneusPacket(type);
-            packet.Write(new CharacterLevelUp(character).Serialize());
+            packet.Write(new CharacterLevelUp(characterId, level, statPoint, skillPoint, minExp, nextExp).Serialize());
             client.Send(packet);
         }
 

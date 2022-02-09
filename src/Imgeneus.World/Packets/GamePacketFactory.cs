@@ -807,10 +807,11 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendPartyLevel(IWorldClient client, Character sender)
+        public void SendPartyLevel(IWorldClient client, int senderId, ushort level)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_LEVEL);
-            packet.Write(new PartyMemberLevelChange(sender).Serialize());
+            packet.Write(senderId);
+            packet.Write(level);
             client.Send(packet);
         }
 

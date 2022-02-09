@@ -216,8 +216,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRebirthed += Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged += Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle += Character_OnStartSummonVehicle;
-            character.OnLevelUp += Character_OnLevelUp;
-            character.OnAdminLevelChange += Character_OnAdminLevelChange;
+            character.LevelingManager.OnLevelUp += Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting += Character_OnTeleport;
         }
@@ -248,8 +247,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRebirthed -= Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged -= Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
-            character.OnLevelUp -= Character_OnLevelUp;
-            character.OnAdminLevelChange -= Character_OnAdminLevelChange;
+            character.LevelingManager.OnLevelUp -= Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting -= Character_OnTeleport;
         }
@@ -449,20 +447,13 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that player levelled up
         /// </summary>
-        private void Character_OnLevelUp(Character sender)
+        private void Character_OnLevelUp(int senderId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
         {
+            var hasParty = Players[senderId].PartyManager.HasParty;
+
             foreach (var player in GetAllPlayers(true))
                 // If sender has party, send admin level up
-                _packetsHelper.SendLevelUp(player.Client, sender, sender.PartyManager.HasParty);
-        }
-
-        /// <summary>
-        /// Notifies other players that an admin changed a player's level
-        /// </summary>
-        private void Character_OnAdminLevelChange(Character sender)
-        {
-            foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendLevelUp(player.Client, sender, true);
+                _packetsHelper.SendLevelUp(player.Client, senderId, level, statPoint, skillPoint, minExp, nextExp, hasParty);
         }
 
         /// <summary>
@@ -609,10 +600,7 @@ namespace Imgeneus.World.Game.Zone
 
             // Add experience to killer character/party
             if (killer is Character killerCharacter)
-                if (killerCharacter.PartyManager.HasParty)
-                    killerCharacter.AddPartyMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
-                else
-                    killerCharacter.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
+                killerCharacter.LevelingManager.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
 
             if (Map is GRBMap)
                 (Map as GRBMap).AddPoints(mob.GuildPoints);

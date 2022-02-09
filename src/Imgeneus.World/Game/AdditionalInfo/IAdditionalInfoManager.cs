@@ -7,7 +7,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
 {
     public interface IAdditionalInfoManager
     {
-        void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender);
+        void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow);
 
         Race Race { get; set; }
         CharacterProfession Class { get; set; }
@@ -15,6 +15,16 @@ namespace Imgeneus.World.Game.AdditionalInfo
         byte Face { get; }
         byte Height { get; }
         Gender Gender { get; }
+
+        /// <summary>
+        /// Beginner, Normal, Hard or Ultimate.
+        /// </summary>
+        Mode Grow { get; }
+
+        /// <summary>
+        /// Changes mode and saves to database.
+        /// </summary>
+        Task<bool> TrySetGrow(Mode grow);
 
         /// <summary>
         /// Gets the character's primary stat

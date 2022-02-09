@@ -1008,7 +1008,7 @@ namespace Imgeneus.World.Game.Inventory
             if (item.Reqlevel > _levelProvider.Level)
                 return false;
 
-            if (_levelingManager.Grow < item.Grow)
+            if (_additionalInfoManager.Grow < item.Grow)
                 return false;
 
             switch (item.ItemClassType)
@@ -1319,19 +1319,19 @@ namespace Imgeneus.World.Game.Inventory
         private async Task<bool> TryResetStats()
         {
             var defaultStat = _characterConfig.DefaultStats.First(s => s.Job == _additionalInfoManager.Class);
-            var statPerLevel = _characterConfig.GetLevelStatSkillPoints(_levelingManager.Grow).StatPoint;
+            var statPerLevel = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow).StatPoint;
 
-            var ok = await _statsManager.TrySetStats(defaultStat.Str,
-                                                     defaultStat.Dex,
-                                                     defaultStat.Rec,
-                                                     defaultStat.Int,
-                                                     defaultStat.Wis,
-                                                     defaultStat.Luc,
-                                                     (ushort)((_levelProvider.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
+            var ok = _statsManager.TrySetStats(defaultStat.Str,
+                                               defaultStat.Dex,
+                                               defaultStat.Rec,
+                                               defaultStat.Int,
+                                               defaultStat.Wis,
+                                               defaultStat.Luc,
+                                               (ushort)((_levelProvider.Level - 1) * statPerLevel)); // Level - 1, because we are starting with 1 level.
             if (!ok)
                 return false;
 
-            await _levelingManager.IncreasePrimaryStat((ushort)(_levelProvider.Level - 1));
+            _levelingManager.IncreasePrimaryStat((ushort)(_levelProvider.Level - 1));
 
             _statsManager.RaiseResetStats();
             return ok;

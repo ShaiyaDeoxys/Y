@@ -1,10 +1,11 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Session;
 using System;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Stats
 {
-    public interface IStatsManager
+    public interface IStatsManager : ISessionedService
     {
         /// <summary>
         /// Inits constant stats.
@@ -259,7 +260,7 @@ namespace Imgeneus.World.Game.Stats
         /// <summary>
         /// Tries to set const stats.
         /// </summary>
-        Task<bool> TrySetStats(ushort? str = null, ushort? dex = null, ushort? rec = null, ushort? intl = null, ushort? wis = null, ushort? luc = null, ushort? statPoints = null);
+        bool TrySetStats(ushort? str = null, ushort? dex = null, ushort? rec = null, ushort? intl = null, ushort? wis = null, ushort? luc = null, ushort? statPoints = null);
 
         /// <summary>
         /// Initiates <see cref="OnAdditionalStatsUpdate"/>

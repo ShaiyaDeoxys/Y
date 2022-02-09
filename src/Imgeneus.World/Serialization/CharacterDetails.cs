@@ -90,9 +90,9 @@ namespace Imgeneus.Network.Serialization
             StatPoint = character.StatsManager.StatPoint;
             SkillPoint = character.SkillsManager.SkillPoints;
             Angle = character.Angle;
-            StartLvlExp = character.MinLevelExp / 10; // Normalize experience for ep8 game
-            EndLvlExp = character.NextLevelExp / 10; // Normalize experience for ep8 game
-            CurrentExp = character.Exp / 10; // Normalize experience for ep8 game
+            StartLvlExp = character.LevelingManager.MinLevelExp / 10; // Normalize experience for ep8 game
+            EndLvlExp = character.LevelingManager.NextLevelExp / 10; // Normalize experience for ep8 game
+            CurrentExp = character.LevelingManager.Exp / 10; // Normalize experience for ep8 game
             Gold = character.InventoryManager.Gold;
             PosX = character.PosX;
             PosY = character.PosY;

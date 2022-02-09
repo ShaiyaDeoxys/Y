@@ -47,7 +47,7 @@ namespace Imgeneus.World.Game.Skills
         /// </summary>
         /// <param name="skillPoint">value of skill points</param>
         /// <returns>true if success</returns>
-        Task<bool> TrySetSkillPoints(ushort skillPoint);
+        bool TrySetSkillPoints(ushort skillPoint);
 
         /// <summary>
         /// Collection of available skills.

@@ -228,9 +228,9 @@ namespace Imgeneus.World.Game.PartyAndRaid
             _packetFactory.SendPartyMemberGetItem(client, characterId, item);
         }
 
-        protected override void SendLevel(IWorldClient client, Character sender)
+        protected override void SendLevel(IWorldClient client, int senderId, ushort level)
         {
-            _packetFactory.SendPartyLevel(client, sender);
+            _packetFactory.SendPartyLevel(client, senderId, level);
         }
 
         #endregion

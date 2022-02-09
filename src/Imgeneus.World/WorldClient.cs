@@ -6,9 +6,11 @@ using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Kills;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
 using LiteNetwork.Protocol.Abstractions;
@@ -55,6 +57,7 @@ namespace Imgeneus.World
 
             var tasks = new List<Task>();
 
+            tasks.Add(x.GetService<IStatsManager>().Clear());
             tasks.Add(x.GetService<IInventoryManager>().Clear());
             tasks.Add(x.GetService<ISkillsManager>().Clear());
             tasks.Add(x.GetService<IBuffsManager>().Clear());
@@ -64,6 +67,7 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<IPartyManager>().Clear());
             tasks.Add(x.GetService<ITradeManager>().Clear());
             tasks.Add(x.GetService<IDuelManager>().Clear());
+            tasks.Add(x.GetService<ILevelingManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

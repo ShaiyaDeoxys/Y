@@ -33,7 +33,7 @@ namespace Imgeneus.World.Serialization
         public CharacterEnteredMap(Character character)
         {
             CharId = character.Id;
-            IsAdmin = character.IsAdmin ? (byte)2 : (byte)3; // Looks like it's bool value +2. Don't ask me, it just works.
+            IsAdmin = character.GameSession.IsAdmin ? (byte)2 : (byte)3; // Looks like it's bool value +2. Don't ask me, it just works.
             Angle = character.Angle;
             PosX = character.PosX;
             PosY = character.PosY;
