@@ -54,10 +54,6 @@ namespace Imgeneus.World.Game.Player
             switch (packet)
             {
 
-                case CharacterShapePacket characterShapePacket:
-                    HandleCharacterShape(characterShapePacket.CharacterId);
-                    break;
-
                 case CharacterTeleportViaNpcPacket teleportViaNpcPacket:
                     HandleTeleportViaNpc(teleportViaNpcPacket);
                     break;

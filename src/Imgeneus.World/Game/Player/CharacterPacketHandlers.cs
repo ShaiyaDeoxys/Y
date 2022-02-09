@@ -35,18 +35,6 @@ namespace Imgeneus.World.Game.Player
             _taskQueue.Enqueue(ActionType.SAVE_QUICK_BAR, Id, skillBarPacket.QuickItems);
         }
 
-        private void HandleCharacterShape(int characterId)
-        {
-            var character = _gameWorld.Players[characterId];
-            if (character is null)
-            {
-                _logger.LogWarning($"Trying to get player {characterId}, that is not presented in game world.");
-                return;
-            }
-
-            _packetsHelper.SendCharacterShape(Client, character);
-        }
-
         /*private void HandleUpdateStats(ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
         {
             var fullStat = str + dex + rec + intl + wis + luc;
