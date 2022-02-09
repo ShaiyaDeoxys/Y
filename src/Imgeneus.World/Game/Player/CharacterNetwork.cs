@@ -66,41 +66,6 @@ namespace Imgeneus.World.Game.Player
                     TryUseItem(useItem2Packet.Bag, useItem2Packet.Slot, useItem2Packet.TargetId);
                     break;
 
-                case DuelDefeatPacket duelDefeatPacket:
-                    FinishDuel(Duel.DuelCancelReason.AdmitDefeat);
-                    break;
-
-                case MapPickUpItemPacket mapPickUpItemPacket:
-                    var mapItem = Map.GetItem(mapPickUpItemPacket.ItemId, this);
-                    if (mapItem is null)
-                    {
-                        _packetsHelper.SendItemDoesNotBelong(Client);
-                        return;
-                    }
-                    if (mapItem.Item.Type == Item.MONEY_ITEM_TYPE)
-                    {
-                        Map.RemoveItem(CellId, mapItem.Id);
-                        mapItem.Item.Bag = 1;
-                        ChangeGold(Gold + (uint)mapItem.Item.Gem1.TypeId);
-                        SendAddItemToInventory(mapItem.Item);
-                    }
-                    else
-                    {
-                        var inventoryItem = AddItemToInventory(mapItem.Item);
-                        if (inventoryItem is null)
-                        {
-                            _packetsHelper.SendFullInventory(Client);
-                        }
-                        else
-                        {
-                            Map.RemoveItem(CellId, mapItem.Id);
-                            SendAddItemToInventory(inventoryItem);
-                            if (Party != null)
-                                Party.MemberGetItem(this, inventoryItem);
-                        }
-                    }
-                    break;
-
                 case QuestStartPacket questStartPacket:
                     var npcQuestGiver = Map.GetNPC(CellId, questStartPacket.NpcId);
                     if (npcQuestGiver is null || !npcQuestGiver.StartQuestIds.Contains(questStartPacket.QuestId))

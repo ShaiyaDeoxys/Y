@@ -167,6 +167,14 @@ namespace Imgeneus.World.Game.Duel
             if (OpponentId == 0)
                 return;
 
+            if (reason == DuelCancelReason.AdmitDefeat)
+            {
+                if (senderId == _ownerId)
+                    _killsManager.Defeats++;
+                else
+                    _killsManager.Victories++;
+            }
+
             if (senderId == _ownerId)
             {
                 _gameWorld.Players.TryGetValue(OpponentId, out var opponent);
@@ -186,6 +194,9 @@ namespace Imgeneus.World.Game.Duel
             _healthManager.OnDead -= HealthManager_OnDead;
 
             _tradeManager.Cancel();
+
+            _x = 0;
+            _z = 0;
 
             OpponentId = 0;
             IsApproved = false;
@@ -233,9 +244,6 @@ namespace Imgeneus.World.Game.Duel
         {
             _killsManager.Victories++;
             OnFinish?.Invoke(true);
-
-            _x = 0;
-            _z = 0;
 
             Stop();
         }
