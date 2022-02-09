@@ -35,6 +35,7 @@ using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Duel;
 using System.Text;
+using Imgeneus.World.Game.Vehicle;
 
 namespace Imgeneus.World.Packets
 {
@@ -362,6 +363,20 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE);
             packet.Write(ok);
             packet.Write(isOnVehicle);
+            client.Send(packet);
+        }
+
+        public void SendVehicleResponse(IWorldClient client, VehicleResponse status)
+        {
+            using var packet = new ImgeneusPacket(PacketType.VEHICLE_RESPONSE);
+            packet.Write((byte)status);
+            client.Send(packet);
+        }
+
+        public void SendVehicleRequest(IWorldClient client, int requesterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.VEHICLE_REQUEST);
+            packet.Write(requesterId);
             client.Send(packet);
         }
 

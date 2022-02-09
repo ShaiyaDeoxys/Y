@@ -137,10 +137,6 @@ namespace Imgeneus.World.Game.Player
 
         public void SendUseVehicle(bool success, bool status) => _packetsHelper.SendUseVehicle(Client, success, status);
 
-        public void SendVehicleResponse(VehicleResponse status) => _packetsHelper.SendVehicleResponse(Client, status);
-
-        public void SendVehicleRequest(int requesterId) => _packetsHelper.SendVehicleRequest(Client, requesterId);
-
         public void SendMyShape() => _packetsHelper.SendCharacterShape(Client, this);
 
         public void SendAttribute(CharacterAttributeEnum attribute) =>

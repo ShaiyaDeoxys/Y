@@ -84,18 +84,6 @@ namespace Imgeneus.World.Game.Player
                     QuitQuest(questQuitPacket.QuestId);
                     break;
 
-                case VehicleRequestPacket vehicleRequestPacket:
-                    HandleVehicleRequestPacket(vehicleRequestPacket.CharacterId);
-                    break;
-
-                case VehicleResponsePacket vehicleResponsePacket:
-                    HandleVehicleResponsePacket(vehicleResponsePacket.Rejected);
-                    break;
-
-                case UseVehicle2Packet useVehicle2Packet:
-                    HandleUseVehicle2Packet();
-                    break;
-
                 case GuildCreatePacket guildCreatePacket:
                     HandleCreateGuild(guildCreatePacket.Name, guildCreatePacket.Message);
                     break;

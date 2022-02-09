@@ -16,6 +16,7 @@ using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Portals;
 using System.Collections.Generic;
@@ -68,9 +69,9 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Vehicle
-
         void SendUseVehicle(IWorldClient client, bool ok, bool isOnVehicle);
-
+        void SendVehicleResponse(IWorldClient client, VehicleResponse status);
+        void SendVehicleRequest(IWorldClient client, int requesterId);
         #endregion
 
         #region Map

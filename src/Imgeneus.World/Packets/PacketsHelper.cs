@@ -197,20 +197,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendVehicleRequest(IWorldClient client, int requesterId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.VEHICLE_REQUEST);
-            packet.Write(requesterId);
-            client.Send(packet);
-        }
-
-        internal void SendVehicleResponse(IWorldClient client, VehicleResponse status)
-        {
-            using var packet = new ImgeneusPacket(PacketType.VEHICLE_RESPONSE);
-            packet.Write((byte)status);
-            client.Send(packet);
-        }
-
         internal void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILL_BAR);
