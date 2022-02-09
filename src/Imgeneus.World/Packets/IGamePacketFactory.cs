@@ -199,6 +199,15 @@ namespace Imgeneus.World.Packets
         void SendDuelFinish(IWorldClient client, bool isWin);
         #endregion
 
+        #region Chat
+        void SendNormal(IWorldClient client, int senderId, string message, bool isAdmin);
+        void SendWhisper(IWorldClient client, string senderName, string message, bool isAdmin);
+        void SendParty(IWorldClient client, int senderId, string message, bool isAdmin);
+        void SendMap(IWorldClient client, string senderName, string message);
+        void SendWorld(IWorldClient client, string senderName, string message);
+        void SendGuild(IWorldClient client, string senderName, string message, bool isAdmin);
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

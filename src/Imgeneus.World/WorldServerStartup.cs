@@ -88,6 +88,9 @@ namespace Imgeneus.World
             services.AddSingleton<ICharacterConfiguration, CharacterConfiguration>((x) => CharacterConfiguration.LoadFromConfigFile());
             services.AddSingleton<IGuildConfiguration, GuildConfiguration>((x) => GuildConfiguration.LoadFromConfigFile());
             services.AddSingleton<IGuildHouseConfiguration, GuildHouseConfiguration>((x => GuildHouseConfiguration.LoadFromConfigFile()));
+            services.AddSingleton<IChatManager, ChatManager>();
+            services.AddSingleton<INoticeManager, NoticeManager>();
+            services.AddSingleton<IGuildRankingManager, GuildRankingManager>();
             services.AddSingleton<IDatabasePreloader, DatabasePreloader>((x) =>
             {
                 using (var scope = x.CreateScope())
@@ -97,9 +100,6 @@ namespace Imgeneus.World
                     return new DatabasePreloader(logger, db);
                 }
             });
-            services.AddSingleton<IChatManager, ChatManager>();
-            services.AddSingleton<INoticeManager, NoticeManager>();
-            services.AddSingleton<IGuildRankingManager, GuildRankingManager>();
 
             services.AddScoped<ICharacterFactory, CharacterFactory>();
             services.AddScoped<ISelectionScreenManager, SelectionScreenManager>();
@@ -132,9 +132,9 @@ namespace Imgeneus.World
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
-            
-            services.AddTransient<IGuildManager, GuildManager>();
             services.AddTransient<ITimeService, TimeService>();
+
+            services.AddTransient<IGuildManager, GuildManager>();
 
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<DatabaseWorker>();

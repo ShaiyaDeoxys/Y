@@ -66,30 +66,6 @@ namespace Imgeneus.World.Game.Player
                     TryUseItem(useItem2Packet.Bag, useItem2Packet.Slot, useItem2Packet.TargetId);
                     break;
 
-                case ChatNormalPacket chatNormalPacket:
-                    _chatManager.SendMessage(this, Chat.MessageType.Normal, chatNormalPacket.Message);
-                    break;
-
-                case ChatWhisperPacket chatWisperPacket:
-                    _chatManager.SendMessage(this, Chat.MessageType.Whisper, chatWisperPacket.Message, chatWisperPacket.TargetName);
-                    break;
-
-                case ChatPartyPacket chatPartyPacket:
-                    _chatManager.SendMessage(this, Chat.MessageType.Party, chatPartyPacket.Message);
-                    break;
-
-                case ChatMapPacket chatMapPacket:
-                    _chatManager.SendMessage(this, Chat.MessageType.Map, chatMapPacket.Message);
-                    break;
-
-                case ChatWorldPacket chatWorldPacket:
-                    _chatManager.SendMessage(this, Chat.MessageType.World, chatWorldPacket.Message);
-                    break;
-
-                case ChatGuildPacket chatGuildPacket:
-                    _chatManager.SendMessage(this, Chat.MessageType.Guild, chatGuildPacket.Message);
-                    break;
-
                 case DuelDefeatPacket duelDefeatPacket:
                     FinishDuel(Duel.DuelCancelReason.AdmitDefeat);
                     break;

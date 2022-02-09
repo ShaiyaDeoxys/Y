@@ -34,6 +34,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Duel;
+using System.Text;
 
 namespace Imgeneus.World.Packets
 {
@@ -1234,6 +1235,83 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.DUEL_WIN_LOSE);
             packet.WriteByte(isWin ? (byte)1 : (byte)2); // 1 - win, 2 - lose
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Chat
+
+        public void SendNormal(IWorldClient client, int senderId, string message, bool isAdmin)
+        {
+            SendMessage(isAdmin ? PacketType.CHAT_NORMAL_ADMIN : PacketType.CHAT_NORMAL, client, senderId, message);
+        }
+
+        public void SendWhisper(IWorldClient client, string senderName, string message, bool isAdmin)
+        {
+            SendMessage(isAdmin ? PacketType.CHAT_WHISPER_ADMIN : PacketType.CHAT_WHISPER, client, senderName, message, true);
+        }
+
+        public void SendParty(IWorldClient client, int senderId, string message, bool isAdmin)
+        {
+            SendMessage(isAdmin ? PacketType.CHAT_PARTY_ADMIN : PacketType.CHAT_PARTY, client, senderId, message);
+        }
+
+        public void SendMap(IWorldClient client, string senderName, string message)
+        {
+            SendMessage(PacketType.CHAT_MAP, client, senderName, message);
+        }
+
+        public void SendWorld(IWorldClient client, string senderName, string message)
+        {
+            SendMessage(PacketType.CHAT_WORLD, client, senderName, message);
+        }
+
+        public void SendGuild(IWorldClient client, string senderName, string message, bool isAdmin)
+        {
+            SendMessage(isAdmin ? PacketType.CHAT_GUILD_ADMIN : PacketType.CHAT_GUILD, client, senderName, message);
+        }
+
+        private void SendMessage(PacketType packetType, IWorldClient client, int senderId, string message)
+        {
+            using var packet = new ImgeneusPacket(packetType);
+            packet.Write(senderId);
+
+#if EP8_V2
+            packet.WriteByte((byte)(message.Length + 1));
+#endif
+
+            packet.WriteByte((byte)message.Length);
+
+#if (EP8_V2 || SHAIYA_US || DEBUG)
+            packet.WriteString(message, message.Length, Encoding.Unicode);
+#else
+            packet.WriteString(message);
+#endif
+
+            client.Send(packet);
+        }
+
+        private void SendMessage(PacketType packetType, IWorldClient client, string senderName, string message, bool includeNameFlag = false)
+        {
+            using var packet = new ImgeneusPacket(packetType);
+
+            if (includeNameFlag)
+                packet.Write(false); // false == use sender name, if set to true, sender name will be ignored
+
+            packet.WriteString(senderName, 21);
+
+#if EP8_V2
+            packet.WriteByte((byte)(message.Length + 1));
+#endif
+
+            packet.WriteByte((byte)message.Length);
+
+#if (EP8_V2 || SHAIYA_US || DEBUG)
+            packet.WriteString(message, message.Length, Encoding.Unicode);
+#else
+            packet.WriteString(message);
+#endif
             client.Send(packet);
         }
 
