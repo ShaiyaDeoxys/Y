@@ -11,11 +11,13 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.NPCs;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Vehicle;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -46,9 +48,11 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IBuffsManager _buffsManager;
         private readonly ICharacterConfiguration _characterConfig;
         private readonly IAttackManager _attackManager;
+        private readonly IPartyManager _partyManager;
+        private readonly ITeleportationManager _teleportationManager;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -67,6 +71,8 @@ namespace Imgeneus.World.Game.Inventory
             _buffsManager = buffsManager;
             _characterConfig = characterConfiguration;
             _attackManager = attackManager;
+            _partyManager = partyManager;
+            _teleportationManager = teleportationManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
 
 #if DEBUG
@@ -958,7 +964,6 @@ namespace Imgeneus.World.Game.Inventory
 
             if (!CanUseItem(item))
             {
-                //_packetsHelper.SendCanNotUseItem(Client, Id);
                 return false;
             }
 
@@ -966,7 +971,6 @@ namespace Imgeneus.World.Game.Inventory
             {
                 if (!CanUseItemOnTarget(item, (int)targetId))
                 {
-                    //_packetsHelper.SendCanNotUseItem(Client, Id);
                     return false;
                 }
             }
@@ -1076,19 +1080,6 @@ namespace Imgeneus.World.Game.Inventory
                 }
             }
 
-            /*switch (item.Special)
-            {
-                case SpecialEffect.RecreationRune:
-                case SpecialEffect.AbsoluteRecreationRune:
-                case SpecialEffect.RecreationRune_STR:
-                case SpecialEffect.RecreationRune_DEX:
-                case SpecialEffect.RecreationRune_REC:
-                case SpecialEffect.RecreationRune_INT:
-                case SpecialEffect.RecreationRune_WIS:
-                case SpecialEffect.RecreationRune_LUC:
-                    return LinkingManager.Item != null && LinkingManager.Item.IsComposable;
-            }*/
-
             return true;
         }
 
@@ -1097,15 +1088,15 @@ namespace Imgeneus.World.Game.Inventory
             switch (item.Special)
             {
                 case SpecialEffect.MovementRune:
-                /*if (_gameWorld.Players.TryGetValue(targetId, out var target))
-                {
-                    if (target.Party != Party)
-                        return false;
+                    if (_gameWorld.Players.TryGetValue(targetId, out var target))
+                    {
+                        if (target.PartyManager.Party != _partyManager.Party)
+                            return false;
 
-                    return _gameWorld.CanTeleport(this, target.MapId, out var reason);
-                }
-                else
-                    return false;*/
+                        return _gameWorld.CanTeleport(_gameWorld.Players[_ownerId], target.MapProvider.NextMapId, out var reason);
+                    }
+                    else
+                        return false;
 
                 default:
                     return true;
@@ -1126,10 +1117,10 @@ namespace Imgeneus.World.Game.Inventory
                     if (item.SkillId != 0)
                     {
                         var skill = new Skill(_databasePreloader.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0);
-                        var target = _gameWorld.Players[_ownerId];
+                        var me = _gameWorld.Players[_ownerId];
 
-                        if (_skillsManager.CanUseSkill(skill, target, out var s))
-                            _skillsManager.UseSkill(skill, target);
+                        if (_skillsManager.CanUseSkill(skill, me, out var s))
+                            _skillsManager.UseSkill(skill, me);
                     }
 
                     break;
@@ -1256,8 +1247,8 @@ namespace Imgeneus.World.Game.Inventory
                     break;
 
                 case SpecialEffect.MovementRune:
-                    //if (_gameWorld.Players.TryGetValue((int)targetId, out var target))
-                    //    Teleport(target.Map.Id, target.PosX, target.PosY, target.PosZ);
+                    if (_gameWorld.Players.TryGetValue((int)targetId, out var target))
+                        _teleportationManager.Teleport(target.Map.Id, target.PosX, target.PosY, target.PosZ);
                     break;
 
                 default:

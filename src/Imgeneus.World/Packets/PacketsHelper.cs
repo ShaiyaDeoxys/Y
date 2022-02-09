@@ -117,17 +117,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendCharacterTeleport(IWorldClient client, Character player, bool teleportedByAdmin)
-        {
-            using var packet = new ImgeneusPacket(teleportedByAdmin ? PacketType.CHARACTER_MAP_TELEPORT : PacketType.GM_TELEPORT_MAP_COORDINATES);
-            packet.Write(player.Id);
-            packet.Write(player.MapProvider.NextMapId);
-            packet.Write(player.PosX);
-            packet.Write(player.PosY);
-            packet.Write(player.PosZ);
-            client.Send(packet);
-        }
-
         internal void SendGuildNpcs(IWorldClient client, IEnumerable<DbGuildNpcLvl> npcs)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_NPC_LIST);

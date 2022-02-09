@@ -458,6 +458,17 @@ namespace Imgeneus.World.Packets
             packet.Write(new MapWeather(map).Serialize());
             client.Send(packet);
         }
+
+        public void SendCharacterTeleport(IWorldClient client, int characterId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
+        {
+            using var packet = new ImgeneusPacket(teleportedByAdmin ? PacketType.CHARACTER_MAP_TELEPORT : PacketType.GM_TELEPORT_MAP_COORDINATES);
+            packet.Write(characterId);
+            packet.Write(mapId);
+            packet.Write(x);
+            packet.Write(y);
+            packet.Write(z);
+            client.Send(packet);
+        }
         #endregion
 
         #region Linking

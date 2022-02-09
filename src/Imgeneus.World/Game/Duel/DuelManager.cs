@@ -4,6 +4,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
@@ -26,13 +27,13 @@ namespace Imgeneus.World.Game.Duel
         private readonly IKillsManager _killsManager;
         private readonly IMapProvider _mapProvider;
         private readonly IInventoryManager _inventoryManager;
-
+        private readonly ITeleportationManager _teleportationManager;
         private readonly Timer _duelRequestTimer = new Timer();
         private readonly Timer _duelStartTimer = new Timer();
 
         private int _ownerId;
 
-        public DuelManager(ILogger<DuelManager> logger, IGameWorld gameWorld, ITradeManager tradeManager, IMovementManager movementManager, IHealthManager healthManager, IKillsManager killsManager, IMapProvider mapProvider, IInventoryManager inventoryManager)
+        public DuelManager(ILogger<DuelManager> logger, IGameWorld gameWorld, ITradeManager tradeManager, IMovementManager movementManager, IHealthManager healthManager, IKillsManager killsManager, IMapProvider mapProvider, IInventoryManager inventoryManager, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
@@ -42,6 +43,7 @@ namespace Imgeneus.World.Game.Duel
             _killsManager = killsManager;
             _mapProvider = mapProvider;
             _inventoryManager = inventoryManager;
+            _teleportationManager = teleportationManager;
             _duelRequestTimer.Interval = 10000; // 10 seconds.
             _duelRequestTimer.Elapsed += DuelRequestTimer_Elapsed;
             _duelRequestTimer.AutoReset = false;
@@ -152,6 +154,7 @@ namespace Imgeneus.World.Game.Duel
             _movementManager.OnMove += MovementManager_OnMove;
             _healthManager.OnGotDamage += HealthManager_OnGotDamage;
             _healthManager.OnDead += HealthManager_OnDead;
+            _teleportationManager.OnTeleporting += TeleportationManager_OnTeleporting;
 
             OnStart?.Invoke();
         }
@@ -192,6 +195,7 @@ namespace Imgeneus.World.Game.Duel
             _movementManager.OnMove -= MovementManager_OnMove;
             _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
             _healthManager.OnDead -= HealthManager_OnDead;
+            _teleportationManager.OnTeleporting -= TeleportationManager_OnTeleporting;
 
             _tradeManager.Cancel();
 
@@ -286,6 +290,12 @@ namespace Imgeneus.World.Game.Duel
         private void HealthManager_OnDead(int senderId, IKiller killer)
         {
             Lose();
+        }
+
+        private void TeleportationManager_OnTeleporting(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
+        {
+            if (_mapProvider.Map.Id != mapId|| MathExtensions.Distance(x, _x, z, _z) >= 45)
+                Cancel(_ownerId, DuelCancelReason.TooFarAway);
         }
 
         #endregion

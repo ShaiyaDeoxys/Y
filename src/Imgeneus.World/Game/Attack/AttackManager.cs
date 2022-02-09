@@ -4,6 +4,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -186,13 +187,13 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && (target is null || target.HealthManager.IsDead))
+            if (target is null || target.HealthManager.IsDead)
             {
                 success = AttackSuccess.WrongTarget;
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && Target.CountryProvider.Country == _countryProvider.Country)
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && Target.CountryProvider.Country == _countryProvider.Country && (Target is Character && ((Character)Target).DuelManager.OpponentId != _ownerId))
             {
                 success = AttackSuccess.WrongTarget;
                 return false;

@@ -294,23 +294,6 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <summary>
-        /// Teleports player to selected position on map.
-        /// </summary>
-        /// <param name="playerId">Id of player</param>
-        /// <param name="teleportedByAdmin">Indicates whether the teleport was issued by an admin or not</param>
-        public void TeleportPlayer(int playerId, bool teleportedByAdmin)
-        {
-            if (!Players.ContainsKey(playerId))
-            {
-                _logger.LogError("Trying to get player, that is not presented on the map.");
-                return;
-            }
-
-            var player = Players[playerId];
-            Cells[player.CellId].TeleportPlayer(player, teleportedByAdmin);
-        }
-
-        /// <summary>
         /// When player's position changes, we are checking if player's map cell should be changed.
         /// </summary>
         private void Character_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
@@ -322,7 +305,9 @@ namespace Imgeneus.World.Game.Zone
                 return;
 
             // Need to calculate new cell...
-            _logger.LogDebug($"Character {sender.Id} change map cell from {oldCellId} to {newCellId}.");
+#if DEBUG
+            _logger.LogDebug("Character {characterId} change map cell from {oldCellId} to {newCellId}.", sender.Id, oldCellId, newCellId);
+#endif
             Cells[oldCellId].RemovePlayer(sender, false);
             Cells[newCellId].AddPlayer(sender);
         }

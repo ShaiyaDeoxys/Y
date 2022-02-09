@@ -37,9 +37,11 @@ namespace Imgeneus.World.Game.Skills
         private readonly ICharacterConfiguration _characterConfig;
         private readonly ILevelingManager _levelingManager;
         private readonly ILevelProvider _levelProvider;
+        private readonly IGameWorld _gameWorld;
+
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelingManager levelingManager, ILevelProvider levelProvider)
+        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelingManager levelingManager, ILevelProvider levelProvider, IGameWorld gameWorld)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -53,6 +55,7 @@ namespace Imgeneus.World.Game.Skills
             _characterConfig = characterConfig;
             _levelingManager = levelingManager;
             _levelProvider = levelProvider;
+            _gameWorld = gameWorld;
             _castTimer.Elapsed += CastTimer_Elapsed;
 
 #if DEBUG
@@ -293,7 +296,8 @@ namespace Imgeneus.World.Game.Skills
         private void CastTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             _castTimer.Stop();
-            CanUseSkill(_skillInCast, _targetInCast, out var success);
+            if (CanUseSkill(_skillInCast, _targetInCast, out var success))
+                UseSkill(_skillInCast, _gameWorld.Players[_ownerId], _targetInCast);
 
             _skillInCast = null;
             _targetInCast = null;
@@ -309,7 +313,7 @@ namespace Imgeneus.World.Game.Skills
                 skill.TargetType == TargetType.AnyEnemy ||
                 skill.TargetType == TargetType.EnemiesNearTarget)
                 &&
-                (target is null || target.HealthManager.IsDead || (target is Mob && (target as Mob).CountryProvider.Country == _countryProvider.Country)))
+                (target is null || target.HealthManager.IsDead))
             {
                 success = AttackSuccess.WrongTarget;
                 return false;
@@ -331,6 +335,34 @@ namespace Imgeneus.World.Game.Skills
             {
                 success = AttackSuccess.NotEnoughMPSP;
                 return false;
+            }
+
+            if (target.CountryProvider.Country == _countryProvider.Country)
+            {
+                if (target is Character)
+                {
+                    if (((Character)target).DuelManager.OpponentId == _ownerId)
+                    {
+                        if (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff)
+                        {
+                            success = AttackSuccess.WrongTarget;
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.Buff)
+                        {
+                            success = AttackSuccess.WrongTarget;
+                            return false;
+                        }
+                    }
+                }
+                else // Taget is mob
+                {
+                    success = AttackSuccess.WrongTarget;
+                    return false;
+                }
             }
 
             if ((skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack) &&

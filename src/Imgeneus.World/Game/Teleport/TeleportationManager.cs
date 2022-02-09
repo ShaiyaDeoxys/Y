@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Portals;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Teleport
@@ -18,11 +19,10 @@ namespace Imgeneus.World.Game.Teleport
         private readonly IDatabase _database;
         private readonly ICountryProvider _countryProvider;
         private readonly ILevelProvider _levelProvider;
-        private readonly IDuelManager _duelManager;
         private readonly IGameWorld _gameWorld;
         private int _ownerId;
 
-        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IDuelManager duelManager, IGameWorld gameWorld)
+        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IGameWorld gameWorld)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -30,7 +30,6 @@ namespace Imgeneus.World.Game.Teleport
             _database = database;
             _countryProvider = countryProvider;
             _levelProvider = levelProvider;
-            _duelManager = duelManager;
             _gameWorld = gameWorld;
 #if DEBUG
             _logger.LogDebug("TeleportationManager {hashcode} created", GetHashCode());
@@ -71,6 +70,8 @@ namespace Imgeneus.World.Game.Teleport
 
         #endregion
 
+        public event Action<int, ushort, float, float, float, bool> OnTeleporting;
+
         /// <summary>
         /// Indicator if character is teleporting between maps.
         /// </summary>
@@ -86,16 +87,15 @@ namespace Imgeneus.World.Game.Teleport
             _movementManager.PosY = y;
             _movementManager.PosZ = z;
 
-            var prevMapId = _mapProvider.Map.Id;
-            _mapProvider.Map.TeleportPlayer(_ownerId, teleportedByAdmin);
+            OnTeleporting?.Invoke(_ownerId, _mapProvider.NextMapId, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ, teleportedByAdmin);
 
+            var prevMapId = _mapProvider.Map.Id;
             if (prevMapId == mapId)
             {
                 IsTeleporting = false;
             }
             else
             {
-                _duelManager.Cancel(_ownerId, DuelCancelReason.TooFarAway);
                 _mapProvider.Map.UnloadPlayer(_ownerId);
             }
         }

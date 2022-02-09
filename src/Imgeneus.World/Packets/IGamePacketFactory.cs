@@ -84,6 +84,7 @@ namespace Imgeneus.World.Packets
         void SendAppearanceChanged(IWorldClient client, int characterId, byte hair, byte face, byte size, byte gender);
         void SendPortalTeleportNotAllowed(IWorldClient client, PortalTeleportNotAllowedReason reason);
         void SendWeather(IWorldClient client, Map map);
+        void SendCharacterTeleport(IWorldClient client, int characterId, ushort mapId, float x, float y, float z, bool teleportedByAdmin);
         #endregion
 
         #region Linking

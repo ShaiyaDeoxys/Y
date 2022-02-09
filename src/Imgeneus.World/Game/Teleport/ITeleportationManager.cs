@@ -1,5 +1,6 @@
 ﻿using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Zone.Portals;
+using System;
 
 namespace Imgeneus.World.Game.Teleport
 {
@@ -11,6 +12,11 @@ namespace Imgeneus.World.Game.Teleport
         /// Indicator if character is teleporting between maps.
         /// </summary>
         bool IsTeleporting { get; set; }
+
+        /// <summary>
+        /// Fires event, that teleports player.
+        /// </summary>
+        event Action<int, ushort, float, float, float, bool> OnTeleporting;
 
         /// <summary>
         /// Teleports character inside one map or to another map.

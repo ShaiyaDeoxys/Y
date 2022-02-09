@@ -188,17 +188,6 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <summary>
-        /// Teleports player to new position.
-        /// </summary>
-        /// <param name="character">Player to teleport</param>
-        /// <param name="teleportedByAdmin">Indicates whether the teleport was issued by an admin or not</param>
-        public void TeleportPlayer(Character character, bool teleportedByAdmin)
-        {
-            foreach (var p in GetAllPlayers(true))
-                _packetsHelper.SendCharacterTeleport(p.Client, character, teleportedByAdmin);
-        }
-
-        /// <summary>
         /// Subscribes to character events.
         /// </summary>
         private void AddListeners(Character character)
@@ -230,6 +219,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnLevelUp += Character_OnLevelUp;
             character.OnAdminLevelChange += Character_OnAdminLevelChange;
             character.VehicleManager.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
+            character.TeleportationManager.OnTeleporting += Character_OnTeleport;
         }
 
         /// <summary>
@@ -261,6 +251,7 @@ namespace Imgeneus.World.Game.Zone
             character.OnLevelUp -= Character_OnLevelUp;
             character.OnAdminLevelChange -= Character_OnAdminLevelChange;
             character.VehicleManager.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
+            character.TeleportationManager.OnTeleporting -= Character_OnTeleport;
         }
 
         #region Character listeners
@@ -481,6 +472,15 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 _packetsHelper.VehiclePassengerChanged(player.Client, senderId, vehicle2CharacterID);
+        }
+
+        /// <summary>
+        /// Teleports player to new position.
+        /// </summary>
+        private void Character_OnTeleport(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
+        {
+            foreach (var p in GetAllPlayers(true))
+                Map.PacketFactory.SendCharacterTeleport(p.Client, senderId, mapId, x, y, z, teleportedByAdmin);
         }
 
         #endregion

@@ -25,5 +25,13 @@ namespace Imgeneus.World.Handlers
             if (!ok)
                 _packetFactory.SendCanNotUseItem(client, _gameSession.CharId);
         }
+
+        [HandlerAction(PacketType.USE_ITEM_2)]
+        public async Task Handle(WorldClient client, UseItem2Packet packet)
+        {
+            var ok = await _invetoryManager.TryUseItem(packet.Bag, packet.Slot, packet.TargetId);
+            if (!ok)
+                _packetFactory.SendCanNotUseItem(client, _gameSession.CharId);
+        }
     }
 }

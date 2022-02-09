@@ -58,10 +58,6 @@ namespace Imgeneus.World.Game.Player
                     HandleTeleportViaNpc(teleportViaNpcPacket);
                     break;
 
-                case UseItem2Packet useItem2Packet:
-                    TryUseItem(useItem2Packet.Bag, useItem2Packet.Slot, useItem2Packet.TargetId);
-                    break;
-
                 case QuestStartPacket questStartPacket:
                     var npcQuestGiver = Map.GetNPC(CellId, questStartPacket.NpcId);
                     if (npcQuestGiver is null || !npcQuestGiver.StartQuestIds.Contains(questStartPacket.QuestId))
