@@ -65,11 +65,11 @@ namespace Imgeneus.World.Handlers
                 if (m.Id == _guildManager.CreationRequest.GuildCreatorId)
                     rank = 1;
 
-                await _guildManager.TryAddMember(guild.Id, m.Id, rank);
-
                 m.GuildManager.GuildId = guild.Id;
                 m.GuildManager.GuildName = guild.Name;
                 m.GuildManager.GuildRank = rank;
+
+                await _guildManager.TryAddMember(m.Id, rank);
             }
 
             foreach (var m in _guildManager.CreationRequest.Members)

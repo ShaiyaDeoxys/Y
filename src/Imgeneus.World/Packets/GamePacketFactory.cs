@@ -1425,6 +1425,46 @@ namespace Imgeneus.World.Packets
             }
         }
 
+        public void SendGuildJoinRequest(IWorldClient client, bool ok)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_REQUEST);
+            packet.Write(ok);
+            client.Send(packet);
+        }
+
+
+        public void SendGuildJoinRequestAdd(IWorldClient client, Character character)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_ADD);
+            packet.Write(new GuildJoinUserUnit(character).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendGuildJoinRequestRemove(IWorldClient client, int playerId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_REMOVE);
+            packet.Write(playerId);
+            client.Send(packet);
+        }
+
+        public void SendGuildJoinResult(IWorldClient client, bool ok, int guildId = 0, byte rank = 9, string name = "")
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_RESULT_USER);
+            packet.Write(ok);
+            packet.Write(guildId);
+            packet.Write(rank);
+            packet.WriteString(name, 25);
+            client.Send(packet);
+        }
+
+        public void SendGuildUserListAdd(IWorldClient client, DbCharacter character, bool online)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_LIST_ADD);
+            packet.Write(online);
+            packet.Write(new GuildUserUnit(character).Serialize());
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

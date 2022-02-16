@@ -64,7 +64,7 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="characterId">new character</param>
         /// <param name="rank">character rank in guild</param>
         /// <returns>db character, if character was added to guild, otherwise null</returns>
-        Task<DbCharacter> TryAddMember(int guildId, int characterId, byte rank = 9);
+        Task<DbCharacter> TryAddMember(int characterId, byte rank = 9);
 
         /// <summary>
         /// Tries to remove character from guild.
@@ -96,7 +96,7 @@ namespace Imgeneus.World.Game.Guild
         /// Player requests to join a guild.
         /// </summary>
         /// <returns>true is success</returns>
-        Task<bool> RequestJoin(int guildId, int playerId);
+        Task<bool> RequestJoin(int guildId, Character player);
 
         /// <summary>
         /// Removes player from join requests.

@@ -183,20 +183,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGuildJoinRequestAdd(IWorldClient client, DbCharacter character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_ADD);
-            packet.Write(new GuildJoinUserUnit(character).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendGuildJoinRequestRemove(IWorldClient client, int playerId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_REMOVE);
-            packet.Write(playerId);
-            client.Send(packet);
-        }
-
         internal void SendGuildMemberRemove(IWorldClient client, int playerId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
@@ -279,14 +265,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.GUILD_KICK);
             packet.Write(ok);
             packet.Write(characterId);
-            client.Send(packet);
-        }
-
-        internal void SendGuildUserListAdd(IWorldClient client, DbCharacter character, bool online)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_LIST_ADD);
-            packet.Write(online);
-            packet.Write(new GuildUserUnit(character).Serialize());
             client.Send(packet);
         }
 
@@ -501,22 +479,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.FRIEND_ONLINE);
             packet.Write(id);
             packet.Write(isOnline);
-            client.Send(packet);
-        }
-        internal void SendGuildJoinRequest(IWorldClient client, bool ok)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_REQUEST);
-            packet.Write(ok);
-            client.Send(packet);
-        }
-
-        internal void SendGuildJoinResult(IWorldClient client, bool ok, DbGuild guild, byte rank = 9)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_RESULT_USER);
-            packet.Write(ok);
-            packet.Write(guild.Id);
-            packet.Write(rank);
-            packet.WriteString(guild.Name, 25);
             client.Send(packet);
         }
 

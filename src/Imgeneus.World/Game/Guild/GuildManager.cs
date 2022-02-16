@@ -292,21 +292,12 @@ namespace Imgeneus.World.Game.Guild
 
         #region Add/remove members
 
-        /// <inheritdoc/>
-        public async Task<DbCharacter> TryAddMember(int guildId, int characterId, byte rank = 9)
+        public async Task<DbCharacter> TryAddMember(int characterId, byte rank = 9)
         {
-            await _sync.WaitAsync();
+            if (GuildId == 0)
+                throw new Exception("Member can not be added to guild, if guild manager is not initialized.");
 
-            var result = await AddMember(guildId, characterId, rank);
-
-            _sync.Release();
-
-            return result;
-        }
-
-        private async Task<DbCharacter> AddMember(int guildId, int characterId, byte rank = 9)
-        {
-            var guild = await _database.Guilds.FindAsync(guildId);
+            var guild = await _database.Guilds.FindAsync(GuildId);
             if (guild is null)
                 return null;
 
@@ -415,20 +406,15 @@ namespace Imgeneus.World.Game.Guild
         /// </summary>
         public static readonly ConcurrentDictionary<int, int> JoinRequests = new ConcurrentDictionary<int, int>();
 
-        /// <inheritdoc/>
-        public async Task<bool> RequestJoin(int guildId, int playerId)
+        public async Task<bool> RequestJoin(int guildId, Character player)
         {
             var guild = await _database.Guilds.FindAsync(guildId);
             if (guild is null)
                 return false;
 
-            var character = await _database.Characters.FindAsync(playerId);
-            if (character is null)
-                return false;
+            await RemoveRequestJoin(player.Id);
 
-            await RemoveRequestJoin(playerId);
-
-            JoinRequests.TryAdd(playerId, guildId);
+            JoinRequests.TryAdd(player.Id, guildId);
 
             foreach (var m in guild.Members.Where(x => x.GuildRank < 3))
             {
@@ -436,7 +422,7 @@ namespace Imgeneus.World.Game.Guild
                     continue;
 
                 var guildMember = _gameWorld.Players[m.Id];
-                guildMember.SendGuildJoinRequestAdd(character);
+                guildMember.SendGuildJoinRequestAdd(player);
             }
 
             return true;

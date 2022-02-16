@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Network.Serialization;
 using Imgeneus.Database.Entities;
 using BinarySerialization;
+using Imgeneus.World.Game.Player;
 
 namespace Imgeneus.World.Serialization
 {
@@ -18,11 +19,11 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(3), FieldLength(21)]
         public string Name { get; }
 
-        public GuildJoinUserUnit(DbCharacter character)
+        public GuildJoinUserUnit(Character character)
         {
             Id = character.Id;
-            Level = character.Level;
-            Job = character.Class;
+            Level = character.LevelProvider.Level;
+            Job = character.AdditionalInfoManager.Class;
             Name = character.Name;
         }
     }

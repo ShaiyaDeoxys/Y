@@ -84,18 +84,6 @@ namespace Imgeneus.World.Game.Player
                     QuitQuest(questQuitPacket.QuestId);
                     break;
 
-                case GuildAgreePacket guildAgreePacket:
-                    HandleGuildAgree(guildAgreePacket.Ok);
-                    break;
-
-                case GuildJoinRequestPacket guildJoinRequestPacket:
-                    HandleGuildJoinRequest(guildJoinRequestPacket.GuildId);
-                    break;
-
-                case GuildJoinResultPacket guildJoinResultPacket:
-                    HandleJoinResult(guildJoinResultPacket.Ok, guildJoinResultPacket.CharacterId);
-                    break;
-
                 case GuildKickPacket guildKickPacket:
                     HandleGuildKick(guildKickPacket.CharacterId);
                     break;

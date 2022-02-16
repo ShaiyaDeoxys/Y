@@ -218,6 +218,11 @@ namespace Imgeneus.World.Packets
         void SendGuildMemberIsOffline(IWorldClient client, int playerId);
         void SendGuildList(IWorldClient client, DbGuild[] guilds);
         void SendGuildMembersOnline(IWorldClient client, List<DbCharacter> members, bool online);
+        void SendGuildJoinRequest(IWorldClient client, bool ok);
+        void SendGuildJoinRequestAdd(IWorldClient client, Character character);
+        void SendGuildJoinRequestRemove(IWorldClient client, int playerId);
+        void SendGuildJoinResult(IWorldClient client, bool ok, int guildId = 0, byte rank = 9, string name = "");
+        void SendGuildUserListAdd(IWorldClient client, DbCharacter character, bool online);
         #endregion
 
         #region GM
