@@ -84,10 +84,6 @@ namespace Imgeneus.World.Game.Player
                     QuitQuest(questQuitPacket.QuestId);
                     break;
 
-                case GuildCreatePacket guildCreatePacket:
-                    HandleCreateGuild(guildCreatePacket.Name, guildCreatePacket.Message);
-                    break;
-
                 case GuildAgreePacket guildAgreePacket:
                     HandleGuildAgree(guildAgreePacket.Ok);
                     break;

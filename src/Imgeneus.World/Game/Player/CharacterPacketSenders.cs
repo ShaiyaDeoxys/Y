@@ -25,8 +25,8 @@ namespace Imgeneus.World.Game.Player
         public void SendCharacterInfo()
         {
             // SendWorldDay(); // TODO: why do we need it?
-            SendGuildList();
-            SendGuildMembersOnline();
+            //SendGuildList();
+            //SendGuildMembersOnline();
             SendDetails();
             //SendAdditionalStats();
             //SendCurrentHitpoints();
@@ -150,15 +150,11 @@ namespace Imgeneus.World.Game.Player
 
         public void SendResetSkills() => _packetsHelper.SendResetSkills(Client, SkillsManager.SkillPoints);
 
-        public void SendGuildCreateFailed(GuildCreateFailedReason reason) => _packetsHelper.SendGuildCreateFailed(Client, reason);
-
         public void SendGuildCreateSuccess(int guildId, byte rank, string guildName, string guildMessage) => _packetsHelper.SendGuildCreateSuccess(Client, guildId, rank, guildName, guildMessage);
 
-        public void SendGuildCreateRequest(int creatorId, string guildName, string guildMessage) => _packetsHelper.SendGuildCreateRequest(Client, creatorId, guildName, guildMessage);
+        public void SendGuildMemberIsOnline(int playerId) => _packetFactory.SendGuildMemberIsOnline(GameSession.Client, playerId);
 
-        public void SendGuildMemberIsOnline(int playerId) => _packetsHelper.SendGuildMemberIsOnline(Client, playerId);
-
-        public void SendGuildMemberIsOffline(int playerId) => _packetsHelper.SendGuildMemberIsOffline(Client, playerId);
+        public void SendGuildMemberIsOffline(int playerId) => _packetFactory.SendGuildMemberIsOffline(GameSession.Client, playerId);
 
         public void SendGuildJoinRequestAdd(DbCharacter character) => _packetsHelper.SendGuildJoinRequestAdd(Client, character);
 

@@ -1,22 +1,22 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 using System.Text;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GuildCreatePacket : IDeserializedPacket
+    public record GuildCreatePacket : IPacketDeserializer
     {
-        public string Name { get; }
+        public string Name { get; private set; }
 
-        public string Message { get; }
+        public string Message { get; private set; }
 
-        public GuildCreatePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Name = packet.ReadString(25);
+            Name = packetStream.ReadString(25);
 
-#if (EP8_V2 || SHAIYA_US)
-            Message = packet.ReadString(25, Encoding.Unicode);
+#if EP8_V2 || SHAIYA_US || DEBUG
+            Message = packetStream.ReadString(25, Encoding.Unicode);
 #else
-            Message = packet.ReadString(25);
+            Message = packetStream.ReadString(25);
 #endif
         }
     }

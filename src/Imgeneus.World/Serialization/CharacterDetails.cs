@@ -104,7 +104,7 @@ namespace Imgeneus.Network.Serialization
             MaxHP = character.HealthManager.MaxHP;
             MaxMP = character.HealthManager.MaxMP;
             MaxSP = character.HealthManager.MaxSP;
-            GuildName = character.GuildName;
+            GuildName = character.GuildManager.GuildName;
         }
     }
 }

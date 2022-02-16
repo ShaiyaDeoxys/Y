@@ -46,7 +46,6 @@ namespace Imgeneus.World.Game.Player
         private readonly IBackgroundTaskQueue _taskQueue;
         private readonly IMapsLoader _mapLoader;
         private readonly PacketsHelper _packetsHelper;
-        private readonly IGuildManager _guildManager;
         private readonly IGamePacketFactory _packetFactory;
 
         public IAdditionalInfoManager AdditionalInfoManager { get; private set; }
@@ -65,6 +64,7 @@ namespace Imgeneus.World.Game.Player
         public ITradeManager TradeManager { get; private set; }
         public IFriendsManager FriendsManager { get; private set; }
         public IDuelManager DuelManager { get; private set; }
+        public IGuildManager GuildManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -104,7 +104,6 @@ namespace Imgeneus.World.Game.Player
             _gameWorld = gameWorld;
             _taskQueue = taskQueue;
             _mapLoader = mapLoader;
-            _guildManager = guildManager;
             _packetFactory = packetFactory;
 
             AdditionalInfoManager = additionalInfoManager;
@@ -123,6 +122,7 @@ namespace Imgeneus.World.Game.Player
             TradeManager = tradeManager;
             FriendsManager = friendsManager;
             DuelManager = duelManager;
+            GuildManager = guildManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
@@ -176,9 +176,6 @@ namespace Imgeneus.World.Game.Player
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
-
-            // Notify guild members, that player is offline.
-            NotifyGuildMembersOffline();
 
             // Save current quests state to database.
             foreach (var quest in Quests.Where(q => q.SaveUpdateToDatabase))
@@ -246,8 +243,7 @@ namespace Imgeneus.World.Game.Player
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
-                Points = dbCharacter.User.Points,
-                GuildId = dbCharacter.GuildId
+                Points = dbCharacter.User.Points
             };
 
             var quests = dbCharacter.Quests.Select(q => new Quest(databasePreloader, q)).ToList();
@@ -257,13 +253,6 @@ namespace Imgeneus.World.Game.Player
 
             foreach (var bankItem in dbCharacter.User.BankItems.Where(bi => !bi.IsClaimed).Select(bi => new BankItem(bi)))
                 character.BankItems.TryAdd(bankItem.Slot, bankItem);
-
-            if (dbCharacter.Guild != null)
-            {
-                character.GuildName = dbCharacter.Guild.Name;
-                character.GuildRank = dbCharacter.GuildRank;
-                character.GuildMembers.AddRange(dbCharacter.Guild.Members);
-            }
 
             character.Init();
 

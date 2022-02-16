@@ -129,12 +129,11 @@ namespace Imgeneus.World
             services.AddScoped<ITradeManager, TradeManager>();
             services.AddScoped<IFriendsManager, FriendsManager>();
             services.AddScoped<IDuelManager, DuelManager>();
+            services.AddScoped<IGuildManager, GuildManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
             services.AddTransient<ITimeService, TimeService>();
-
-            services.AddTransient<IGuildManager, GuildManager>();
 
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<DatabaseWorker>();

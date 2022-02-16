@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
@@ -22,50 +23,156 @@ namespace Imgeneus.World.Game.Guild
         private readonly IDatabase _database;
         private readonly IGameWorld _gameWorld;
         private readonly ITimeService _timeService;
+        private readonly IInventoryManager _inventoryManager;
+        private readonly IPartyManager _partyManager;
+        private readonly ICountryProvider _countryProvider;
         private SemaphoreSlim _sync = new SemaphoreSlim(1);
+
+        private int _ownerId;
 
         private readonly IGuildConfiguration _config;
         private readonly IGuildHouseConfiguration _houseConfig;
 
-        public GuildManager(ILogger<IGuildManager> logger, IGuildConfiguration config, IGuildHouseConfiguration houseConfig, IDatabase database, IGameWorld gameWorld, ITimeService timeService)
+        public GuildManager(ILogger<IGuildManager> logger, IGuildConfiguration config, IGuildHouseConfiguration houseConfig, IDatabase database, IGameWorld gameWorld, ITimeService timeService, IInventoryManager inventoryManager, IPartyManager partyManager, ICountryProvider countryProvider)
         {
             _logger = logger;
             _database = database;
             _gameWorld = gameWorld;
             _timeService = timeService;
-
+            _inventoryManager = inventoryManager;
+            _partyManager = partyManager;
+            _countryProvider = countryProvider;
             _config = config;
             _houseConfig = houseConfig;
+#if DEBUG
+            _logger.LogDebug("GuildManager {hashcode} created", GetHashCode());
+#endif
         }
+
+#if DEBUG
+        ~GuildManager()
+        {
+            _logger.LogDebug("GuildManager {hashcode} collected by GC", GetHashCode());
+        }
+#endif
+
+        #region Init & Clear
+
+        public void Init(int ownerId, int guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null)
+        {
+            _ownerId = ownerId;
+            GuildId = guildId;
+
+            if (GuildId != 0)
+            {
+                GuildName = name;
+                GuildRank = rank;
+                GuildMembers.AddRange(members);
+                NotifyGuildMembersOnline();
+            }
+        }
+
+        public Task Clear()
+        {
+            NotifyGuildMembersOffline();
+            GuildId = 0;
+            GuildName = string.Empty;
+            GuildRank = 0;
+            GuildMembers.Clear();
+            return Task.CompletedTask;
+        }
+
+        public int GuildId { get; set; }
+
+        public bool HasGuild { get => GuildId != 0; }
+
+        public string GuildName { get; set; } = string.Empty;
+
+        public byte GuildRank { get; set; }
+
+        public List<DbCharacter> GuildMembers { get; init; } = new List<DbCharacter>();
+
+        /// <summary>
+        /// Notifies guild members, that player is online.
+        /// </summary>
+        private void NotifyGuildMembersOnline()
+        {
+            if (!HasGuild)
+                return;
+
+            foreach (var m in GuildMembers)
+            {
+                var id = m.Id;
+                if (id == _ownerId)
+                    continue;
+
+                if (!_gameWorld.Players.ContainsKey(id))
+                    continue;
+
+                _gameWorld.Players.TryGetValue(id, out var player);
+
+                if (player is null)
+                    continue;
+
+                player.SendGuildMemberIsOnline(_ownerId);
+            }
+        }
+
+        /// <summary>
+        /// Notifies guild members, that player is offline.
+        /// </summary>
+        private void NotifyGuildMembersOffline()
+        {
+            if (!HasGuild)
+                return;
+
+            foreach (var m in GuildMembers)
+            {
+                var id = m.Id;
+                if (id == _ownerId)
+                    continue;
+
+                if (!_gameWorld.Players.ContainsKey(id))
+                    continue;
+
+                _gameWorld.Players.TryGetValue(id, out var player);
+
+                if (player is null)
+                    continue;
+
+                player.SendGuildMemberIsOffline(_ownerId);
+            }
+        }
+
+        #endregion
 
         #region Guild creation
 
-        /// <inheritdoc/>
-        public async Task<GuildCreateFailedReason> CanCreateGuild(Character guildCreator, string guildName)
+        public async Task<GuildCreateFailedReason> CanCreateGuild(string guildName)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(guildName))
                     return GuildCreateFailedReason.WrongName;
 
-                if (guildCreator.InventoryManager.Gold < _config.MinGold)
+                if (_inventoryManager.Gold < _config.MinGold)
                     return GuildCreateFailedReason.NotEnoughGold;
 
-                if (!guildCreator.PartyManager.HasParty || !(guildCreator.PartyManager.Party is Party) || guildCreator.PartyManager.Party.Members.Count != _config.MinMembers)
+                if (!_partyManager.HasParty || !(_partyManager.Party is Party) || _partyManager.Party.Members.Count != _config.MinMembers)
                     return GuildCreateFailedReason.NotEnoughMembers;
 
-                if (!guildCreator.PartyManager.Party.Members.All(x => x.LevelProvider.Level > _config.MinLevel))
+                if (!_partyManager.Party.Members.All(x => x.LevelProvider.Level >= _config.MinLevel))
                     return GuildCreateFailedReason.LevelLimit;
 
                 // TODO: banned words?
                 // if(guildName.Contains(bannedWords))
                 // return GuildCreateFailedReason.WrongName;
 
-                if (guildCreator.PartyManager.Party.Members.Any(x => x.HasGuild))
+                if (_partyManager.Party.Members.Any(x => x.GuildManager.HasGuild))
                     return GuildCreateFailedReason.PartyMemberInAnotherGuild;
 
                 var penalty = false;
-                foreach (var m in guildCreator.PartyManager.Party.Members)
+                foreach (var m in _partyManager.Party.Members)
                 {
                     if (await CheckPenalty(m.Id))
                     {
@@ -102,140 +209,42 @@ namespace Imgeneus.World.Game.Guild
             return _timeService.UtcNow.Subtract(leaveTime).TotalHours < _config.MinPenalty;
         }
 
-        /// <summary>
-        /// Guild creation requests.
-        /// </summary>
-        public static ConcurrentDictionary<IParty, GuildCreateRequest> CreationRequests { get; private set; } = new ConcurrentDictionary<IParty, GuildCreateRequest>();
+        public GuildCreateRequest CreationRequest { get; set; }
 
-        /// <inheritdoc/>
-        public void SendGuildRequest(Character guildCreator, string guildName, string guildMessage)
+        public void InitCreateRequest(string guildName, string guildMessage)
         {
-            var request = new GuildCreateRequest(guildCreator, guildCreator.PartyManager.Party.Members, guildName, guildMessage);
-            var success = CreationRequests.TryAdd(guildCreator.PartyManager.Party, request);
+            var request = new GuildCreateRequest(_ownerId, _partyManager.Party.Members, guildName, guildMessage);
+            foreach (var m in request.Members)
+                m.GuildManager.CreationRequest = request;
 
-            if (!success)
-                guildCreator.SendGuildCreateFailed(GuildCreateFailedReason.Unknown);
-
-            guildCreator.PartyManager.Party.OnMemberEnter += Party_OnMemberChange;
-            guildCreator.PartyManager.Party.OnMemberLeft += Party_OnMemberChange;
-
-            foreach (var member in guildCreator.PartyManager.Party.Members)
-                member.SendGuildCreateRequest(guildCreator.Id, guildName, guildMessage);
+            _partyManager.Party.OnMemberEnter += Party_OnMemberChange;
+            _partyManager.Party.OnMemberLeft += Party_OnMemberChange;
         }
 
         private void Party_OnMemberChange(IParty party)
         {
-            CreationRequests.TryRemove(party, out var creationRequest);
-
-            if (creationRequest != null)
-            {
-                creationRequest.GuildCreator.SendGuildCreateFailed(GuildCreateFailedReason.Unknown);
-                creationRequest.Dispose();
-            }
+            CreationRequest?.Dispose();
 
             party.OnMemberEnter -= Party_OnMemberChange;
             party.OnMemberLeft -= Party_OnMemberChange;
         }
 
-        /// <inheritdoc/>
-        public async void SetAgreeRequest(Character character, bool agree)
+        public async Task<DbGuild> TryCreateGuild(string name, string message, int masterId)
         {
-            if (character.PartyManager.Party is null)
-                return;
-
-            CreationRequests.TryGetValue(character.PartyManager.Party, out var request);
-
-            if (request is null)
-                return;
-
-            if (!request.Acceptance.ContainsKey(character.Id))
-                return;
-
-            request.Acceptance[character.Id] = agree;
-
-            if (!agree)
-            {
-                CreationRequests.TryRemove(character.PartyManager.Party, out request);
-                foreach (var m in request.Members)
-                    m.SendGuildCreateFailed(GuildCreateFailedReason.PartyMemberRejected);
-                request.Dispose();
-                return;
-            }
-
-            var allAgree = request.Acceptance.Values.All(x => x == true);
-            if (!allAgree)
-                return;
-
-            CreationRequests.TryRemove(character.PartyManager.Party, out request);
-
-            if (request is null) // is it possible?
-            {
-                return;
-            }
-
-            var guild = await TryCreateGuild(request.Name, request.Message, request.GuildCreator);
-            if (guild is null) // Creation failed.
-            {
-                foreach (var m in request.Members)
-                    m.SendGuildCreateFailed(GuildCreateFailedReason.Unknown);
-                request.Dispose();
-                return;
-            }
-
-            foreach (var m in request.Members)
-            {
-                byte rank = 9;
-                if (m == request.GuildCreator)
-                    rank = 1;
-
-                await TryAddMember(guild.Id, m.Id, rank);
-
-                m.GuildId = guild.Id;
-                m.GuildName = guild.Name;
-                m.GuildRank = rank;
-            }
-
-            foreach (var m in request.Members)
-            {
-                m.GuildMembers.AddRange(guild.Members);
-                m.SendGuildMembersOnline();
-                m.SendGuildCreateSuccess(guild.Id, m.GuildRank, guild.Name, request.Message);
-            }
-
-            request.GuildCreator.InventoryManager.Gold = request.GuildCreator.InventoryManager.Gold - _config.MinGold;
-            request.GuildCreator.SendGoldUpdate();
-
-            foreach (var player in _gameWorld.Players.Values.ToList())
-                player.SendGuildListAdd(guild);
-
-            request.Dispose();
-        }
-
-        /// <summary>
-        /// Creates guild in database.
-        /// </summary>
-        /// <returns>Db guild, if it was created, otherwise null.</returns>
-        private async Task<DbGuild> TryCreateGuild(string name, string message, Character master)
-        {
-            await _sync.WaitAsync();
-
-            var result = await CreateGuild(name, message, master);
-
-            _sync.Release();
-
-            return result;
-        }
-
-        private async Task<DbGuild> CreateGuild(string name, string message, Character master)
-        {
-            var guild = new DbGuild(name, message, master.Id, master.CountryProvider.Country == Country.CountryType.Light ? Fraction.Light : Fraction.Dark);
+            var guild = new DbGuild(name, message, masterId, _countryProvider.Country == Country.CountryType.Light ? Fraction.Light : Fraction.Dark);
 
             _database.Guilds.Add(guild);
 
             var result = await _database.SaveChangesAsync();
 
             if (result > 0)
+            {
+                var guildCreator = _gameWorld.Players[masterId];
+                guildCreator.InventoryManager.Gold -= _config.MinGold;
+                guildCreator.SendGoldUpdate();
+
                 return guild;
+            }
             else
                 return null;
         }
@@ -355,13 +364,12 @@ namespace Imgeneus.World.Game.Guild
 
         #region List guilds
 
-        /// <inheritdoc/>
-        public DbGuild[] GetAllGuilds(Fraction country = Fraction.NotSelected)
+        public Task<DbGuild[]> GetAllGuilds(Fraction country = Fraction.NotSelected)
         {
             if (country == Fraction.NotSelected)
-                return _database.Guilds.Include(g => g.Master).ToArray();
+                return _database.Guilds.Include(g => g.Master).ToArrayAsync();
 
-            return _database.Guilds.Include(g => g.Master).Where(g => g.Country == country).ToArray();
+            return _database.Guilds.Include(g => g.Master).Where(g => g.Country == country).ToArrayAsync();
         }
 
         /// <inheritdoc/>
@@ -514,7 +522,7 @@ namespace Imgeneus.World.Game.Guild
 
         private async Task<GuildHouseBuyReason> BuyHouse(Character character)
         {
-            if (character.GuildRank != 1)
+            if (character.GuildManager.GuildRank != 1)
             {
                 return GuildHouseBuyReason.NotAuthorized;
             }
@@ -524,7 +532,7 @@ namespace Imgeneus.World.Game.Guild
                 return GuildHouseBuyReason.NoGold;
             }
 
-            var guild = await GetGuild((int)character.GuildId);
+            var guild = await GetGuild(character.GuildManager.GuildId);
             if (guild is null || guild.Rank > 30)
             {
                 return GuildHouseBuyReason.LowRank;
@@ -711,7 +719,7 @@ namespace Imgeneus.World.Game.Guild
             await _sync.WaitAsync();
 
             var result = new List<Item>();
-            var guild = await GetGuild((int)character.GuildId);
+            var guild = await GetGuild(GuildId);
 
             var totalEtin = 0;
 

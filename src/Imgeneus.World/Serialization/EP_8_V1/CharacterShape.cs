@@ -121,7 +121,7 @@ namespace Imgeneus.World.Serialization.EP_8_V1
                 PartyDefinition = 0;
             }
 
-            var chars = character.GuildName.ToCharArray();
+            var chars = character.GuildManager.GuildName.ToCharArray();
             for (var i = 0; i < chars.Length; i++)
             {
                 GuildName[i] = (byte)chars[i];

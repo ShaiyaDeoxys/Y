@@ -38,7 +38,7 @@ namespace Imgeneus.World.Serialization
             PosX = character.PosX;
             PosY = character.PosY;
             PosZ = character.PosZ;
-            GuildId = character.GuildId ?? 0;
+            GuildId = character.GuildManager.GuildId;
             Vehicle = character.VehicleManager.Vehicle2CharacterID;
         }
     }

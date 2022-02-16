@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Friends;
+using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Monster;
@@ -208,6 +209,15 @@ namespace Imgeneus.World.Packets
         void SendMap(IWorldClient client, string senderName, string message);
         void SendWorld(IWorldClient client, string senderName, string message);
         void SendGuild(IWorldClient client, string senderName, string message, bool isAdmin);
+        #endregion
+
+        #region Guild
+        void SendGuildCreateFailed(IWorldClient client, GuildCreateFailedReason reason);
+        void SendGuildCreateRequest(IWorldClient client, int creatorId, string guildName, string guildMessage);
+        void SendGuildMemberIsOnline(IWorldClient client, int playerId);
+        void SendGuildMemberIsOffline(IWorldClient client, int playerId);
+        void SendGuildList(IWorldClient client, DbGuild[] guilds);
+        void SendGuildMembersOnline(IWorldClient client, List<DbCharacter> members, bool online);
         #endregion
 
         #region GM

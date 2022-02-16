@@ -52,20 +52,20 @@ namespace Imgeneus.World.Game.Player
 
             if (Map is GuildHouseMap)
             {
-                if (!HasGuild)
+                if (!GuildManager.HasGuild)
                 {
                     _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, 30);
                     return;
                 }
 
-                var allowed = _guildManager.CanUseNpc((int)GuildId, npc.Type, npc.TypeId, out var requiredRank);
+                var allowed = GuildManager.CanUseNpc(GuildManager.GuildId, npc.Type, npc.TypeId, out var requiredRank);
                 if (!allowed)
                 {
                     _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, requiredRank);
                     return;
                 }
 
-                allowed = _guildManager.HasNpcLevel((int)GuildId, npc.Type, npc.TypeId);
+                allowed = GuildManager.HasNpcLevel(GuildManager.GuildId, npc.Type, npc.TypeId);
                 if (!allowed)
                 {
                     _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowLevel, 0);
@@ -95,46 +95,28 @@ namespace Imgeneus.World.Game.Player
             TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
 
-        private async void HandleCreateGuild(string name, string message)
-        {
-            var result = await _guildManager.CanCreateGuild(this, name);
-            if (result != GuildCreateFailedReason.Success)
-            {
-                SendGuildCreateFailed(result);
-                return;
-            }
-
-            _guildManager.SendGuildRequest(this, name, message);
-        }
-
-
-        private void HandleGuildAgree(bool ok)
-        {
-            _guildManager.SetAgreeRequest(this, ok);
-        }
-
         private async void HandleGuildJoinRequest(int guildId)
         {
-            if (HasGuild)
+            if (GuildManager.HasGuild)
             {
                 _packetsHelper.SendGuildJoinRequest(Client, false);
                 return;
             }
 
-            var success = await _guildManager.RequestJoin(guildId, Id);
+            var success = await GuildManager.RequestJoin(guildId, Id);
             _packetsHelper.SendGuildJoinRequest(Client, success);
         }
 
         private async void HandleJoinResult(bool ok, int characterId)
         {
-            if (!HasGuild || GuildRank > 3)
+            if (!GuildManager.HasGuild || GuildManager.GuildRank > 3)
                 return;
 
-            var guild = await _guildManager.GetGuild((int)GuildId);
+            var guild = await GuildManager.GetGuild(GuildManager.GuildId);
             if (guild is null)
                 return;
 
-            await _guildManager.RemoveRequestJoin(characterId);
+            await GuildManager.RemoveRequestJoin(characterId);
 
             var onlinePlayer = _gameWorld.Players[characterId];
             if (!ok)
@@ -145,7 +127,7 @@ namespace Imgeneus.World.Game.Player
                 return;
             }
 
-            var dbCharacter = await _guildManager.TryAddMember((int)GuildId, characterId);
+            var dbCharacter = await GuildManager.TryAddMember(GuildManager.GuildId, characterId);
             if (dbCharacter is null)
             {
                 if (onlinePlayer != null)
@@ -155,39 +137,39 @@ namespace Imgeneus.World.Game.Player
             }
 
             // Update guild members.
-            foreach (var member in GuildMembers.ToList())
+            foreach (var member in GuildManager.GuildMembers.ToList())
             {
                 if (!_gameWorld.Players.ContainsKey(member.Id))
                     continue;
 
                 var guildPlayer = _gameWorld.Players[member.Id];
-                guildPlayer.GuildMembers.Add(dbCharacter);
+                guildPlayer.GuildManager.GuildMembers.Add(dbCharacter);
                 guildPlayer.SendGuildUserListAdd(dbCharacter, onlinePlayer != null);
             }
 
             // Send additional info to new member, if he is online.
             if (onlinePlayer != null)
             {
-                onlinePlayer.GuildId = guild.Id;
-                onlinePlayer.GuildName = guild.Name;
-                onlinePlayer.GuildRank = 9;
-                onlinePlayer.GuildMembers.AddRange(GuildMembers);
+                onlinePlayer.GuildManager.GuildId = guild.Id;
+                onlinePlayer.GuildManager.GuildName = guild.Name;
+                onlinePlayer.GuildManager.GuildRank = 9;
+                onlinePlayer.GuildManager.GuildMembers.AddRange(GuildManager.GuildMembers);
 
                 onlinePlayer.SendGuildJoinResult(true, guild);
-                onlinePlayer.SendGuildMembersOnline();
+                //onlinePlayer.SendGuildMembersOnline();
                 onlinePlayer.SendGuildNpcLvlList();
             }
         }
 
         private async void HandleGuildKick(int removeId)
         {
-            if (!HasGuild || GuildRank > 3)
+            if (!GuildManager.HasGuild || GuildManager.GuildRank > 3)
             {
                 SendGuildKickMember(false, removeId);
                 return;
             }
 
-            var dbCharacter = await _guildManager.TryRemoveMember((int)GuildId, removeId);
+            var dbCharacter = await GuildManager.TryRemoveMember(GuildManager.GuildId, removeId);
             if (dbCharacter is null)
             {
                 SendGuildKickMember(false, removeId);
@@ -195,7 +177,7 @@ namespace Imgeneus.World.Game.Player
             }
 
             // Update guild members.
-            foreach (var member in GuildMembers.ToList())
+            foreach (var member in GuildManager.GuildMembers.ToList())
             {
                 if (!_gameWorld.Players.ContainsKey(member.Id))
                     continue;
@@ -206,10 +188,10 @@ namespace Imgeneus.World.Game.Player
                     guildPlayer.ClearGuild();
                 else
                 {
-                    var temp = guildPlayer.GuildMembers.FirstOrDefault(x => x.Id == removeId);
+                    var temp = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == removeId);
 
                     if (temp != null)
-                        guildPlayer.GuildMembers.Remove(temp);
+                        guildPlayer.GuildManager.GuildMembers.Remove(temp);
 
                     guildPlayer.SendGuildMemberRemove(removeId);
                 }
@@ -220,20 +202,20 @@ namespace Imgeneus.World.Game.Player
 
         private async void HandleChangeRank(bool demote, int characterId)
         {
-            if (!HasGuild || GuildRank > 3)
+            if (!GuildManager.HasGuild || GuildManager.GuildRank > 3)
                 return;
 
-            var dbCharacter = await _guildManager.TryChangeRank((int)GuildId, characterId, demote);
+            var dbCharacter = await GuildManager.TryChangeRank(GuildManager.GuildId, characterId, demote);
             if (dbCharacter is null)
                 return;
 
-            foreach (var member in GuildMembers.ToList())
+            foreach (var member in GuildManager.GuildMembers.ToList())
             {
                 if (!_gameWorld.Players.ContainsKey(member.Id))
                     continue;
 
                 var guildPlayer = _gameWorld.Players[member.Id];
-                var changed = guildPlayer.GuildMembers.FirstOrDefault(x => x.Id == characterId);
+                var changed = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == characterId);
                 if (changed is null)
                     continue;
 
@@ -244,17 +226,17 @@ namespace Imgeneus.World.Game.Player
 
         private void HandleLeaveGuild()
         {
-            if (!HasGuild)
+            if (!GuildManager.HasGuild)
                 return;
 
-            var dbCharacter = _guildManager.TryRemoveMember((int)GuildId, Id);
+            var dbCharacter = GuildManager.TryRemoveMember(GuildManager.GuildId, Id);
             if (dbCharacter == null)
             {
                 SendGuildMemberLeaveResult(false);
                 return;
             }
 
-            foreach (var member in GuildMembers.ToList())
+            foreach (var member in GuildManager.GuildMembers.ToList())
             {
                 if (!_gameWorld.Players.ContainsKey(member.Id))
                     continue;
@@ -267,10 +249,10 @@ namespace Imgeneus.World.Game.Player
                 }
                 else
                 {
-                    var temp = guildPlayer.GuildMembers.FirstOrDefault(x => x.Id == Id);
+                    var temp = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == Id);
 
                     if (temp != null)
-                        guildPlayer.GuildMembers.Remove(temp);
+                        guildPlayer.GuildManager.GuildMembers.Remove(temp);
 
                     guildPlayer.SendGuildMemberLeave(Id);
                 }
@@ -281,14 +263,14 @@ namespace Imgeneus.World.Game.Player
 
         private async void HandleGuildDismantle()
         {
-            if (!HasGuild || GuildRank != 1)
+            if (!GuildManager.HasGuild || GuildManager.GuildRank != 1)
                 return;
 
-            var result = await _guildManager.TryDeleteGuild((int)GuildId);
+            var result = await GuildManager.TryDeleteGuild(GuildManager.GuildId);
             if (!result)
                 return;
 
-            foreach (var member in GuildMembers.ToList())
+            foreach (var member in GuildManager.GuildMembers.ToList())
             {
                 if (!_gameWorld.Players.ContainsKey(member.Id))
                     continue;
@@ -301,18 +283,18 @@ namespace Imgeneus.World.Game.Player
 
         private async void HandleGuildHouseBuy()
         {
-            if (!HasGuild)
+            if (!GuildManager.HasGuild)
                 return;
 
-            var reason = await _guildManager.TryBuyHouse(this);
+            var reason = await GuildManager.TryBuyHouse(this);
             _packetsHelper.SendGuildHouseBuy(Client, reason, InventoryManager.Gold);
         }
         private async void HandleGetEtin()
         {
             var etin = 0;
-            if (HasGuild)
+            if (GuildManager.HasGuild)
             {
-                etin = await _guildManager.GetEtin((int)GuildId);
+                etin = await GuildManager.GetEtin(GuildManager.GuildId);
             }
 
             _packetsHelper.SendGetEtin(Client, etin);
@@ -358,16 +340,16 @@ namespace Imgeneus.World.Game.Player
 
         private async void HandleGuildUpgradeNpc(byte npcType, byte npcGroup, byte npcLevel)
         {
-            if (!HasGuild || (GuildRank != 1 && GuildRank != 2))
+            if (!GuildManager.HasGuild || (GuildManager.GuildRank != 1 && GuildManager.GuildRank != 2))
             {
                 _packetsHelper.SendGuildUpgradeNpc(Client, GuildNpcUpgradeReason.Failed, npcType, npcGroup, npcLevel);
                 return;
             }
 
-            var reason = await _guildManager.TryUpgradeNPC((int)GuildId, npcType, npcGroup, npcLevel);
+            var reason = await GuildManager.TryUpgradeNPC(GuildManager.GuildId, npcType, npcGroup, npcLevel);
             if (reason == GuildNpcUpgradeReason.Ok)
             {
-                var etin = await _guildManager.GetEtin((int)GuildId);
+                var etin = await GuildManager.GetEtin(GuildManager.GuildId);
                 _packetsHelper.SendGetEtin(Client, etin);
             }
 
@@ -377,10 +359,10 @@ namespace Imgeneus.World.Game.Player
 
         private async void HandleEtinReturn()
         {
-            if (!HasGuild)
+            if (!GuildManager.HasGuild)
                 return;
 
-            var etins = await _guildManager.ReturnEtin(this);
+            var etins = await GuildManager.ReturnEtin(this);
 
             _packetsHelper.SendEtinReturnResult(Client, etins);
         }

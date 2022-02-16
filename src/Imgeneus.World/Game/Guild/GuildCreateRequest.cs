@@ -19,7 +19,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Initiator of request.
         /// </summary>
-        public Character GuildCreator { get; private set; }
+        public int GuildCreatorId { get; private set; }
 
         /// <summary>
         /// All party members.
@@ -36,9 +36,9 @@ namespace Imgeneus.World.Game.Guild
         /// </summary>
         public string Message { get; private set; }
 
-        public GuildCreateRequest(Character guildCreator, IEnumerable<Character> members, string name, string message)
+        public GuildCreateRequest(int guildCreatorId, IEnumerable<Character> members, string name, string message)
         {
-            GuildCreator = guildCreator;
+            GuildCreatorId = guildCreatorId;
             Members = members;
             Name = name;
             Message = message;
@@ -49,8 +49,8 @@ namespace Imgeneus.World.Game.Guild
 
         public void Dispose()
         {
-            GuildCreator = null;
             Acceptance.Clear();
+            Members = null;
             Acceptance = null;
         }
     }

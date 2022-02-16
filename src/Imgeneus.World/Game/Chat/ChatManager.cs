@@ -77,9 +77,9 @@ namespace Imgeneus.World.Game.Chat
                     break;
 
                 case MessageType.Guild:
-                    if (sender.HasGuild)
+                    if (sender.GuildManager.HasGuild)
                     {
-                        foreach (var guildMember in sender.GuildMembers.ToList())
+                        foreach (var guildMember in sender.GuildManager.GuildMembers.ToList())
                         {
                             if (!_gameWorld.Players.ContainsKey(guildMember.Id))
                                 continue;

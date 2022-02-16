@@ -152,7 +152,7 @@ namespace Imgeneus.World.Game.Player
                                              .Include(c => c.Skills)
                                              .Include(c => c.Items)
                                              .Include(c => c.ActiveBuffs)
-                                             //.Include(c => c.Guild).ThenInclude(g => g.Members)
+                                             .Include(c => c.Guild)
                                              .Include(c => c.Quests)
                                              .Include(c => c.QuickItems)
                                              .Include(c => c.User)
@@ -223,6 +223,17 @@ namespace Imgeneus.World.Game.Player
             _friendsManager.Init(dbCharacter.Id, _database.Friends.AsNoTracking().Include(x => x.Friend).Where(x => x.CharacterId == characterId).Select(x => x.Friend));
 
             _duelManager.Init(dbCharacter.Id);
+
+            if(dbCharacter.GuildId != null)
+            {
+                var guild = await _database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId);
+                _guildManager.Init(dbCharacter.Id, dbCharacter.GuildId.Value, guild?.Name, dbCharacter.GuildRank, guild?.Members);
+            }
+            else
+            {
+                _guildManager.Init(dbCharacter.Id);
+            }
+           
 
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;

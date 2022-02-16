@@ -113,7 +113,7 @@ namespace Imgeneus.World.Game
 
                 if (destinationMapDef.CreateType == CreateType.GuildHouse)
                 {
-                    if (!player.HasGuild)
+                    if (!player.GuildManager.HasGuild)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyForGuilds;
                         return false;
@@ -138,7 +138,7 @@ namespace Imgeneus.World.Game
 
                 if (destinationMapDef.CreateType == CreateType.GRB)
                 {
-                    if (!player.HasGuild)
+                    if (!player.GuildManager.HasGuild)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyForGuilds;
                         return false;
@@ -370,13 +370,13 @@ namespace Imgeneus.World.Game
                 if (mapDef.CreateType == CreateType.GuildHouse || mapDef.CreateType == CreateType.GRB)
                 {
                     int guildId = 0;
-                    if (player.GuildId is null) // probably guild id has changed during loading in portal? Or it's admin without guild tries to load into GBR map.
+                    if (!player.GuildManager.HasGuild) // probably guild id has changed during loading in portal? Or it's admin without guild tries to load into GBR map.
                     {
                         _logger.LogWarning("Trying to load character {id} without guild id to guild specific map. Fallback to 0.", player.Id);
                     }
                     else
                     {
-                        guildId = (int)player.GuildId;
+                        guildId = player.GuildManager.GuildId;
                     }
 
                     if (mapDef.CreateType == CreateType.GuildHouse)
@@ -427,10 +427,10 @@ namespace Imgeneus.World.Game
                     map = PartyMaps[player.PartyManager.Party.Id];
                 else if (PartyMaps.ContainsKey(player.PartyManager.PreviousPartyId))
                     map = PartyMaps[player.PartyManager.PreviousPartyId];
-                else if (player.HasGuild && GuildHouseMaps.ContainsKey((int)player.GuildId))
-                    map = GuildHouseMaps[(int)player.GuildId];
-                else if (player.HasGuild && GRBMaps.ContainsKey((int)player.GuildId))
-                    map = GRBMaps[(int)player.GuildId];
+                else if (player.GuildManager.HasGuild && GuildHouseMaps.ContainsKey(player.GuildManager.GuildId))
+                    map = GuildHouseMaps[player.GuildManager.GuildId];
+                else if (player.GuildManager.HasGuild && GRBMaps.ContainsKey(player.GuildManager.GuildId))
+                    map = GRBMaps[player.GuildManager.GuildId];
 
                 if (map is null)
                     _logger.LogError("Couldn't find character's {characterId} map {mapId}.", characterId, player.MapProvider.Map.Id);

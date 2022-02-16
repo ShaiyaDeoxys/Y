@@ -64,52 +64,6 @@ namespace Imgeneus.World.Packets
             }
         }
 
-        internal void SendGuildList(IWorldClient client, DbGuild[] guilds)
-        {
-            using var start = new ImgeneusPacket(PacketType.GUILD_LIST_LOADING_START);
-            client.Send(start);
-
-            var steps = guilds.Length / 15;
-            var left = guilds.Length % 15;
-
-            for (var i = 0; i <= steps; i++)
-            {
-                var startIndex = i * 15;
-                var length = i == steps ? left : 15;
-                var endIndex = startIndex + length;
-
-                using var packet = new ImgeneusPacket(PacketType.GUILD_LIST);
-                packet.Write(new GuildList(guilds[startIndex..endIndex]).Serialize());
-                client.Send(packet);
-            }
-
-            using var end = new ImgeneusPacket(PacketType.GUILD_LIST_LOADING_END);
-            client.Send(end);
-        }
-
-        internal void SendGuildMembersOnline(IWorldClient client, List<DbCharacter> members, bool online)
-        {
-            var steps = members.Count / 40;
-            var left = members.Count % 40;
-
-            for (var i = 0; i <= steps; i++)
-            {
-                var startIndex = i * 40;
-                var length = i == steps ? left : 40;
-                var endIndex = startIndex + length;
-
-                ImgeneusPacket packet;
-                if (online)
-                    packet = new ImgeneusPacket(PacketType.GUILD_USER_LIST_ONLINE);
-                else
-                    packet = new ImgeneusPacket(PacketType.GUILD_USER_LIST_NOT_ONLINE);
-
-                packet.Write(new GuildListOnline(members.GetRange(startIndex, endIndex)).Serialize());
-                client.Send(packet);
-                packet.Dispose();
-            }
-        }
-
         internal void SendWorldDay(IWorldClient client)
         {
             using var packet = new ImgeneusPacket(PacketType.WORLD_DAY);
@@ -229,14 +183,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGuildMemberIsOnline(IWorldClient client, int playerId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
-            packet.WriteByte(104);
-            packet.Write(playerId);
-            client.Send(packet);
-        }
-
         internal void SendGuildJoinRequestAdd(IWorldClient client, DbCharacter character)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_ADD);
@@ -247,14 +193,6 @@ namespace Imgeneus.World.Packets
         internal void SendGuildJoinRequestRemove(IWorldClient client, int playerId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_REMOVE);
-            packet.Write(playerId);
-            client.Send(packet);
-        }
-
-        internal void SendGuildMemberIsOffline(IWorldClient client, int playerId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
-            packet.WriteByte(105);
             packet.Write(playerId);
             client.Send(packet);
         }
@@ -371,15 +309,6 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_ADDITIONAL_STATS);
             packet.Write(new CharacterAdditionalStats(character).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendGuildCreateRequest(IWorldClient client, int creatorId, string guildName, string guildMessage)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE_AGREE);
-            packet.Write(creatorId);
-            packet.WriteString(guildName, 25);
-            packet.WriteString(guildMessage, 65);
             client.Send(packet);
         }
 
@@ -634,12 +563,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE);
             packet.Write(success);
             packet.Write(status);
-            client.Send(packet);
-        }
-        internal void SendGuildCreateFailed(IWorldClient client, GuildCreateFailedReason reason)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE);
-            packet.Write((byte)reason);
             client.Send(packet);
         }
 
