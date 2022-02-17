@@ -95,43 +95,6 @@ namespace Imgeneus.World.Game.Player
             TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
 
-        private void HandleLeaveGuild()
-        {
-            if (!GuildManager.HasGuild)
-                return;
-
-            var dbCharacter = GuildManager.TryRemoveMember(Id);
-            if (dbCharacter == null)
-            {
-                SendGuildMemberLeaveResult(false);
-                return;
-            }
-
-            foreach (var member in GuildManager.GuildMembers.ToList())
-            {
-                if (!_gameWorld.Players.ContainsKey(member.Id))
-                    continue;
-
-                var guildPlayer = _gameWorld.Players[member.Id];
-
-                if (guildPlayer.Id == Id)
-                {
-                    //guildPlayer.ClearGuild();
-                }
-                else
-                {
-                    var temp = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == Id);
-
-                    if (temp != null)
-                        guildPlayer.GuildManager.GuildMembers.Remove(temp);
-
-                    guildPlayer.SendGuildMemberLeave(Id);
-                }
-            }
-
-            SendGuildMemberLeaveResult(true);
-        }
-
         private async void HandleGuildDismantle()
         {
             if (!GuildManager.HasGuild || GuildManager.GuildRank != 1)

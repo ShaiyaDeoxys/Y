@@ -160,10 +160,6 @@ namespace Imgeneus.World.Game.Player
 
         public void SendGuildJoinRequestRemove(int playerId) => _packetFactory.SendGuildJoinRequestRemove(GameSession.Client, playerId);
 
-        public void SendGuildMemberLeave(int characterId) => _packetsHelper.SendGuildMemberLeave(Client, characterId);
-
-        public void SendGuildMemberLeaveResult(bool ok) => _packetsHelper.SendGuildMemberLeaveResult(Client, ok);
-
         public void SendGuildDismantle() => _packetsHelper.SendGuildDismantle(Client);
 
         public void SendGuildListAdd(DbGuild guild) => _packetsHelper.SendGuildListAdd(Client, guild);

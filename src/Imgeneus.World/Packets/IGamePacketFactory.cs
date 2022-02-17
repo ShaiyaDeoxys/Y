@@ -226,6 +226,8 @@ namespace Imgeneus.World.Packets
         void SendGuildKickMember(IWorldClient client, bool ok, int characterId);
         void SendGuildMemberRemove(IWorldClient client, int characterId);
         void SendGuildUserChangeRank(IWorldClient client, int characterId, byte rank);
+        void SendGuildMemberLeaveResult(IWorldClient client, bool ok);
+        void SendGuildMemberLeave(IWorldClient client, int characterId);
         #endregion
 
         #region GM
