@@ -18,7 +18,7 @@ namespace Imgeneus.World.Handlers
             _bankManager = bankManager;
         }
 
-        [HandlerAction(PacketType.CHANGE_APPEARANCE)]
+        [HandlerAction(PacketType.BANK_CLAIM_ITEM)]
         public async Task Handle(WorldClient client, BankClaimItemPacket packet)
         {
             var item = await _bankManager.TryClaimBankItem(packet.Slot);

@@ -37,10 +37,17 @@ namespace Imgeneus.World.Game
             _mapFactory = mapFactory;
             _timeService = timeService;
             _guildRankingManager = guildRankingManager;
+        }
 
+        #region Init
+
+        public void Init()
+        {
             InitMaps();
             InitGRB();
         }
+
+        #endregion
 
         #region Maps
 

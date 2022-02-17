@@ -399,7 +399,7 @@ namespace Imgeneus.World.Game.Zone
 
         #region Mobs
 
-        private int _currentGlobalMobId;
+        private static int _currentGlobalMobId;
         private readonly object _currentGlobalMobIdMutex = new object();
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text;
 using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Country;
@@ -99,7 +100,7 @@ namespace Imgeneus.World.Game.Notice
 
             packet.WriteByte((byte)message.Length);
 
-#if (EP8_V2 || SHAIYA_US)
+#if EP8_V2 || SHAIYA_US
             packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);

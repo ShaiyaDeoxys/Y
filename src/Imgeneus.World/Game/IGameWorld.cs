@@ -5,7 +5,6 @@ using Imgeneus.World.Game.Zone.Portals;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game
 {
@@ -14,6 +13,11 @@ namespace Imgeneus.World.Game
     /// </summary>
     public interface IGameWorld
     {
+        /// <summary>
+        /// Starts game world.
+        /// </summary>
+        void Init();
+
         /// <summary>
         /// Connected players. Key is character id, value is character.
         /// </summary>
