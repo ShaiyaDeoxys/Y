@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GuildUserStatePacket : IDeserializedPacket
+    public record GuildUserStatePacket : IPacketDeserializer
     {
-        public bool Demote { get; }
+        public bool Demote { get; private set; }
 
-        public int CharacterId { get; }
+        public int CharacterId { get; private set; }
 
-        public GuildUserStatePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Demote = packet.Read<bool>();
-            CharacterId = packet.Read<int>();
+            Demote = packetStream.Read<bool>();
+            CharacterId = packetStream.Read<int>();
         }
     }
 }

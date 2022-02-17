@@ -244,14 +244,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGuildUserChangeRank(IWorldClient client, int playerId, byte rank)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
-            packet.WriteByte((byte)(rank + 200));
-            packet.Write(playerId);
-            client.Send(packet);
-        }
-
         internal void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_TELEPORT_VIA_NPC);

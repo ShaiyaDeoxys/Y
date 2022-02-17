@@ -439,30 +439,20 @@ namespace Imgeneus.World.Game.Guild
 
         #region Member rank change
 
-        /// <inheritdoc/>
-        public async Task<DbCharacter> TryChangeRank(int guildId, int playerId, bool demote)
+        public async Task<byte> TryChangeRank(int playerId, bool demote)
         {
-            await _sync.WaitAsync();
+            if (GuildId == 0)
+                throw new Exception("Rank of member can not be changed, if guild manager is not initialized.");
 
-            var result = await ChangeRank(guildId, playerId, demote);
-
-            _sync.Release();
-
-            return result;
-
-        }
-
-        private async Task<DbCharacter> ChangeRank(int guildId, int playerId, bool demote)
-        {
-            var character = await _database.Characters.FirstOrDefaultAsync(x => x.GuildId == guildId && x.Id == playerId);
+            var character = await _database.Characters.FirstOrDefaultAsync(x => x.GuildId == GuildId && x.Id == playerId);
             if (character is null)
-                return null;
+                return 0;
 
             if (demote && character.GuildRank == 9)
-                return null;
+                return 0;
 
             if (!demote && character.GuildRank == 2)
-                return null;
+                return 0;
 
             if (demote)
                 character.GuildRank++;
@@ -470,11 +460,7 @@ namespace Imgeneus.World.Game.Guild
                 character.GuildRank--;
 
             var result = await _database.SaveChangesAsync();
-
-            if (result > 0)
-                return character;
-            else
-                return null;
+            return result > 0 ? character.GuildRank : (byte)0;
         }
 
         #endregion

@@ -1480,6 +1480,14 @@ namespace Imgeneus.World.Packets
             packet.Write(characterId);
             client.Send(packet);
         }
+
+        public void SendGuildUserChangeRank(IWorldClient client, int characterId, byte rank)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
+            packet.WriteByte((byte)(rank + 200));
+            packet.Write(characterId);
+            client.Send(packet);
+        }
         #endregion
 
         #region GM

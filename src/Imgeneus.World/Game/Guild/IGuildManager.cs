@@ -105,11 +105,10 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Change guild rank of character.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="characterId">character id</param>
         /// <param name="demote">decrease or increase rank?</param>
-        /// <returns>db character, if rank was changed, otherwise null</returns>
-        Task<DbCharacter> TryChangeRank(int guildId, int characterId, bool demote);
+        /// <returns>new rank</returns>
+        Task<byte> TryChangeRank(int characterId, bool demote);
 
         /// <summary>
         /// Tries to remove guild.

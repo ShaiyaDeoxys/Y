@@ -95,30 +95,6 @@ namespace Imgeneus.World.Game.Player
             TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
 
-        private async void HandleChangeRank(bool demote, int characterId)
-        {
-            if (!GuildManager.HasGuild || GuildManager.GuildRank > 3)
-                return;
-
-            var dbCharacter = await GuildManager.TryChangeRank(GuildManager.GuildId, characterId, demote);
-            if (dbCharacter is null)
-                return;
-
-            foreach (var member in GuildManager.GuildMembers.ToList())
-            {
-                if (!_gameWorld.Players.ContainsKey(member.Id))
-                    continue;
-
-                var guildPlayer = _gameWorld.Players[member.Id];
-                var changed = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == characterId);
-                if (changed is null)
-                    continue;
-
-                changed.GuildRank = dbCharacter.GuildRank;
-                guildPlayer.SendGuildUserChangeRank(changed.Id, changed.GuildRank);
-            }
-        }
-
         private void HandleLeaveGuild()
         {
             if (!GuildManager.HasGuild)
