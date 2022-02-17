@@ -97,7 +97,7 @@ namespace Imgeneus.World.Handlers
 
             //SendBlessAmount();
 
-            //SendBankItems();
+            _packetFactory.SendBankItems(client, character.BankManager.BankItems.Values);
 
             //SendGuildNpcLvlList();
 

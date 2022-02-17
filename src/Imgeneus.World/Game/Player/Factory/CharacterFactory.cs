@@ -3,6 +3,7 @@ using Imgeneus.Database.Preload;
 using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
@@ -70,6 +71,7 @@ namespace Imgeneus.World.Game.Player
         private readonly ITradeManager _tradeManager;
         private readonly IFriendsManager _friendsManager;
         private readonly IDuelManager _duelManager;
+        private readonly IBankManager _bankManager;
         private readonly IGamePacketFactory _packetFactory;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
@@ -105,6 +107,7 @@ namespace Imgeneus.World.Game.Player
                                 ITradeManager tradeManager,
                                 IFriendsManager friendsManager,
                                 IDuelManager duelManager,
+                                IBankManager bankManager,
                                 IGamePacketFactory packetFactory)
         {
             _logger = logger;
@@ -140,6 +143,7 @@ namespace Imgeneus.World.Game.Player
             _tradeManager = tradeManager;
             _friendsManager = friendsManager;
             _duelManager = duelManager;
+            _bankManager = bankManager;
             _packetFactory = packetFactory;
         }
 
@@ -224,7 +228,7 @@ namespace Imgeneus.World.Game.Player
 
             _duelManager.Init(dbCharacter.Id);
 
-            if(dbCharacter.GuildId != null)
+            if (dbCharacter.GuildId != null)
             {
                 var guild = await _database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId);
                 _guildManager.Init(dbCharacter.Id, dbCharacter.GuildId.Value, guild?.Name, dbCharacter.GuildRank, guild?.Members);
@@ -233,7 +237,8 @@ namespace Imgeneus.World.Game.Player
             {
                 _guildManager.Init(dbCharacter.Id);
             }
-           
+
+            _bankManager.Init(dbCharacter.UserId, dbCharacter.User.BankItems.Where(bi => !bi.IsClaimed));
 
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
@@ -269,6 +274,7 @@ namespace Imgeneus.World.Game.Player
                                         _tradeManager,
                                         _friendsManager,
                                         _duelManager,
+                                        _bankManager,
                                         _gameSession,
                                         _packetFactory);
 

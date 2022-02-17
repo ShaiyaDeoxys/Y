@@ -12,6 +12,7 @@ using Imgeneus.Network.Packets.Game;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Friends;
@@ -879,19 +880,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendBankItems(IWorldClient client, ICollection<BankItem> bankItems)
-        {
-            using var packet = new ImgeneusPacket(PacketType.BANK_ITEM_LIST);
-            packet.Write(new BankItemList(bankItems).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendBankItemClaim(IWorldClient client, byte bankSlot, Item item)
-        {
-            using var packet = new ImgeneusPacket(PacketType.BANK_CLAIM_ITEM);
-            packet.Write(new BankItemClaim(bankSlot, item).Serialize());
-            client.Send(packet);
-        }
         internal void SendAccountPoints(IWorldClient client, uint points)
         {
             using var packet = new ImgeneusPacket(PacketType.ACCOUNT_POINTS);

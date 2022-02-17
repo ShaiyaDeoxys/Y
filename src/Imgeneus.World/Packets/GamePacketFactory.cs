@@ -37,6 +37,7 @@ using Imgeneus.World.Game.Duel;
 using System.Text;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Bank;
 
 namespace Imgeneus.World.Packets
 {
@@ -1524,6 +1525,24 @@ namespace Imgeneus.World.Packets
             packet.Write(guildId);
             client.Send(packet);
         }
+        #endregion
+
+        #region Bank
+
+        public void SendBankItemClaim(IWorldClient client, byte bankSlot, Item item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.BANK_CLAIM_ITEM);
+            packet.Write(new BankItemClaim(bankSlot, item).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendBankItems(IWorldClient client, ICollection<BankItem> bankItems)
+        {
+            using var packet = new ImgeneusPacket(PacketType.BANK_ITEM_LIST);
+            packet.Write(new BankItemList(bankItems).Serialize());
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

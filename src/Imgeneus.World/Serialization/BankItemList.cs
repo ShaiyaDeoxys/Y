@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using BinarySerialization;
 using Imgeneus.Network.Serialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Bank;
 
 namespace Imgeneus.World.Serialization
 {

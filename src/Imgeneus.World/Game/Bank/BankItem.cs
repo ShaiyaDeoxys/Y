@@ -1,7 +1,7 @@
 using System.Transactions;
 using Imgeneus.Database.Entities;
 
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Bank
 {
     public class BankItem
     {
@@ -25,7 +25,7 @@ namespace Imgeneus.World.Game.Player
             Count = count;
         }
 
-        public BankItem(DbBankItem dbBankItem) : this (dbBankItem.Slot, dbBankItem.Type, dbBankItem.TypeId, dbBankItem.Count)
+        public BankItem(DbBankItem dbBankItem) : this(dbBankItem.Slot, dbBankItem.Type, dbBankItem.TypeId, dbBankItem.Count)
         {
         }
     }

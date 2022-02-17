@@ -38,7 +38,7 @@ namespace Imgeneus.World.Game.Player
             //SendMoveAndAttackSpeed();
             //SendFriends();
             SendBlessAmount();
-            SendBankItems();
+            //SendBankItems();
             SendGuildNpcLvlList();
             //SendAutoStats();
 #if !EP8_V2
@@ -143,9 +143,6 @@ namespace Imgeneus.World.Game.Player
 
         public void SendWarning(string message) => _packetsHelper.SendWarning(Client, message);
 
-        public void SendBankItems() => _packetsHelper.SendBankItems(Client, BankItems.Values.ToList());
-
-        public void SendBankItemClaim(byte bankSlot, Item item) => _packetsHelper.SendBankItemClaim(Client, bankSlot, item);
         public void SendAccountPoints() => _packetsHelper.SendAccountPoints(Client, Points);
 
         public void SendResetSkills() => _packetsHelper.SendResetSkills(Client, SkillsManager.SkillPoints);

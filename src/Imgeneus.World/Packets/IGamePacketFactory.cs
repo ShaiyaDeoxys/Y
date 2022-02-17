@@ -4,6 +4,7 @@ using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Dyeing;
@@ -231,6 +232,11 @@ namespace Imgeneus.World.Packets
         void SendGuildDismantle(IWorldClient client);
         void SendGuildListAdd(IWorldClient client, DbGuild guild);
         void SendGuildListRemove(IWorldClient client, int guildId);
+        #endregion
+
+        #region Bank
+        void SendBankItemClaim(IWorldClient client, byte bankSlot, Item item);
+        void SendBankItems(IWorldClient client, ICollection<BankItem> bankItems);
         #endregion
 
         #region GM

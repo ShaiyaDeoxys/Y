@@ -6,8 +6,8 @@ using Imgeneus.World.Game.Dyeing;
 using System.Collections.Generic;
 using System.Text;
 using System.Timers;
-using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Linking;
+using Imgeneus.World.Game.Bank;
 
 namespace Imgeneus.World.Game.Inventory
 {

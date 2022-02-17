@@ -8,6 +8,7 @@ using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
@@ -130,6 +131,7 @@ namespace Imgeneus.World
             services.AddScoped<IFriendsManager, FriendsManager>();
             services.AddScoped<IDuelManager, DuelManager>();
             services.AddScoped<IGuildManager, GuildManager>();
+            services.AddScoped<IBankManager, BankManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
