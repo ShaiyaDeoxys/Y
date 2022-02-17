@@ -84,10 +84,6 @@ namespace Imgeneus.World.Game.Player
                     QuitQuest(questQuitPacket.QuestId);
                     break;
 
-                case GuildKickPacket guildKickPacket:
-                    HandleGuildKick(guildKickPacket.CharacterId);
-                    break;
-
                 case GuildUserStatePacket guildUserStatePacket:
                     HandleChangeRank(guildUserStatePacket.Demote, guildUserStatePacket.CharacterId);
                     break;

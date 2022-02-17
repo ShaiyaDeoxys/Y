@@ -69,10 +69,9 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Tries to remove character from guild.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="characterId">character id</param>
         /// <returns>db character, if character was removed, otherwise null</returns>
-        Task<DbCharacter> TryRemoveMember(int guildId, int characterId);
+        Task<bool> TryRemoveMember(int characterId);
 
         /// <summary>
         /// Get all guilds in this server.

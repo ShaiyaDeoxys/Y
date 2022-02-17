@@ -183,14 +183,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGuildMemberRemove(IWorldClient client, int playerId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
-            packet.WriteByte(103);
-            packet.Write(playerId);
-            client.Send(packet);
-        }
-
         internal void SendGuildMemberLeave(IWorldClient client, int playerId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
@@ -257,14 +249,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte((byte)(rank + 200));
             packet.Write(playerId);
-            client.Send(packet);
-        }
-
-        internal void SendGuildKickMember(IWorldClient client, bool ok, int characterId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_KICK);
-            packet.Write(ok);
-            packet.Write(characterId);
             client.Send(packet);
         }
 

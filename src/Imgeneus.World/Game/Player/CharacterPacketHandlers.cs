@@ -95,45 +95,6 @@ namespace Imgeneus.World.Game.Player
             TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
 
-        private async void HandleGuildKick(int removeId)
-        {
-            if (!GuildManager.HasGuild || GuildManager.GuildRank > 3)
-            {
-                SendGuildKickMember(false, removeId);
-                return;
-            }
-
-            var dbCharacter = await GuildManager.TryRemoveMember(GuildManager.GuildId, removeId);
-            if (dbCharacter is null)
-            {
-                SendGuildKickMember(false, removeId);
-                return;
-            }
-
-            // Update guild members.
-            foreach (var member in GuildManager.GuildMembers.ToList())
-            {
-                if (!_gameWorld.Players.ContainsKey(member.Id))
-                    continue;
-
-                var guildPlayer = _gameWorld.Players[member.Id];
-
-                if (guildPlayer.Id == removeId)
-                    guildPlayer.ClearGuild();
-                else
-                {
-                    var temp = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == removeId);
-
-                    if (temp != null)
-                        guildPlayer.GuildManager.GuildMembers.Remove(temp);
-
-                    guildPlayer.SendGuildMemberRemove(removeId);
-                }
-
-                guildPlayer.SendGuildKickMember(true, removeId);
-            }
-        }
-
         private async void HandleChangeRank(bool demote, int characterId)
         {
             if (!GuildManager.HasGuild || GuildManager.GuildRank > 3)
@@ -163,7 +124,7 @@ namespace Imgeneus.World.Game.Player
             if (!GuildManager.HasGuild)
                 return;
 
-            var dbCharacter = GuildManager.TryRemoveMember(GuildManager.GuildId, Id);
+            var dbCharacter = GuildManager.TryRemoveMember(Id);
             if (dbCharacter == null)
             {
                 SendGuildMemberLeaveResult(false);
@@ -179,7 +140,7 @@ namespace Imgeneus.World.Game.Player
 
                 if (guildPlayer.Id == Id)
                 {
-                    guildPlayer.ClearGuild();
+                    //guildPlayer.ClearGuild();
                 }
                 else
                 {
@@ -210,7 +171,7 @@ namespace Imgeneus.World.Game.Player
                     continue;
 
                 var guildPlayer = _gameWorld.Players[member.Id];
-                guildPlayer.ClearGuild();
+                //guildPlayer.ClearGuild();
                 guildPlayer.SendGuildDismantle();
             }
         }

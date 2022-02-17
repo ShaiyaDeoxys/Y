@@ -223,6 +223,8 @@ namespace Imgeneus.World.Packets
         void SendGuildJoinRequestRemove(IWorldClient client, int playerId);
         void SendGuildJoinResult(IWorldClient client, bool ok, int guildId = 0, byte rank = 9, string name = "");
         void SendGuildUserListAdd(IWorldClient client, DbCharacter character, bool online);
+        void SendGuildKickMember(IWorldClient client, bool ok, int characterId);
+        void SendGuildMemberRemove(IWorldClient client, int characterId);
         #endregion
 
         #region GM

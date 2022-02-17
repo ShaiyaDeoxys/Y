@@ -6,19 +6,6 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {
-            
-
-        /// <summary>
-        /// Clears guild values from player. Not from DB!
-        /// </summary>
-        public void ClearGuild()
-        {
-            //GuildId = null;
-            //GuildName = string.Empty;
-            //GuildRank = 0;
-            //GuildMembers.Clear();
-        }
-
         public bool GuildHasHouse
         {
             get

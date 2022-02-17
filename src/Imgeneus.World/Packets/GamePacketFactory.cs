@@ -1465,6 +1465,21 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendGuildKickMember(IWorldClient client, bool ok, int characterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_KICK);
+            packet.Write(ok);
+            packet.Write(characterId);
+            client.Send(packet);
+        }
+
+        public void SendGuildMemberRemove(IWorldClient client, int characterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
+            packet.WriteByte(103);
+            packet.Write(characterId);
+            client.Send(packet);
+        }
         #endregion
 
         #region GM

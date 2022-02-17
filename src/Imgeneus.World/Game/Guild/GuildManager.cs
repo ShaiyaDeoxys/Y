@@ -316,40 +316,27 @@ namespace Imgeneus.World.Game.Guild
                 return null;
         }
 
-        /// <inheritdoc/>
-        public async Task<DbCharacter> TryRemoveMember(int guildId, int characterId)
+        public async Task<bool> TryRemoveMember(int characterId)
         {
-            await _sync.WaitAsync();
+            if (GuildId == 0)
+                throw new Exception("Member can not be removed from guild, if guild manager is not initialized.");
 
-            var result = await RemoveMember(guildId, characterId);
-
-            _sync.Release();
-
-            return result;
-
-        }
-
-        private async Task<DbCharacter> RemoveMember(int guildId, int characterId)
-        {
-            var guild = await _database.Guilds.FindAsync(guildId);
+            var guild = await _database.Guilds.FindAsync(GuildId);
             if (guild is null)
-                return null;
+                return false;
 
             var character = await _database.Characters.FindAsync(characterId);
             if (character is null)
-                return null;
+                return false;
 
             guild.Members.Remove(character);
+            character.GuildId = null;
             character.GuildRank = 0;
             character.GuildLeaveTime = _timeService.UtcNow;
 
             var result = await _database.SaveChangesAsync();
-            if (result > 0)
-                return character;
-            else
-                return null;
+            return result > 0;
         }
-
 
         #endregion
 
