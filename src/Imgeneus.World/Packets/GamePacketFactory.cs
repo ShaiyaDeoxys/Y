@@ -1432,7 +1432,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-
         public void SendGuildJoinRequestAdd(IWorldClient client, Character character)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_ADD);
@@ -1501,6 +1500,28 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(102);
             packet.Write(characterId);
+            client.Send(packet);
+        }
+
+        public void SendGuildDismantle(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
+            packet.WriteByte(101);
+            packet.Write(0);
+            client.Send(packet);
+        }
+
+        public void SendGuildListAdd(IWorldClient client, DbGuild guild)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_LIST_ADD);
+            packet.Write(new GuildUnit(guild).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendGuildListRemove(IWorldClient client, int guildId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_LIST_REMOVE);
+            packet.Write(guildId);
             client.Send(packet);
         }
         #endregion

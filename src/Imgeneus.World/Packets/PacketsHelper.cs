@@ -183,21 +183,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGuildDismantle(IWorldClient client)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
-            packet.WriteByte(101);
-            packet.Write(0);
-            client.Send(packet);
-        }
-
-        internal void SendGuildListAdd(IWorldClient client, DbGuild guild)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_LIST_ADD);
-            packet.Write(new GuildUnit(guild).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendGRBNotice(IWorldClient client, GRBNotice notice)
         {
             using var packet = new ImgeneusPacket(PacketType.GRB_NOTICE);
@@ -219,13 +204,6 @@ namespace Imgeneus.World.Packets
             packet.Write(currentPoints);
             packet.Write(maxPoints);
             packet.Write(topGuild);
-            client.Send(packet);
-        }
-
-        internal void SendGuildListRemove(IWorldClient client, int guildId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_LIST_REMOVE);
-            packet.Write(guildId);
             client.Send(packet);
         }
 

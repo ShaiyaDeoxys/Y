@@ -83,7 +83,7 @@ namespace Imgeneus.World.Handlers
             }
 
             foreach (var player in _gameWorld.Players.Values.ToList())
-                player.SendGuildListAdd(guild);
+                _packetFactory.SendGuildListAdd(player.GameSession.Client, guild);
         }
     }
 }

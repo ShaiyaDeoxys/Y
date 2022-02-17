@@ -84,10 +84,6 @@ namespace Imgeneus.World.Game.Player
                     QuitQuest(questQuitPacket.QuestId);
                     break;
 
-                case GuildDismantlePacket guildDismantlePacket:
-                    HandleGuildDismantle();
-                    break;
-
                 case GuildHouseBuyPacket guildHouseBuyPacket:
                     HandleGuildHouseBuy();
                     break;

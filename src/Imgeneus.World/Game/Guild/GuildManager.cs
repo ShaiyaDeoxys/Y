@@ -253,39 +253,25 @@ namespace Imgeneus.World.Game.Guild
 
         #region Guild remove
 
-        /// <inheritdoc/>
-        public async Task<bool> TryDeleteGuild(int guildId)
+        public async Task<bool> TryDeleteGuild()
         {
-            await _sync.WaitAsync();
+            if (GuildId == 0)
+                throw new Exception("Guild can not be deleted, if guild manager is not initialized.");
 
-            var result = await DeleteGuild(guildId);
-
-            _sync.Release();
-
-            return result;
-        }
-
-        private async Task<bool> DeleteGuild(int guildId)
-        {
-            var guild = await _database.Guilds.Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == guildId);
+            var guild = await _database.Guilds.Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == GuildId);
             if (guild is null)
                 return false;
 
             foreach (var m in guild.Members)
+            {
+                m.GuildId = null;
                 m.GuildRank = 0;
+            }
 
             _database.Guilds.Remove(guild);
 
             var result = await _database.SaveChangesAsync();
-            var success = result > 0;
-
-            if (success)
-            {
-                foreach (var player in _gameWorld.Players.Values.ToList())
-                    player.SendGuildListRemove(guildId);
-            }
-
-            return success;
+            return result > 0;
         }
 
         #endregion

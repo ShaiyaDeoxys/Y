@@ -113,9 +113,8 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Tries to remove guild.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <returns>true if was removed</returns>
-        Task<bool> TryDeleteGuild(int guildId);
+        Task<bool> TryDeleteGuild();
 
         /// <summary>
         /// Tries to buy guild house.
