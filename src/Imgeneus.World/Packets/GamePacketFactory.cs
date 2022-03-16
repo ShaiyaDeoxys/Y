@@ -1533,6 +1533,21 @@ namespace Imgeneus.World.Packets
             packet.Write(rank);
             client.Send(packet);
         }
+
+        public void SendGuildHouseBuy(IWorldClient client, GuildHouseBuyReason reason, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_BUY);
+            packet.Write((byte)reason);
+            packet.Write(gold);
+            client.Send(packet);
+        }
+
+        public void SendGetEtin(IWorldClient client, int etin)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_GET_ETIN);
+            packet.Write(etin);
+            client.Send(packet);
+        }
         #endregion
 
         #region Bank

@@ -80,14 +80,6 @@ namespace Imgeneus.World.Game.Player
                     QuitQuest(questQuitPacket.QuestId);
                     break;
 
-                case GuildHouseBuyPacket guildHouseBuyPacket:
-                    HandleGuildHouseBuy();
-                    break;
-
-                case GuildGetEtinPacket guildGetEtinPacket:
-                    HandleGetEtin();
-                    break;
-
                 case GuildNpcUpgradePacket guildNpcUpgradePacket:
                     HandleGuildUpgradeNpc(guildNpcUpgradePacket.NpcType, guildNpcUpgradePacket.NpcGroup, guildNpcUpgradePacket.NpcLevel);
                     break;

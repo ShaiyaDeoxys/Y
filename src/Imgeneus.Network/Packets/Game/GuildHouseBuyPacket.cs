@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GuildHouseBuyPacket : IDeserializedPacket
+    public record GuildHouseBuyPacket : IPacketDeserializer
     {
-        public int NpcId; // what for?
+        public int NpcId { get; private set; } // what for?
 
-        public GuildHouseBuyPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            NpcId = packet.Read<int>();
+            NpcId = packetStream.Read<int>();
         }
     }
 }

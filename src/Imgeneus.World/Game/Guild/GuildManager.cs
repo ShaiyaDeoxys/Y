@@ -90,6 +90,17 @@ namespace Imgeneus.World.Game.Guild
 
         public byte GuildRank { get; set; }
 
+        public bool HasTopRank
+        {
+            get
+            {
+                if (!HasGuild)
+                    return false;
+
+                return GuildRank <= 30;
+            }
+        }
+
         public List<DbCharacter> GuildMembers { get; init; } = new List<DbCharacter>();
 
         /// <summary>
@@ -339,7 +350,7 @@ namespace Imgeneus.World.Game.Guild
         /// <inheritdoc/>
         public async Task<DbGuild> GetGuild(int guildId)
         {
-            return await _database.Guilds.FindAsync(guildId);
+            return await _database.Guilds.AsNoTracking().FirstAsync(x => x.Id == guildId);
         }
 
         /// <inheritdoc/>
@@ -453,31 +464,35 @@ namespace Imgeneus.World.Game.Guild
 
         #region Guild house
 
-        /// <inheritdoc/>
-        public async Task<GuildHouseBuyReason> TryBuyHouse(Character character)
+        public bool HasGuildHouse
         {
-            await _sync.WaitAsync();
+            get
+            {
+                if (!HasGuild)
+                    return false;
 
-            var result = await BuyHouse(character);
+                var guild = _database.Guilds.AsNoTracking().FirstOrDefault(x => x.Id == GuildId);
+                if (guild is null)
+                    return false;
 
-            _sync.Release();
-
-            return result;
+                return guild.HasHouse;
+            }
         }
 
-        private async Task<GuildHouseBuyReason> BuyHouse(Character character)
+        /// <inheritdoc/>
+        public async Task<GuildHouseBuyReason> TryBuyHouse()
         {
-            if (character.GuildManager.GuildRank != 1)
+            if (GuildRank != 1)
             {
                 return GuildHouseBuyReason.NotAuthorized;
             }
 
-            if (character.InventoryManager.Gold < _houseConfig.HouseBuyMoney)
+            if (_inventoryManager.Gold < _houseConfig.HouseBuyMoney)
             {
                 return GuildHouseBuyReason.NoGold;
             }
 
-            var guild = await GetGuild(character.GuildManager.GuildId);
+            var guild = await _database.Guilds.FindAsync(GuildId);
             if (guild is null || guild.Rank > 30)
             {
                 return GuildHouseBuyReason.LowRank;
@@ -488,22 +503,12 @@ namespace Imgeneus.World.Game.Guild
                 return GuildHouseBuyReason.AlreadyBought;
             }
 
-            character.InventoryManager.Gold = (uint)(character.InventoryManager.Gold - _houseConfig.HouseBuyMoney);
+            _inventoryManager.Gold = (uint)(_inventoryManager.Gold - _houseConfig.HouseBuyMoney);
 
             guild.HasHouse = true;
-            await _database.SaveChangesAsync();
+            var count = await _database.SaveChangesAsync();
 
-            return GuildHouseBuyReason.Ok;
-        }
-
-        ///  <inheritdoc/>
-        public bool HasHouse(int guildId)
-        {
-            var guild = _database.Guilds.Find(guildId);
-            if (guild is null)
-                return false;
-
-            return guild.HasHouse;
+            return count > 0 ? GuildHouseBuyReason.Ok : GuildHouseBuyReason.Unknown;
         }
 
         ///  <inheritdoc/>
@@ -657,9 +662,12 @@ namespace Imgeneus.World.Game.Guild
 
         #region Etin
 
-        public async Task<int> GetEtin(int guildId)
+        public async Task<int> GetEtin()
         {
-            var guild = await GetGuild(guildId);
+            if (GuildId == 0)
+                throw new Exception("Etin can not be checked, if guild manager is not initialized.");
+
+            var guild = await GetGuild(GuildId);
             return guild.Etin;
         }
 

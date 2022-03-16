@@ -429,21 +429,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGetEtin(IWorldClient client, int etin)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_GET_ETIN);
-            packet.Write(etin);
-            client.Send(packet);
-        }
-
-        internal void SendGuildHouseBuy(IWorldClient client, GuildHouseBuyReason reason, uint gold)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_BUY);
-            packet.Write((byte)reason);
-            packet.Write(gold);
-            client.Send(packet);
-        }
-
         internal void SendUseVehicle(IWorldClient client, bool success, bool status)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE);

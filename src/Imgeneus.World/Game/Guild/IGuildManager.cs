@@ -32,6 +32,16 @@ namespace Imgeneus.World.Game.Guild
         byte GuildRank { get; set; }
 
         /// <summary>
+        /// Guild has guild house?
+        /// </summary>
+        bool HasGuildHouse { get; }
+
+        /// <summary>
+        /// Guild has top 30 rank?
+        /// </summary>
+        bool HasTopRank { get; }
+
+        /// <summary>
         /// Guild member ids for easy notification.
         /// </summary>
         List<DbCharacter> GuildMembers { get; }
@@ -119,12 +129,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Tries to buy guild house.
         /// </summary>
-        Task<GuildHouseBuyReason> TryBuyHouse(Character character);
-
-        /// <summary>
-        /// Checks if guild has house.
-        /// </summary>
-        bool HasHouse(int guildId);
+        Task<GuildHouseBuyReason> TryBuyHouse();
 
         /// <summary>
         /// Gets guild rank.
@@ -139,7 +144,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Gets guild's etin.
         /// </summary>
-        Task<int> GetEtin(int guildId);
+        Task<int> GetEtin();
 
         /// <summary>
         /// Gives etin from character inventory to guild. Saves changes to database.

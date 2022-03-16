@@ -6,28 +6,6 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {
-        public bool GuildHasHouse
-        {
-            get
-            {
-                //if (!HasGuild)
-                //    return false;
-
-                return false;//GuildManager.HasHouse((int)GuildId);
-            }
-        }
-
-        public bool GuildHasTopRank
-        {
-            get
-            {
-                //if (!HasGuild)
-                //    return false;
-
-                return false;// GuildManager.GetRank((int)GuildId) <= 30;
-            }
-        }
-
         /// <summary>
         /// Reloads guild ranks for <see cref="_guildManager"/>.
         /// </summary>

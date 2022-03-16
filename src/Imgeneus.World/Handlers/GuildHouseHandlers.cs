@@ -1,0 +1,46 @@
+﻿using Imgeneus.Network.Packets;
+using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Session;
+using Imgeneus.World.Packets;
+using Sylver.HandlerInvoker.Attributes;
+using System.Threading.Tasks;
+
+namespace Imgeneus.World.Handlers
+{
+    [Handler]
+    public class GuildHouseHandlers : BaseHandler
+    {
+        private readonly IGuildManager _guildManager;
+        private readonly IInventoryManager _inventoryManager;
+
+        public GuildHouseHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IGuildManager guildManager, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
+        {
+            _guildManager = guildManager;
+            _inventoryManager = inventoryManager;
+        }
+
+        [HandlerAction(PacketType.GUILD_HOUSE_BUY)]
+        public async Task HandleBuyHouse(WorldClient client, GuildHouseBuyPacket packet)
+        {
+            if (!_guildManager.HasGuild)
+                return;
+
+            var reason = await _guildManager.TryBuyHouse();
+            _packetFactory.SendGuildHouseBuy(client, reason, _inventoryManager.Gold);
+        }
+
+        [HandlerAction(PacketType.GUILD_GET_ETIN)]
+        public async Task HandleGetEtin(WorldClient client, GuildGetEtinPacket packet)
+        {
+            var etin = 0;
+            if (_guildManager.HasGuild)
+            {
+                etin = await _guildManager.GetEtin();
+            }
+
+            _packetFactory.SendGetEtin(client, etin);
+        }
+    }
+}

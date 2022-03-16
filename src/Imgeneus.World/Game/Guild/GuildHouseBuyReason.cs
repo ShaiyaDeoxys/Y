@@ -25,6 +25,11 @@
         /// <summary>
         /// Guilds with rank <= 30 can have guild house.
         /// </summary>
-        LowRank = 4
+        LowRank = 4,
+
+        /// <summary>
+        /// Could not save in database for unknown reason.
+        /// </summary>
+        Unknown = 5
     }
 }

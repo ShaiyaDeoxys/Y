@@ -35,25 +35,6 @@ namespace Imgeneus.World.Game.Player
             _taskQueue.Enqueue(ActionType.SAVE_QUICK_BAR, Id, skillBarPacket.QuickItems);
         }
 
-        private async void HandleGuildHouseBuy()
-        {
-            if (!GuildManager.HasGuild)
-                return;
-
-            var reason = await GuildManager.TryBuyHouse(this);
-            _packetsHelper.SendGuildHouseBuy(Client, reason, InventoryManager.Gold);
-        }
-        private async void HandleGetEtin()
-        {
-            var etin = 0;
-            if (GuildManager.HasGuild)
-            {
-                etin = await GuildManager.GetEtin(GuildManager.GuildId);
-            }
-
-            _packetsHelper.SendGetEtin(Client, etin);
-        }
-
         private void HandleNpcBuyItem(int npcId, byte itemIndex, byte count)
         {
             /*var npc = Map.GetNPC(CellId, npcId);
@@ -103,8 +84,9 @@ namespace Imgeneus.World.Game.Player
             var reason = await GuildManager.TryUpgradeNPC(GuildManager.GuildId, npcType, npcGroup, npcLevel);
             if (reason == GuildNpcUpgradeReason.Ok)
             {
-                var etin = await GuildManager.GetEtin(GuildManager.GuildId);
-                _packetsHelper.SendGetEtin(Client, etin);
+                var etin = await GuildManager.GetEtin();
+                //_packetsHelper.SendGetEtin(Client, etin);
+                return;
             }
 
             _packetsHelper.SendGuildUpgradeNpc(Client, reason, npcType, npcGroup, npcLevel);

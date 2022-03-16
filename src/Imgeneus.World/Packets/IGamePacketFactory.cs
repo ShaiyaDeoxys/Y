@@ -233,6 +233,8 @@ namespace Imgeneus.World.Packets
         void SendGuildListAdd(IWorldClient client, DbGuild guild);
         void SendGuildListRemove(IWorldClient client, int guildId);
         void SendGuildHouseActionError(IWorldClient client, GuildHouseActionError error, byte rank);
+        void SendGuildHouseBuy(IWorldClient client, GuildHouseBuyReason reason, uint gold);
+        void SendGetEtin(IWorldClient client, int etin);
         #endregion
 
         #region Bank

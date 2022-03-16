@@ -126,13 +126,13 @@ namespace Imgeneus.World.Game
                         return false;
                     }
 
-                    if (!player.GuildHasHouse)
+                    if (!player.GuildManager.HasGuildHouse)
                     {
                         reason = PortalTeleportNotAllowedReason.NoGuildHouse;
                         return false;
                     }
 
-                    if (!player.GuildHasTopRank)
+                    if (!player.GuildManager.HasTopRank)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyTop30Guilds;
                         return false;
