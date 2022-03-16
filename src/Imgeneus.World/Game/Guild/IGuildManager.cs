@@ -160,16 +160,15 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="typeId">npc type is</param>
         /// <param name="requiredRank">guild's rank, that needed for this NPC</param>
         /// <returns>true, if player can use it</returns>
-        bool CanUseNpc(int guildId, byte type, ushort typeId, out byte requiredRank);
+        bool CanUseNpc(byte type, ushort typeId, out byte requiredRank);
 
         /// <summary>
         /// Checks if guild has bought NPC of the right level.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="type">npc type</param>
         /// <param name="typeId">npc type is</param>
         /// <returns>true, if guild has right NPC level</returns>
-        bool HasNpcLevel(int guildId, byte type, ushort typeId);
+        bool HasNpcLevel(byte type, ushort typeId);
 
         /// <summary>
         /// Tries to upgrade NPC. Updates guild etin as well.

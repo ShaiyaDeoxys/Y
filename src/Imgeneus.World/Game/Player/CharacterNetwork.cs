@@ -54,10 +54,6 @@ namespace Imgeneus.World.Game.Player
             switch (packet)
             {
 
-                case CharacterTeleportViaNpcPacket teleportViaNpcPacket:
-                    HandleTeleportViaNpc(teleportViaNpcPacket);
-                    break;
-
                 case QuestStartPacket questStartPacket:
                     var npcQuestGiver = Map.GetNPC(CellId, questStartPacket.NpcId);
                     if (npcQuestGiver is null || !npcQuestGiver.StartQuestIds.Contains(questStartPacket.QuestId))

@@ -35,66 +35,6 @@ namespace Imgeneus.World.Game.Player
             _taskQueue.Enqueue(ActionType.SAVE_QUICK_BAR, Id, skillBarPacket.QuickItems);
         }
 
-        private void HandleTeleportViaNpc(CharacterTeleportViaNpcPacket teleportViaNpcPacket)
-        {
-            var npc = Map.GetNPC(CellId, teleportViaNpcPacket.NpcId);
-            if (npc is null)
-            {
-                _logger.LogWarning($"Character {Id} is trying to get non-existing npc via teleport packet.");
-                return;
-            }
-
-            if (!npc.ContainsGate(teleportViaNpcPacket.GateId))
-            {
-                _logger.LogWarning($"NPC type {npc.Type} type id {npc.TypeId} doesn't contain teleport gate {teleportViaNpcPacket.GateId}. Check it out!");
-                return;
-            }
-
-            if (Map is GuildHouseMap)
-            {
-                if (!GuildManager.HasGuild)
-                {
-                    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, 30);
-                    return;
-                }
-
-                var allowed = GuildManager.CanUseNpc(GuildManager.GuildId, npc.Type, npc.TypeId, out var requiredRank);
-                if (!allowed)
-                {
-                    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, requiredRank);
-                    return;
-                }
-
-                allowed = GuildManager.HasNpcLevel(GuildManager.GuildId, npc.Type, npc.TypeId);
-                if (!allowed)
-                {
-                    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowLevel, 0);
-                    return;
-                }
-            }
-
-            var gate = npc.Gates[teleportViaNpcPacket.GateId];
-
-            if (InventoryManager.Gold < gate.Cost)
-            {
-                SendTeleportViaNpc(NpcTeleportNotAllowedReason.NotEnoughMoney);
-                return;
-            }
-
-            var mapConfig = _mapLoader.LoadMapConfiguration(gate.MapId);
-            if (mapConfig is null)
-            {
-                SendTeleportViaNpc(NpcTeleportNotAllowedReason.MapCapacityIsFull);
-                return;
-            }
-
-            // TODO: there should be somewhere player's level check. But I can not find it in gate config.
-
-            InventoryManager.Gold = (uint)(InventoryManager.Gold - gate.Cost);
-            SendTeleportViaNpc(NpcTeleportNotAllowedReason.Success);
-            TeleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
-        }
-
         private async void HandleGuildHouseBuy()
         {
             if (!GuildManager.HasGuild)

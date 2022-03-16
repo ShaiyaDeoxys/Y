@@ -232,11 +232,16 @@ namespace Imgeneus.World.Packets
         void SendGuildDismantle(IWorldClient client);
         void SendGuildListAdd(IWorldClient client, DbGuild guild);
         void SendGuildListRemove(IWorldClient client, int guildId);
+        void SendGuildHouseActionError(IWorldClient client, GuildHouseActionError error, byte rank);
         #endregion
 
         #region Bank
         void SendBankItemClaim(IWorldClient client, byte bankSlot, Item item);
         void SendBankItems(IWorldClient client, ICollection<BankItem> bankItems);
+        #endregion
+
+        #region Teleport
+        void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money);
         #endregion
 
         #region GM

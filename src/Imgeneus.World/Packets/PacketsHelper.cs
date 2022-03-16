@@ -208,14 +208,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_TELEPORT_VIA_NPC);
-            packet.Write((byte)reason);
-            packet.Write(money);
-            client.Send(packet);
-        }
-
         internal void SendItemExpiration(IWorldClient client, Item item)
         {
             using var packet = new ImgeneusPacket(PacketType.ITEM_EXPIRATION);
@@ -449,14 +441,6 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_BUY);
             packet.Write((byte)reason);
             packet.Write(gold);
-            client.Send(packet);
-        }
-
-        internal void SendGuildHouseActionError(IWorldClient client, GuildHouseActionError error, byte rank)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_ACTION_ERR);
-            packet.Write((byte)error);
-            packet.Write(rank);
             client.Send(packet);
         }
 

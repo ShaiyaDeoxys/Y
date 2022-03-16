@@ -517,31 +517,36 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public bool CanUseNpc(int guildId, byte type, ushort typeId, out byte requiredRank)
+        public bool CanUseNpc(byte type, ushort typeId, out byte requiredRank)
         {
+            if (GuildId == 0)
+                throw new Exception("NPC can not be checked, if guild manager is not initialized.");
+
             requiredRank = 30;
 
-            var guild = _database.Guilds.Find(guildId);
-            if (guild is null || guild.Rank > 30)
+            if (GuildRank > 30)
                 return false;
 
-            var npcInfo = FindNpcInfo(guild.Country, type, typeId);
+            var npcInfo = FindNpcInfo(_countryProvider.Country, type, typeId);
 
             if (npcInfo is null)
                 return false;
 
             requiredRank = npcInfo.MinRank;
-            return requiredRank >= guild.Rank;
+            return requiredRank >= GuildRank;
         }
 
         ///  <inheritdoc/>
-        public bool HasNpcLevel(int guildId, byte type, ushort typeId)
+        public bool HasNpcLevel(byte type, ushort typeId)
         {
-            var guild = _database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == guildId);
+            if (GuildId == 0)
+                throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
+
+            var guild = _database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
             if (guild is null)
                 return false;
 
-            var npcInfo = FindNpcInfo(guild.Country, type, typeId);
+            var npcInfo = FindNpcInfo(_countryProvider.Country, type, typeId);
 
             if (npcInfo is null)
                 return false;
@@ -614,10 +619,10 @@ namespace Imgeneus.World.Game.Guild
             return GuildNpcUpgradeReason.Ok;
         }
 
-        private GuildHouseNpcInfo FindNpcInfo(Fraction country, byte npcType, ushort npcTypeId)
+        private GuildHouseNpcInfo FindNpcInfo(CountryType country, byte npcType, ushort npcTypeId)
         {
             GuildHouseNpcInfo npcInfo;
-            if (country == Fraction.Light)
+            if (country == CountryType.Light)
             {
                 npcInfo = _houseConfig.NpcInfos.FirstOrDefault(x => x.NpcType == npcType && x.LightNpcTypeId == npcTypeId);
             }

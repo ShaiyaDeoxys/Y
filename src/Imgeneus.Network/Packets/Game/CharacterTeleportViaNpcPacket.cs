@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct CharacterTeleportViaNpcPacket : IDeserializedPacket
+    public record CharacterTeleportViaNpcPacket : IPacketDeserializer
     {
-        public int NpcId;
+        public int NpcId { get; private set; }
 
-        public byte GateId;
+        public byte GateId { get; private set; }
 
-        public CharacterTeleportViaNpcPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            NpcId = packet.Read<int>();
-            GateId = packet.Read<byte>();
+            NpcId = packetStream.Read<int>();
+            GateId = packetStream.Read<byte>();
         }
     }
 }

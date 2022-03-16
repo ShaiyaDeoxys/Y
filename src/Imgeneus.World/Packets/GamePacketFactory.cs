@@ -1525,6 +1525,14 @@ namespace Imgeneus.World.Packets
             packet.Write(guildId);
             client.Send(packet);
         }
+
+        public void SendGuildHouseActionError(IWorldClient client, GuildHouseActionError error, byte rank)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_HOUSE_ACTION_ERR);
+            packet.Write((byte)error);
+            packet.Write(rank);
+            client.Send(packet);
+        }
         #endregion
 
         #region Bank
@@ -1540,6 +1548,18 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.BANK_ITEM_LIST);
             packet.Write(new BankItemList(bankItems).Serialize());
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Teleport
+
+        public void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_TELEPORT_VIA_NPC);
+            packet.Write((byte)reason);
+            packet.Write(money);
             client.Send(packet);
         }
 

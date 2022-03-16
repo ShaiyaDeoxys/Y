@@ -133,8 +133,6 @@ namespace Imgeneus.World.Game.Player
 
         public void SendObeliskBroken(Obelisk obelisk) => _packetsHelper.SendObeliskBroken(Client, obelisk);
 
-        public void SendTeleportViaNpc(NpcTeleportNotAllowedReason reason) => _packetsHelper.SendTeleportViaNpc(Client, reason, InventoryManager.Gold);
-
         public void SendUseVehicle(bool success, bool status) => _packetsHelper.SendUseVehicle(Client, success, status);
 
         public void SendMyShape() => _packetsHelper.SendCharacterShape(Client, this);
