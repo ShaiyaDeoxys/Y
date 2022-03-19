@@ -99,7 +99,7 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendBankItems(client, character.BankManager.BankItems.Values);
 
-            //SendGuildNpcLvlList();
+            _packetFactory.SendGuildNpcs(client, await character.GuildManager.GetGuildNpcs());
 
             _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
 

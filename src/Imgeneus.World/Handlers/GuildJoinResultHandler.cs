@@ -70,7 +70,7 @@ namespace Imgeneus.World.Handlers
                 onlinePlayer.GuildManager.GuildMembers.AddRange(_guildManager.GuildMembers);
 
                 _packetFactory.SendGuildJoinResult(onlinePlayer.GameSession.Client, true, onlinePlayer.GuildManager.GuildId, onlinePlayer.GuildManager.GuildRank, onlinePlayer.GuildManager.GuildName);
-                //onlinePlayer.SendGuildNpcLvlList();
+                _packetFactory.SendGuildNpcs(onlinePlayer.GameSession.Client, await onlinePlayer.GuildManager.GetGuildNpcs());
 
                 var online = new List<DbCharacter>();
                 var notOnline = new List<DbCharacter>();

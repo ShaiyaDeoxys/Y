@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Guild
 {
@@ -55,7 +56,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Calculates guild ranks based on guild points gained during GRB.
         /// </summary>
-        public void CalculateRanks();
+        public Task CalculateRanks();
 
         /// <summary>
         /// Player ids, that took part in GRB.

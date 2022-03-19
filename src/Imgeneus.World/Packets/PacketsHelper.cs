@@ -72,13 +72,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGuildNpcs(IWorldClient client, IEnumerable<DbGuildNpcLvl> npcs)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_NPC_LIST);
-            packet.Write(new GuildNpcList(npcs).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendCurrentHitpoints(IWorldClient client, Character character)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_CURRENT_HITPOINTS);
@@ -181,30 +174,6 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.REMOVE_ITEM);
             packet.Write(new RemovedInventoryItem(item, fullRemove).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendGRBNotice(IWorldClient client, GRBNotice notice)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GRB_NOTICE);
-            packet.Write((ushort)50); // GRB map is always 50. Technically this doesn't really matter, because it's not used anywhere...
-            packet.Write((byte)notice);
-            client.Send(packet);
-        }
-
-        internal void SendGuildRanksCalculated(IWorldClient client, IEnumerable<(int GuildId, int Points, byte Rank)> results)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_RANK_UPDATE);
-            packet.Write(new GuildRankUpdate(results).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendGBRPoints(IWorldClient client, int currentPoints, int maxPoints, int topGuild)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GRB_POINTS);
-            packet.Write(currentPoints);
-            packet.Write(maxPoints);
-            packet.Write(topGuild);
             client.Send(packet);
         }
 

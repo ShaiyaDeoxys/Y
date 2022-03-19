@@ -87,7 +87,7 @@ namespace Imgeneus.World.Game
         {
             reason = PortalTeleportNotAllowedReason.Unknown;
 
-            if (Maps.ContainsKey(destinationMapId))
+            if (Maps.ContainsKey(destinationMapId) || player.Map.Id == destinationMapId)
             {
                 return true;
             }

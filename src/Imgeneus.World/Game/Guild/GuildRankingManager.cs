@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace Imgeneus.World.Game.Guild
@@ -17,16 +18,16 @@ namespace Imgeneus.World.Game.Guild
         private readonly ILogger<IGuildRankingManager> _logger;
         private readonly IMapsLoader _mapsLoader;
         private readonly ITimeService _timeService;
-        private readonly IBackgroundTaskQueue _taskQueue;
+        private readonly IDatabase _database;
 
         private readonly MapDefinition _grbMap;
 
-        public GuildRankingManager(ILogger<IGuildRankingManager> logger, IMapsLoader mapsLoader, ITimeService timeService, IBackgroundTaskQueue backgroundTaskQueue)
+        public GuildRankingManager(ILogger<IGuildRankingManager> logger, IMapsLoader mapsLoader, ITimeService timeService, IDatabase database)
         {
             _logger = logger;
             _mapsLoader = mapsLoader;
             _timeService = timeService;
-            _taskQueue = backgroundTaskQueue;
+            _database = database;
 
             var defitions = _mapsLoader.LoadMapDefinitions();
             var grbMap = defitions.Maps.FirstOrDefault(x => x.CreateType == CreateType.GRB);
@@ -208,9 +209,9 @@ namespace Imgeneus.World.Game.Guild
         /// </summary>
         private readonly Timer _calculateRanksTimer = new Timer() { AutoReset = false };
 
-        private void CalculateRanks_Elapsed(object sender, ElapsedEventArgs e)
+        private async void CalculateRanks_Elapsed(object sender, ElapsedEventArgs e)
         {
-            CalculateRanks();
+            await CalculateRanks();
             CalculateRanksTimer();
         }
 
@@ -288,9 +289,12 @@ namespace Imgeneus.World.Game.Guild
         public event Action<IEnumerable<(int GuildId, int Points, byte Rank)>> OnRanksCalculated;
 
         /// <inheritdoc/>
-        public void CalculateRanks()
+        public async Task CalculateRanks()
         {
-            _taskQueue.Enqueue(ActionType.GUILD_CLEAR_ALL_RANKS);
+            // Clear old ranks.
+            var guilds = _database.Guilds.ToList();
+            foreach (var g in guilds)
+                g.Rank = 31;
 
             var guildRanks = new List<(int GuildId, int Points, byte Rank)>();
 
@@ -300,10 +304,15 @@ namespace Imgeneus.World.Game.Guild
                 var guildId = result.Key;
                 var points = GuildPoints[guildId];
                 guildRanks.Add((guildId, points, rank));
-                _taskQueue.Enqueue(ActionType.GUILD_UPDATE_RANK_AND_POINTS, guildId, rank, points);
+
+                var guild = await _database.Guilds.FindAsync(guildId);
+                guild.Rank = rank;
+                guild.Points = points;
 
                 rank++;
             }
+
+            await _database.SaveChangesAsync();
 
             OnRanksCalculated?.Invoke(guildRanks);
             GuildPoints.Clear();

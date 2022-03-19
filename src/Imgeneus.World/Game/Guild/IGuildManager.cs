@@ -155,7 +155,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Finds npcs & their levels assigned to this guild.
         /// </summary>
-        IEnumerable<DbGuildNpcLvl> GetGuildNpcs(int guildId);
+        Task<IEnumerable<DbGuildNpcLvl>> GetGuildNpcs();
 
         /// <summary>
         /// Checks if guild has enough rank in order to use NPC.

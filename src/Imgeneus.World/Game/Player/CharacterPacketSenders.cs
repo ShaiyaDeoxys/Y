@@ -39,7 +39,7 @@ namespace Imgeneus.World.Game.Player
             //SendFriends();
             SendBlessAmount();
             //SendBankItems();
-            SendGuildNpcLvlList();
+            //SendGuildNpcLvlList();
             //SendAutoStats();
 #if !EP8_V2
             SendAccountPoints(); // WARNING: This is necessary if you have an in-game item mall.
@@ -155,17 +155,17 @@ namespace Imgeneus.World.Game.Player
 
         public void SendGuildJoinRequestRemove(int playerId) => _packetFactory.SendGuildJoinRequestRemove(GameSession.Client, playerId);
 
-        public void SendGBRPoints(int currentPoints, int maxPoints, int topGuild) => _packetsHelper.SendGBRPoints(Client, currentPoints, maxPoints, topGuild);
+        public void SendGBRPoints(int currentPoints, int maxPoints, int topGuild) => _packetFactory.SendGBRPoints(GameSession.Client, currentPoints, maxPoints, topGuild);
 
-        public void SendGRBStartsSoon() => _packetsHelper.SendGRBNotice(Client, GRBNotice.StartsSoon);
+        public void SendGRBStartsSoon() => _packetFactory.SendGRBNotice(GameSession.Client, GRBNotice.StartsSoon);
 
-        public void SendGRBStarted() => _packetsHelper.SendGRBNotice(Client, GRBNotice.Started);
+        public void SendGRBStarted() => _packetFactory.SendGRBNotice(GameSession.Client, GRBNotice.Started);
 
-        public void SendGRB10MinsLeft() => _packetsHelper.SendGRBNotice(Client, GRBNotice.Min10);
+        public void SendGRB10MinsLeft() => _packetFactory.SendGRBNotice(GameSession.Client, GRBNotice.Min10);
 
-        public void SendGRB1MinLeft() => _packetsHelper.SendGRBNotice(Client, GRBNotice.Min1);
+        public void SendGRB1MinLeft() => _packetFactory.SendGRBNotice(GameSession.Client, GRBNotice.Min1);
 
-        public void SendGuildRanksCalculated(IEnumerable<(int GuildId, int Points, byte Rank)> results) => _packetsHelper.SendGuildRanksCalculated(Client, results);
+        public void SendGuildRanksCalculated(IEnumerable<(int GuildId, int Points, byte Rank)> results) => _packetFactory.SendGuildRanksCalculated(GameSession.Client, results);
 
         public void SendGoldUpdate() => _packetFactory.SendGoldUpdate(GameSession.Client, InventoryManager.Gold);
     }

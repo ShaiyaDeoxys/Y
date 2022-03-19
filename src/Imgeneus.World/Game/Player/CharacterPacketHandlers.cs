@@ -30,11 +30,6 @@ namespace Imgeneus.World.Game.Player
             OnMotion?.Invoke(this, packet.Motion);
         }
 
-        private void HandleSkillBarPacket(SkillBarPacket skillBarPacket)
-        {
-            _taskQueue.Enqueue(ActionType.SAVE_QUICK_BAR, Id, skillBarPacket.QuickItems);
-        }
-
         private void HandleNpcBuyItem(int npcId, byte itemIndex, byte count)
         {
             /*var npc = Map.GetNPC(CellId, npcId);

@@ -237,6 +237,10 @@ namespace Imgeneus.World.Packets
         void SendGetEtin(IWorldClient client, int etin);
         void SendEtinReturnResult(IWorldClient client, IList<Item> etins);
         void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, byte npcType, byte npcGroup, byte npcLevel);
+        void SendGuildNpcs(IWorldClient client, IEnumerable<DbGuildNpcLvl> npcs);
+        void SendGRBNotice(IWorldClient client, GRBNotice notice);
+        void SendGBRPoints(IWorldClient client, int currentPoints, int maxPoints, int topGuild);
+        void SendGuildRanksCalculated(IWorldClient client, IEnumerable<(int GuildId, int Points, byte Rank)> results);
         #endregion
 
         #region Bank

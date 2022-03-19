@@ -565,9 +565,12 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public IEnumerable<DbGuildNpcLvl> GetGuildNpcs(int guildId)
+        public async Task<IEnumerable<DbGuildNpcLvl>> GetGuildNpcs()
         {
-            return _database.GuildNpcLvls.Where(x => x.GuildId == guildId).ToList();
+            if (GuildId == 0)
+                throw new Exception("NPC list can not be loaded, if guild manager is not initialized.");
+
+            return await _database.GuildNpcLvls.AsNoTracking().Where(x => x.GuildId == GuildId).ToListAsync();
         }
 
         ///  <inheritdoc/>
