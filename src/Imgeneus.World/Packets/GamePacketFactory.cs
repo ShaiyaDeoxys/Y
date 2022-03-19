@@ -1548,6 +1548,18 @@ namespace Imgeneus.World.Packets
             packet.Write(etin);
             client.Send(packet);
         }
+
+        public void SendEtinReturnResult(IWorldClient client, IList<Item> etins)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_ETIN_RETURN);
+            packet.WriteByte((byte)etins.Count);
+            foreach (var etin in etins)
+            {
+                packet.WriteByte(etin.Bag);
+                packet.WriteByte(etin.Slot);
+            }
+            client.Send(packet);
+        }
         #endregion
 
         #region Bank

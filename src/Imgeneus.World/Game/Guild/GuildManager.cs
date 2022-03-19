@@ -672,19 +672,17 @@ namespace Imgeneus.World.Game.Guild
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Item>> ReturnEtin(Character character)
+        public async Task<IList<Item>> ReturnEtin()
         {
-            await _sync.WaitAsync();
-
             var result = new List<Item>();
-            var guild = await GetGuild(GuildId);
+            var guild = await _database.Guilds.FindAsync(GuildId);
 
             var totalEtin = 0;
 
-            var etins = character.InventoryManager.InventoryItems.Select(x => x.Value).Where(itm => itm.Special == SpecialEffect.Etin_1 || itm.Special == SpecialEffect.Etin_10 || itm.Special == SpecialEffect.Etin_100 || itm.Special == SpecialEffect.Etin_1000).ToList();
+            var etins = _inventoryManager.InventoryItems.Select(x => x.Value).Where(itm => itm.Special == SpecialEffect.Etin_1 || itm.Special == SpecialEffect.Etin_10 || itm.Special == SpecialEffect.Etin_100 || itm.Special == SpecialEffect.Etin_1000).ToList();
             foreach (var etin in etins)
             {
-                character.InventoryManager.RemoveItem(etin);
+                _inventoryManager.RemoveItem(etin);
 
                 var etinNumber = 0;
                 switch (etin.Special)
@@ -712,11 +710,12 @@ namespace Imgeneus.World.Game.Guild
 
             guild.Etin += totalEtin;
 
-            await _database.SaveChangesAsync();
+            var count = await _database.SaveChangesAsync();
 
-            _sync.Release();
+            // Do not track etins.
+            _database.Entry(guild).State = EntityState.Detached;
 
-            return result;
+            return count > 0 ? result : throw new Exception("Could not save etins to database");
         }
 
         #endregion

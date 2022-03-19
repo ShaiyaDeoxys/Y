@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -112,5 +113,10 @@ namespace Imgeneus.Database
         /// Migrate database.
         /// </summary>
         public void Migrate();
+
+        /// <summary>
+        /// Track entity.
+        /// </summary>
+        public EntityEntry Entry(object entity);
     }
 }

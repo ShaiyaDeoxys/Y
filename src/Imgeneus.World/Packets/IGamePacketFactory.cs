@@ -235,6 +235,7 @@ namespace Imgeneus.World.Packets
         void SendGuildHouseActionError(IWorldClient client, GuildHouseActionError error, byte rank);
         void SendGuildHouseBuy(IWorldClient client, GuildHouseBuyReason reason, uint gold);
         void SendGetEtin(IWorldClient client, int etin);
+        void SendEtinReturnResult(IWorldClient client, IList<Item> etins);
         #endregion
 
         #region Bank

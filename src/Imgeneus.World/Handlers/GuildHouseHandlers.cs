@@ -42,5 +42,16 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendGetEtin(client, etin);
         }
+
+        [HandlerAction(PacketType.GUILD_ETIN_RETURN)]
+        public async Task HandleEtinReturn(WorldClient client, GuildEtinReturnPacket packet)
+        {
+            if (!_guildManager.HasGuild)
+                return;
+
+            var etins = await _guildManager.ReturnEtin();
+
+            _packetFactory.SendEtinReturnResult(client, etins);
+        }
     }
 }

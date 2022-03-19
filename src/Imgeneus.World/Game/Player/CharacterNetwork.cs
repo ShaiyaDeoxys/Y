@@ -82,11 +82,7 @@ namespace Imgeneus.World.Game.Player
 
                 case GuildNpcUpgradePacket guildNpcUpgradePacket:
                     HandleGuildUpgradeNpc(guildNpcUpgradePacket.NpcType, guildNpcUpgradePacket.NpcGroup, guildNpcUpgradePacket.NpcLevel);
-                    break;
-
-                case GuildEtinReturnPacket guildEtinReturnPacket:
-                    HandleEtinReturn();
-                    break;                    
+                    break;                  
 
                 case GMNoticeMapPacket gmNoticeMapPacket:
                     if (!IsAdmin)

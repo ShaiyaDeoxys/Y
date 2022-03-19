@@ -150,7 +150,7 @@ namespace Imgeneus.World.Game.Guild
         /// Gives etin from character inventory to guild. Saves changes to database.
         /// </summary>
         /// <returns>List of removed etin items.</returns>
-        Task<IList<Item>> ReturnEtin(Character character);
+        Task<IList<Item>> ReturnEtin();
 
         /// <summary>
         /// Finds npcs & their levels assigned to this guild.
