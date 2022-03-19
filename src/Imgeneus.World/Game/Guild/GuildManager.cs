@@ -571,24 +571,16 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public async Task<GuildNpcUpgradeReason> TryUpgradeNPC(int guildId, byte npcType, byte npcGroup, byte nextLevel)
+        public async Task<GuildNpcUpgradeReason> TryUpgradeNPC(byte npcType, byte npcGroup, byte nextLevel)
         {
-            await _sync.WaitAsync();
+            if (GuildId == 0)
+                throw new Exception("NPC can not be upgraded, if guild manager is not initialized.");
 
-            var result = await UpgradeNPC(guildId, npcType, npcGroup, nextLevel);
-
-            _sync.Release();
-
-            return result;
-        }
-
-        private async Task<GuildNpcUpgradeReason> UpgradeNPC(int guildId, byte npcType, byte npcGroup, byte nextLevel)
-        {
-            var guild = _database.Guilds.Find(guildId);
+            var guild = await _database.Guilds.FindAsync(GuildId);
             if (guild is null || guild.Rank > 30)
                 return GuildNpcUpgradeReason.LowRank;
 
-            var currentLevel = _database.GuildNpcLvls.FirstOrDefault(x => x.GuildId == guildId && x.NpcType == npcType && x.Group == npcGroup);
+            var currentLevel = _database.GuildNpcLvls.FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == npcType && x.Group == npcGroup);
             if (currentLevel is null && nextLevel != 1) // current npc level is 0
                 return GuildNpcUpgradeReason.OneByOneLvl;
 
@@ -607,7 +599,7 @@ namespace Imgeneus.World.Game.Guild
 
             if (currentLevel is null)
             {
-                currentLevel = new DbGuildNpcLvl() { NpcType = npcType, Group = npcGroup, GuildId = guildId, NpcLevel = 0 };
+                currentLevel = new DbGuildNpcLvl() { NpcType = npcType, Group = npcGroup, GuildId = GuildId, NpcLevel = 0 };
             }
             else // Remove prevous level.
             {
@@ -619,9 +611,9 @@ namespace Imgeneus.World.Game.Guild
             guild.Etin -= npcInfo.UpPrice;
             _database.GuildNpcLvls.Add(currentLevel);
 
-            await _database.SaveChangesAsync();
+            var count = await _database.SaveChangesAsync();
 
-            return GuildNpcUpgradeReason.Ok;
+            return count > 0 ? GuildNpcUpgradeReason.Ok : GuildNpcUpgradeReason.Failed;
         }
 
         private GuildHouseNpcInfo FindNpcInfo(CountryType country, byte npcType, ushort npcTypeId)

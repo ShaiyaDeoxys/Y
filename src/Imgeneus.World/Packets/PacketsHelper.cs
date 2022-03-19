@@ -448,17 +448,6 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, byte npcType, byte npcGroup, byte npcLevel)
-        {
-            using var packet = new ImgeneusPacket(PacketType.GUILD_NPC_UPGRADE);
-            packet.Write((byte)reason);
-            packet.Write(npcType);
-            packet.Write(npcGroup);
-            packet.Write(npcLevel);
-            packet.WriteByte(0); // TODO: number? what is it?!
-            client.Send(packet);
-        }
-
         internal void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc)
         {
             using var packet = new ImgeneusPacket(PacketType.UPDATE_STATS);

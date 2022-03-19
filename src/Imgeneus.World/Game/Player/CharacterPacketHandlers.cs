@@ -72,24 +72,5 @@ namespace Imgeneus.World.Game.Player
             if (boughtItem != null)
                 _packetsHelper.SendBoughtItem(Client, boughtItem, InventoryManager.Gold);*/
         }
-
-        private async void HandleGuildUpgradeNpc(byte npcType, byte npcGroup, byte npcLevel)
-        {
-            if (!GuildManager.HasGuild || (GuildManager.GuildRank != 1 && GuildManager.GuildRank != 2))
-            {
-                _packetsHelper.SendGuildUpgradeNpc(Client, GuildNpcUpgradeReason.Failed, npcType, npcGroup, npcLevel);
-                return;
-            }
-
-            var reason = await GuildManager.TryUpgradeNPC(GuildManager.GuildId, npcType, npcGroup, npcLevel);
-            if (reason == GuildNpcUpgradeReason.Ok)
-            {
-                var etin = await GuildManager.GetEtin();
-                //_packetsHelper.SendGetEtin(Client, etin);
-                return;
-            }
-
-            _packetsHelper.SendGuildUpgradeNpc(Client, reason, npcType, npcGroup, npcLevel);
-        }
     }
 }

@@ -78,11 +78,7 @@ namespace Imgeneus.World.Game.Player
 
                 case QuestQuitPacket questQuitPacket:
                     QuitQuest(questQuitPacket.QuestId);
-                    break;
-
-                case GuildNpcUpgradePacket guildNpcUpgradePacket:
-                    HandleGuildUpgradeNpc(guildNpcUpgradePacket.NpcType, guildNpcUpgradePacket.NpcGroup, guildNpcUpgradePacket.NpcLevel);
-                    break;                  
+                    break;                
 
                 case GMNoticeMapPacket gmNoticeMapPacket:
                     if (!IsAdmin)

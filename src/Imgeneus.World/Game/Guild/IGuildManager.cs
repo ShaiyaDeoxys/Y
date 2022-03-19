@@ -178,11 +178,10 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Tries to upgrade NPC. Updates guild etin as well.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="npcType">npc type</param>
         /// <param name="npcGroup">npc group</param>
         /// <param name="npcLevel">npc next level</param>
-        Task<GuildNpcUpgradeReason> TryUpgradeNPC(int guildId, byte npcType, byte npcGroup, byte npcLevel);
+        Task<GuildNpcUpgradeReason> TryUpgradeNPC(byte npcType, byte npcGroup, byte npcLevel);
 
         /// <summary>
         /// Gets blacksmith npc extra rates based on NPC level.

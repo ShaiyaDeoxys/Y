@@ -53,5 +53,24 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendEtinReturnResult(client, etins);
         }
+
+        [HandlerAction(PacketType.GUILD_NPC_UPGRADE)]
+        public async Task HandleGuildUpgradeNpc(WorldClient client, GuildNpcUpgradePacket packet)
+        {
+            if (!_guildManager.HasGuild || (_guildManager.GuildRank != 1 && _guildManager.GuildRank != 2))
+            {
+                _packetFactory.SendGuildUpgradeNpc(client, GuildNpcUpgradeReason.Failed, packet.NpcType, packet.NpcGroup, packet.NpcLevel);
+                return;
+            }
+
+            var reason = await _guildManager.TryUpgradeNPC(packet.NpcType, packet.NpcGroup, packet.NpcLevel);
+            if (reason == GuildNpcUpgradeReason.Ok)
+            {
+                var etin = await _guildManager.GetEtin();
+                _packetFactory.SendGetEtin(client, etin);
+            }
+
+            _packetFactory.SendGuildUpgradeNpc(client, reason, packet.NpcType, packet.NpcGroup, packet.NpcLevel);
+        }
     }
 }

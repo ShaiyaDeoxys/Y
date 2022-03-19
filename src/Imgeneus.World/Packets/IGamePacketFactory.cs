@@ -236,6 +236,7 @@ namespace Imgeneus.World.Packets
         void SendGuildHouseBuy(IWorldClient client, GuildHouseBuyReason reason, uint gold);
         void SendGetEtin(IWorldClient client, int etin);
         void SendEtinReturnResult(IWorldClient client, IList<Item> etins);
+        void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, byte npcType, byte npcGroup, byte npcLevel);
         #endregion
 
         #region Bank
