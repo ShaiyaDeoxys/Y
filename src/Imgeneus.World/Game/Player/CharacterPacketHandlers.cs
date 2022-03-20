@@ -29,43 +29,5 @@ namespace Imgeneus.World.Game.Player
             _logger.LogDebug($"Character {Id} sends motion {packet.Motion}");
             OnMotion?.Invoke(this, packet.Motion);
         }
-
-        private void HandleNpcBuyItem(int npcId, byte itemIndex, byte count)
-        {
-            /*var npc = Map.GetNPC(CellId, npcId);
-            if (npc is null || !npc.ContainsProduct(itemIndex))
-            {
-                _logger.LogWarning($"NPC with id {npcId} doesn't contain item at index: {itemIndex}.");
-                return;
-            }
-
-            if (Map is GuildHouseMap)
-            {
-                if (!HasGuild)
-                {
-                    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, 30);
-                    return;
-                }
-
-                var allowed = _guildManager.CanUseNpc((int)GuildId, npc.Type, npc.TypeId, out var requiredRank);
-                if (!allowed)
-                {
-                    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, requiredRank);
-                    return;
-                }
-
-                allowed = _guildManager.HasNpcLevel((int)GuildId, npc.Type, npc.TypeId);
-                if (!allowed)
-                {
-                    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowLevel, 0);
-                    return;
-                }
-            }
-
-            var buyItem = npc.Products[itemIndex];
-            var boughtItem = BuyItem(buyItem, count);
-            if (boughtItem != null)
-                _packetsHelper.SendBoughtItem(Client, boughtItem, InventoryManager.Gold);*/
-        }
     }
 }

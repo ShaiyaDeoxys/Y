@@ -186,7 +186,6 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Gets blacksmith npc extra rates based on NPC level.
         /// </summary>
-        /// <param name="guildId">guild id</param>
-        (byte LinkRate, byte RepaireRate) GetBlacksmithRates(int guildId);
+        (byte LinkRate, byte RepaireRate) GetBlacksmithRates();
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -21,8 +23,10 @@ namespace Imgeneus.World.Game.Linking
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
         private readonly ISpeedManager _speedManager;
+        private readonly IGuildManager _guildManager;
+        private readonly IMapProvider _mapProvider;
 
-        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager)
+        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -30,6 +34,8 @@ namespace Imgeneus.World.Game.Linking
             _statsManager = statsManager;
             _healthManager = healthManager;
             _speedManager = speedManager;
+            _guildManager = guildManager;
+            _mapProvider = mapProvider;
 
 #if DEBUG
             _logger.LogDebug("LinkingManager {hashcode} created", GetHashCode());
@@ -455,11 +461,11 @@ namespace Imgeneus.World.Game.Linking
         private byte CalculateExtraRate()
         {
             byte extraRate = 0;
-            //if (HasGuild && Map is GuildHouseMap)
-            //{
-            //    var rates = _guildManager.GetBlacksmithRates((int)GuildId);
-            //    extraRate += rates.LinkRate;
-            //}
+            if (_guildManager.HasGuild && _mapProvider.Map is GuildHouseMap)
+            {
+                var rates = _guildManager.GetBlacksmithRates();
+                extraRate += rates.LinkRate;
+            }
 
             // TODO: add bless rate.
 

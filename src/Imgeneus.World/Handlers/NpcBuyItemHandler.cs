@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Zone;
@@ -17,13 +18,15 @@ namespace Imgeneus.World.Handlers
         private readonly IMapProvider _mapProvider;
         private readonly IGameWorld _gameWorld;
         private readonly IInventoryManager _inventoryManager;
+        private readonly IGuildManager _guildManager;
 
-        public NpcBuyItemHandler(ILogger<NpcBuyItemHandler> logger,IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
+        public NpcBuyItemHandler(ILogger<NpcBuyItemHandler> logger,IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IInventoryManager inventoryManager, IGuildManager guildManager) : base(packetFactory, gameSession)
         {
             _logger = logger;
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
             _inventoryManager = inventoryManager;
+            _guildManager = guildManager;
         }
 
         [HandlerAction(PacketType.NPC_BUY_ITEM)]
@@ -40,25 +43,25 @@ namespace Imgeneus.World.Handlers
 
             if (_mapProvider.Map is GuildHouseMap)
             {
-                //if (!HasGuild)
-                //{
-                //    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, 30);
-                //    return;
-                //}
+                if (!_guildManager.HasGuild)
+                {
+                    _packetFactory.SendGuildHouseActionError(client, GuildHouseActionError.LowRank, 30);
+                    return;
+                }
 
-                //var allowed = _guildManager.CanUseNpc((int)GuildId, npc.Type, npc.TypeId, out var requiredRank);
-                //if (!allowed)
-                //{
-                //    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowRank, requiredRank);
-                //    return;
-                //}
+                var allowed = _guildManager.CanUseNpc(npc.Type, npc.TypeId, out var requiredRank);
+                if (!allowed)
+                {
+                    _packetFactory.SendGuildHouseActionError(client, GuildHouseActionError.LowRank, requiredRank);
+                    return;
+                }
 
-                //allowed = _guildManager.HasNpcLevel((int)GuildId, npc.Type, npc.TypeId);
-                //if (!allowed)
-                //{
-                //    _packetsHelper.SendGuildHouseActionError(Client, GuildHouseActionError.LowLevel, 0);
-                //    return;
-                //}
+                allowed = _guildManager.HasNpcLevel(npc.Type, npc.TypeId);
+                if (!allowed)
+                {
+                    _packetFactory.SendGuildHouseActionError(client, GuildHouseActionError.LowLevel, 0);
+                    return;
+                }
             }
 
             var buyItem = npc.Products[packet.ItemIndex];

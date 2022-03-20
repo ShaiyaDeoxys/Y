@@ -640,9 +640,12 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public (byte LinkRate, byte RepaireRate) GetBlacksmithRates(int guildId)
+        public (byte LinkRate, byte RepaireRate) GetBlacksmithRates()
         {
-            var npc = _database.GuildNpcLvls.FirstOrDefault(x => x.GuildId == guildId && x.NpcType == 3 && x.Group == 0);
+            if (GuildId == 0)
+                throw new Exception("Linking rate can not be calculated, if guild manager is not initialized.");
+
+            var npc = _database.GuildNpcLvls.AsNoTracking().FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == 3 && x.Group == 0);
             if (npc is null)
                 return (0, 0);
 
