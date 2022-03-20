@@ -44,24 +44,5 @@ namespace Imgeneus.World.Game.Player
             _client = null;
         }
 
-        /// <summary>
-        /// Tries to handle all packets, that client sends.
-        /// </summary>
-        /// <param name="sender">TCP connection with client</param>
-        /// <param name="packet">packet, that clients sends</param>
-        /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
-        {
-            switch (packet)
-            {                            
-
-                case GMNoticeMapPacket gmNoticeMapPacket:
-                    if (!IsAdmin)
-                        return;
-
-                    _noticeManager.SendMapNotice(gmNoticeMapPacket.Message, this.MapId, gmNoticeMapPacket.TimeInterval);
-                    _packetsHelper.SendGmCommandSuccess(Client);
-                    break;
-            }
-        }*/
     }
 }

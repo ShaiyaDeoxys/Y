@@ -27,7 +27,11 @@ namespace Imgeneus.World.Game.Notice
 
             foreach (var player in worldPlayers)
             {
+#if SHAIYA_US
+                SendNoticeToPlayer(player, PacketType.GM_SHAIYA_US_NOTICE_WORLD, message);
+#else
                 SendNoticeToPlayer(player, PacketType.NOTICE_WORLD, message);
+#endif
             }
         }
 
@@ -86,7 +90,7 @@ namespace Imgeneus.World.Game.Notice
             _logger.LogError("Area notice is not implemented yet. Notice failed.");
         }
 
-        #region Senders
+#region Senders
 
         /// <summary>
         /// Sends a notice to a player
@@ -109,6 +113,6 @@ namespace Imgeneus.World.Game.Notice
             character.Client.Send(packet);
         }
 
-        #endregion
+#endregion
     }
 }
