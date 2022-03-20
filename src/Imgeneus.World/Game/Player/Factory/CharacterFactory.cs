@@ -151,6 +151,10 @@ namespace Imgeneus.World.Game.Player
         {
             Character.ClearOutdatedValues(_database, characterId);
 
+            // Before loading character, check, that right map is loaded.
+            _gameWorld.EnsureMap(await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId));
+            await _database.SaveChangesAsync();
+
             var dbCharacter = await _database.Characters
                                              .AsNoTracking()
                                              .Include(c => c.Skills)
