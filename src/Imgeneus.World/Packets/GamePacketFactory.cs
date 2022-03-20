@@ -232,6 +232,20 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendAddBuff(IWorldClient client, Buff buff)
+        {
+            using var packet = new ImgeneusPacket(PacketType.BUFF_ADD);
+            packet.Write(new SerializedActiveBuff(buff).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendRemoveBuff(IWorldClient client, Buff buff)
+        {
+            using var packet = new ImgeneusPacket(PacketType.BUFF_REMOVE);
+            packet.Write(buff.Id);
+            client.Send(packet);
+        }
+
         public void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc)
         {
             using var packet = new ImgeneusPacket(PacketType.AUTO_STATS_LIST);
@@ -1675,6 +1689,13 @@ namespace Imgeneus.World.Packets
             packet.Write(questId);
             packet.Write(index);
             packet.Write(count);
+            client.Send(packet);
+        }
+
+        public void SendFinishedQuests(IWorldClient client, IEnumerable<Quest> quests)
+        {
+            using var packet = new ImgeneusPacket(PacketType.QUEST_FINISHED_LIST);
+            packet.Write(new CharacterFinishedQuests(quests).Serialize());
             client.Send(packet);
         }
 

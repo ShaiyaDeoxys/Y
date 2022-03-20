@@ -49,23 +49,6 @@ namespace Imgeneus.World.Packets
     /// </summary>
     internal class PacketsHelper
     {
-        internal void SendInventoryItems(IWorldClient client, Item[] inventoryItems)
-        {
-            var steps = inventoryItems.Length / 50;
-            var left = inventoryItems.Length % 50;
-
-            for (var i = 0; i <= steps; i++)
-            {
-                var startIndex = i * 50;
-                var length = i == steps ? left : 50;
-                var endIndex = startIndex + length;
-
-                using var packet = new ImgeneusPacket(PacketType.CHARACTER_ITEMS);
-                packet.Write(new InventoryItems(inventoryItems[startIndex..endIndex]).Serialize());
-                client.Send(packet);
-            }
-        }
-
         internal void SendWorldDay(IWorldClient client)
         {
             using var packet = new ImgeneusPacket(PacketType.WORLD_DAY);
@@ -77,34 +60,6 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_CURRENT_HITPOINTS);
             packet.Write(new CharacterHitpoints(character).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendDetails(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_DETAILS);
-            packet.Write(new CharacterDetails(character).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendLearnedSkills(IWorldClient client, Character character)
-        {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILLS);
-            packet.Write(new CharacterSkills(character).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendAddBuff(IWorldClient client, Buff buff)
-        {
-            using var packet = new ImgeneusPacket(PacketType.BUFF_ADD);
-            packet.Write(new SerializedActiveBuff(buff).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendRemoveBuff(IWorldClient client, Buff buff)
-        {
-            using var packet = new ImgeneusPacket(PacketType.BUFF_REMOVE);
-            packet.Write(buff.Id);
             client.Send(packet);
         }
 
@@ -326,13 +281,6 @@ namespace Imgeneus.World.Packets
             packet.Write(buff.SkillId);
             packet.Write(buff.SkillLevel);
 
-            client.Send(packet);
-        }
-
-        internal void SendFinishedQuests(IWorldClient client, IEnumerable<Quest> quests)
-        {
-            using var packet = new ImgeneusPacket(PacketType.QUEST_FINISHED_LIST);
-            packet.Write(new CharacterFinishedQuests(quests).Serialize());
             client.Send(packet);
         }
 

@@ -135,8 +135,8 @@ namespace Imgeneus.World.Game.Player
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
             StatsManager.OnResetStats += SendResetStats;
-            BuffsManager.OnBuffAdded += OnBuffAdded;
-            BuffsManager.OnBuffRemoved += OnBuffRemoved;
+            BuffsManager.OnBuffAdded += SendAddBuff;
+            BuffsManager.OnBuffRemoved += SendRemoveBuff;
             AttackManager.OnStartAttack += SendAttackStart;
             VehicleManager.OnUsedVehicle += SendUseVehicle;
             SkillsManager.OnResetSkills += SendResetSkills;
@@ -163,8 +163,8 @@ namespace Imgeneus.World.Game.Player
         {
             StatsManager.OnAdditionalStatsUpdate -= SendAdditionalStats;
             StatsManager.OnResetStats -= SendResetStats;
-            BuffsManager.OnBuffAdded -= OnBuffAdded;
-            BuffsManager.OnBuffRemoved -= OnBuffRemoved;
+            BuffsManager.OnBuffAdded -= SendAddBuff;
+            BuffsManager.OnBuffRemoved -= SendRemoveBuff;
             AttackManager.OnStartAttack -= SendAttackStart;
             VehicleManager.OnUsedVehicle -= SendUseVehicle;
             SkillsManager.OnResetSkills -= SendResetSkills;
@@ -191,10 +191,6 @@ namespace Imgeneus.World.Game.Player
 
             ClearConnection();
         }
-
-        private void OnBuffAdded(int senderId, Buff buff) => SendAddBuff(buff);
-
-        private void OnBuffRemoved(int senderId, Buff buff) => SendRemoveBuff(buff);
 
         #region Motion
 

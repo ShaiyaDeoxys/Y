@@ -1,20 +1,12 @@
-﻿using System;
-using Imgeneus.Network.Packets.Game;
-using Imgeneus.World.Game.Monster;
-using Imgeneus.World.Game.Zone.Obelisks;
-using Imgeneus.World.Game.Zone.Portals;
-using System.Linq;
-using Imgeneus.World.Game.Guild;
-using Imgeneus.Database.Entities;
-using Imgeneus.Network.Server;
-using System.Collections.Generic;
-using Imgeneus.World.Game.Health;
-using Imgeneus.World.Game.Buffs;
-using Imgeneus.World.Game.Skills;
-using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Vehicle;
+﻿using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Duel;
+using Imgeneus.World.Game.Guild;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Quests;
+using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Zone.Obelisks;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -28,13 +20,13 @@ namespace Imgeneus.World.Game.Player
             // SendWorldDay(); // TODO: why do we need it?
             //SendGuildList();
             //SendGuildMembersOnline();
-            SendDetails();
+            //SendDetails();
             //SendAdditionalStats();
             //SendCurrentHitpoints();
-            SendInventoryItems();
-            SendLearnedSkills();
+            //SendInventoryItems();
+            //SendLearnedSkills();
             //SendOpenQuests();
-            SendFinishedQuests();
+            //SendFinishedQuests();
             //SendActiveBuffs();
             //SendMoveAndAttackSpeed();
             //SendFriends();
@@ -49,26 +41,11 @@ namespace Imgeneus.World.Game.Player
 
         private void SendWorldDay() => _packetsHelper.SendWorldDay(Client);
 
-        private void SendDetails() => _packetsHelper.SendDetails(Client, this);
-
-        private void SendInventoryItems()
-        {
-            var inventoryItems = InventoryManager.InventoryItems.Values.ToArray();
-            _packetsHelper.SendInventoryItems(Client, inventoryItems); // WARNING: some servers expanded invetory to 6 bags(os is 5 bags), if you send item in 6 bag, client will crash!
-
-            foreach (var item in inventoryItems.Where(i => i.ExpirationTime != null))
-                SendItemExpiration(item);
-        }
-
         private void SendAdditionalStats() => _packetsHelper.SendAdditionalStats(Client, this);
 
         private void SendResetStats() => _packetsHelper.SendResetStats(Client, this);
 
         private void SendItemExpiration(Item item) => _packetsHelper.SendItemExpiration(Client, item);
-
-        private void SendLearnedSkills() => _packetsHelper.SendLearnedSkills(Client, this);
-
-        private void SendFinishedQuests() => _packetsHelper.SendFinishedQuests(Client, QuestsManager.Quests.Where(q => q.IsFinished));
 
         private void SendQuestFinished(Quest quest, int npcId = 0) => _packetFactory.SendQuestFinished(GameSession.Client, quest, npcId);
 
@@ -76,11 +53,9 @@ namespace Imgeneus.World.Game.Player
 
         private void SendQuestCountUpdate(ushort questId, byte index, byte count) => _packetFactory.SendQuestCountUpdate(GameSession.Client, questId, index, count);
 
-        //private void SendActiveBuffs() => _packetsHelper.SendActiveBuffs(Client, ActiveBuffs);
+        private void SendAddBuff(int senderId, Buff buff) => _packetFactory.SendAddBuff(GameSession.Client, buff);
 
-        private void SendAddBuff(Buff buff) => _packetsHelper.SendAddBuff(Client, buff);
-
-        private void SendRemoveBuff(Buff buff) => _packetsHelper.SendRemoveBuff(Client, buff);
+        private void SendRemoveBuff(int senderId, Buff buff) => _packetFactory.SendRemoveBuff(GameSession.Client, buff);
 
         //private void SendMaxHP() => _packetsHelper.SendMaxHitpoints(Client, this, HitpointType.HP);
 

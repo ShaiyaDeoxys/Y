@@ -55,6 +55,8 @@ namespace Imgeneus.World.Packets
         void SendLearnedNewSkill(IWorldClient client, bool ok, Skill skill);
         void SendLearnedSkills(IWorldClient client, Character character);
         void SendActiveBuffs(IWorldClient client, ICollection<Buff> activeBuffs);
+        void SendAddBuff(IWorldClient client, Buff buff);
+        void SendRemoveBuff(IWorldClient client, Buff buff);
         void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
         #endregion
 
@@ -259,6 +261,7 @@ namespace Imgeneus.World.Packets
         void SendQuestStarted(IWorldClient client, ushort questId, int npcId);
         void SendQuestFinished(IWorldClient client, Quest quest, int npcId);
         void SendQuestCountUpdate(IWorldClient client, ushort questId, byte index, byte count);
+        void SendFinishedQuests(IWorldClient client, IEnumerable<Quest> quests);
         #endregion
 
         #region Bless
