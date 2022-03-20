@@ -38,6 +38,7 @@ using System.Text;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Bank;
+using Imgeneus.World.Game.Quests;
 
 namespace Imgeneus.World.Packets
 {
@@ -1629,6 +1630,50 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_TELEPORT_VIA_NPC);
             packet.Write((byte)reason);
             packet.Write(money);
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Quests
+
+        public void SendOpenQuests(IWorldClient client, IEnumerable<Quest> quests)
+        {
+            using var packet = new ImgeneusPacket(PacketType.QUEST_LIST);
+            packet.Write(new CharacterQuests(quests).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendQuestStarted(IWorldClient client, ushort questId, int npcId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.QUEST_START);
+            packet.Write(npcId);
+            packet.Write(questId);
+            client.Send(packet);
+        }
+
+        public void SendQuestFinished(IWorldClient client, Quest quest, int npcId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.QUEST_END);
+            packet.Write(npcId);
+            packet.Write(quest.Id);
+            packet.Write(quest.IsSuccessful);
+            packet.WriteByte(0); // ResultType
+            packet.Write(quest.IsSuccessful ? quest.XP : 0);
+            packet.Write(quest.IsSuccessful ? quest.Gold : 0);
+            packet.WriteByte(0); // bag
+            packet.WriteByte(0); // slot
+            packet.WriteByte(0); // item type
+            packet.WriteByte(0); // item id
+            client.Send(packet);
+        }
+
+        public void SendQuestCountUpdate(IWorldClient client, ushort questId, byte index, byte count)
+        {
+            using var packet = new ImgeneusPacket(PacketType.QUEST_UPDATE_COUNT);
+            packet.Write(questId);
+            packet.Write(index);
+            packet.Write(count);
             client.Send(packet);
         }
 

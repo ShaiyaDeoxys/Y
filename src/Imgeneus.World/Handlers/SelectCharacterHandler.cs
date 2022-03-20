@@ -86,7 +86,7 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendLearnedSkills(client, character);
 
-            //SendOpenQuests();
+            _packetFactory.SendOpenQuests(client, character.QuestsManager.Quests.Where(q => !q.IsFinished));
             //SendFinishedQuests();
 
             _packetFactory.SendActiveBuffs(client, character.BuffsManager.ActiveBuffs);

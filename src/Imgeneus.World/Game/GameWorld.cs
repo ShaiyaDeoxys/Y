@@ -300,7 +300,7 @@ namespace Imgeneus.World.Game
         {
             foreach (var player in Players.Values.ToList())
             {
-                player.ReloadGuildRanks(results);
+                player.GuildManager.ReloadGuildRanks(results);
                 player.SendGuildRanksCalculated(results);
             }
         }

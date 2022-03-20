@@ -599,8 +599,12 @@ namespace Imgeneus.World.Game.Zone
                 _packetsHelper.SendMobDead(player.Client, senderId, killer);
 
             // Add experience to killer character/party
+            // Update quest.
             if (killer is Character killerCharacter)
+            {
                 killerCharacter.LevelingManager.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
+                killerCharacter.QuestsManager.UpdateQuestMobCount(mob.MobId);
+            }
 
             if (Map is GRBMap)
                 (Map as GRBMap).AddPoints(mob.GuildPoints);

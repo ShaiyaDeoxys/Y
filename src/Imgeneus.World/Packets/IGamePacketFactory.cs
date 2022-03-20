@@ -16,6 +16,7 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Vehicle;
@@ -250,6 +251,13 @@ namespace Imgeneus.World.Packets
 
         #region Teleport
         void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money);
+        #endregion
+
+        #region Quests
+        void SendOpenQuests(IWorldClient client, IEnumerable<Quest> quests);
+        void SendQuestStarted(IWorldClient client, ushort questId, int npcId);
+        void SendQuestFinished(IWorldClient client, Quest quest, int npcId);
+        void SendQuestCountUpdate(IWorldClient client, ushort questId, byte index, byte count);
         #endregion
 
         #region GM

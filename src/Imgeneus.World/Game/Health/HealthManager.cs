@@ -386,25 +386,6 @@ namespace Imgeneus.World.Game.Health
                             AddItemsDropOnMap(notDistributedItems, dropOwner);
 
                         }
-                    }
-
-                    // Update quest.
-                    if (this is Mob && killer is Character)
-                    {
-                        var character = killer as Character;
-                        var mob = this as Mob;
-                        if (character.PartyManager.Party is null)
-                        {
-                            character.UpdateQuestMobCount(mob.MobId);
-                        }
-                        else
-                        {
-                            foreach (var m in character.PartyManager.Party.Members)
-                            {
-                                if (m.MapProvider.Map == character.MapProvider.Map)
-                                    m.UpdateQuestMobCount(mob.MobId);
-                            }
-                        }
                     }*/
                 }
             }

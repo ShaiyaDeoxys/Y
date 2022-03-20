@@ -17,6 +17,7 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
@@ -72,6 +73,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IFriendsManager _friendsManager;
         private readonly IDuelManager _duelManager;
         private readonly IBankManager _bankManager;
+        private readonly IQuestsManager _questsManager;
         private readonly IGamePacketFactory _packetFactory;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
@@ -108,6 +110,7 @@ namespace Imgeneus.World.Game.Player
                                 IFriendsManager friendsManager,
                                 IDuelManager duelManager,
                                 IBankManager bankManager,
+                                IQuestsManager questsManager,
                                 IGamePacketFactory packetFactory)
         {
             _logger = logger;
@@ -144,6 +147,7 @@ namespace Imgeneus.World.Game.Player
             _friendsManager = friendsManager;
             _duelManager = duelManager;
             _bankManager = bankManager;
+            _questsManager = questsManager;
             _packetFactory = packetFactory;
         }
 
@@ -232,6 +236,8 @@ namespace Imgeneus.World.Game.Player
 
             _duelManager.Init(dbCharacter.Id);
 
+            _questsManager.Init(dbCharacter.Id, dbCharacter.Quests);
+
             if (dbCharacter.GuildId != null)
             {
                 var guild = await _database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId);
@@ -279,6 +285,7 @@ namespace Imgeneus.World.Game.Player
                                         _friendsManager,
                                         _duelManager,
                                         _bankManager,
+                                        _questsManager,
                                         _gameSession,
                                         _packetFactory);
 

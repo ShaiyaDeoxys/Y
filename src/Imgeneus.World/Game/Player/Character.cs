@@ -21,6 +21,7 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
@@ -67,6 +68,7 @@ namespace Imgeneus.World.Game.Player
         public IDuelManager DuelManager { get; private set; }
         public IGuildManager GuildManager { get; private set; }
         public IBankManager BankManager { get; private set; }
+        public IQuestsManager QuestsManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -100,6 +102,7 @@ namespace Imgeneus.World.Game.Player
                          IFriendsManager friendsManager,
                          IDuelManager duelManager,
                          IBankManager bankManager,
+                         IQuestsManager questsManager,
                          IGameSession gameSession,
                          IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
         {
@@ -127,6 +130,7 @@ namespace Imgeneus.World.Game.Player
             DuelManager = duelManager;
             GuildManager = guildManager;
             BankManager = bankManager;
+            QuestsManager = questsManager;
             GameSession = gameSession;
 
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
@@ -146,16 +150,13 @@ namespace Imgeneus.World.Game.Player
             DuelManager.OnCanceled += SendDuelCancel;
             DuelManager.OnFinish += SendDuelFinish;
             LevelingManager.OnExpChanged += SendExperienceGain;
+            QuestsManager.OnQuestMobCountChanged += SendQuestCountUpdate;
+            QuestsManager.OnQuestFinished += SendQuestFinished;
 
             _packetsHelper = new PacketsHelper();
 
             Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;
-        }
-
-        private void Init()
-        {
-            InitQuests();
         }
 
         public void Dispose()
@@ -177,16 +178,11 @@ namespace Imgeneus.World.Game.Player
             DuelManager.OnCanceled -= SendDuelCancel;
             DuelManager.OnFinish -= SendDuelFinish;
             LevelingManager.OnExpChanged -= SendExperienceGain;
+            QuestsManager.OnQuestMobCountChanged -= SendQuestCountUpdate;
+            QuestsManager.OnQuestFinished -= SendQuestFinished;
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
-
-            // Save current quests state to database.
-            foreach (var quest in Quests.Where(q => q.SaveUpdateToDatabase))
-            {
-                _taskQueue.Enqueue(ActionType.QUEST_UPDATE, Id, quest.Id, quest.RemainingTime, quest.CountMob1, quest.CountMob2, quest.Count3, quest.IsFinished, quest.IsSuccessful);
-                quest.QuestTimeElapsed -= Quest_QuestTimeElapsed;
-            }
 
             // Save current HP, MP, SP to database.
             _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_HP_MP_SP, Id, HealthManager.CurrentHP, HealthManager.CurrentMP, HealthManager.CurrentSP);
@@ -241,21 +237,16 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, ILinkingManager linkingManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IBankManager bankManager, IGameSession gameSession, IGamePacketFactory packetFactory)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, ILinkingManager linkingManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IBankManager bankManager, IQuestsManager questsManager, IGameSession gameSession, IGamePacketFactory packetFactory)
         {
-            var character = new Character(logger, gameWorld, taskQueue, databasePreloader, mapsLoader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, bankManager, gameSession, packetFactory)
+            var character = new Character(logger, gameWorld, taskQueue, databasePreloader, mapsLoader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, bankManager, questsManager, gameSession, packetFactory)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,
                 Points = dbCharacter.User.Points
             };
 
-            var quests = dbCharacter.Quests.Select(q => new Quest(databasePreloader, q)).ToList();
-            character.Quests.AddRange(quests);
-
             character.QuickItems = dbCharacter.QuickItems;
-
-            character.Init();
 
             return character;
         }

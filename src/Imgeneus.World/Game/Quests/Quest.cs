@@ -2,12 +2,11 @@
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Inventory;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 
-namespace Imgeneus.World.Game.Player
+namespace Imgeneus.World.Game.Quests
 {
     public class Quest
     {

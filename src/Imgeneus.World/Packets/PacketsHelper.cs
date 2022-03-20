@@ -24,6 +24,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
@@ -328,50 +329,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        internal void SendQuests(IWorldClient client, IEnumerable<Quest> quests)
-        {
-            using var packet = new ImgeneusPacket(PacketType.QUEST_LIST);
-            packet.Write(new CharacterQuests(quests).Serialize());
-            client.Send(packet);
-        }
-
         internal void SendFinishedQuests(IWorldClient client, IEnumerable<Quest> quests)
         {
             using var packet = new ImgeneusPacket(PacketType.QUEST_FINISHED_LIST);
             packet.Write(new CharacterFinishedQuests(quests).Serialize());
-            client.Send(packet);
-        }
-
-        internal void SendQuestStarted(IWorldClient client, ushort questId, int npcId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.QUEST_START);
-            packet.Write(npcId);
-            packet.Write(questId);
-            client.Send(packet);
-        }
-
-        internal void SendQuestFinished(IWorldClient client, Quest quest, int npcId)
-        {
-            using var packet = new ImgeneusPacket(PacketType.QUEST_END);
-            packet.Write(npcId);
-            packet.Write(quest.Id);
-            packet.Write(quest.IsSuccessful);
-            packet.WriteByte(0); // ResultType
-            packet.Write(quest.IsSuccessful ? quest.XP : 0);
-            packet.Write(quest.IsSuccessful ? quest.Gold : 0);
-            packet.WriteByte(0); // bag
-            packet.WriteByte(0); // slot
-            packet.WriteByte(0); // item type
-            packet.WriteByte(0); // item id
-            client.Send(packet);
-        }
-
-        internal void SendQuestCountUpdate(IWorldClient client, ushort questId, byte index, byte count)
-        {
-            using var packet = new ImgeneusPacket(PacketType.QUEST_UPDATE_COUNT);
-            packet.Write(questId);
-            packet.Write(index);
-            packet.Write(count);
             client.Send(packet);
         }
 

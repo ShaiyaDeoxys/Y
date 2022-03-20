@@ -9,6 +9,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Stats;
@@ -70,6 +71,7 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<IDuelManager>().Clear());
             tasks.Add(x.GetService<ILevelingManager>().Clear());
             tasks.Add(x.GetService<IGuildManager>().Clear());
+            tasks.Add(x.GetService<IQuestsManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

@@ -14,6 +14,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Duel;
+using Imgeneus.World.Game.Quests;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -32,7 +33,7 @@ namespace Imgeneus.World.Game.Player
             //SendCurrentHitpoints();
             SendInventoryItems();
             SendLearnedSkills();
-            SendOpenQuests();
+            //SendOpenQuests();
             SendFinishedQuests();
             //SendActiveBuffs();
             //SendMoveAndAttackSpeed();
@@ -67,17 +68,13 @@ namespace Imgeneus.World.Game.Player
 
         private void SendLearnedSkills() => _packetsHelper.SendLearnedSkills(Client, this);
 
-        private void SendOpenQuests() => _packetsHelper.SendQuests(Client, Quests.Where(q => !q.IsFinished));
+        private void SendFinishedQuests() => _packetsHelper.SendFinishedQuests(Client, QuestsManager.Quests.Where(q => q.IsFinished));
 
-        private void SendFinishedQuests() => _packetsHelper.SendFinishedQuests(Client, Quests.Where(q => q.IsFinished));
-
-        private void SendQuestStarted(Quest quest, int npcId = 0) => _packetsHelper.SendQuestStarted(Client, quest.Id, npcId);
-
-        private void SendQuestFinished(Quest quest, int npcId = 0) => _packetsHelper.SendQuestFinished(Client, quest, npcId);
+        private void SendQuestFinished(Quest quest, int npcId = 0) => _packetFactory.SendQuestFinished(GameSession.Client, quest, npcId);
 
         public void SendFriendOnline(int friendId, bool isOnline) => _packetsHelper.SendFriendOnline(Client, friendId, isOnline);
 
-        private void SendQuestCountUpdate(ushort questId, byte index, byte count) => _packetsHelper.SendQuestCountUpdate(Client, questId, index, count);
+        private void SendQuestCountUpdate(ushort questId, byte index, byte count) => _packetFactory.SendQuestCountUpdate(GameSession.Client, questId, index, count);
 
         //private void SendActiveBuffs() => _packetsHelper.SendActiveBuffs(Client, ActiveBuffs);
 

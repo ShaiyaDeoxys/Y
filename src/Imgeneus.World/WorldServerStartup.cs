@@ -29,6 +29,7 @@ using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
+using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
@@ -132,6 +133,7 @@ namespace Imgeneus.World
             services.AddScoped<IDuelManager, DuelManager>();
             services.AddScoped<IGuildManager, GuildManager>();
             services.AddScoped<IBankManager, BankManager>();
+            services.AddScoped<IQuestsManager, QuestsManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

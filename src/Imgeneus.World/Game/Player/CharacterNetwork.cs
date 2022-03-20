@@ -52,33 +52,7 @@ namespace Imgeneus.World.Game.Player
         /*private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
         {
             switch (packet)
-            {
-
-                case QuestStartPacket questStartPacket:
-                    var npcQuestGiver = Map.GetNPC(CellId, questStartPacket.NpcId);
-                    if (npcQuestGiver is null || !npcQuestGiver.StartQuestIds.Contains(questStartPacket.QuestId))
-                    {
-                        _logger.LogWarning($"Trying to start unknown quest {questStartPacket.QuestId} at npc {questStartPacket.NpcId}");
-                        return;
-                    }
-
-                    var quest = new Quest(_databasePreloader, questStartPacket.QuestId);
-                    StartQuest(quest, npcQuestGiver.Id);
-                    break;
-
-                case QuestEndPacket questEndPacket:
-                    var npcQuestReceiver = Map.GetNPC(CellId, questEndPacket.NpcId);
-                    if (npcQuestReceiver is null || !npcQuestReceiver.EndQuestIds.Contains(questEndPacket.QuestId))
-                    {
-                        _logger.LogWarning($"Trying to finish unknown quest {questEndPacket.QuestId} at npc {questEndPacket.NpcId}");
-                        return;
-                    }
-                    FinishQuest(questEndPacket.QuestId, npcQuestReceiver.Id);
-                    break;
-
-                case QuestQuitPacket questQuitPacket:
-                    QuitQuest(questQuitPacket.QuestId);
-                    break;                
+            {                            
 
                 case GMNoticeMapPacket gmNoticeMapPacket:
                     if (!IsAdmin)
