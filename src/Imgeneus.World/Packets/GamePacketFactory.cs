@@ -39,6 +39,7 @@ using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Quests;
+using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Packets
 {
@@ -1674,6 +1675,30 @@ namespace Imgeneus.World.Packets
             packet.Write(questId);
             packet.Write(index);
             packet.Write(count);
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Bless
+
+        public void SendBlessAmount(IWorldClient client, CountryType country, int amount, uint remainingTime)
+        {
+            using var packet = new ImgeneusPacket(PacketType.BLESS_INIT);
+            packet.Write((byte)country);
+
+            packet.Write(amount);
+            packet.Write(remainingTime);
+
+            client.Send(packet);
+        }
+
+        public void SendBlessUpdate(IWorldClient client, CountryType country, int amount)
+        {
+            using var packet = new ImgeneusPacket(PacketType.BLESS_UPDATE);
+            packet.Write((byte)country);
+            packet.Write(amount);
+
             client.Send(packet);
         }
 

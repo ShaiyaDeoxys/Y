@@ -2,6 +2,7 @@
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Player;
@@ -95,11 +96,12 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendFriends(client, character.FriendsManager.Friends.Values);
 
-            //SendBlessAmount();
+            _packetFactory.SendBlessAmount(client, character.CountryProvider.Country, character.CountryProvider.Country == CountryType.Light ? Bless.Instance.LightAmount : Bless.Instance.DarkAmount, Bless.Instance.RemainingTime);
 
             _packetFactory.SendBankItems(client, character.BankManager.BankItems.Values);
 
-            _packetFactory.SendGuildNpcs(client, await character.GuildManager.GetGuildNpcs());
+            if (character.GuildManager.HasGuild)
+                _packetFactory.SendGuildNpcs(client, await character.GuildManager.GetGuildNpcs());
 
             _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
 

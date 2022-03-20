@@ -6,6 +6,7 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Friends;
@@ -258,6 +259,11 @@ namespace Imgeneus.World.Packets
         void SendQuestStarted(IWorldClient client, ushort questId, int npcId);
         void SendQuestFinished(IWorldClient client, Quest quest, int npcId);
         void SendQuestCountUpdate(IWorldClient client, ushort questId, byte index, byte count);
+        #endregion
+
+        #region Bless
+        void SendBlessAmount(IWorldClient client, CountryType country, int amount, uint remainingTime);
+        void SendBlessUpdate(IWorldClient client, CountryType country, int amount);
         #endregion
 
         #region GM

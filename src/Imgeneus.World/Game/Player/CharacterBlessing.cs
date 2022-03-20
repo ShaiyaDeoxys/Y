@@ -1,10 +1,5 @@
-﻿using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
-using Imgeneus.Network.PacketProcessor;
-using Imgeneus.Network.Packets;
-using Imgeneus.World.Game.Blessing;
+﻿using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Country;
-using System;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -13,19 +8,19 @@ namespace Imgeneus.World.Game.Player
         private void OnDarkBlessChanged(BlessArgs args)
         {
             if (CountryProvider.Country == CountryType.Dark)
+            {
                 AddBlessBonuses(args);
-
-            if (Client != null)
-                SendBlessUpdate(1, args.NewValue);
+                _packetFactory.SendBlessUpdate(GameSession.Client, CountryProvider.Country, args.NewValue);
+            }
         }
 
         private void OnLightBlessChanged(BlessArgs args)
         {
             if (CountryProvider.Country == CountryType.Light)
+            {
                 AddBlessBonuses(args);
-
-            if (Client != null)
-                SendBlessUpdate(0, args.NewValue);
+                _packetFactory.SendBlessUpdate(GameSession.Client, CountryProvider.Country, args.NewValue);
+            }
         }
 
         /// <summary>
@@ -48,30 +43,5 @@ namespace Imgeneus.World.Game.Player
             }
         }
 
-        /// <summary>
-        /// Sends new bless amount.
-        /// </summary>
-        private void SendBlessUpdate(byte fraction, int amount)
-        {
-            using var packet = new ImgeneusPacket(PacketType.BLESS_UPDATE);
-            packet.Write(fraction);
-            packet.Write(amount);
-            Client.Send(packet);
-        }
-
-        /// <summary>
-        /// Sends initial bless amount.
-        /// </summary>
-        private void SendBlessAmount()
-        {
-            using var packet = new ImgeneusPacket(PacketType.BLESS_INIT);
-            packet.Write((byte)CountryProvider.Country);
-
-            var blessAmount = CountryProvider.Country == CountryType.Light ? Bless.Instance.LightAmount : Bless.Instance.DarkAmount;
-            packet.Write(blessAmount);
-            packet.Write(Bless.Instance.RemainingTime);
-
-            Client.Send(packet);
-        }
     }
 }

@@ -38,7 +38,7 @@ namespace Imgeneus.World.Game.Player
             //SendActiveBuffs();
             //SendMoveAndAttackSpeed();
             //SendFriends();
-            SendBlessAmount();
+            //SendBlessAmount();
             //SendBankItems();
             //SendGuildNpcLvlList();
             //SendAutoStats();
