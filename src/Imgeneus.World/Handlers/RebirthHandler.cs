@@ -2,6 +2,7 @@
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
@@ -17,13 +18,15 @@ namespace Imgeneus.World.Handlers
         private readonly IGameWorld _gameWorld;
         private readonly IHealthManager _healthManager;
         private readonly ITeleportationManager _teleportationManager;
+        private readonly IMovementManager _movementManager;
 
-        public RebirthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IHealthManager healthManager, ITeleportationManager teleportationManager) : base(packetFactory, gameSession)
+        public RebirthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IHealthManager healthManager, ITeleportationManager teleportationManager, IMovementManager movementManager) : base(packetFactory, gameSession)
         {
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
             _healthManager = healthManager;
             _teleportationManager = teleportationManager;
+            _movementManager = movementManager;
         }
 
         [HandlerAction(PacketType.REBIRTH_TO_NEAREST_TOWN)]
@@ -40,10 +43,16 @@ namespace Imgeneus.World.Handlers
                 rebirthCoordinate = _mapProvider.Map.GetRebirthMap(_gameWorld.Players[_gameSession.CharId]);
             }
 
-            _healthManager.Rebirth();
-
             if (_mapProvider.Map.Id != rebirthCoordinate.MapId)
                 _teleportationManager.Teleport(rebirthCoordinate.MapId, rebirthCoordinate.X, rebirthCoordinate.Y, rebirthCoordinate.Z);
+            else
+            {
+                _movementManager.PosX = rebirthCoordinate.X;
+                _movementManager.PosY = rebirthCoordinate.Y;
+                _movementManager.PosZ = rebirthCoordinate.Z;
+            }
+
+            _healthManager.Rebirth();
         }
     }
 }
