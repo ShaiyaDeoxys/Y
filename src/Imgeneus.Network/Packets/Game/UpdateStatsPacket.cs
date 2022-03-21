@@ -1,6 +1,4 @@
-﻿using Imgeneus.Network.Data;
-using Imgeneus.Network.PacketProcessor;
-using System;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {

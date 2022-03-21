@@ -1,25 +1,17 @@
-﻿using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets.Game;
-using System;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Login
 {
-    public struct SelectServerPacket : IEquatable<SelectServerPacket>, IDeserializedPacket
+    public record SelectServerPacket : IPacketDeserializer
     {
-        public byte WorldId { get; }
+        public byte WorldId { get; private set; }
 
-        public int BuildClient { get; }
+        public int BuildClient { get; private set; }
 
-        public SelectServerPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            this.WorldId = packet.Read<byte>();
-            this.BuildClient = packet.Read<int>();
-        }
-
-        public bool Equals(SelectServerPacket other)
-        {
-            return this.WorldId == other.WorldId &&
-                this.BuildClient == other.BuildClient;
+            WorldId = packetStream.Read<byte>();
+            BuildClient = packetStream.Read<int>();
         }
     }
 }

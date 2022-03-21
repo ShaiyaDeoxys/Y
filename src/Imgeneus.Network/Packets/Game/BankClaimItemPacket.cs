@@ -1,18 +1,18 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct BankClaimItemPacket : IDeserializedPacket
+    public record BankClaimItemPacket : IPacketDeserializer
     {
-        public byte Slot;
-        public int Unknown1;
-        public int Unknown2;
+        public byte Slot { get; private set; }
+        public int Unknown1 { get; private set; }
+        public int Unknown2 { get; private set; }
 
-        public BankClaimItemPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Slot = packet.Read<byte>();
-            Unknown1 = packet.Read<int>();
-            Unknown2 = packet.Read<int>();
+            Slot = packetStream.Read<byte>();
+            Unknown1 = packetStream.Read<int>();
+            Unknown2 = packetStream.Read<int>();
         }
     }
 }

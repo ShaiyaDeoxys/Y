@@ -1,4 +1,3 @@
-using Imgeneus.Network.Data;
 using Imgeneus.Network.PacketProcessor;
 using System.Text;
 
@@ -14,7 +13,7 @@ namespace Imgeneus.Network.Packets.Game
             TimeInterval = packetStream.Read<short>();
             var messageLength = packetStream.Read<byte>();
             // Message always ends with an empty character
-#if EP8_V2
+#if EP8_V2 || SHAIYA_US
             Message = packetStream.ReadString(messageLength, Encoding.Unicode);
 #else
             Message = packetStream.ReadString(messageLength);

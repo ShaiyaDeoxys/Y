@@ -1,5 +1,4 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
 using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
