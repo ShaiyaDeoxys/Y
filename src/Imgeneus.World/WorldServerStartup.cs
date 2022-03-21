@@ -38,6 +38,7 @@ using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Trade;
+using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
@@ -133,6 +134,7 @@ namespace Imgeneus.World
             services.AddScoped<IGuildManager, GuildManager>();
             services.AddScoped<IBankManager, BankManager>();
             services.AddScoped<IQuestsManager, QuestsManager>();
+            services.AddScoped<IUntouchableManager, UntouchableManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

@@ -25,6 +25,7 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
+using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
@@ -70,6 +71,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IDuelManager _duelManager;
         private readonly IBankManager _bankManager;
         private readonly IQuestsManager _questsManager;
+        private readonly IUntouchableManager _untouchableManager;
         private readonly IGamePacketFactory _packetFactory;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
@@ -105,6 +107,7 @@ namespace Imgeneus.World.Game.Player
                                 IDuelManager duelManager,
                                 IBankManager bankManager,
                                 IQuestsManager questsManager,
+                                IUntouchableManager untouchableManager,
                                 IGamePacketFactory packetFactory)
         {
             _logger = logger;
@@ -140,6 +143,7 @@ namespace Imgeneus.World.Game.Player
             _duelManager = duelManager;
             _bankManager = bankManager;
             _questsManager = questsManager;
+            _untouchableManager = untouchableManager;
             _packetFactory = packetFactory;
         }
 
@@ -230,6 +234,8 @@ namespace Imgeneus.World.Game.Player
 
             _questsManager.Init(dbCharacter.Id, dbCharacter.Quests);
 
+            _untouchableManager.Init(dbCharacter.Id);
+
             if (dbCharacter.GuildId != null)
             {
                 var guild = await _database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId);
@@ -275,6 +281,7 @@ namespace Imgeneus.World.Game.Player
                                         _duelManager,
                                         _bankManager,
                                         _questsManager,
+                                        _untouchableManager,
                                         _gameSession,
                                         _packetFactory);
 

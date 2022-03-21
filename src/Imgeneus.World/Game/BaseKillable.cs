@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,10 @@ namespace Imgeneus.World.Game
         public IBuffsManager BuffsManager { get; private set; }
         public IElementProvider ElementProvider { get; private set; }
         public IMovementManager MovementManager { get; private set; }
+        public IUntouchableManager UntouchableManager { get; private set; }
         public IMapProvider MapProvider { get; private set; }
 
-        public BaseKillable(IDatabasePreloader databasePreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider, IMovementManager movementManager, IMapProvider mapProvider)
+        public BaseKillable(IDatabasePreloader databasePreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider, IMovementManager movementManager, IUntouchableManager untouchableManager, IMapProvider mapProvider)
         {
             _databasePreloader = databasePreloader;
             CountryProvider = countryProvider;
@@ -39,6 +41,7 @@ namespace Imgeneus.World.Game
             BuffsManager = buffsManager;
             ElementProvider = elementProvider;
             MovementManager = movementManager;
+            UntouchableManager = untouchableManager;
             MapProvider = mapProvider;
         }
 
@@ -111,8 +114,7 @@ namespace Imgeneus.World.Game
 
         #region Untouchable
 
-        ///  <inheritdoc/>
-        public virtual bool IsUntouchable { get; private set; }
+        public bool IsUntouchable { get => UntouchableManager.IsUntouchable; }
 
         #endregion
 

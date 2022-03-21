@@ -9,6 +9,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -51,6 +52,7 @@ namespace Imgeneus.World.Game.Monster
                               scope.ServiceProvider.GetRequiredService<IBuffsManager>(),
                               scope.ServiceProvider.GetRequiredService<IElementProvider>(),
                               scope.ServiceProvider.GetRequiredService<IMovementManager>(),
+                              scope.ServiceProvider.GetRequiredService<IUntouchableManager>(),
                               scope.ServiceProvider.GetRequiredService<IMapProvider>());
             mob.HealthManager.OnDead += Mob_OnDead;
 

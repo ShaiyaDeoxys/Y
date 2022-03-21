@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Untouchable;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
 using System;
@@ -27,9 +28,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IHealthManager _healthManager;
         private readonly ISpeedManager _speedManager;
         private readonly IElementProvider _elementProvider;
+        private readonly IUntouchableManager _untouchableManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager)
         {
             _logger = logger;
             _database = database;
@@ -38,6 +40,7 @@ namespace Imgeneus.World.Game.Buffs
             _healthManager = healthManager;
             _speedManager = speedManager;
             _elementProvider = elementProvider;
+            _untouchableManager = untouchableManager;
 
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
@@ -370,7 +373,7 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Untouchable:
-                    //IsUntouchable = true;
+                    _untouchableManager.IsUntouchable = true;
                     break;
 
                 default:
@@ -463,7 +466,7 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Untouchable:
-                    //IsUntouchable = ActiveBuffs.Any(b => b.IsUntouchable);
+                    _untouchableManager.IsUntouchable = ActiveBuffs.Any(b => b.IsUntouchable);
                     break;
 
                 default:

@@ -402,9 +402,6 @@ namespace Imgeneus.World.Game.Health
         /// </summary>
         public ConcurrentDictionary<IKiller, int> DamageMakers { get; private set; } = new ConcurrentDictionary<IKiller, int>();
 
-        /// <summary>
-        /// IKiller, that made max damage.
-        /// </summary>
         public IKiller MaxDamageMaker
         {
             get

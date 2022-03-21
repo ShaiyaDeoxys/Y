@@ -102,6 +102,11 @@ namespace Imgeneus.World.Game.Health
         event Action<int, IKiller> OnGotDamage;
 
         /// <summary>
+        /// IKiller, that made max damage.
+        /// </summary>
+        IKiller MaxDamageMaker { get; }
+
+        /// <summary>
         /// Decreases health and calculates how much damage was done in order to get who was killer later on.
         /// </summary>
         /// <param name="hp">damage hp</param>

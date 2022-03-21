@@ -329,13 +329,13 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (target.CountryProvider.Country == _countryProvider.Country)
+            if (target.CountryProvider.Country == _countryProvider.Country && skill.TargetType != TargetType.Caster)
             {
                 if (target is Character)
                 {
                     if (((Character)target).DuelManager.OpponentId == _ownerId)
                     {
-                        if (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff)
+                        if (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff || skill.Type == TypeDetail.PeriodicalHeal)
                         {
                             success = AttackSuccess.WrongTarget;
                             return false;
@@ -343,7 +343,7 @@ namespace Imgeneus.World.Game.Skills
                     }
                     else
                     {
-                        if (skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.Buff)
+                        if (skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.Buff && skill.Type != TypeDetail.PeriodicalHeal)
                         {
                             success = AttackSuccess.WrongTarget;
                             return false;

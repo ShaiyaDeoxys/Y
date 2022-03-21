@@ -28,9 +28,9 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
+using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
-using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 using System;
@@ -94,8 +94,9 @@ namespace Imgeneus.World.Game.Player
                          IDuelManager duelManager,
                          IBankManager bankManager,
                          IQuestsManager questsManager,
+                         IUntouchableManager untouchableManager,
                          IGameSession gameSession,
-                         IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
+                         IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
             _logger = logger;
             _packetFactory = packetFactory;
@@ -216,9 +217,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IDatabasePreloader databasePreloader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, ILinkingManager linkingManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IBankManager bankManager, IQuestsManager questsManager, IGameSession gameSession, IGamePacketFactory packetFactory)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IDatabasePreloader databasePreloader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, ILinkingManager linkingManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IBankManager bankManager, IQuestsManager questsManager, IUntouchableManager untouchableManager, IGameSession gameSession, IGamePacketFactory packetFactory)
         {
-            var character = new Character(logger, databasePreloader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, bankManager, questsManager, gameSession, packetFactory)
+            var character = new Character(logger, databasePreloader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, bankManager, questsManager, untouchableManager, gameSession, packetFactory)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,

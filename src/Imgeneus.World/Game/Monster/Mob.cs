@@ -11,6 +11,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
@@ -42,7 +43,8 @@ namespace Imgeneus.World.Game.Monster
                    IBuffsManager buffsManager,
                    IElementProvider elementProvider,
                    IMovementManager movementManager,
-                   IMapProvider mapProvider) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
+                   IUntouchableManager untouchableManager,
+                   IMapProvider mapProvider) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
             _logger = logger;
             _dbMob = databasePreloader.Mobs[mobId];
@@ -91,6 +93,8 @@ namespace Imgeneus.World.Game.Monster
                 HealthManager.OnDead += MobRebirth_OnDead;
             }
 
+            HealthManager.OnGotDamage += OnDecreaseHP;
+
             SetupAITimers();
             State = MobState.Idle;
         }
@@ -115,28 +119,18 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public short GuildPoints => _dbMob.MoneyMax;
 
-        #region Untouchable 
-
-        ///  <inheritdoc/>
-        public override bool IsUntouchable
-        {
-            get
-            {
-                return State == MobState.BackToBirthPosition;
-            }
-        }
-        #endregion
-
         /// <summary>
         /// Creates mob clone.
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, MapProvider);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
         }
 
         public void Dispose()
         {
+            HealthManager.OnDead -= MobRebirth_OnDead;
+            HealthManager.OnGotDamage -= OnDecreaseHP;
             ClearTimers();
         }
     }
