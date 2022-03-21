@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Untouchable;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
@@ -29,9 +30,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly ISpeedManager _speedManager;
         private readonly IElementProvider _elementProvider;
         private readonly IUntouchableManager _untouchableManager;
+        private readonly IStealthManager _stealthManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager)
         {
             _logger = logger;
             _database = database;
@@ -41,6 +43,7 @@ namespace Imgeneus.World.Game.Buffs
             _speedManager = speedManager;
             _elementProvider = elementProvider;
             _untouchableManager = untouchableManager;
+            _stealthManager = stealthManager;
 
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
@@ -330,7 +333,7 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Stealth:
-                    //_stealthManager.IsStealth = true;
+                    _stealthManager.IsStealth = true;
 
                     var sprinterBuff = ActiveBuffs.FirstOrDefault(b => b.SkillId == 681 || b.SkillId == 114); // 114 (old ep) 681 (new ep) are unique numbers for sprinter buff.
                     if (sprinterBuff != null)
@@ -436,7 +439,7 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Stealth:
-                    //_stealthManager.IsStealth = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
+                    _stealthManager.IsStealth = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
                     break;
 
                 case TypeDetail.WeaponMastery:

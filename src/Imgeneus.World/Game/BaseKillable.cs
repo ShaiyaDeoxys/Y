@@ -98,16 +98,12 @@ namespace Imgeneus.World.Game
 
         #region Position
 
-        /// <inheritdoc />
         public float PosX { get => MovementManager.PosX; }
 
-        /// <inheritdoc />
         public float PosY { get => MovementManager.PosY; }
 
-        /// <inheritdoc />
         public float PosZ { get => MovementManager.PosZ; }
 
-        /// <inheritdoc />
         public ushort Angle { get => MovementManager.Angle; }
 
         #endregion

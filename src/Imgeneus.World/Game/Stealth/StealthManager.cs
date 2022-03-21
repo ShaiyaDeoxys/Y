@@ -32,10 +32,6 @@ namespace Imgeneus.World.Game.Stealth
             _ownerId = ownerId;
         }
 
-        public void Dispose()
-        {
-        }
-
         #endregion
 
         public event Action<int> OnStealthChange;
@@ -51,7 +47,6 @@ namespace Imgeneus.World.Game.Stealth
                 _isAdminStealth = value;
 
                 OnStealthChange?.Invoke(_ownerId);
-                //InvokeAttackOrMoveChanged();
             }
 
             get => _isAdminStealth;
@@ -69,7 +64,6 @@ namespace Imgeneus.World.Game.Stealth
 
                 OnStealthChange?.Invoke(_ownerId);
                 //SendRunMode(); // Do we need this in new eps?
-                //InvokeAttackOrMoveChanged();
             }
             get => _isStealth || _isAdminStealth;
         }

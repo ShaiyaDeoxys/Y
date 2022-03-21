@@ -480,6 +480,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.ElementalAttack:
                 case TypeDetail.ElementalProtection:
                 case TypeDetail.Untouchable:
+                case TypeDetail.Stealth:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
@@ -489,10 +490,6 @@ namespace Imgeneus.World.Game.Skills
 
                 case TypeDetail.Dispel:
                     attackResult = UsedDispelSkill(skill, target);
-                    break;
-
-                case TypeDetail.Stealth:
-                    attackResult = UsedStealthSkill(skill, target);
                     break;
 
                 case TypeDetail.UniqueHitAttack:
@@ -529,15 +526,6 @@ namespace Imgeneus.World.Game.Skills
             target.HealthManager.CurrentSP += healSP;
 
             return result;
-        }
-
-        /// <summary>
-        /// Makes target invisible.
-        /// </summary>
-        public AttackResult UsedStealthSkill(Skill skill, IKillable target)
-        {
-            //target.BuffsManager.AddActiveBuff(skill, this);
-            return new AttackResult(AttackSuccess.Normal, new Damage());
         }
 
         /// <summary>
