@@ -47,7 +47,6 @@ namespace Imgeneus.World.Game.Player
         private readonly IGameWorld _gameWorld;
         private readonly IBackgroundTaskQueue _taskQueue;
         private readonly IMapsLoader _mapLoader;
-        private readonly PacketsHelper _packetsHelper;
         private readonly IGamePacketFactory _packetFactory;
 
         public IAdditionalInfoManager AdditionalInfoManager { get; private set; }
@@ -152,8 +151,6 @@ namespace Imgeneus.World.Game.Player
             LevelingManager.OnExpChanged += SendExperienceGain;
             QuestsManager.OnQuestMobCountChanged += SendQuestCountUpdate;
             QuestsManager.OnQuestFinished += SendQuestFinished;
-
-            _packetsHelper = new PacketsHelper();
 
             Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;

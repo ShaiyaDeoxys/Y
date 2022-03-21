@@ -24,8 +24,6 @@ namespace Imgeneus.World.Game.Zone
 {
     public class MapCell : IDisposable
     {
-        private readonly PacketsHelper _packetsHelper = new PacketsHelper();
-
         public MapCell(int index, IEnumerable<int> neighborCells, Map map)
         {
             CellIndex = index;
@@ -73,23 +71,23 @@ namespace Imgeneus.World.Game.Zone
 
             foreach (var player in sendPlayerLeave)
             {
-                _packetsHelper.SendCharacterLeave(player.Client, character);
-                _packetsHelper.SendCharacterLeave(character.Client, player);
+                Map.PacketFactory.SendCharacterLeave(player.GameSession.Client, character);
+                Map.PacketFactory.SendCharacterLeave(character.GameSession.Client, player);
             }
 
             foreach (var player in sendPlayerEnter)
                 if (player.Id != character.Id)
                 {
                     // Notify players in this map, that new player arrived.
-                    _packetsHelper.SendCharacterEnter(player.Client, character);
+                    Map.PacketFactory.SendCharacterEnter(player.Client, character);
 
                     // Notify new player, about already loaded player.
-                    _packetsHelper.SendCharacterEnter(character.Client, player);
+                    Map.PacketFactory.SendCharacterEnter(character.Client, player);
                 }
                 else // Original server sends this also to player himself, although I'm not sure if it's needed.
                      // Added it as a fix for admin stealth.
                     if (character.OldCellId == -1)
-                    _packetsHelper.SendCharacterEnter(character.Client, character);
+                    Map.PacketFactory.SendCharacterEnter(character.Client, character);
 
             // Send update npcs.
             var oldCellNPCs = character.OldCellId != -1 ? Map.Cells[character.OldCellId].GetAllNPCs(true) : new List<Npc>();
@@ -99,9 +97,9 @@ namespace Imgeneus.World.Game.Zone
             var npcToEnter = newCellNPCs.Where(npc => !oldCellNPCs.Contains(npc));
 
             foreach (var npc in npcToLeave)
-                _packetsHelper.SendNpcLeave(character.Client, npc);
+                Map.PacketFactory.SendNpcLeave(character.GameSession.Client, npc);
             foreach (var npc in npcToEnter)
-                _packetsHelper.SendNpcEnter(character.Client, npc);
+                Map.PacketFactory.SendNpcEnter(character.GameSession.Client, npc);
 
             // Send update mobs.
             var oldCellMobs = character.OldCellId != -1 ? Map.Cells[character.OldCellId].GetAllMobs(true) : new List<Mob>();
@@ -111,10 +109,10 @@ namespace Imgeneus.World.Game.Zone
             var mobToEnter = newCellMobs.Where(m => !oldCellMobs.Contains(m));
 
             foreach (var mob in mobToLeave)
-                _packetsHelper.SendMobLeave(character.Client, mob);
+                Map.PacketFactory.SendMobLeave(character.GameSession.Client, mob);
 
             foreach (var mob in mobToEnter)
-                _packetsHelper.SendMobEnter(character.Client, mob, false);
+                Map.PacketFactory.SendMobEnter(character.GameSession.Client, mob, false);
         }
 
         /// <summary>
@@ -184,7 +182,7 @@ namespace Imgeneus.World.Game.Zone
 
             if (notifyPlayers)
                 foreach (var player in GetAllPlayers(true))
-                    _packetsHelper.SendCharacterLeave(player.Client, character);
+                    Map.PacketFactory.SendCharacterLeave(player.GameSession.Client, character);
         }
 
         /// <summary>
@@ -209,7 +207,6 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxHPChanged += Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged += Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged += Character_OnMaxMPChanged;
-            //character.OnMax_HP_MP_SP_Changed += Character_OnMax_HP_MP_SP_Changed;
             character.HealthManager.OnRecover += Character_OnRecover;
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange += Character_OnShapeChange;
@@ -240,7 +237,6 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxHPChanged -= Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged -= Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged -= Character_OnMaxMPChanged;
-            //character.OnMax_HP_MP_SP_Changed -= Character_OnMax_HP_MP_SP_Changed;
             character.HealthManager.OnRecover -= Character_OnRecover;
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange -= Character_OnShapeChange;
@@ -261,7 +257,7 @@ namespace Imgeneus.World.Game.Zone
         {
             // Send other clients notification, that user is moving.
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendCharacterMoves(player.Client, senderId, x, y, z ,a, motion);
+                Map.PacketFactory.SendCharacterMoves(player.GameSession.Client, senderId, x, y, z ,a, motion);
         }
 
         /// <summary>
@@ -270,7 +266,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnMotion(Character playerWithMotion, Motion motion)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendCharacterMotion(player.Client, playerWithMotion.Id, motion);
+                Map.PacketFactory.SendCharacterMotion(player.GameSession.Client, playerWithMotion.Id, motion);
         }
 
         /// <summary>
@@ -282,7 +278,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnEquipmentChanged(int characterId, Item equipmentItem, byte slot)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendCharacterChangedEquipment(player.Client, characterId, equipmentItem, slot);
+                Map.PacketFactory.SendCharacterChangedEquipment(player.GameSession.Client, characterId, equipmentItem, slot);
         }
 
         /// <summary>
@@ -299,7 +295,7 @@ namespace Imgeneus.World.Game.Zone
                 else if (sender.PartyManager.HasParty)
                     type = PartyMemberType.Member;
 
-                _packetsHelper.SendCharacterPartyChanged(player.Client, sender.Id, type);
+                Map.PacketFactory.SendCharacterPartyChanged(player.Client, sender.Id, type);
             }
         }
 
@@ -309,7 +305,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnAttackOrMoveChanged(int senderId, AttackSpeed attack, MoveSpeed move)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendAttackAndMovementSpeed(player.Client, senderId, attack, move);
+                Map.PacketFactory.SendAttackAndMovementSpeed(player.GameSession.Client, senderId, attack, move);
         }
 
         /// <summary>
@@ -319,10 +315,10 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendCharacterUsedSkill(player.Client, senderId, target, skill, attackResult);
+                Map.PacketFactory.SendCharacterUsedSkill(player.GameSession.Client, senderId, target, skill, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
-                    _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);
+                    Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);
             }
         }
 
@@ -333,10 +329,10 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendCharacterUsualAttack(player.Client, senderId, target, attackResult);
+                Map.PacketFactory.SendCharacterUsualAttack(player.GameSession.Client, senderId, target, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
-                    _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);
+                    Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);
             }
         }
 
@@ -346,7 +342,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnDead(int senderId, IKiller killer)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendCharacterKilled(player.Client, senderId, killer);
+                Map.PacketFactory.SendCharacterKilled(player.GameSession.Client, senderId, killer);
         }
 
         /// <summary>
@@ -355,7 +351,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnSkillCastStarted(int senderId, IKillable target, Skill skill)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendSkillCastStarted(player.Client, senderId, target, skill);
+                Map.PacketFactory.SendSkillCastStarted(player.GameSession.Client, senderId, target, skill);
         }
 
         /// <summary>
@@ -364,62 +360,53 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnUsedItem(int senderId, Item item)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendUsedItem(player.Client, senderId, item);
+                Map.PacketFactory.SendUsedItem(player.GameSession.Client, senderId, item);
         }
 
         private void Character_OnRecover(int senderId, int hp, int mp, int sp)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendRecoverCharacter(player.Client, senderId, hp, mp, sp);
+                Map.PacketFactory.SendRecoverCharacter(player.GameSession.Client, senderId, hp, mp, sp);
         }
 
         private void Character_OnMaxHPChanged(int senderId, int value)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMaxHitpoints(player.Client, senderId, HitpointType.HP, value);
+                Map.PacketFactory.SendMaxHitpoints(player.GameSession.Client, senderId, HitpointType.HP, value);
         }
 
         private void Character_OnMaxSPChanged(int senderId, int value)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMaxHitpoints(player.Client, senderId, HitpointType.SP, value);
+                Map.PacketFactory.SendMaxHitpoints(player.GameSession.Client, senderId, HitpointType.SP, value);
         }
 
         private void Character_OnMaxMPChanged(int senderId, int value)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMaxHitpoints(player.Client, senderId, HitpointType.MP, value);
-        }
-
-        /// <summary>
-        /// Notifies other players that player's max HP, MP and SP changed
-        /// </summary>
-        private void Character_OnMax_HP_MP_SP_Changed(IKillable sender)
-        {
-            foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMax_HP_MP_SP(player.Client, (Character)sender);
+                Map.PacketFactory.SendMaxHitpoints(player.GameSession.Client, senderId, HitpointType.MP, value);
         }
 
         private void Character_OnSkillKeep(int senderId, Buff buff, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendSkillKeep(player.Client, senderId, buff.SkillId, buff.SkillLevel, result);
+                Map.PacketFactory.SendSkillKeep(player.GameSession.Client, senderId, buff.SkillId, buff.SkillLevel, result);
         }
 
         private void Character_OnShapeChange(int senderId, ShapeEnum shape, int param1, int param2)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendShapeUpdate(player.Client, senderId, shape, param1, param2);
+                Map.PacketFactory.SendShapeUpdate(player.GameSession.Client, senderId, shape, param1, param2);
         }
 
         private void Character_OnUsedRangeSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendUsedRangeSkill(player.Client, senderId, target, skill, attackResult);
+                Map.PacketFactory.SendUsedRangeSkill(player.GameSession.Client, senderId, target, skill, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
-                    _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);
+                    Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);
             }
         }
 
@@ -427,21 +414,21 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendCharacterRebirth(player.Client, senderId);
-                _packetsHelper.SendDeadRebirth(player.Client, Players[senderId]);
+                Map.PacketFactory.SendCharacterRebirth(player.GameSession.Client, senderId);
+                Map.PacketFactory.SendDeadRebirth(player.GameSession.Client, Players[senderId]);
             }
         }
 
         private void Character_OnAppearanceChanged(int characterId, byte hair, byte face, byte size, byte gender)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendAppearanceChanged(player.Client, characterId, hair, face, size, gender);
+                Map.PacketFactory.SendAppearanceChanged(player.GameSession.Client, characterId, hair, face, size, gender);
         }
 
         private void Character_OnStartSummonVehicle(int senderId)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendStartSummoningVehicle(player.Client, senderId);
+                Map.PacketFactory.SendStartSummoningVehicle(player.GameSession.Client, senderId);
         }
 
         /// <summary>
@@ -453,7 +440,7 @@ namespace Imgeneus.World.Game.Zone
 
             foreach (var player in GetAllPlayers(true))
                 // If sender has party, send admin level up
-                _packetsHelper.SendLevelUp(player.Client, senderId, level, statPoint, skillPoint, minExp, nextExp, hasParty);
+                Map.PacketFactory.SendLevelUp(player.GameSession.Client, senderId, level, statPoint, skillPoint, minExp, nextExp, hasParty);
         }
 
         /// <summary>
@@ -462,7 +449,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnVehiclePassengerChanged(int senderId, int vehicle2CharacterID)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.VehiclePassengerChanged(player.Client, senderId, vehicle2CharacterID);
+                Map.PacketFactory.SendVehiclePassengerChanged(player.GameSession.Client, senderId, vehicle2CharacterID);
         }
 
         /// <summary>
@@ -495,7 +482,7 @@ namespace Imgeneus.World.Game.Zone
             AddListeners(mob);
 
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMobEnter(player.Client, mob, true);
+                Map.PacketFactory.SendMobEnter(player.GameSession.Client, mob, true);
         }
 
         /// <summary>
@@ -507,7 +494,7 @@ namespace Imgeneus.World.Game.Zone
             RemoveListeners(removedMob);
 
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMobLeave(player.Client, mob);
+                Map.PacketFactory.SendMobLeave(player.GameSession.Client, mob);
         }
 
         /// <summary>
@@ -596,7 +583,7 @@ namespace Imgeneus.World.Game.Zone
             RemoveListeners(mob);
 
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMobDead(player.Client, senderId, killer);
+                Map.PacketFactory.SendMobDead(player.GameSession.Client, senderId, killer);
 
             // Add experience to killer character/party
             // Update quest.
@@ -618,17 +605,17 @@ namespace Imgeneus.World.Game.Zone
         private void Mob_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             foreach (var player in GetAllPlayers(true))
-                _packetsHelper.SendMobMove(player.Client, senderId, x, z, motion);
+                Map.PacketFactory.SendMobMove(player.GameSession.Client, senderId, x, z, motion);
         }
 
         private void Mob_OnAttack(IKiller sender, IKillable target, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendMobAttack(player.Client, (Mob)sender, target.Id, attackResult);
+                Map.PacketFactory.SendMobAttack(player.GameSession.Client, (Mob)sender, target.Id, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
-                    _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);
+                    Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);
             }
         }
 
@@ -636,10 +623,10 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
             {
-                _packetsHelper.SendMobUsedSkill(player.Client, (Mob)sender, target.Id, skill, attackResult);
+                Map.PacketFactory.SendMobUsedSkill(player.GameSession.Client, (Mob)sender, target.Id, skill, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
-                    _packetsHelper.SendAbsorbValue(player.Client, attackResult.Absorb);
+                    Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);
             }
         }
 
@@ -668,7 +655,7 @@ namespace Imgeneus.World.Game.Zone
             {
                 AssignCellIndex(npc);
                 foreach (var player in GetAllPlayers(true))
-                    _packetsHelper.SendNpcEnter(player.Client, npc);
+                    Map.PacketFactory.SendNpcEnter(player.GameSession.Client, npc);
             }
         }
 
@@ -683,7 +670,7 @@ namespace Imgeneus.World.Game.Zone
                 if (NPCs.TryRemove(npc.Id, out var removedNpc))
                 {
                     foreach (var player in GetAllPlayers(true))
-                        _packetsHelper.SendNpcLeave(player.Client, npc);
+                        Map.PacketFactory.SendNpcLeave(player.GameSession.Client, npc);
                 }
             }
         }
@@ -739,7 +726,7 @@ namespace Imgeneus.World.Game.Zone
             {
                 AssignCellIndex(item);
                 foreach (var player in GetAllPlayers(true))
-                    _packetsHelper.SendAddItem(player.Client, item);
+                    Map.PacketFactory.SendAddItem(player.GameSession.Client, item);
             }
         }
 
@@ -801,7 +788,7 @@ namespace Imgeneus.World.Game.Zone
             {
                 mapItem.StopRemoveTimer();
                 foreach (var player in GetAllPlayers(true))
-                    _packetsHelper.SendRemoveItem(player.Client, mapItem);
+                    Map.PacketFactory.SendRemoveItem(player.GameSession.Client, mapItem);
             }
 
             return mapItem;

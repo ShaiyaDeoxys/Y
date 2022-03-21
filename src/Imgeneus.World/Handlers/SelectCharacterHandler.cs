@@ -59,7 +59,7 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendCharacterSelected(client, true, character.Id);
 
-            //SendWorldDay(); // TODO: why do we need it?
+            _packetFactory.SendWorldDay(client); // TODO: why do we need it?
             _packetFactory.SendGuildList(client, await _guildManager.GetAllGuilds(_countryProvider.Country == CountryType.Light ? Fraction.Light : Fraction.Dark));
 
             var online = new List<DbCharacter>();
@@ -79,7 +79,7 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendAdditionalStats(client, character);
 
-            //SendCurrentHitpoints();
+            _packetFactory.SendCurrentHitpoints(client, character);
 
             _packetFactory.SendInventoryItems(client, character.InventoryManager.InventoryItems.Values); // WARNING: some servers expanded invetory to 6 bags(os is 5 bags), if you send item in 6 bag, client will crash!
             foreach (var item in character.InventoryManager.InventoryItems.Values.Where(i => i.ExpirationTime != null))
@@ -106,7 +106,7 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
 
 #if !EP8_V2
-            //SendAccountPoints(); // WARNING: This is necessary if you have an in-game item mall.
+            _packetFactory.SendAccountPoints(client, character.Points); // WARNING: This is necessary if you have an in-game item mall.
 #endif
 
             _packetFactory.SendSkillBar(client, character.QuickItems); // Should be always the last! Changes packet encryption to xor!

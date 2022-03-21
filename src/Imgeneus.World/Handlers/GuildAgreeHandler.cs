@@ -75,7 +75,7 @@ namespace Imgeneus.World.Handlers
             foreach (var m in _guildManager.CreationRequest.Members)
             {
                 m.GuildManager.GuildMembers.AddRange(guild.Members);
-                m.SendGuildCreateSuccess(guild.Id, m.GuildManager.GuildRank, guild.Name, guild.Message);
+                _packetFactory.SendGuildCreateSuccess(m.GameSession.Client, guild.Id, m.GuildManager.GuildRank, guild.Name, guild.Message);
                 _packetFactory.SendGuildMembersOnline(client, m.GuildManager.GuildMembers, true);
 
                 m.GuildManager.CreationRequest.Dispose();

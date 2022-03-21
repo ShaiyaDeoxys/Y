@@ -15,13 +15,16 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
+using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
 using System.Collections.Generic;
 
@@ -49,6 +52,8 @@ namespace Imgeneus.World.Packets
         #region Character
         void SendDetails(IWorldClient client, Character character);
         void SendAdditionalStats(IWorldClient client, Character character);
+        void SendResetStats(IWorldClient client, Character character);
+        void SendResetSkills(IWorldClient client, ushort skillPoint);
         void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems);
         void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue);
         void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc);
@@ -58,6 +63,7 @@ namespace Imgeneus.World.Packets
         void SendAddBuff(IWorldClient client, Buff buff);
         void SendRemoveBuff(IWorldClient client, Buff buff);
         void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
+        void SendCurrentHitpoints(IWorldClient client, Character character);
         #endregion
 
         #region Inventory
@@ -72,16 +78,20 @@ namespace Imgeneus.World.Packets
         void SendBoughtItem(IWorldClient client, BuyResult result, Item boughtItem, uint gold);
         void SendSoldItem(IWorldClient client, bool success, Item itemToSell, uint gold);
         void SendGoldUpdate(IWorldClient client, uint gold);
+        void SendItemExpired(IWorldClient client, Item item, ExpireType expireType);
         #endregion
 
         #region Vehicle
         void SendUseVehicle(IWorldClient client, bool ok, bool isOnVehicle);
         void SendVehicleResponse(IWorldClient client, VehicleResponse status);
         void SendVehicleRequest(IWorldClient client, int requesterId);
+        void SendStartSummoningVehicle(IWorldClient client, int senderId);
+        void SendVehiclePassengerChanged(IWorldClient client, int passengerId, int vehicleCharId);
         #endregion
 
         #region Map
         void SendCharacterMotion(IWorldClient client, int characterId, Motion motion);
+        void SendCharacterMoves(IWorldClient client, int senderId, float x, float y, float z, ushort a, MoveMotion motion);
         void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot);
         void SendCharacterShape(IWorldClient client, Character character);
         void SendShapeUpdate(IWorldClient client, int senderId, ShapeEnum shape, int? param1 = null, int? param2 = null);
@@ -92,6 +102,23 @@ namespace Imgeneus.World.Packets
         void SendPortalTeleportNotAllowed(IWorldClient client, PortalTeleportNotAllowedReason reason);
         void SendWeather(IWorldClient client, Map map);
         void SendCharacterTeleport(IWorldClient client, int characterId, ushort mapId, float x, float y, float z, bool teleportedByAdmin);
+        void SendCharacterLeave(IWorldClient client, Character character);
+        void SendCharacterEnter(IWorldClient client, Character character);
+        void SendAttackAndMovementSpeed(IWorldClient client, int senderId, AttackSpeed attack, MoveSpeed move);
+        void SendCharacterUsedSkill(IWorldClient client, int senderId, IKillable target, Skill skill, AttackResult attackResult);
+        void SendAbsorbValue(IWorldClient client, ushort absorb);
+        void SendSkillCastStarted(IWorldClient client, int senderId, IKillable target, Skill skill);
+        void SendUsedItem(IWorldClient client, int senderId, Item item);
+        void SendMax_HP_MP_SP(IWorldClient client, Character character);
+        void SendSkillKeep(IWorldClient client, int id, ushort skillId, byte skillLevel, AttackResult result);
+        void SendUsedRangeSkill(IWorldClient client, int senderId, IKillable target, Skill skill, AttackResult attackResult);
+        void SendAddItem(IWorldClient client, MapItem mapItem);
+        void SendRemoveItem(IWorldClient client, MapItem mapItem);
+        #endregion
+
+        #region NPC
+        void SendNpcLeave(IWorldClient client, Npc npc);
+        void SendNpcEnter(IWorldClient client, Npc npc);
         #endregion
 
         #region Linking
@@ -133,7 +160,7 @@ namespace Imgeneus.World.Packets
         void SendPartyMemberGetItem(IWorldClient client, int characterId, Item item);
         void SendPartyLevel(IWorldClient client, int senderId, ushort level);
         void SendPartyError(IWorldClient client, PartyErrorType partyError, int id = 0);
-        void SendRaidDismantle(IWorldClient client);
+        void SendCharacterPartyChanged(IWorldClient client, int characterId, PartyMemberType type);
         #endregion
 
         #region Raid
@@ -154,6 +181,7 @@ namespace Imgeneus.World.Packets
         void SendMemberGetItem(IWorldClient client, int characterId, Item item);
         void SendRaidInvite(IWorldClient client, int charId);
         void SendDeclineRaid(IWorldClient client, int charId);
+        void SendRaidDismantle(IWorldClient client);
         #endregion
 
         #region Trade
@@ -170,16 +198,27 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Attack
+        void SendAttackStart(IWorldClient client);
         void SendMobInTarget(IWorldClient client, Mob target);
         void SendPlayerInTarget(IWorldClient client, Character target);
         void SendCurrentBuffs(IWorldClient client, IKillable target);
+        void SendTargetAddBuff(IWorldClient client, int targetId, Buff buff, bool isMob);
+        void SendTargetRemoveBuff(IWorldClient client, int targetId, Buff buff, bool isMob);
         void SendMobState(IWorldClient client, Mob target);
         void SendAutoAttackFailed(IWorldClient client, int senderId, IKillable target, AttackSuccess reason);
         void SendUseSkillFailed(IWorldClient client, int senderId, Skill skill, IKillable target, AttackSuccess reason);
+        void SendUseSMMP(IWorldClient client, ushort MP, ushort SP);
+        void SendCharacterUsualAttack(IWorldClient client, int senderId, IKillable target, AttackResult attackResult);
         #endregion
 
         #region Mobs
         void SendMobPosition(IWorldClient client, int senderId, float x, float z, MoveMotion motion);
+        void SendMobEnter(IWorldClient client, Mob mob, bool isNew);
+        void SendMobLeave(IWorldClient client, Mob mob);
+        void SendMobMove(IWorldClient client, int senderId, float x, float z, MoveMotion motion);
+        void SendMobAttack(IWorldClient client, Mob mob, int targetId, AttackResult attackResult);
+        void SendMobUsedSkill(IWorldClient client, Mob mob, int targetId, Skill skill, AttackResult attackResult);
+        void SendMobDead(IWorldClient client, int senderId, IKiller killer);
         #endregion
 
         #region Friends
@@ -217,6 +256,7 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Guild
+        void SendGuildCreateSuccess(IWorldClient client, int guildId, byte rank, string guildName, string guildMessage);
         void SendGuildCreateFailed(IWorldClient client, GuildCreateFailedReason reason);
         void SendGuildCreateRequest(IWorldClient client, int creatorId, string guildName, string guildMessage);
         void SendGuildMemberIsOnline(IWorldClient client, int playerId);
@@ -269,12 +309,35 @@ namespace Imgeneus.World.Packets
         void SendBlessUpdate(IWorldClient client, CountryType country, int amount);
         #endregion
 
+        #region Obelisks
+        void SendObelisks(IWorldClient client, IEnumerable<Obelisk> obelisks);
+        void SendObeliskBroken(IWorldClient client, Obelisk obelisk);
+        #endregion
+
+        #region Leveling
+        void SendExperienceGain(IWorldClient client, uint exp);
+        void SendLevelUp(IWorldClient client, int characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp, bool hasParty = false);
+        #endregion
+
+        #region Death
+        void SendCharacterKilled(IWorldClient client, int characterId, IKiller killer);
+        void SendDeadRebirth(IWorldClient client, Character sender);
+        void SendCharacterRebirth(IWorldClient client, int senderId);
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);
         void SendCharacterPosition(IWorldClient client, Character player);
         void SendGmTeleportToPlayer(IWorldClient client, Character player);
         void SendGmSummon(IWorldClient client, Character player, PacketType type);
+        void SendWarning(IWorldClient client, string message);
+        #endregion
+
+        #region Other
+        void SendWorldDay(IWorldClient client);
+        void SendRunMode(IWorldClient client, MoveMotion motion);
+        void SendAccountPoints(IWorldClient client, uint points);
         #endregion
     }
 }

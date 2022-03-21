@@ -12,44 +12,13 @@ namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {
-        /// <summary>
-        /// Sends to client character start-up information.
-        /// </summary>
-        public void SendCharacterInfo()
-        {
-            // SendWorldDay(); // TODO: why do we need it?
-            //SendGuildList();
-            //SendGuildMembersOnline();
-            //SendDetails();
-            //SendAdditionalStats();
-            //SendCurrentHitpoints();
-            //SendInventoryItems();
-            //SendLearnedSkills();
-            //SendOpenQuests();
-            //SendFinishedQuests();
-            //SendActiveBuffs();
-            //SendMoveAndAttackSpeed();
-            //SendFriends();
-            //SendBlessAmount();
-            //SendBankItems();
-            //SendGuildNpcLvlList();
-            //SendAutoStats();
-#if !EP8_V2
-            SendAccountPoints(); // WARNING: This is necessary if you have an in-game item mall.
-#endif
-        }
+        private void SendAdditionalStats() => _packetFactory.SendAdditionalStats(GameSession.Client, this);
 
-        private void SendWorldDay() => _packetsHelper.SendWorldDay(Client);
-
-        private void SendAdditionalStats() => _packetsHelper.SendAdditionalStats(Client, this);
-
-        private void SendResetStats() => _packetsHelper.SendResetStats(Client, this);
-
-        private void SendItemExpiration(Item item) => _packetsHelper.SendItemExpiration(Client, item);
+        private void SendResetStats() => _packetFactory.SendResetStats(GameSession.Client, this);
 
         private void SendQuestFinished(Quest quest, int npcId = 0) => _packetFactory.SendQuestFinished(GameSession.Client, quest, npcId);
 
-        public void SendFriendOnline(int friendId, bool isOnline) => _packetsHelper.SendFriendOnline(Client, friendId, isOnline);
+        public void SendFriendOnline(int friendId, bool isOnline) => _packetFactory.SendFriendOnline(GameSession.Client, friendId, isOnline);
 
         private void SendQuestCountUpdate(ushort questId, byte index, byte count) => _packetFactory.SendQuestCountUpdate(GameSession.Client, questId, index, count);
 
@@ -57,23 +26,13 @@ namespace Imgeneus.World.Game.Player
 
         private void SendRemoveBuff(int senderId, Buff buff) => _packetFactory.SendRemoveBuff(GameSession.Client, buff);
 
-        //private void SendMaxHP() => _packetsHelper.SendMaxHitpoints(Client, this, HitpointType.HP);
+        private void SendAttackStart() => _packetFactory.SendAttackStart(GameSession.Client);
 
-        //private void SendMaxSP() => _packetsHelper.SendMaxHitpoints(Client, this, HitpointType.SP);
+        private void SendUseSMMP(ushort needMP, ushort needSP) => _packetFactory.SendUseSMMP(GameSession.Client, needMP, needSP);
 
-        //private void SendMaxMP() => _packetsHelper.SendMaxHitpoints(Client, this, HitpointType.MP);
+        private void SendTargetAddBuff(IKillable target, Buff buff) => _packetFactory.SendTargetAddBuff(GameSession.Client, target.Id, buff, target is Mob);
 
-        private void SendAttackStart() => _packetsHelper.SendAttackStart(Client);
-
-        private void SendUseSMMP(ushort needMP, ushort needSP) => _packetsHelper.SendUseSMMP(Client, needMP, needSP);
-
-        private void SendCooldownNotOver(IKillable target, Skill skill) => _packetsHelper.SendCooldownNotOver(Client, this, target, skill);
-
-        private void SendRunMode() => _packetsHelper.SendRunMode(Client, this);
-
-        private void SendTargetAddBuff(IKillable target, Buff buff) => _packetsHelper.SendTargetAddBuff(Client, target.Id, buff, target is Mob);
-
-        private void SendTargetRemoveBuff(IKillable target, Buff buff) => _packetsHelper.SendTargetRemoveBuff(Client, target.Id, buff, target is Mob);
+        private void SendTargetRemoveBuff(IKillable target, Buff buff) => _packetFactory.SendTargetRemoveBuff(GameSession.Client, target.Id, buff, target is Mob);
 
         private void SendDuelResponse(int senderId, DuelResponse response) => _packetFactory.SendDuelResponse(GameSession.Client, response, senderId);
 
@@ -89,35 +48,23 @@ namespace Imgeneus.World.Game.Player
 
         public void SendAddItemToInventory(Item item)
         {
-            _packetsHelper.SendAddItem(Client, item);
+            _packetFactory.SendAddItem(GameSession.Client, item);
 
             if (item.ExpirationTime != null)
-                _packetsHelper.SendItemExpiration(Client, item);
+                _packetFactory.SendItemExpiration(GameSession.Client, item);
         }
 
-        public void SendRemoveItemFromInventory(Item item, bool fullRemove) => _packetsHelper.SendRemoveItem(Client, item, fullRemove);
+        public void SendRemoveItemFromInventory(Item item, bool fullRemove) => _packetFactory.SendRemoveItem(GameSession.Client, item, fullRemove);
 
-        public void SendItemExpired(Item item) => _packetsHelper.SendItemExpired(Client, item, ExpireType.ExpireItemDuration);
+        public void SendItemExpired(Item item) => _packetFactory.SendItemExpired(GameSession.Client, item, ExpireType.ExpireItemDuration);
 
-        public void SendTradeCanceled() => _packetsHelper.SendTradeCanceled(GameSession.Client);
+        public void SendObeliskBroken(Obelisk obelisk) => _packetFactory.SendObeliskBroken(GameSession.Client, obelisk);
 
-        public void SendObelisks() => _packetsHelper.SendObelisks(Client, Map.Obelisks.Values);
+        public void SendUseVehicle(bool success, bool status) => _packetFactory.SendUseVehicle(GameSession.Client, success, status);
 
-        public void SendObeliskBroken(Obelisk obelisk) => _packetsHelper.SendObeliskBroken(Client, obelisk);
+        public void SendExperienceGain(uint expAmount) => _packetFactory.SendExperienceGain(GameSession.Client, expAmount);
 
-        public void SendUseVehicle(bool success, bool status) => _packetsHelper.SendUseVehicle(Client, success, status);
-
-        public void SendMyShape() => _packetsHelper.SendCharacterShape(Client, this);
-
-        public void SendExperienceGain(uint expAmount) => _packetsHelper.SendExperienceGain(Client, expAmount);
-
-        public void SendWarning(string message) => _packetsHelper.SendWarning(Client, message);
-
-        public void SendAccountPoints() => _packetsHelper.SendAccountPoints(Client, Points);
-
-        public void SendResetSkills() => _packetsHelper.SendResetSkills(Client, SkillsManager.SkillPoints);
-
-        public void SendGuildCreateSuccess(int guildId, byte rank, string guildName, string guildMessage) => _packetsHelper.SendGuildCreateSuccess(Client, guildId, rank, guildName, guildMessage);
+        public void SendResetSkills() => _packetFactory.SendResetSkills(GameSession.Client, SkillsManager.SkillPoints);
 
         public void SendGuildMemberIsOnline(int playerId) => _packetFactory.SendGuildMemberIsOnline(GameSession.Client, playerId);
 

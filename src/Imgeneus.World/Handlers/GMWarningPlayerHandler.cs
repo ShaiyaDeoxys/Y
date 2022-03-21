@@ -29,9 +29,8 @@ namespace Imgeneus.World.Handlers
                 return;
             }
 
-            target?.SendWarning(packet.Message);
-
+            _packetFactory.SendWarning(target.GameSession.Client, packet.Message);
             _packetFactory.SendGmCommandSuccess(client);
         }
-        }
+    }
 }

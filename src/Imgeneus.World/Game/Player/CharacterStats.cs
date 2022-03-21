@@ -37,21 +37,5 @@ namespace Imgeneus.World.Game.Player
         }
 
         #endregion
-
-        #region Account Points
-
-        /// <summary>
-        /// Attempts to set the player's account points.
-        /// </summary>
-        /// <param name="points">Points to set.</param>
-        public void SetPoints(uint points)
-        {
-            Points = points;
-
-            _taskQueue.Enqueue(ActionType.SAVE_ACCOUNT_POINTS, Client.UserId, Points);
-            SendAccountPoints();
-        }
-
-        #endregion
     }
 }
