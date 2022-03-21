@@ -121,6 +121,7 @@ namespace Imgeneus.World.Game.Player
             QuestsManager = questsManager;
             GameSession = gameSession;
 
+            HealthManager.MP_SP_Used += SendUseMPSP;
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
             StatsManager.OnResetStats += SendResetStats;
             BuffsManager.OnBuffAdded += SendAddBuff;
@@ -147,6 +148,7 @@ namespace Imgeneus.World.Game.Player
 
         public void Dispose()
         {
+            HealthManager.MP_SP_Used -= SendUseMPSP;
             StatsManager.OnAdditionalStatsUpdate -= SendAdditionalStats;
             StatsManager.OnResetStats -= SendResetStats;
             BuffsManager.OnBuffAdded -= SendAddBuff;

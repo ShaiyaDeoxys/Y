@@ -28,7 +28,7 @@ namespace Imgeneus.World.Game.Player
 
         private void SendAttackStart() => _packetFactory.SendAttackStart(GameSession.Client);
 
-        private void SendUseSMMP(ushort needMP, ushort needSP) => _packetFactory.SendUseSMMP(GameSession.Client, needMP, needSP);
+        private void SendUseMPSP(ushort needMP, ushort needSP) => _packetFactory.SendUseSMMP(GameSession.Client, needMP, needSP);
 
         private void SendTargetAddBuff(IKillable target, Buff buff) => _packetFactory.SendTargetAddBuff(GameSession.Client, target.Id, buff, target is Mob);
 

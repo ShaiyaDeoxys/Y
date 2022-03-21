@@ -160,6 +160,16 @@ namespace Imgeneus.World.Game.Health
         event Action<int, HitpointArgs> SP_Changed;
 
         /// <summary>
+        /// Event, that is fired, when player used any skill and both MP and SP changed.
+        /// </summary>
+        event Action<ushort, ushort> MP_SP_Used;
+
+        /// <summary>
+        /// Fires <see cref="MP_SP_Used"/>
+        /// </summary>
+        void InvokeUsedMPSP(ushort usedMP, ushort usedSP);
+
+        /// <summary>
         /// Event, that is fired, when killable recovers.
         /// </summary>
         event Action<int, int, int, int> OnRecover;

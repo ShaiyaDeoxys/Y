@@ -384,6 +384,7 @@ namespace Imgeneus.World.Game.Skills
             {
                 _healthManager.CurrentMP -= skill.NeedMP;
                 _healthManager.CurrentSP -= skill.NeedSP;
+                _healthManager.InvokeUsedMPSP(skill.NeedMP, skill.NeedSP);
             }
 
             int n = 0;

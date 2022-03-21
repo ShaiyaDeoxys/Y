@@ -188,6 +188,11 @@ namespace Imgeneus.World.Game.Health
             }
         }
 
+        public void InvokeUsedMPSP(ushort usedMP, ushort usedSP)
+        {
+            MP_SP_Used?.Invoke(usedMP, usedSP);
+        }
+
         #endregion
 
         #region Extras
@@ -435,19 +440,12 @@ namespace Imgeneus.World.Game.Health
 
         #endregion
 
-        /// <summary>
-        /// Event, that is fired, when hp changes.
-        /// </summary>
         public event Action<int, HitpointArgs> HP_Changed;
 
-        /// <summary>
-        /// Event, that is fired, when mp changes.
-        /// </summary>
         public event Action<int, HitpointArgs> MP_Changed;
 
-        /// <summary>
-        /// Event, that is fired, when sp changes.
-        /// </summary>
         public event Action<int, HitpointArgs> SP_Changed;
+
+        public event Action<ushort, ushort> MP_SP_Used;
     }
 }
