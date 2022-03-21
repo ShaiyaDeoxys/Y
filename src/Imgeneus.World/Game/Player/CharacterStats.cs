@@ -1,10 +1,4 @@
-﻿using Imgeneus.DatabaseBackgroundService.Handlers;
-using Imgeneus.Network.Packets.Game;
-using Imgeneus.World.Game.Stats;
-using System;
-using System.Linq;
-
-namespace Imgeneus.World.Game.Player
+﻿namespace Imgeneus.World.Game.Player
 {
     public partial class Character
     {

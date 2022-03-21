@@ -1,6 +1,5 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Preload;
-using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
@@ -28,7 +27,6 @@ using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
 using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
-using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Packets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -43,9 +41,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IDatabase _database;
         private readonly ILogger<Character> _characterLogger;
         private readonly IGameWorld _gameWorld;
-        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly IDatabasePreloader _databasePreloader;
-        private readonly IMapsLoader _mapsLoader;
         private readonly ICountryProvider _countryProvider;
         private readonly ISpeedManager _speedManager;
         private readonly IStatsManager _statsManager;
@@ -80,9 +76,7 @@ namespace Imgeneus.World.Game.Player
                                 IDatabase database,
                                 ILogger<Character> characterLogger,
                                 IGameWorld gameWorld,
-                                IBackgroundTaskQueue backgroundTaskQueue,
                                 IDatabasePreloader databasePreloader,
-                                IMapsLoader mapsLoader,
                                 ICountryProvider countryProvider,
                                 ISpeedManager speedManager,
                                 IStatsManager statsManager,
@@ -117,9 +111,7 @@ namespace Imgeneus.World.Game.Player
             _database = database;
             _characterLogger = characterLogger;
             _gameWorld = gameWorld;
-            _backgroundTaskQueue = backgroundTaskQueue;
             _databasePreloader = databasePreloader;
-            _mapsLoader = mapsLoader;
             _countryProvider = countryProvider;
             _speedManager = speedManager;
             _statsManager = statsManager;
@@ -255,10 +247,7 @@ namespace Imgeneus.World.Game.Player
 
             var player = Character.FromDbCharacter(dbCharacter,
                                         _characterLogger,
-                                        _gameWorld,
-                                        _backgroundTaskQueue,
                                         _databasePreloader,
-                                        _mapsLoader,
                                         _countryProvider,
                                         _speedManager,
                                         _statsManager,
@@ -288,8 +277,6 @@ namespace Imgeneus.World.Game.Player
                                         _questsManager,
                                         _gameSession,
                                         _packetFactory);
-
-            player.Client = _gameSession.Client; // TODO: remove it.
 
             return player;
         }

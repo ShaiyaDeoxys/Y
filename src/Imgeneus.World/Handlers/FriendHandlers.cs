@@ -56,7 +56,7 @@ namespace Imgeneus.World.Handlers
                 _packetFactory.SendFriendAdded(client, friend);
 
                 friend = await requester.FriendsManager.AddFriend(responser);
-                _packetFactory.SendFriendAdded(requester.Client, friend);
+                _packetFactory.SendFriendAdded(requester.GameSession.Client, friend);
             }
 
             _friendsManager.LastRequester = null;
@@ -76,7 +76,7 @@ namespace Imgeneus.World.Handlers
                     deleted = await friendPlayer.FriendsManager.DeleteFriend(_gameSession.CharId);
 
                     if (deleted is not null)
-                        _packetFactory.SendFriendDeleted(friendPlayer.Client, deleted.Id);
+                        _packetFactory.SendFriendDeleted(friendPlayer.GameSession.Client, deleted.Id);
                 }
             }
         }

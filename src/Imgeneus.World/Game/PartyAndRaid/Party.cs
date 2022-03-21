@@ -43,7 +43,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
                 // Notify others, that new party member joined.
                 foreach (var member in Members.Where(m => m != newPartyMember))
-                    _packetFactory.SendPlayerJoinedParty(member.Client, newPartyMember);
+                    _packetFactory.SendPlayerJoinedParty(member.GameSession.Client, newPartyMember);
 
                 return true;
             }
@@ -57,7 +57,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    _packetFactory.SendPlayerLeftParty(member.Client, leftPartyMember);
+                    _packetFactory.SendPlayerLeftParty(member.GameSession.Client, leftPartyMember);
 
                 RemoveMember(leftPartyMember);
                 CallMemberLeft();
@@ -72,7 +72,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    _packetFactory.SendPartyKickMember(member.Client, playerToKick);
+                    _packetFactory.SendPartyKickMember(member.GameSession.Client, playerToKick);
 
                 RemoveMember(playerToKick);
             }
@@ -95,7 +95,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 _members.Clear();
 
                 lastMember.PartyManager.Party = null;
-                _packetFactory.SendPlayerLeftParty(lastMember.Client, lastMember);
+                _packetFactory.SendPlayerLeftParty(lastMember.GameSession.Client, lastMember);
 
                 CallAllMembersLeft();
             }
@@ -141,7 +141,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                                     itemAdded = true;
                                     dropReceiver.SendAddItemToInventory(inventoryItem);
                                     foreach (var member in Members.Where(m => m != dropReceiver))
-                                        SendMemberGetItem(member.Client, dropReceiver.Id, inventoryItem);
+                                        SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                                 }
                             }
                             else
@@ -172,7 +172,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         public override void MemberGetItem(Character player, Item item)
         {
             foreach (var member in Members.Where(m => m != player))
-                SendMemberGetItem(member.Client, player.Id, item);
+                SendMemberGetItem(member.GameSession.Client, player.Id, item);
         }
 
         #endregion

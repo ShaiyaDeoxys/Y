@@ -110,7 +110,7 @@ namespace Imgeneus.World.Game.Notice
             packet.WriteString(message);
 #endif
 
-            character.Client.Send(packet);
+            character.GameSession.Client.Send(packet);
         }
 
 #endregion

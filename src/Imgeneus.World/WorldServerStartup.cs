@@ -1,7 +1,6 @@
 ﻿using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
 using Imgeneus.Database.Preload;
-using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.Logs;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
@@ -138,9 +137,6 @@ namespace Imgeneus.World
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
             services.AddTransient<ITimeService, TimeService>();
-
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            services.AddHostedService<DatabaseWorker>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb)

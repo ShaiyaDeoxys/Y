@@ -2,8 +2,6 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
-using Imgeneus.DatabaseBackgroundService;
-using Imgeneus.DatabaseBackgroundService.Handlers;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
@@ -44,9 +42,6 @@ namespace Imgeneus.World.Game.Player
     public partial class Character : BaseKillable, IKiller, IMapMember, IDisposable
     {
         private readonly ILogger<Character> _logger;
-        private readonly IGameWorld _gameWorld;
-        private readonly IBackgroundTaskQueue _taskQueue;
-        private readonly IMapsLoader _mapLoader;
         private readonly IGamePacketFactory _packetFactory;
 
         public IAdditionalInfoManager AdditionalInfoManager { get; private set; }
@@ -71,10 +66,7 @@ namespace Imgeneus.World.Game.Player
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
-                         IGameWorld gameWorld,
-                         IBackgroundTaskQueue taskQueue,
                          IDatabasePreloader databasePreloader,
-                         IMapsLoader mapLoader,
                          IGuildManager guildManager,
                          ICountryProvider countryProvider,
                          ISpeedManager speedManager,
@@ -106,9 +98,6 @@ namespace Imgeneus.World.Game.Player
                          IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, mapProvider)
         {
             _logger = logger;
-            _gameWorld = gameWorld;
-            _taskQueue = taskQueue;
-            _mapLoader = mapLoader;
             _packetFactory = packetFactory;
 
             AdditionalInfoManager = additionalInfoManager;
@@ -181,12 +170,7 @@ namespace Imgeneus.World.Game.Player
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
 
-            // Save current HP, MP, SP to database.
-            _taskQueue.Enqueue(ActionType.SAVE_CHARACTER_HP_MP_SP, Id, HealthManager.CurrentHP, HealthManager.CurrentMP, HealthManager.CurrentSP);
-
             Map = null;
-
-            ClearConnection();
         }
 
         #region Motion
@@ -230,9 +214,9 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates character from database information.
         /// </summary>
-        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IGameWorld gameWorld, IBackgroundTaskQueue taskQueue, IDatabasePreloader databasePreloader, IMapsLoader mapsLoader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, ILinkingManager linkingManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IBankManager bankManager, IQuestsManager questsManager, IGameSession gameSession, IGamePacketFactory packetFactory)
+        public static Character FromDbCharacter(DbCharacter dbCharacter, ILogger<Character> logger, IDatabasePreloader databasePreloader, ICountryProvider countryProvider, ISpeedManager speedManager, IStatsManager statsManager, IAdditionalInfoManager additionalInfoManager, IHealthManager healthManager, ILevelProvider levelProvider, ILevelingManager levelingManager, IInventoryManager inventoryManager, ILinkingManager linkingManager, IGuildManager guildManger, IStealthManager stealthManager, IAttackManager attackManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IElementProvider elementProvider, IKillsManager killsManager, IVehicleManager vehicleManager, IShapeManager shapeManager, IMovementManager movementManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IPartyManager partyManager, ITradeManager tradeManager, IFriendsManager friendsManager, IDuelManager duelManager, IBankManager bankManager, IQuestsManager questsManager, IGameSession gameSession, IGamePacketFactory packetFactory)
         {
-            var character = new Character(logger, gameWorld, taskQueue, databasePreloader, mapsLoader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, bankManager, questsManager, gameSession, packetFactory)
+            var character = new Character(logger, databasePreloader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, bankManager, questsManager, gameSession, packetFactory)
             {
                 Id = dbCharacter.Id,
                 Name = dbCharacter.Name,

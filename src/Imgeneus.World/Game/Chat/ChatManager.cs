@@ -1,15 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using Imgeneus.Database.Entities;
-using Imgeneus.DatabaseBackgroundService;
-using Imgeneus.DatabaseBackgroundService.Handlers;
-using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets;
-using Imgeneus.World.Game.Country;
+﻿using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Imgeneus.World.Game.Chat
 {

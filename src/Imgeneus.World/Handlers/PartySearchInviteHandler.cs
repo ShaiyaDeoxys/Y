@@ -26,7 +26,7 @@ namespace Imgeneus.World.Handlers
             if (requestedPlayer != null && !requestedPlayer.PartyManager.HasParty)
             {
                 requestedPlayer.PartyManager.InviterId = _gameSession.CharId;
-                _packetFactory.SendPartyRequest(requestedPlayer.Client, _gameSession.CharId);
+                _packetFactory.SendPartyRequest(requestedPlayer.GameSession.Client, _gameSession.CharId);
             }
         }
     }

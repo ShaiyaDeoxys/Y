@@ -79,15 +79,15 @@ namespace Imgeneus.World.Game.Zone
                 if (player.Id != character.Id)
                 {
                     // Notify players in this map, that new player arrived.
-                    Map.PacketFactory.SendCharacterEnter(player.Client, character);
+                    Map.PacketFactory.SendCharacterEnter(player.GameSession.Client, character);
 
                     // Notify new player, about already loaded player.
-                    Map.PacketFactory.SendCharacterEnter(character.Client, player);
+                    Map.PacketFactory.SendCharacterEnter(character.GameSession.Client, player);
                 }
                 else // Original server sends this also to player himself, although I'm not sure if it's needed.
                      // Added it as a fix for admin stealth.
                     if (character.OldCellId == -1)
-                    Map.PacketFactory.SendCharacterEnter(character.Client, character);
+                    Map.PacketFactory.SendCharacterEnter(character.GameSession.Client, character);
 
             // Send update npcs.
             var oldCellNPCs = character.OldCellId != -1 ? Map.Cells[character.OldCellId].GetAllNPCs(true) : new List<Npc>();
@@ -295,7 +295,7 @@ namespace Imgeneus.World.Game.Zone
                 else if (sender.PartyManager.HasParty)
                     type = PartyMemberType.Member;
 
-                Map.PacketFactory.SendCharacterPartyChanged(player.Client, sender.Id, type);
+                Map.PacketFactory.SendCharacterPartyChanged(player.GameSession.Client, sender.Id, type);
             }
         }
 
@@ -458,7 +458,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnTeleport(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
         {
             foreach (var p in GetAllPlayers(true))
-                Map.PacketFactory.SendCharacterTeleport(p.Client, senderId, mapId, x, y, z, teleportedByAdmin);
+                Map.PacketFactory.SendCharacterTeleport(p.GameSession.Client, senderId, mapId, x, y, z, teleportedByAdmin);
         }
 
         #endregion
@@ -633,7 +633,7 @@ namespace Imgeneus.World.Game.Zone
         private void Mob_OnRecover(int senderId, int hp, int mp, int sp)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMobRecover(player.Client, senderId, hp);
+                Map.PacketFactory.SendMobRecover(player.GameSession.Client, senderId, hp);
         }
 
         #endregion

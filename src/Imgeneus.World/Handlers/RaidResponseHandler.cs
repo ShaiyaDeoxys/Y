@@ -31,7 +31,7 @@ namespace Imgeneus.World.Handlers
 
             if (packet.IsDeclined)
             {
-                _packetFactory.SendDeclineRaid(partyRequester.Client, _gameSession.CharId);
+                _packetFactory.SendDeclineRaid(partyRequester.GameSession.Client, _gameSession.CharId);
                 return;
             }
 

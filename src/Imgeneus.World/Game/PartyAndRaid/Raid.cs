@@ -54,7 +54,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             foreach (var m in Members.ToList())
             {
-                _packetFactory.SendAutoJoinChanged(m.Client, AutoJoin);
+                _packetFactory.SendAutoJoinChanged(m.GameSession.Client, AutoJoin);
             }
         }
 
@@ -148,7 +148,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                         {
                             Leader.SendAddItemToInventory(inventoryItem);
                             foreach (var member in Members.Where(m => m != Leader))
-                                _packetFactory.SendMemberGetItem(member.Client, Leader.Id, inventoryItem);
+                                _packetFactory.SendMemberGetItem(member.GameSession.Client, Leader.Id, inventoryItem);
                         }
                         else
                         {
@@ -197,7 +197,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                                 itemAdded = true;
                                 dropReceiver.SendAddItemToInventory(inventoryItem);
                                 foreach (var member in Members.Where(m => m != dropReceiver))
-                                    _packetFactory.SendMemberGetItem(member.Client, dropReceiver.Id, inventoryItem);
+                                    _packetFactory.SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                             }
                         }
                         else
@@ -249,7 +249,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                                 itemAdded = true;
                                 dropReceiver.SendAddItemToInventory(inventoryItem);
                                 foreach (var member in Members.Where(m => m != dropReceiver))
-                                    _packetFactory.SendMemberGetItem(member.Client, dropReceiver.Id, inventoryItem);
+                                    _packetFactory.SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                             }
                         }
                         else
@@ -273,7 +273,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         public override void MemberGetItem(Character player, Item item)
         {
             foreach (var member in Members.Where(m => m != player))
-                _packetFactory.SendMemberGetItem(member.Client, player.Id, item);
+                _packetFactory.SendMemberGetItem(member.GameSession.Client, player.Id, item);
         }
 
         #endregion
@@ -362,7 +362,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
                 // Notify others, that new raid member joined.
                 foreach (var member in Members)
-                    _packetFactory.SendPlayerJoinedRaid(member.Client, newPartyMember, (ushort)index);
+                    _packetFactory.SendPlayerJoinedRaid(member.GameSession.Client, newPartyMember, (ushort)index);
 
                 return true;
             }
@@ -373,7 +373,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    _packetFactory.SendPlayerLeftRaid(member.Client, leftPartyMember);
+                    _packetFactory.SendPlayerLeftRaid(member.GameSession.Client, leftPartyMember);
 
                 RemoveMember(leftPartyMember);
                 CallMemberLeft();
@@ -385,7 +385,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    _packetFactory.SendRaidKickMember(member.Client, player);
+                    _packetFactory.SendRaidKickMember(member.GameSession.Client, player);
 
                 RemoveMember(player);
             }
@@ -419,7 +419,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 var lastMember = Members[0];
                 _membersDict.Clear();
                 lastMember.PartyManager.Party = null;
-                _packetFactory.SendPlayerLeftRaid(lastMember.Client, lastMember);
+                _packetFactory.SendPlayerLeftRaid(lastMember.GameSession.Client, lastMember);
                 CallAllMembersLeft();
             }
             else if (character == Leader)
@@ -462,7 +462,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 }
 
                 foreach (var member in Members)
-                    _packetFactory.SendPlayerMove(member.Client, sourceIndex, destinationIndex, GetIndex(Leader), GetIndex(SubLeader));
+                    _packetFactory.SendPlayerMove(member.GameSession.Client, sourceIndex, destinationIndex, GetIndex(Leader), GetIndex(SubLeader));
             }
         }
 

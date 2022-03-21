@@ -85,14 +85,14 @@ namespace Imgeneus.World.Handlers
 
             if (packet.Rejected)
             {
-                _packetFactory.SendVehicleResponse(player.Client, VehicleResponse.Rejected);
+                _packetFactory.SendVehicleResponse(player.GameSession.Client, VehicleResponse.Rejected);
             }
             else
             {
                 _vehicleManager.Vehicle2CharacterID = _vehicleManager.VehicleRequesterID;
                 _vehicleManager.VehicleRequesterID = 0;
 
-                _packetFactory.SendVehicleResponse(player.Client, VehicleResponse.Accepted);
+                _packetFactory.SendVehicleResponse(player.GameSession.Client, VehicleResponse.Accepted);
             }
         }
 
