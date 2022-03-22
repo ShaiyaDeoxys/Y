@@ -327,9 +327,12 @@ namespace Imgeneus.World.Game.Buffs
                     buff.StartPeriodicalDebuff();
                     break;
 
-                case TypeDetail.PreventAttack:
                 case TypeDetail.Immobilize:
-                    //SendMoveAndAttackSpeed();
+                    _speedManager.Immobilize = true;
+                    break;
+
+                case TypeDetail.PreventAttack:
+                    // ?
                     break;
 
                 case TypeDetail.Stealth:
@@ -433,9 +436,12 @@ namespace Imgeneus.World.Game.Buffs
                     buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
                     break;
 
-                case TypeDetail.PreventAttack:
                 case TypeDetail.Immobilize:
-                    //SendMoveAndAttackSpeed();
+                    _speedManager.Immobilize = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Immobilize);
+                    break;
+
+                case TypeDetail.PreventAttack:
+                    // ?
                     break;
 
                 case TypeDetail.Stealth:

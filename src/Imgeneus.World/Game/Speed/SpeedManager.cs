@@ -75,10 +75,16 @@ namespace Imgeneus.World.Game.Speed
         private int _extraMoveSpeed;
         public int ExtraMoveSpeed { get => _extraMoveSpeed; set { _extraMoveSpeed = value; RaiseMoveAndAttackSpeed(); } }
 
+        private bool _immobilize;
+        public bool Immobilize { get => _immobilize; set { _immobilize = value; RaiseMoveAndAttackSpeed(); } }
+
         public MoveSpeed TotalMoveSpeed
         {
             get
             {
+                if (Immobilize)
+                    return MoveSpeed.CanNotMove;
+
                 var finalSpeed = ConstMoveSpeed + ExtraMoveSpeed;
 
                 if (finalSpeed < 0)

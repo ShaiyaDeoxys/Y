@@ -207,14 +207,6 @@ namespace Imgeneus.World.Game.Attack
 
             if (skillNumber != IAttackManager.AUTO_ATTACK_NUMBER && skillNumber != ISkillsManager.ITEM_SKILL_NUMBER)
             {
-                /*if (!_skillsManager.Skills.TryGetValue(skillNumber, out var skill))
-                {
-                    _logger.LogWarning("Character {characterId} tries to use nonexistent skill.", _ownerId);
-                    success = AttackSuccess.CanNotAttack;
-                    return false;
-                }*/
-
-                //return _skillsManager.CanUseSkill(skill, target, out success);
                 success = AttackSuccess.Normal;
                 return true;
             }

@@ -14,6 +14,7 @@ using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -39,10 +40,10 @@ namespace Imgeneus.World.Game.Skills
         private readonly ILevelProvider _levelProvider;
         private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IGameWorld _gameWorld;
-
+        private readonly IMapProvider _mapProvider;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld)
+        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -57,6 +58,7 @@ namespace Imgeneus.World.Game.Skills
             _levelProvider = levelProvider;
             _additionalInfoManager = additionalInfoManager;
             _gameWorld = gameWorld;
+            _mapProvider = mapProvider;
             _castTimer.Elapsed += CastTimer_Elapsed;
 
 #if DEBUG
@@ -415,9 +417,9 @@ namespace Imgeneus.World.Game.Skills
                         break;
 
                     case TargetType.EnemiesNearTarget:
-                        /*var enemies = Map.Cells[CellId].GetEnemies(this, target, skill.ApplyRange);
+                        var enemies = _mapProvider.Map.Cells[(skillOwner as Character).CellId].GetEnemies(skillOwner, target, skill.ApplyRange);
                         foreach (var e in enemies)
-                            targets.Add(e);*/
+                            targets.Add(e);
                         break;
 
                     default:

@@ -52,13 +52,18 @@ namespace Imgeneus.World.Game.Speed
         /// </summary>
         int ConstMoveSpeed { get; set; }
 
+        /// <summary>
+        /// Can not move?
+        /// </summary>
+        bool Immobilize { get; set; }
+
         #endregion
 
-        #region Events
+            #region Events
 
-        /// <summary>
-        /// Event, that is fired, when attack or move speed changes.
-        /// </summary>
+            /// <summary>
+            /// Event, that is fired, when attack or move speed changes.
+            /// </summary>
         event Action<int, AttackSpeed, MoveSpeed> OnAttackOrMoveChanged;
 
         /// <summary>

@@ -161,7 +161,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Gets enemies near target.
         /// </summary>
-        public IEnumerable<IKillable> GetEnemies(Character sender, IKillable target, byte range)
+        public IEnumerable<IKillable> GetEnemies(IKiller sender, IKillable target, byte range)
         {
             IEnumerable<IKillable> mobs = GetAllMobs(true).Where(m => !m.HealthManager.IsDead && MathExtensions.Distance(target.MovementManager.PosX, m.PosX, target.MovementManager.PosZ, m.PosZ) <= range);
             IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.HealthManager.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(target.MovementManager.PosX, p.PosX, target.MovementManager.PosZ, p.PosZ) <= range);
