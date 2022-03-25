@@ -1,5 +1,4 @@
-using Imgeneus.World.Game.Player;
-using Imgeneus.World.Game.Zone;
+using Imgeneus.World.Game.Inventory;
 using System.ComponentModel;
 using Xunit;
 

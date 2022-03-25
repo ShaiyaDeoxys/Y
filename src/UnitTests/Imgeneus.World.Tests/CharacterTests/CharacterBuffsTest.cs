@@ -1,4 +1,5 @@
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using System.ComponentModel;
 using Xunit;
 
@@ -11,11 +12,11 @@ namespace Imgeneus.World.Tests
         public void Character_AddActiveBuff()
         {
             var character = CreateCharacter();
-            Assert.Empty(character.ActiveBuffs);
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
 
             var usedSkill = new Skill(skill1_level1, 1, 0);
-            character.AddActiveBuff(usedSkill, character);
-            Assert.NotEmpty(character.ActiveBuffs);
+            character.BuffsManager.AddBuff(usedSkill, character);
+            Assert.NotEmpty(character.BuffsManager.ActiveBuffs);
         }
 
         [Fact]
@@ -23,15 +24,15 @@ namespace Imgeneus.World.Tests
         public void Character_BuffOflowerLevelCanNotOverrideHigherLevel()
         {
             var character = CreateCharacter();
-            character.AddActiveBuff(new Skill(skill1_level2, 1, 0), character);
+            character.BuffsManager.AddBuff(new Skill(skill1_level2, 1, 0), character);
 
-            Assert.Equal(skill1_level2.SkillId, character.ActiveBuffs[0].SkillId);
-            Assert.Equal(skill1_level2.SkillLevel, character.ActiveBuffs[0].SkillLevel);
+            Assert.Equal(skill1_level2.SkillId, character.BuffsManager.ActiveBuffs[0].SkillId);
+            Assert.Equal(skill1_level2.SkillLevel, character.BuffsManager.ActiveBuffs[0].SkillLevel);
 
-            character.AddActiveBuff(new Skill(skill1_level1, 1, 0), character);
+            character.BuffsManager.AddBuff(new Skill(skill1_level1, 1, 0), character);
 
-            Assert.Equal(skill1_level2.SkillId, character.ActiveBuffs[0].SkillId);
-            Assert.Equal(skill1_level2.SkillLevel, character.ActiveBuffs[0].SkillLevel);
+            Assert.Equal(skill1_level2.SkillId, character.BuffsManager.ActiveBuffs[0].SkillId);
+            Assert.Equal(skill1_level2.SkillLevel, character.BuffsManager.ActiveBuffs[0].SkillLevel);
         }
 
         [Fact]
@@ -41,11 +42,11 @@ namespace Imgeneus.World.Tests
             var character = CreateCharacter();
             var skill = new Skill(skill1_level2, 1, 0);
 
-            character.AddActiveBuff(skill, character);
-            var oldReselTime = character.ActiveBuffs[0].ResetTime;
+            character.BuffsManager.AddBuff(skill, character);
+            var oldReselTime = character.BuffsManager.ActiveBuffs[0].ResetTime;
 
-            character.AddActiveBuff(skill, character);
-            Assert.True(character.ActiveBuffs[0].ResetTime > oldReselTime && character.ActiveBuffs[0].ResetTime != oldReselTime);
+            character.BuffsManager.AddBuff(skill, character);
+            Assert.True(character.BuffsManager.ActiveBuffs[0].ResetTime > oldReselTime && character.BuffsManager.ActiveBuffs[0].ResetTime != oldReselTime);
         }
 
         [Fact]
@@ -54,20 +55,20 @@ namespace Imgeneus.World.Tests
         {
             var character = CreateCharacter();
             var leadership = new Skill(Leadership, 1, 0);
-            var health_potion = new Skill(Skill_HealthRemedy_Level1, Character.ITEM_SKILL_NUMBER, 0);
+            var health_potion = new Skill(Skill_HealthRemedy_Level1, ISkillsManager.ITEM_SKILL_NUMBER, 0);
 
-            character.AddActiveBuff(leadership, character);
-            character.AddActiveBuff(health_potion, character);
+            character.BuffsManager.AddBuff(leadership, character);
+            character.BuffsManager.AddBuff(health_potion, character);
 
-            Assert.Equal(2, character.ActiveBuffs.Count);
-            Assert.Equal(Leadership.AbilityValue1, character.MinAttack);
+            Assert.Equal(2, character.BuffsManager.ActiveBuffs.Count);
+            Assert.Equal(Leadership.AbilityValue1, character.StatsManager.MinAttack);
 
-            character.DecreaseHP(100, CreateCharacter());
+            character.HealthManager.DecreaseHP(100, CreateCharacter());
 
-            Assert.True(character.IsDead);
-            Assert.Single(character.ActiveBuffs);
-            Assert.Equal(Skill_HealthRemedy_Level1.SkillId, character.ActiveBuffs[0].SkillId);
-            Assert.Equal(0, character.MinAttack);
+            Assert.True(character.HealthManager.IsDead);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+            Assert.Equal(Skill_HealthRemedy_Level1.SkillId, character.BuffsManager.ActiveBuffs[0].SkillId);
+            Assert.Equal(0, character.StatsManager.MinAttack);
         }
     }
 }

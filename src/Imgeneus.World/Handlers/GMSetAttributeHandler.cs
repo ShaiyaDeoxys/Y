@@ -56,7 +56,8 @@ namespace Imgeneus.World.Handlers
             switch (attribute)
             {
                 case CharacterAttributeEnum.Grow:
-                    ok = await targetPlayer.AdditionalInfoManager.TrySetGrow((Mode)attributeValue);
+                    targetPlayer.AdditionalInfoManager.Grow = (Mode)attributeValue;
+                    ok = true;
                     break;
 
                 case CharacterAttributeEnum.Level:

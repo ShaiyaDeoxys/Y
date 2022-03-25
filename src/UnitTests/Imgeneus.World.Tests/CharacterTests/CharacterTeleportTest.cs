@@ -17,8 +17,8 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(0, character.PosY);
             Assert.Equal(0, character.PosZ);
 
-            character.Teleport(Map.TEST_MAP_ID, 10, 20, 30);
-            Assert.Equal(Map.TEST_MAP_ID, character.MapId);
+            character.TeleportationManager.Teleport(Map.TEST_MAP_ID, 10, 20, 30);
+            Assert.Equal(Map.TEST_MAP_ID, character.MapProvider.NextMapId);
             Assert.Equal(10, character.PosX);
             Assert.Equal(20, character.PosY);
             Assert.Equal(30, character.PosZ);
@@ -33,6 +33,7 @@ namespace Imgeneus.World.Tests.CharacterTests
                     new MapDefinition(),
                     new MapConfiguration() { Size = 100, CellSize = 100 },
                     mapLoggerMock.Object,
+                    packetFactoryMock.Object,
                     databasePreloader.Object,
                     mobFactoryMock.Object,
                     npcFactoryMock.Object,
@@ -43,6 +44,7 @@ namespace Imgeneus.World.Tests.CharacterTests
                     new MapDefinition(),
                     new MapConfiguration() { Size = 100, CellSize = 100 },
                     mapLoggerMock.Object,
+                    packetFactoryMock.Object,
                     databasePreloader.Object,
                     mobFactoryMock.Object,
                     npcFactoryMock.Object,
@@ -53,7 +55,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             map1.LoadPlayer(character);
             Assert.NotNull(map1.GetPlayer(character.Id));
 
-            character.Teleport(map2.Id, 10, 20, 30);
+            character.TeleportationManager.Teleport(map2.Id, 10, 20, 30);
             Assert.Null(map1.GetPlayer(character.Id));
         }
     }

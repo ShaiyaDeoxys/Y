@@ -113,10 +113,5 @@ namespace Imgeneus.Database
         /// Migrate database.
         /// </summary>
         public void Migrate();
-
-        /// <summary>
-        /// Track entity.
-        /// </summary>
-        public EntityEntry Entry(object entity);
     }
 }

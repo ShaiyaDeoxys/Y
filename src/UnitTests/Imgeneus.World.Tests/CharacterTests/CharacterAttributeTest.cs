@@ -1,5 +1,4 @@
 using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Player;
 using System.ComponentModel;
 using Xunit;
 
@@ -13,18 +12,18 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
-            character.SetStatPoint(10);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character.StatsManager.TrySetStats(statPoints: 10);
 
-            Assert.NotEqual(105, character.StatPoint);
-            character.SetStatPoint(105);
-            Assert.Equal(105, character.StatPoint);
+            Assert.NotEqual(105, character.StatsManager.StatPoint);
+            character.StatsManager.TrySetStats(statPoints: 105);
+            Assert.Equal(105, character.StatsManager.StatPoint);
 
-            character.SetStatPoint(ushort.MinValue);
-            Assert.Equal(ushort.MinValue, character.StatPoint);
+            character.StatsManager.TrySetStats(statPoints: ushort.MinValue);
+            Assert.Equal(ushort.MinValue, character.StatsManager.StatPoint);
 
-            character.SetStatPoint(ushort.MaxValue);
-            Assert.Equal(ushort.MaxValue, character.StatPoint);
+            character.StatsManager.TrySetStats(statPoints: ushort.MaxValue);
+            Assert.Equal(ushort.MaxValue, character.StatsManager.StatPoint);
         }
 
         [Fact]
@@ -33,18 +32,18 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
-            character.SetStatPoint(10);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character.StatsManager.TrySetStats(statPoints: 10);
 
-            Assert.NotEqual(105, character.SkillPoint);
-            character.SetSkillPoint(105);
-            Assert.Equal(105, character.SkillPoint);
+            Assert.NotEqual(105, character.SkillsManager.SkillPoints);
+            character.SkillsManager.TrySetSkillPoints(105);
+            Assert.Equal(105, character.SkillsManager.SkillPoints);
 
-            character.SetSkillPoint(ushort.MinValue);
-            Assert.Equal(ushort.MinValue, character.SkillPoint);
+            character.SkillsManager.TrySetSkillPoints(ushort.MinValue);
+            Assert.Equal(ushort.MinValue, character.SkillsManager.SkillPoints);
 
-            character.SetSkillPoint(ushort.MaxValue);
-            Assert.Equal(ushort.MaxValue, character.SkillPoint);
+            character.SkillsManager.TrySetSkillPoints(ushort.MaxValue);
+            Assert.Equal(ushort.MaxValue, character.SkillsManager.SkillPoints);
         }
 
         [Fact]
@@ -53,18 +52,18 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
 
-            character.SetKills(10);
-            Assert.NotEqual(105, character.Kills);
-            character.SetKills(105);
-            Assert.Equal(105, character.Kills);
+            character.KillsManager.Kills = 10;
+            Assert.NotEqual(105, character.KillsManager.Kills);
+            character.KillsManager.Kills = 105;
+            Assert.Equal(105, character.KillsManager.Kills);
 
-            character.SetKills(ushort.MinValue);
-            Assert.Equal(ushort.MinValue, character.Kills);
+            character.KillsManager.Kills = ushort.MinValue;
+            Assert.Equal(ushort.MinValue, character.KillsManager.Kills);
 
-            character.SetKills(ushort.MaxValue);
-            Assert.Equal(ushort.MaxValue, character.Kills);
+            character.KillsManager.Kills = ushort.MaxValue;
+            Assert.Equal(ushort.MaxValue, character.KillsManager.Kills);
         }
 
         [Fact]
@@ -73,18 +72,18 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
 
-            character.SetDeaths(10);
-            Assert.NotEqual(105, character.Deaths);
-            character.SetDeaths(105);
-            Assert.Equal(105, character.Deaths);
+            character.KillsManager.Deaths = 10;
+            Assert.NotEqual(105, character.KillsManager.Deaths);
+            character.KillsManager.Deaths = 105;
+            Assert.Equal(105, character.KillsManager.Deaths);
 
-            character.SetDeaths(ushort.MinValue);
-            Assert.Equal(ushort.MinValue, character.Deaths);
+            character.KillsManager.Deaths = ushort.MinValue;
+            Assert.Equal(ushort.MinValue, character.KillsManager.Deaths);
 
-            character.SetDeaths(ushort.MaxValue);
-            Assert.Equal(ushort.MaxValue, character.Deaths);
+            character.KillsManager.Deaths = ushort.MaxValue;
+            Assert.Equal(ushort.MaxValue, character.KillsManager.Deaths);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel;
-using Imgeneus.World.Game.Player;
+using System.Threading.Tasks;
+using Imgeneus.World.Game.Inventory;
 using Xunit;
 
 namespace Imgeneus.World.Tests.AccountTests
@@ -8,19 +9,19 @@ namespace Imgeneus.World.Tests.AccountTests
     {
         [Fact]
         [Description("Characters should receive bank claimed items in the first available inventory slot.")]
-        public void Bank_Test()
+        public async Task Bank_Test()
         {
             var character = CreateCharacter();
-            character.AddItemToInventory(new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId));
 
-            character.AddBankItem(WaterArmor.Type, WaterArmor.TypeId, 1);
-            Assert.NotNull(character.BankItems[0]);
+            character.BankManager.AddBankItem(WaterArmor.Type, WaterArmor.TypeId, 1);
+            Assert.NotNull(character.BankManager.BankItems[0]);
 
-            character.TryClaimBankItem(0, out var claimedItem);
+            var claimedItem = character.BankManager.TryClaimBankItem(0);
             Assert.NotNull(claimedItem);
 
             // Item should be in the 2nd slot (slot = 1)
-            character.InventoryItems.TryGetValue((1, 1), out var item);
+            character.InventoryManager.InventoryItems.TryGetValue((1, 1), out var item);
             Assert.NotNull(item);
             Assert.Equal(claimedItem, item);
         }

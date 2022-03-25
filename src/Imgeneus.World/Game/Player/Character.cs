@@ -222,8 +222,7 @@ namespace Imgeneus.World.Game.Player
             var character = new Character(logger, databasePreloader, guildManger, countryProvider, speedManager, statsManager, additionalInfoManager, healthManager, levelProvider, levelingManager, inventoryManager, stealthManager, attackManager, skillsManager, buffsManager, elementProvider, killsManager, vehicleManager, shapeManager, movementManager, linkingManager, mapProvider, teleportationManager, partyManager, tradeManager, friendsManager, duelManager, bankManager, questsManager, untouchableManager, gameSession, packetFactory)
             {
                 Id = dbCharacter.Id,
-                Name = dbCharacter.Name,
-                Points = dbCharacter.User.Points
+                Name = dbCharacter.Name
             };
 
             character.QuickItems = dbCharacter.QuickItems;

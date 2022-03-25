@@ -13,25 +13,25 @@ namespace Imgeneus.World.Tests.CharacterTests
         public void Character_TestKillerCalculation()
         {
             var characterToKill = CreateCharacter();
-            characterToKill.IncreaseHP(characterToKill.MaxHP);
+            characterToKill.HealthManager.IncreaseHP(characterToKill.HealthManager.MaxHP);
 
             var killer1 = CreateCharacter();
             var killer2 = CreateCharacter();
             IKiller finalKiller = null;
-            characterToKill.OnDead += (IKillable sender, IKiller killer) =>
+            characterToKill.HealthManager.OnDead += (int senderId, IKiller killer) =>
             {
                 finalKiller = killer;
             };
 
-            var littleHP = characterToKill.CurrentHP / 5;
-            var allHP = characterToKill.MaxHP;
+            var littleHP = characterToKill.HealthManager.CurrentHP / 5;
+            var allHP = characterToKill.HealthManager.MaxHP;
 
-            characterToKill.DecreaseHP(littleHP, killer1);
-            Assert.Equal(characterToKill.MaxHP - littleHP, characterToKill.CurrentHP);
-            characterToKill.DecreaseHP(characterToKill.MaxHP, killer2);
-            Assert.Equal(0, characterToKill.CurrentHP);
+            characterToKill.HealthManager.DecreaseHP(littleHP, killer1);
+            Assert.Equal(characterToKill.HealthManager.MaxHP - littleHP, characterToKill.HealthManager.CurrentHP);
+            characterToKill.HealthManager.DecreaseHP(characterToKill.HealthManager.MaxHP, killer2);
+            Assert.Equal(0, characterToKill.HealthManager.CurrentHP);
 
-            Assert.True(characterToKill.IsDead);
+            Assert.True(characterToKill.HealthManager.IsDead);
             Assert.Equal(killer2, finalKiller);
         }
     }

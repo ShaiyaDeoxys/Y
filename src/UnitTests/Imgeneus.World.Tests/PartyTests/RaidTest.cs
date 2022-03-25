@@ -1,4 +1,6 @@
-﻿using Imgeneus.World.Game.PartyAndRaid;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Linking;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Zone;
 using System.Collections.Generic;
@@ -22,16 +24,16 @@ namespace Imgeneus.World.Tests.PartyTests
         {
             var character1 = CreateCharacter(_map);
             var character2 = CreateCharacter(_map);
-            Assert.False(character1.IsPartyLead);
+            Assert.False(character1.PartyManager.IsPartyLead);
 
-            var raid = new Raid(true, RaidDropType.Group);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
 
-            Assert.True(character1.IsPartyLead);
+            Assert.True(character1.PartyManager.IsPartyLead);
             Assert.Equal(character1, raid.Leader);
 
-            Assert.True(character2.IsPartySubLeader);
+            Assert.True(character2.PartyManager.IsPartySubLeader);
             Assert.Equal(character2, raid.SubLeader);
         }
 
@@ -42,9 +44,9 @@ namespace Imgeneus.World.Tests.PartyTests
             var character1 = CreateCharacter(_map);
             var character2 = CreateCharacter(_map);
 
-            var raid = new Raid(true, RaidDropType.Leader);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Leader, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
 
             raid.DistributeDrop(new List<Item>()
             {
@@ -53,7 +55,7 @@ namespace Imgeneus.World.Tests.PartyTests
                 new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
-            Assert.Equal(3, character1.InventoryItems.Count);
+            Assert.Equal(3, character1.InventoryManager.InventoryItems.Count);
         }
 
         [Fact]
@@ -64,13 +66,13 @@ namespace Imgeneus.World.Tests.PartyTests
             var character2 = CreateCharacter(_map);
 
             // Set leader far away from character2.
-            character1.PosX = 1000;
-            character1.PosY = 1000;
-            character1.PosZ = 1000;
+            character1.MovementManager.PosX = 1000;
+            character1.MovementManager.PosY = 1000;
+            character1.MovementManager.PosZ = 1000;
 
-            var raid = new Raid(true, RaidDropType.Leader);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Leader, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
 
             raid.DistributeDrop(new List<Item>()
             {
@@ -79,7 +81,7 @@ namespace Imgeneus.World.Tests.PartyTests
                 new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
-            Assert.Empty(character1.InventoryItems);
+            Assert.Empty(character1.InventoryManager.InventoryItems);
         }
 
         [Fact]
@@ -89,9 +91,9 @@ namespace Imgeneus.World.Tests.PartyTests
             var character1 = CreateCharacter(_map);
             var character2 = CreateCharacter(_map);
 
-            var raid = new Raid(true, RaidDropType.Group);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
 
             raid.DistributeDrop(new List<Item>()
             {
@@ -100,13 +102,13 @@ namespace Imgeneus.World.Tests.PartyTests
                 new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
-            Assert.Equal(2, character1.InventoryItems.Count);
-            Assert.Single(character2.InventoryItems);
+            Assert.Equal(2, character1.InventoryManager.InventoryItems.Count);
+            Assert.Single(character2.InventoryManager.InventoryItems);
 
-            Assert.Equal(WaterArmor.Type, character1.InventoryItems[(1, 0)].Type);
-            Assert.Equal(FireSword.Type, character1.InventoryItems[(1, 1)].Type);
+            Assert.Equal(WaterArmor.Type, character1.InventoryManager.InventoryItems[(1, 0)].Type);
+            Assert.Equal(FireSword.Type, character1.InventoryManager.InventoryItems[(1, 1)].Type);
 
-            Assert.Equal(WaterArmor.Type, character2.InventoryItems[(1, 0)].Type);
+            Assert.Equal(WaterArmor.Type, character2.InventoryManager.InventoryItems[(1, 0)].Type);
         }
 
         [Fact]
@@ -118,14 +120,14 @@ namespace Imgeneus.World.Tests.PartyTests
             var character3 = CreateCharacter(_map);
 
             // Set character3 far away from character1 and character2.
-            character3.PosX = 1000;
-            character3.PosY = 1000;
-            character3.PosZ = 1000;
+            character3.MovementManager.PosX = 1000;
+            character3.MovementManager.PosY = 1000;
+            character3.MovementManager.PosZ = 1000;
 
-            var raid = new Raid(true, RaidDropType.Group);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
-            character3.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
+            character3.PartyManager.Party = raid;
 
             raid.DistributeDrop(new List<Item>()
             {
@@ -134,9 +136,9 @@ namespace Imgeneus.World.Tests.PartyTests
                 new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
-            Assert.Equal(2, character1.InventoryItems.Count);
-            Assert.Single(character2.InventoryItems);
-            Assert.Empty(character3.InventoryItems);
+            Assert.Equal(2, character1.InventoryManager.InventoryItems.Count);
+            Assert.Single(character2.InventoryManager.InventoryItems);
+            Assert.Empty(character3.InventoryManager.InventoryItems);
         }
 
         [Fact]
@@ -147,18 +149,17 @@ namespace Imgeneus.World.Tests.PartyTests
             var character2 = CreateCharacter(_map);
             var character3 = CreateCharacter(_map);
 
-            var raid = new Raid(true, RaidDropType.Group);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
-            character3.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
+            character3.PartyManager.Party = raid;
 
-            var money = new Item(databasePreloader.Object, Item.MONEY_ITEM_TYPE, 0);
-            money.Gem1 = new Gem(100);
+            var money = new Item(100);
             raid.DistributeDrop(new List<Item>() { money }, character2);
 
-            Assert.Equal((uint)33, character1.Gold);
-            Assert.Equal((uint)33, character2.Gold);
-            Assert.Equal((uint)33, character3.Gold);
+            Assert.Equal((uint)33, character1.InventoryManager.Gold);
+            Assert.Equal((uint)33, character2.InventoryManager.Gold);
+            Assert.Equal((uint)33, character3.InventoryManager.Gold);
         }
 
         [Fact]
@@ -170,13 +171,13 @@ namespace Imgeneus.World.Tests.PartyTests
 
             for (int i = 0; i < 5 * 25; i++) // 5 bags, 24 slots per 1 bag.
             {
-                character1.AddItemToInventory(new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId));
-                character2.AddItemToInventory(new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId));
+                character1.InventoryManager.AddItem(new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId));
+                character2.InventoryManager.AddItem(new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId));
             }
 
-            var raid = new Raid(true, RaidDropType.Group);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
 
             var notDistributedItems = raid.DistributeDrop(new List<Item>()
             {
@@ -196,10 +197,10 @@ namespace Imgeneus.World.Tests.PartyTests
             var character2 = CreateCharacter(_map);
             var character3 = CreateCharacter(testMap);
 
-            var raid = new Raid(true, RaidDropType.Random);
-            character1.SetParty(raid);
-            character2.SetParty(raid);
-            character3.SetParty(raid);
+            var raid = new Raid(true, RaidDropType.Random, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
+            character3.PartyManager.Party = raid;
 
             raid.DistributeDrop(new List<Item>()
             {
@@ -208,11 +209,11 @@ namespace Imgeneus.World.Tests.PartyTests
                 new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
-            Assert.True(character1.InventoryItems.Count >= 0);
-            Assert.True(character2.InventoryItems.Count >= 0);
-            Assert.True(character3.InventoryItems.Count >= 0);
+            Assert.True(character1.InventoryManager.InventoryItems.Count >= 0);
+            Assert.True(character2.InventoryManager.InventoryItems.Count >= 0);
+            Assert.True(character3.InventoryManager.InventoryItems.Count >= 0);
 
-            Assert.Equal(3, character1.InventoryItems.Count + character2.InventoryItems.Count + character3.InventoryItems.Count);
+            Assert.Equal(3, character1.InventoryManager.InventoryItems.Count + character2.InventoryManager.InventoryItems.Count + character3.InventoryManager.InventoryItems.Count);
         }
     }
 }

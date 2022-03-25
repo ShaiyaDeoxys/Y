@@ -1,6 +1,8 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using System.ComponentModel;
 using Xunit;
 
@@ -121,7 +123,7 @@ namespace Imgeneus.World.Tests
         public void ElementTests(Element attackElement, Element defenceElement, double expectedFactor)
         {
             IKiller character = CreateCharacter();
-            Assert.Equal(expectedFactor, character.GetElementFactor(attackElement, defenceElement));
+            Assert.Equal(expectedFactor, character.AttackManager.GetElementFactor(attackElement, defenceElement));
         }
 
         [Fact]
@@ -129,13 +131,13 @@ namespace Imgeneus.World.Tests
         public void RemoveElementTest()
         {
             var character = CreateCharacter();
-            Assert.Equal(Element.None, character.DefenceElement);
+            Assert.Equal(Element.None, character.ElementProvider.DefenceElement);
 
-            character.Armor = new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId);
-            Assert.Equal(Element.Water1, character.DefenceElement);
+            character.InventoryManager.Armor = new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId);
+            Assert.Equal(Element.Water1, character.ElementProvider.DefenceElement);
 
-            character.AddActiveBuff(new Skill(AttributeRemove, 0, 0), null);
-            Assert.Equal(Element.None, character.DefenceElement);
+            character.BuffsManager.AddBuff(new Skill(AttributeRemove, 0, 0), null);
+            Assert.Equal(Element.None, character.ElementProvider.DefenceElement);
         }
 
         [Fact]
@@ -143,13 +145,13 @@ namespace Imgeneus.World.Tests
         public void AttackElementSkillTest()
         {
             var character = CreateCharacter();
-            Assert.Equal(Element.None, character.AttackElement);
+            Assert.Equal(Element.None, character.ElementProvider.AttackElement);
 
-            character.Weapon = new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId);
-            Assert.Equal(Element.Fire1, character.AttackElement);
+            character.InventoryManager.Weapon = new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId);
+            Assert.Equal(Element.Fire1, character.ElementProvider.AttackElement);
 
-            character.AddActiveBuff(new Skill(EarthWeapon, 0, 0), null);
-            Assert.Equal(Element.Earth1, character.AttackElement);
+            character.BuffsManager.AddBuff(new Skill(EarthWeapon, 0, 0), null);
+            Assert.Equal(Element.Earth1, character.ElementProvider.AttackElement);
         }
 
         [Fact]
@@ -157,13 +159,13 @@ namespace Imgeneus.World.Tests
         public void ElementalProtectionTest()
         {
             var character = CreateCharacter();
-            Assert.Equal(Element.None, character.DefenceElement);
+            Assert.Equal(Element.None, character.ElementProvider.DefenceElement);
 
-            character.Armor = new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId);
-            Assert.Equal(Element.Water1, character.DefenceElement);
+            character.InventoryManager.Armor = new Item(databasePreloader.Object, WaterArmor.Type, WaterArmor.TypeId);
+            Assert.Equal(Element.Water1, character.ElementProvider.DefenceElement);
 
-            character.AddActiveBuff(new Skill(EarthSkin, 0, 0), null);
-            Assert.Equal(Element.Earth1, character.DefenceElement);
+            character.BuffsManager.AddBuff(new Skill(EarthSkin, 0, 0), null);
+            Assert.Equal(Element.Earth1, character.ElementProvider.DefenceElement);
         }
 
         [Fact]
@@ -171,13 +173,13 @@ namespace Imgeneus.World.Tests
         public void ElementalSkinSkillTest()
         {
             var character = CreateCharacter();
-            character.AddActiveBuff(new Skill(EarthSkin, 0, 0), null);
-            Assert.Equal(Element.Earth1, character.DefenceElement);
-            Assert.Single(character.ActiveBuffs);
+            character.BuffsManager.AddBuff(new Skill(EarthSkin, 0, 0), null);
+            Assert.Equal(Element.Earth1, character.ElementProvider.DefenceElement);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
 
-            character.AddActiveBuff(new Skill(FireSkin, 0, 0), null);
-            Assert.Equal(Element.Fire1, character.DefenceElement);
-            Assert.Single(character.ActiveBuffs);
+            character.BuffsManager.AddBuff(new Skill(FireSkin, 0, 0), null);
+            Assert.Equal(Element.Fire1, character.ElementProvider.DefenceElement);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
         }
 
         [Fact]
@@ -185,13 +187,13 @@ namespace Imgeneus.World.Tests
         public void ElementalWeaponSkillTest()
         {
             var character = CreateCharacter();
-            character.AddActiveBuff(new Skill(EarthWeapon, 0, 0), null);
-            Assert.Equal(Element.Earth1, character.AttackElement);
-            Assert.Single(character.ActiveBuffs);
+            character.BuffsManager.AddBuff(new Skill(EarthWeapon, 0, 0), null);
+            Assert.Equal(Element.Earth1, character.ElementProvider.AttackElement);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
 
-            character.AddActiveBuff(new Skill(FireWeapon, 0, 0), null);
-            Assert.Equal(Element.Fire1, character.AttackElement);
-            Assert.Single(character.ActiveBuffs);
+            character.BuffsManager.AddBuff(new Skill(FireWeapon, 0, 0), null);
+            Assert.Equal(Element.Fire1, character.ElementProvider.AttackElement);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
         }
     }
 }

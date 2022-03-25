@@ -39,7 +39,7 @@ namespace Imgeneus.World.Game.Speed
 
         public Dictionary<byte, byte> WeaponSpeedPassiveSkillModificator { get; init; } = new Dictionary<byte, byte>();
 
-        private int _constAttackSpeed = 5; // 5 == normal by default.
+        private int _constAttackSpeed = 0;
         public int ConstAttackSpeed { get => _constAttackSpeed; set { _constAttackSpeed = value; RaiseMoveAndAttackSpeed(); } }
 
         private int _extraAttackSpeed;

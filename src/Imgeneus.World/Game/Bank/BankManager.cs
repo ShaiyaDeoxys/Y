@@ -48,13 +48,37 @@ namespace Imgeneus.World.Game.Bank
                 BankItems.TryAdd(bankItem.Slot, bankItem);
         }
 
+        public async Task Clear()
+        {
+            var oldItems = _database.BankItems.Where(b => b.UserId == _ownerId);
+            _database.BankItems.RemoveRange(oldItems);
+
+            foreach (var bankItem in BankItems)
+            {
+                var dbItem = new DbBankItem();
+                dbItem.UserId = _ownerId;
+                dbItem.Type = bankItem.Value.Type;
+                dbItem.TypeId = bankItem.Value.TypeId;
+                dbItem.Count = bankItem.Value.Count;
+                dbItem.Slot = bankItem.Value.Slot;
+                dbItem.ObtainmentTime = bankItem.Value.ObtainmentTime;
+                dbItem.ClaimTime = bankItem.Value.ClaimTime;
+                dbItem.IsClaimed = bankItem.Value.ClaimTime.HasValue;
+                dbItem.IsDeleted = false;
+
+                _database.BankItems.Add(dbItem);
+            }
+
+            await _database.SaveChangesAsync();
+        }
+
         #endregion
 
         #region Items
 
         public ConcurrentDictionary<byte, BankItem> BankItems { get; init; } = new ConcurrentDictionary<byte, BankItem>();
 
-        public async Task<BankItem> AddBankItem(byte type, byte typeId, byte count)
+        public BankItem AddBankItem(byte type, byte typeId, byte count)
         {
             var freeSlot = FindFreeBankSlot();
 
@@ -64,45 +88,28 @@ namespace Imgeneus.World.Game.Bank
                 return null;
             }
 
-            var bankItem = new BankItem((byte)freeSlot, type, typeId, count);
+            var bankItem = new BankItem((byte)freeSlot, type, typeId, count, DateTime.UtcNow);
 
             BankItems.TryAdd(bankItem.Slot, bankItem);
-
-            var dbItem = new DbBankItem();
-            dbItem.UserId = _ownerId;
-            dbItem.Type = bankItem.Type;
-            dbItem.TypeId = bankItem.TypeId;
-            dbItem.Count = count;
-            dbItem.Slot = bankItem.Slot;
-            dbItem.ObtainmentTime = DateTime.UtcNow;
-            dbItem.ClaimTime = null;
-            dbItem.IsClaimed = false;
-            dbItem.IsDeleted = false;
-
-            _database.BankItems.Add(dbItem);
-            await _database.SaveChangesAsync();
 
             return bankItem;
         }
 
-        public async Task<Item> TryClaimBankItem(byte slot)
+        public Item TryClaimBankItem(byte slot)
         {
-            if (!BankItems.TryGetValue(slot, out var bankItem))
+            if (!BankItems.TryRemove(slot, out var bankItem))
                 return null;
+
+            bankItem.ClaimTime = DateTime.UtcNow;
 
             var item = _inventoryManager.AddItem(new Item(_databasePreloader, bankItem));
-
             if (item == null)
+            {
+                BankItems.TryAdd(bankItem.Slot, bankItem);
                 return null;
+            }
 
-            BankItems.TryRemove(slot, out _);
-
-            var dbItem = _database.BankItems.First(ubi => ubi.UserId == _ownerId && ubi.Slot == slot && !ubi.IsClaimed);
-            dbItem.ClaimTime = DateTime.UtcNow;
-            dbItem.IsClaimed = true;
-
-            var result = await _database.SaveChangesAsync();
-            return result > 0 ? item : null;
+            return item;
         }
 
         #endregion

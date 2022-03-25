@@ -15,6 +15,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -89,9 +90,22 @@ namespace Imgeneus.World.Game.Skills
 
         public async Task Clear()
         {
-            var character = await _database.Characters.FindAsync(_ownerId);
-
+            var character = await _database.Characters.Include(x => x.Skills).FirstAsync(x => x.Id == _ownerId);
             character.SkillPoint = SkillPoints;
+            character.Skills.Clear();
+
+            foreach(var skill in Skills)
+            {
+                // Save char and learned skill.
+                var skillToAdd = new DbCharacterSkill()
+                {
+                    CharacterId = _ownerId,
+                    SkillId = skill.Value.Id,
+                    Number = skill.Key
+                };
+
+                character.Skills.Add(skillToAdd);
+            }
 
             await _database.SaveChangesAsync();
 
@@ -129,7 +143,7 @@ namespace Imgeneus.World.Game.Skills
 
         public ConcurrentDictionary<byte, Skill> Skills { get; private set; } = new ConcurrentDictionary<byte, Skill>();
 
-        public async Task<(bool Ok, Skill Skill)> TryLearnNewSkill(ushort skillId, byte skillLevel)
+        public (bool Ok, Skill Skill) TryLearnNewSkill(ushort skillId, byte skillLevel)
         {
             if (Skills.Values.Any(s => s.SkillId == skillId && s.SkillLevel == skillLevel))
             {
@@ -161,16 +175,6 @@ namespace Imgeneus.World.Game.Skills
                 }
                 else
                 {
-                    var skillToRemove = _database.CharacterSkills.FirstOrDefault(s => s.CharacterId == _ownerId && s.SkillId == learnedSkill.Id);
-                    if (skillToRemove is null)
-                    {
-                        _logger.LogError("Could not remove old skill {skillId} with level {skillLevel} from db for character {characterId}", learnedSkill.SkillId, learnedSkill.SkillLevel, _ownerId);
-                    }
-                    else
-                    {
-                        _database.CharacterSkills.Remove(skillToRemove);
-                    }
-
                     skillNumber = isSkillLearned.Number;
                 }
             }
@@ -187,23 +191,6 @@ namespace Imgeneus.World.Game.Skills
                 {
                     // No learned skills at all.
                 }
-            }
-
-            // Save char and learned skill.
-            var skillToAdd = new DbCharacterSkill()
-            {
-                CharacterId = _ownerId,
-                SkillId = dbSkill.Id,
-                Number = skillNumber
-            };
-
-            _database.CharacterSkills.Add(skillToAdd);
-
-            var ok = (await _database.SaveChangesAsync()) > 0;
-            if (!ok)
-            {
-                _logger.LogError("Could not save skill {skillId} with level {skillLevel} for character {characterId}", skillId, skillLevel, _ownerId);
-                return (false, null);
             }
 
             // Remove previously learned skill.
@@ -226,15 +213,11 @@ namespace Imgeneus.World.Game.Skills
 
         public event Action OnResetSkills;
 
-        public async Task<bool> TryResetSkills()
+        public void ResetSkills()
         {
             var skillFactor = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow).SkillPoint;
 
             SkillPoints = (ushort)(skillFactor * (_levelProvider.Level - 1));
-
-            var skillsToRemove = _database.CharacterSkills.Where(s => s.CharacterId == _ownerId);
-            _database.CharacterSkills.RemoveRange(skillsToRemove);
-            await _database.SaveChangesAsync();
 
             OnResetSkills?.Invoke();
 
@@ -242,10 +225,6 @@ namespace Imgeneus.World.Game.Skills
                 passive.CancelBuff();
 
             Skills.Clear();
-
-
-
-            return true;
         }
 
         #endregion
@@ -530,9 +509,6 @@ namespace Imgeneus.World.Game.Skills
             return result;
         }
 
-        /// <summary>
-        /// Clears debuffs.
-        /// </summary>
         public AttackResult UsedDispelSkill(Skill skill, IKillable target)
         {
             var debuffs = target.BuffsManager.ActiveBuffs.Where(b => b.IsDebuff).ToList();

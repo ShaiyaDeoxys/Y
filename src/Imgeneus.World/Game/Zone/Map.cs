@@ -86,6 +86,7 @@ namespace Imgeneus.World.Game.Zone
 
             InitWeather();
             InitPortals();
+
 #if !DEBUG
             
             InitNPCs();
@@ -214,9 +215,9 @@ namespace Imgeneus.World.Game.Zone
             return neighbors.OrderBy(i => i);
         }
 
-        #endregion
+#endregion
 
-        #region Players
+#region Players
 
         /// <summary>
         /// Thread-safe dictionary of connected players. Key is character id, value is character.
@@ -361,7 +362,7 @@ namespace Imgeneus.World.Game.Zone
             return (Id, spawn.X, spawn.Y, spawn.Z);
         }
 
-        #region Party search
+#region Party search
 
         /// <summary>
         /// Collection of players, that are looking for party.
@@ -393,11 +394,11 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Mobs
+#region Mobs
 
         private static int _currentGlobalMobId;
         private readonly object _currentGlobalMobIdMutex = new object();
@@ -479,9 +480,9 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogInformation($"Map {Id} created {finalMobsCount} mobs.");
         }
 
-        #endregion
+#endregion
 
-        #region Items
+#region Items
 
         /// <summary>
         /// Adds item on map.
@@ -524,9 +525,9 @@ namespace Imgeneus.World.Game.Zone
             RemoveItem(item.CellId, item.Id);
         }
 
-        #endregion
+#endregion
 
-        #region NPC
+#region NPC
 
         /// <summary>
         /// Adds npc to the map.
@@ -576,9 +577,9 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogInformation($"Map {Id} created {finalNPCsCount} NPCs.");
         }
 
-        #endregion
+#endregion
 
-        #region Weather
+#region Weather
 
         private readonly System.Timers.Timer _weatherTimer = new System.Timers.Timer();
 
@@ -651,9 +652,9 @@ namespace Imgeneus.World.Game.Zone
             _weatherTimer.Start();
         }
 
-        #endregion
+#endregion
 
-        #region Obelisks
+#region Obelisks
 
         /// <summary>
         /// Obelisks on this map.
@@ -681,9 +682,9 @@ namespace Imgeneus.World.Game.Zone
                 character.SendObeliskBroken(obelisk);
         }
 
-        #endregion
+#endregion
 
-        #region Portals
+#region Portals
 
         public IList<Portal> Portals { get; private set; } = new List<Portal>();
 
@@ -700,9 +701,9 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogInformation($"Map {Id} created {Portals.Count} portals.");
         }
 
-        #endregion
+#endregion
 
-        #region Open/Closed
+#region Open/Closed
 
         private Timer _openTimer = new Timer();
 
@@ -749,9 +750,9 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        #endregion
+#endregion
 
-        #region Dispose
+#region Dispose
 
         private bool _isDisposed = false;
 
@@ -800,6 +801,6 @@ namespace Imgeneus.World.Game.Zone
             _closeTimer.Elapsed -= CloseTimer_Elapsed;
         }
 
-        #endregion
+#endregion
     }
 }

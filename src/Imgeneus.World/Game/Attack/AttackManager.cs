@@ -455,10 +455,6 @@ namespace Imgeneus.World.Game.Attack
             return result;
         }
 
-
-        /// <summary>
-        /// Calculates element multiplier based on attack and defence elements.
-        /// </summary>
         public double GetElementFactor(Element attackElement, Element defenceElement)
         {
             if (attackElement == defenceElement)

@@ -1,10 +1,9 @@
-﻿using Imgeneus.World.Game.PartyAndRaid;
-using Imgeneus.World.Game.Player;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Zone;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Monster;
 using Xunit;
 
 namespace Imgeneus.World.Tests.PartyTests
@@ -25,13 +24,13 @@ namespace Imgeneus.World.Tests.PartyTests
             var character1 = CreateCharacter(_map);
             var character2 = CreateCharacter(_map);
 
-            Assert.False(character1.IsPartyLead);
+            Assert.False(character1.PartyManager.IsPartyLead);
 
-            var party = new Party();
-            character1.SetParty(party);
-            character2.SetParty(party);
+            var party = new Party(packetFactoryMock.Object);
+            character1.PartyManager.Party = party;
+            character2.PartyManager.Party = party;
 
-            Assert.True(character1.IsPartyLead);
+            Assert.True(character1.PartyManager.IsPartyLead);
             Assert.Equal(character1, party.Leader);
         }
 
@@ -42,9 +41,9 @@ namespace Imgeneus.World.Tests.PartyTests
             var character1 = CreateCharacter(_map);
             var character2 = CreateCharacter(_map);
 
-            var party = new Party();
-            character1.SetParty(party);
-            character2.SetParty(party);
+            var party = new Party(packetFactoryMock.Object);
+            character1.PartyManager.Party = party;
+            character2.PartyManager.Party = party;
 
             party.DistributeDrop(new List<Item>()
             {
@@ -53,13 +52,13 @@ namespace Imgeneus.World.Tests.PartyTests
                 new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
-            Assert.Equal(2, character1.InventoryItems.Count);
-            Assert.Single(character2.InventoryItems);
+            Assert.Equal(2, character1.InventoryManager.InventoryItems.Count);
+            Assert.Single(character2.InventoryManager.InventoryItems);
 
-            Assert.Equal(WaterArmor.Type, character1.InventoryItems[(1, 0)].Type);
-            Assert.Equal(FireSword.Type, character1.InventoryItems[(1, 1)].Type);
+            Assert.Equal(WaterArmor.Type, character1.InventoryManager.InventoryItems[(1, 0)].Type);
+            Assert.Equal(FireSword.Type, character1.InventoryManager.InventoryItems[(1, 1)].Type);
 
-            Assert.Equal(WaterArmor.Type, character2.InventoryItems[(1, 0)].Type);
+            Assert.Equal(WaterArmor.Type, character2.InventoryManager.InventoryItems[(1, 0)].Type);
         }
 
         [Fact]
@@ -70,49 +69,48 @@ namespace Imgeneus.World.Tests.PartyTests
             var nearbyCharacter = CreateCharacter(_map);
             var farAwayCharacter = CreateCharacter(_map);
 
-            killerCharacter.TrySetMode(Mode.Ultimate);
-            nearbyCharacter.TrySetMode(Mode.Ultimate);
-            farAwayCharacter.TrySetMode(Mode.Ultimate);
+            killerCharacter.AdditionalInfoManager.Grow = Mode.Ultimate;
+            nearbyCharacter.AdditionalInfoManager.Grow = Mode.Ultimate;
+            farAwayCharacter.AdditionalInfoManager.Grow = Mode.Ultimate;
 
-            killerCharacter.PosX = 0;
-            killerCharacter.PosZ = 0;
+            killerCharacter.MovementManager.PosX = 0;
+            killerCharacter.MovementManager.PosZ = 0;
 
-            nearbyCharacter.PosX = 0;
-            nearbyCharacter.PosZ = 0;
+            nearbyCharacter.MovementManager.PosX = 0;
+            nearbyCharacter.MovementManager.PosZ = 0;
 
-            farAwayCharacter.PosX = 1000;
-            farAwayCharacter.PosZ = 1000;
+            farAwayCharacter.MovementManager.PosX = 1000;
+            farAwayCharacter.MovementManager.PosZ = 1000;
 
-            var party = new Party();
-            killerCharacter.SetParty(party);
-            nearbyCharacter.SetParty(party);
-            farAwayCharacter.SetParty(party);
+            var party = new Party(packetFactoryMock.Object);
+            killerCharacter.PartyManager.Party = party;
+            nearbyCharacter.PartyManager.Party = party;
+            farAwayCharacter.PartyManager.Party = party;
 
-            var mob = new Mob(Wolf.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), _map, mobLoggerMock.Object,
-                              databasePreloader.Object);
+            var mob = CreateMob(Wolf.Id, _map);
 
-            killerCharacter.TryChangeLevel(mob.Level, true);
-            nearbyCharacter.TryChangeLevel(mob.Level, true);
-            farAwayCharacter.TryChangeLevel(mob.Level, true);
+            killerCharacter.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            nearbyCharacter.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            farAwayCharacter.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
 
             _map.LoadPlayer(killerCharacter);
             _map.LoadPlayer(nearbyCharacter);
             _map.LoadPlayer(farAwayCharacter);
             _map.AddMob(mob);
 
-            Assert.Equal((uint)3022800, killerCharacter.Exp);
-            Assert.Equal((uint)3022800, nearbyCharacter.Exp);
-            Assert.Equal((uint)3022800, farAwayCharacter.Exp);
+            Assert.Equal((uint)3022800, killerCharacter.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, nearbyCharacter.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, farAwayCharacter.LevelingManager.Exp);
 
-            mob.DecreaseHP(20000000, killerCharacter);
+            mob.HealthManager.DecreaseHP(20000000, killerCharacter);
 
-            Assert.True(mob.IsDead);
+            Assert.True(mob.HealthManager.IsDead);
 
             var expectedNewExp = (uint)3022800 + 120 / 3;
 
-            Assert.Equal(expectedNewExp, killerCharacter.Exp);
-            Assert.Equal(expectedNewExp, nearbyCharacter.Exp);
-            Assert.Equal((uint)3022800, farAwayCharacter.Exp);
+            Assert.Equal(expectedNewExp, killerCharacter.LevelingManager.Exp);
+            Assert.Equal(expectedNewExp, nearbyCharacter.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, farAwayCharacter.LevelingManager.Exp);
         }
 
         [Fact]
@@ -127,33 +125,32 @@ namespace Imgeneus.World.Tests.PartyTests
             var character6 = CreateCharacter(_map);
             var character7 = CreateCharacter(_map);
 
-            var party = new Party();
-            character1.SetParty(party);
-            character2.SetParty(party);
-            character3.SetParty(party);
-            character4.SetParty(party);
-            character5.SetParty(party);
-            character6.SetParty(party);
-            character7.SetParty(party);
+            var party = new Party(packetFactoryMock.Object);
+            character1.PartyManager.Party = party;
+            character2.PartyManager.Party = party;
+            character3.PartyManager.Party = party;
+            character4.PartyManager.Party = party;
+            character5.PartyManager.Party = party;
+            character6.PartyManager.Party = party;
+            character7.PartyManager.Party = party;
 
-            var mob = new Mob(Wolf.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), _map, mobLoggerMock.Object,
-                              databasePreloader.Object);
+            var mob = CreateMob(Wolf.Id, _map);
 
-            character1.TrySetMode(Mode.Ultimate);
-            character2.TrySetMode(Mode.Ultimate);
-            character3.TrySetMode(Mode.Ultimate);
-            character4.TrySetMode(Mode.Ultimate);
-            character5.TrySetMode(Mode.Ultimate);
-            character6.TrySetMode(Mode.Ultimate);
-            character7.TrySetMode(Mode.Ultimate);
+            character1.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character2.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character3.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character4.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character5.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character6.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character7.AdditionalInfoManager.Grow = Mode.Ultimate;
 
-            character1.TryChangeLevel(mob.Level, true);
-            character2.TryChangeLevel(mob.Level, true);
-            character3.TryChangeLevel(mob.Level, true);
-            character4.TryChangeLevel(mob.Level, true);
-            character5.TryChangeLevel(mob.Level, true);
-            character6.TryChangeLevel(mob.Level, true);
-            character7.TryChangeLevel(mob.Level, true);
+            character1.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            character2.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            character3.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            character4.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            character5.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            character6.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
+            character7.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
 
             _map.LoadPlayer(character1);
             _map.LoadPlayer(character2);
@@ -164,27 +161,27 @@ namespace Imgeneus.World.Tests.PartyTests
             _map.LoadPlayer(character7);
             _map.AddMob(mob);
 
-            Assert.Equal((uint)3022800, character1.Exp);
-            Assert.Equal((uint)3022800, character2.Exp);
-            Assert.Equal((uint)3022800, character3.Exp);
-            Assert.Equal((uint)3022800, character4.Exp);
-            Assert.Equal((uint)3022800, character5.Exp);
-            Assert.Equal((uint)3022800, character6.Exp);
-            Assert.Equal((uint)3022800, character7.Exp);
+            Assert.Equal((uint)3022800, character1.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, character2.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, character3.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, character4.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, character5.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, character6.LevelingManager.Exp);
+            Assert.Equal((uint)3022800, character7.LevelingManager.Exp);
 
-            mob.DecreaseHP(20000000, character1);
+            mob.HealthManager.DecreaseHP(20000000, character1);
 
-            Assert.True(mob.IsDead);
+            Assert.True(mob.HealthManager.IsDead);
 
             var expectedExp = (uint)3022800 + 120 / 2;
 
-            Assert.Equal(expectedExp, character1.Exp);
-            Assert.Equal(expectedExp, character2.Exp);
-            Assert.Equal(expectedExp, character3.Exp);
-            Assert.Equal(expectedExp, character4.Exp);
-            Assert.Equal(expectedExp, character5.Exp);
-            Assert.Equal(expectedExp, character6.Exp);
-            Assert.Equal(expectedExp, character7.Exp);
+            Assert.Equal(expectedExp, character1.LevelingManager.Exp);
+            Assert.Equal(expectedExp, character2.LevelingManager.Exp);
+            Assert.Equal(expectedExp, character3.LevelingManager.Exp);
+            Assert.Equal(expectedExp, character4.LevelingManager.Exp);
+            Assert.Equal(expectedExp, character5.LevelingManager.Exp);
+            Assert.Equal(expectedExp, character6.LevelingManager.Exp);
+            Assert.Equal(expectedExp, character7.LevelingManager.Exp);
         }
     }
 }

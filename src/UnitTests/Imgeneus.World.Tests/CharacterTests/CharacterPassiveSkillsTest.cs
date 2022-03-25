@@ -1,6 +1,9 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Imgeneus.World.Tests
@@ -21,13 +24,13 @@ namespace Imgeneus.World.Tests
         {
             var character = CreateCharacter();
 
-            Assert.Equal(0, character.MinAttack);
-            Assert.Equal(0, character.MaxAttack);
+            Assert.Equal(0, character.StatsManager.MinAttack);
+            Assert.Equal(0, character.StatsManager.MaxAttack);
 
-            character.AddActiveBuff(new Skill(StrengthTraining, 0, 0), null);
+            character.BuffsManager.AddBuff(new Skill(StrengthTraining, 0, 0), null);
 
-            Assert.Equal(StrengthTraining.AbilityValue1, character.MinAttack);
-            Assert.Equal(StrengthTraining.AbilityValue1, character.MaxAttack);
+            Assert.Equal(StrengthTraining.AbilityValue1, character.StatsManager.MinAttack);
+            Assert.Equal(StrengthTraining.AbilityValue1, character.StatsManager.MaxAttack);
         }
 
         [Fact]
@@ -35,30 +38,30 @@ namespace Imgeneus.World.Tests
         {
             var character = CreateCharacter();
 
-            Assert.Equal(200, character.MaxMP);
+            Assert.Equal(200, character.HealthManager.MaxMP);
 
-            character.AddActiveBuff(new Skill(ManaTraining, 0, 0), null);
+            character.BuffsManager.AddBuff(new Skill(ManaTraining, 0, 0), null);
 
-            Assert.Equal(200 + ManaTraining.AbilityValue1, character.MaxMP);
+            Assert.Equal(200 + ManaTraining.AbilityValue1, character.HealthManager.MaxMP);
         }
 
         [Fact]
-        public void WeaponMasteryTest()
+        public async Task WeaponMasteryTest()
         {
             var character = CreateCharacter();
             var sword = new Item(databasePreloader.Object, 1, 1);
-            Assert.Equal(AttackSpeed.None, character.AttackSpeed);
+            Assert.Equal(AttackSpeed.None, character.SpeedManager.TotalAttackSpeed);
 
-            character.Weapon = sword;
-            Assert.Equal(AttackSpeed.Normal, character.AttackSpeed);
+            character.InventoryManager.Weapon = sword;
+            Assert.Equal(AttackSpeed.Normal, character.SpeedManager.TotalAttackSpeed);
 
             // Learn passive skill lvl 1.
-            character.LearnNewSkill(15, 1);
-            Assert.Equal(AttackSpeed.ABitFast, character.AttackSpeed);
+            character.SkillsManager.TryLearnNewSkill(15, 1);
+            Assert.Equal(AttackSpeed.ABitFast, character.SpeedManager.TotalAttackSpeed);
 
             // Learn passive skill lvl 2.
-            character.LearnNewSkill(15, 2);
-            Assert.Equal(AttackSpeed.Fast, character.AttackSpeed);
+            character.SkillsManager.TryLearnNewSkill(15, 2);
+            Assert.Equal(AttackSpeed.Fast, character.SpeedManager.TotalAttackSpeed);
         }
     }
 }

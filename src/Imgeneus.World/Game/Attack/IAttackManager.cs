@@ -84,5 +84,10 @@ namespace Imgeneus.World.Game.Attack
         /// <param name="skill">skill if any</param>
         /// <returns>true if attack hits target, otherwise false</returns>
         bool AttackSuccessRate(IKillable target, TypeAttack typeAttack, Skill skill = null);
+
+        /// <summary>
+        /// Calculates element multiplier based on attack and defence elements.
+        /// </summary>
+        double GetElementFactor(Element attackElement, Element defenceElement);
     }
 }

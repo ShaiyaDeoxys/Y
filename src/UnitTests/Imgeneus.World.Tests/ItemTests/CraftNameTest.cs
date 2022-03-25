@@ -1,5 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Inventory;
 using System.ComponentModel;
 using Xunit;
 

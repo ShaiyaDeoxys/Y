@@ -192,6 +192,9 @@ namespace Imgeneus.World.Game.Linking
                 }
             }
             gem.Count--;
+            if (gem.Count == 0)
+                _inventoryManager.RemoveItem(gem);
+
             return (success, slot);
         }
 

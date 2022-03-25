@@ -1,13 +1,14 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Stats;
 using System;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.AdditionalInfo
 {
-    public interface IAdditionalInfoManager
+    public interface IAdditionalInfoManager : ISessionedService
     {
-        void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow);
+        void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points);
 
         Race Race { get; set; }
         CharacterProfession Class { get; set; }
@@ -19,12 +20,12 @@ namespace Imgeneus.World.Game.AdditionalInfo
         /// <summary>
         /// Beginner, Normal, Hard or Ultimate.
         /// </summary>
-        Mode Grow { get; }
+        Mode Grow { get; set; }
 
         /// <summary>
-        /// Changes mode and saves to database.
+        /// Account points, used for item mall or online shop purchases.
         /// </summary>
-        Task<bool> TrySetGrow(Mode grow);
+        uint Points { get; set; }
 
         /// <summary>
         /// Gets the character's primary stat

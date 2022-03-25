@@ -91,11 +91,6 @@ namespace Imgeneus.World.Game.Guild
         Task<DbGuild[]> GetAllGuilds(Fraction country = Fraction.NotSelected);
 
         /// <summary>
-        /// Finds guild by id.
-        /// </summary>
-        Task<DbGuild> GetGuild(int guildId);
-
-        /// <summary>
         /// Gets guild members.
         /// </summary>
         /// <returns>collection of memebers</returns>

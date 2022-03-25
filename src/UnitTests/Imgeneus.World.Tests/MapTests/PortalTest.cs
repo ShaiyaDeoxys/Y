@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Zone.Portals;
 using System.ComponentModel;
 using Xunit;
@@ -28,16 +29,16 @@ namespace Imgeneus.World.Tests.MapTests
             Portal portal;
 
             portal = new Portal(new PortalConfiguration() { Faction = 0 });
-            Assert.True(portal.IsSameFaction(Fraction.Light));
-            Assert.True(portal.IsSameFaction(Fraction.Dark));
+            Assert.True(portal.IsSameFaction(CountryType.Light));
+            Assert.True(portal.IsSameFaction(CountryType.Dark));
 
             portal = new Portal(new PortalConfiguration() { Faction = 1 });
-            Assert.True(portal.IsSameFaction(Fraction.Light));
-            Assert.False(portal.IsSameFaction(Fraction.Dark));
+            Assert.True(portal.IsSameFaction(CountryType.Light));
+            Assert.False(portal.IsSameFaction(CountryType.Dark));
 
             portal = new Portal(new PortalConfiguration() { Faction = 2 });
-            Assert.False(portal.IsSameFaction(Fraction.Light));
-            Assert.True(portal.IsSameFaction(Fraction.Dark));
+            Assert.False(portal.IsSameFaction(CountryType.Light));
+            Assert.True(portal.IsSameFaction(CountryType.Dark));
         }
     }
 }

@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Etin;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
@@ -12,7 +13,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Guild
@@ -26,14 +26,13 @@ namespace Imgeneus.World.Game.Guild
         private readonly IInventoryManager _inventoryManager;
         private readonly IPartyManager _partyManager;
         private readonly ICountryProvider _countryProvider;
-        private SemaphoreSlim _sync = new SemaphoreSlim(1);
-
+        private readonly IEtinManager _etinManager;
         private int _ownerId;
 
         private readonly IGuildConfiguration _config;
         private readonly IGuildHouseConfiguration _houseConfig;
 
-        public GuildManager(ILogger<IGuildManager> logger, IGuildConfiguration config, IGuildHouseConfiguration houseConfig, IDatabase database, IGameWorld gameWorld, ITimeService timeService, IInventoryManager inventoryManager, IPartyManager partyManager, ICountryProvider countryProvider)
+        public GuildManager(ILogger<IGuildManager> logger, IGuildConfiguration config, IGuildHouseConfiguration houseConfig, IDatabase database, IGameWorld gameWorld, ITimeService timeService, IInventoryManager inventoryManager, IPartyManager partyManager, ICountryProvider countryProvider, IEtinManager etinManager)
         {
             _logger = logger;
             _database = database;
@@ -42,6 +41,7 @@ namespace Imgeneus.World.Game.Guild
             _inventoryManager = inventoryManager;
             _partyManager = partyManager;
             _countryProvider = countryProvider;
+            _etinManager = etinManager;
             _config = config;
             _houseConfig = houseConfig;
 #if DEBUG
@@ -235,6 +235,7 @@ namespace Imgeneus.World.Game.Guild
         private void Party_OnMemberChange(IParty party)
         {
             CreationRequest?.Dispose();
+            CreationRequest = null;
 
             party.OnMemberEnter -= Party_OnMemberChange;
             party.OnMemberLeft -= Party_OnMemberChange;
@@ -345,12 +346,6 @@ namespace Imgeneus.World.Game.Guild
                 return _database.Guilds.Include(g => g.Master).ToArrayAsync();
 
             return _database.Guilds.Include(g => g.Master).Where(g => g.Country == country).ToArrayAsync();
-        }
-
-        /// <inheritdoc/>
-        public async Task<DbGuild> GetGuild(int guildId)
-        {
-            return await _database.Guilds.AsNoTracking().FirstAsync(x => x.Id == guildId);
         }
 
         /// <inheritdoc/>
@@ -660,13 +655,12 @@ namespace Imgeneus.World.Game.Guild
 
         #region Etin
 
-        public async Task<int> GetEtin()
+        public Task<int> GetEtin()
         {
             if (GuildId == 0)
                 throw new Exception("Etin can not be checked, if guild manager is not initialized.");
 
-            var guild = await GetGuild(GuildId);
-            return guild.Etin;
+            return _etinManager.GetEtin(GuildId);
         }
 
         /// <inheritdoc/>
@@ -706,12 +700,9 @@ namespace Imgeneus.World.Game.Guild
                 result.Add(etin);
             }
 
-            guild.Etin += totalEtin;
+            guild.Etin = await GetEtin() + totalEtin;
 
             var count = await _database.SaveChangesAsync();
-
-            // Do not track etins.
-            _database.Entry(guild).State = EntityState.Detached;
 
             return count > 0 ? result : throw new Exception("Could not save etins to database");
         }

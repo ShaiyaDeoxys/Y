@@ -189,5 +189,10 @@ namespace Imgeneus.World.Game.Inventory
         /// Event, that is fired, when item expires.
         /// </summary>
         event Action<Item> OnItemExpired;
+
+        /// <summary>
+        /// TODO: why it's in inventory?
+        /// </summary>
+        bool TryResetStats();
     }
 }

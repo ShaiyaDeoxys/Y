@@ -12,18 +12,18 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
-            character.TryChangeLevel(2);
-            Assert.Equal(7, character.SkillPoint);
-            Assert.Empty(character.Skills);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character.LevelingManager.TryChangeLevel(2);
+            Assert.Equal(7, character.SkillsManager.SkillPoints);
+            Assert.Empty(character.SkillsManager.Skills);
 
-            character.LearnNewSkill(1, 1);
-            Assert.Equal(6, character.SkillPoint);
-            Assert.NotEmpty(character.Skills);
+            character.SkillsManager.TryLearnNewSkill(1, 1);
+            Assert.Equal(6, character.SkillsManager.SkillPoints);
+            Assert.NotEmpty(character.SkillsManager.Skills);
 
-            character.ResetSkills();
-            Assert.Equal(7, character.SkillPoint);
-            Assert.Empty(character.Skills);
+            character.SkillsManager.ResetSkills();
+            Assert.Equal(7, character.SkillsManager.SkillPoints);
+            Assert.Empty(character.SkillsManager.Skills);
         }
     }
 }

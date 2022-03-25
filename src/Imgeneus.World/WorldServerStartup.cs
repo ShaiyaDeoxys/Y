@@ -14,6 +14,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Dyeing;
 using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Etin;
 using Imgeneus.World.Game.Friends;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
@@ -93,6 +94,7 @@ namespace Imgeneus.World
             services.AddSingleton<IChatManager, ChatManager>();
             services.AddSingleton<INoticeManager, NoticeManager>();
             services.AddSingleton<IGuildRankingManager, GuildRankingManager>();
+            services.AddSingleton<IEtinManager, EtinManager>();
             services.AddSingleton<IDatabasePreloader, DatabasePreloader>((x) =>
             {
                 using (var scope = x.CreateScope())

@@ -92,8 +92,6 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendActiveBuffs(client, character.BuffsManager.ActiveBuffs);
 
-            //SendMoveAndAttackSpeed();
-
             _packetFactory.SendFriends(client, character.FriendsManager.Friends.Values);
 
             _packetFactory.SendBlessAmount(client, character.CountryProvider.Country, character.CountryProvider.Country == CountryType.Light ? Bless.Instance.LightAmount : Bless.Instance.DarkAmount, Bless.Instance.RemainingTime);
@@ -106,7 +104,7 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
 
 #if !EP8_V2
-            _packetFactory.SendAccountPoints(client, character.Points); // WARNING: This is necessary if you have an in-game item mall.
+            _packetFactory.SendAccountPoints(client, character.AdditionalInfoManager.Points); // WARNING: This is necessary if you have an in-game item mall.
 #endif
 
             _packetFactory.SendSkillBar(client, character.QuickItems); // Should be always the last! Changes packet encryption to xor!

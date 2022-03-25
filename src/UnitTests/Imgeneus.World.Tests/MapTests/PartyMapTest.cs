@@ -16,15 +16,16 @@ namespace Imgeneus.World.Tests.MapTests
             var character1 = CreateCharacter(usualMap);
             var character2 = CreateCharacter(usualMap);
 
-            var party = new Party();
-            character1.SetParty(party);
-            character2.SetParty(party);
+            var party = new Party(packetFactoryMock.Object);
+            character1.PartyManager.Party = party;
+            character2.PartyManager.Party = party;
 
             var partyMap = new PartyMap(party,
                                         Map.TEST_MAP_ID,
                                         new MapDefinition() { CreateType = CreateType.Party },
                                         new MapConfiguration() { Size = 100, CellSize = 100 },
                                         mapLoggerMock.Object,
+                                        packetFactoryMock.Object,
                                         databasePreloader.Object,
                                         mobFactoryMock.Object,
                                         npcFactoryMock.Object,
@@ -39,12 +40,12 @@ namespace Imgeneus.World.Tests.MapTests
             partyMap.LoadPlayer(character1);
             partyMap.LoadPlayer(character2);
 
-            character1.SetParty(null);
+            character1.PartyManager.Party = null;
 
             Assert.False(allLeftWasCalled); // Should be called only after all members left.
 
-            partyMap.UnloadPlayer(character1);
-            partyMap.UnloadPlayer(character2);
+            partyMap.UnloadPlayer(character1.Id);
+            partyMap.UnloadPlayer(character2.Id);
 
             Assert.True(allLeftWasCalled);
         }
@@ -57,15 +58,16 @@ namespace Imgeneus.World.Tests.MapTests
             var character1 = CreateCharacter(usualMap);
             var character2 = CreateCharacter(usualMap);
 
-            var party = new Party();
-            character1.SetParty(party);
-            character2.SetParty(party);
+            var party = new Party(packetFactoryMock.Object);
+            character1.PartyManager.Party = party;
+            character2.PartyManager.Party = party;
 
             var partyMap = new PartyMap(party,
                                         Map.TEST_MAP_ID,
                                         new MapDefinition() { CreateType = CreateType.Party },
                                         new MapConfiguration() { Size = 100, CellSize = 100 },
                                         mapLoggerMock.Object,
+                                        packetFactoryMock.Object,
                                         databasePreloader.Object,
                                         mobFactoryMock.Object,
                                         npcFactoryMock.Object,
@@ -77,10 +79,10 @@ namespace Imgeneus.World.Tests.MapTests
                 allLeftWasCalled = true;
             };
 
-            character1.SetParty(null);
+            character1.PartyManager.Party = null;
 
-            Assert.Null(character1.Party);
-            Assert.Null(character2.Party);
+            Assert.Null(character1.PartyManager.Party);
+            Assert.Null(character2.PartyManager.Party);
 
             Assert.True(allLeftWasCalled); // No party member visited map, we can delete it.
         }

@@ -11,11 +11,11 @@ namespace Imgeneus.World.Tests.AccountTests
         {
             var character = CreateCharacter();
 
-            character.SetPoints(200);
-            Assert.Equal((uint)200, character.Points);
+            character.AdditionalInfoManager.Points = 200;
+            Assert.Equal((uint)200, character.AdditionalInfoManager.Points);
 
-            character.SetPoints(50);
-            Assert.Equal((uint)50, character.Points);
+            character.AdditionalInfoManager.Points = 50;
+            Assert.Equal((uint)50, character.AdditionalInfoManager.Points);
         }
     }
 }

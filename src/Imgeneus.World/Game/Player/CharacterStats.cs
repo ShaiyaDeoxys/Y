@@ -2,14 +2,7 @@
 {
     public partial class Character
     {
-        #region Character info
-
         public string Name { get; set; } = "";
-
-        /// <summary>
-        /// Account points, used for item mall or online shop purchases.
-        /// </summary>
-        public uint Points { get; private set; }
 
         private byte[] _nameAsByteArray;
         public byte[] NameAsByteArray
@@ -29,7 +22,5 @@
                 return _nameAsByteArray;
             }
         }
-
-        #endregion
     }
 }

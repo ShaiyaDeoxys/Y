@@ -19,9 +19,9 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.BANK_CLAIM_ITEM)]
-        public async Task Handle(WorldClient client, BankClaimItemPacket packet)
+        public void Handle(WorldClient client, BankClaimItemPacket packet)
         {
-            var item = await _bankManager.TryClaimBankItem(packet.Slot);
+            var item = _bankManager.TryClaimBankItem(packet.Slot);
             if (item is null)
                 _packetFactory.SendFullInventory(client);
             else

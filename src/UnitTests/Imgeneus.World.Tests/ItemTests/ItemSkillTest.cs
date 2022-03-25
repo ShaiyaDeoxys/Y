@@ -1,6 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.World.Game;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Inventory;
 using System.ComponentModel;
 using Xunit;
 
@@ -13,17 +13,17 @@ namespace Imgeneus.World.Tests.ItemTests
         public void HPItemTest()
         {
             var character = CreateCharacter();
-            Assert.Empty(character.ActiveBuffs);
-            Assert.Equal(100, character.MaxHP);
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
+            Assert.Equal(100, character.HealthManager.MaxHP);
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId));
-            character.MoveItem(1, 0, 0, 5);
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.MoveItem(1, 0, 0, 5);
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, Item_HealthRemedy_Level_1.Type, Item_HealthRemedy_Level_1.TypeId));
-            character.TryUseItem(1, 0);
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, Item_HealthRemedy_Level_1.Type, Item_HealthRemedy_Level_1.TypeId));
+            character.InventoryManager.TryUseItem(1, 0);
 
-            Assert.NotEmpty(character.ActiveBuffs);
-            Assert.Equal(Skill_HealthRemedy_Level1.AbilityValue1 + 100, character.MaxHP);
+            Assert.NotEmpty(character.BuffsManager.ActiveBuffs);
+            Assert.Equal(Skill_HealthRemedy_Level1.AbilityValue1 + 100, character.HealthManager.MaxHP);
         }
 
         [Fact]
@@ -33,19 +33,19 @@ namespace Imgeneus.World.Tests.ItemTests
             var character = CreateCharacter();
             var character2 = CreateCharacter();
 
-            var damage = (character2 as IKiller).CalculateDamage(character, TypeAttack.PhysicalAttack, Element.None, 100, 100, 0, 0, null);
+            var damage = (character2 as IKiller).AttackManager.CalculateDamage(character, TypeAttack.PhysicalAttack, Element.None, 100, 100, 0, 0, null);
             Assert.Equal(150, damage.Damage.HP);
             Assert.Equal(0, damage.Absorb);
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId));
-            character.MoveItem(1, 0, 0, 5);
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.MoveItem(1, 0, 0, 5);
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, Item_AbsorbRemedy.Type, Item_AbsorbRemedy.TypeId));
-            character.TryUseItem(1, 0);
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, Item_AbsorbRemedy.Type, Item_AbsorbRemedy.TypeId));
+            character.InventoryManager.TryUseItem(1, 0);
 
             Assert.Equal(20, character.Absorption);
 
-            damage = (character2 as IKiller).CalculateDamage(character, TypeAttack.PhysicalAttack, Element.None, 100, 100, 0, 0, null);
+            damage = (character2 as IKiller).AttackManager.CalculateDamage(character, TypeAttack.PhysicalAttack, Element.None, 100, 100, 0, 0, null);
             Assert.Equal(130, damage.Damage.HP);
             Assert.Equal(20, damage.Absorb);
         }

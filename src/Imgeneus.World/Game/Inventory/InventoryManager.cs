@@ -1211,7 +1211,7 @@ namespace Imgeneus.World.Game.Inventory
                     break;
 
                 case SpecialEffect.StatResetStone:
-                    await TryResetStats();
+                    TryResetStats();
                     break;
 
                 case SpecialEffect.GoddessBlessing:
@@ -1243,7 +1243,7 @@ namespace Imgeneus.World.Game.Inventory
                     break;
 
                 case SpecialEffect.SkillResetStone:
-                    await _skillsManager.TryResetSkills();
+                    _skillsManager.ResetSkills();
                     break;
 
                 case SpecialEffect.MovementRune:
@@ -1316,7 +1316,7 @@ namespace Imgeneus.World.Game.Inventory
                 Bless.Instance.DarkAmount += 500;
         }
 
-        private async Task<bool> TryResetStats()
+        public bool TryResetStats()
         {
             var defaultStat = _characterConfig.DefaultStats.First(s => s.Job == _additionalInfoManager.Class);
             var statPerLevel = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow).StatPoint;

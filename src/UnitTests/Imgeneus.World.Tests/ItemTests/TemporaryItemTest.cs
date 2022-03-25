@@ -1,6 +1,5 @@
-using System;
 using System.ComponentModel;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Inventory;
 using Xunit;
 
 namespace Imgeneus.World.Tests.ItemTests
@@ -12,10 +11,10 @@ namespace Imgeneus.World.Tests.ItemTests
         public void TemporaryItem_Expiration()
         {
             var character = CreateCharacter();
-            character.AddItemToInventory(new Item(databasePreloader.Object, Nimbus1d.Type, Nimbus1d.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, Nimbus1d.Type, Nimbus1d.TypeId));
 
-            character.InventoryItems.TryGetValue((1, 0), out var item);
-            var expectedExpirationTime = ((DateTime)item.CreationTime).AddSeconds(Nimbus1d.Duration);
+            character.InventoryManager.InventoryItems.TryGetValue((1, 0), out var item);
+            var expectedExpirationTime = item.CreationTime.AddSeconds(Nimbus1d.Duration);
 
             Assert.Equal(expectedExpirationTime, item.ExpirationTime);
         }

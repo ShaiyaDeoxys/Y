@@ -60,7 +60,7 @@ namespace Imgeneus.World.Game.Skills
         /// <param name="skillId">skill id</param>
         /// <param name="skillLevel">skill level</param>
         /// <returns>successful or not</returns>
-        Task<(bool Ok, Skill Skill)> TryLearnNewSkill(ushort skillId, byte skillLevel);
+        (bool Ok, Skill Skill) TryLearnNewSkill(ushort skillId, byte skillLevel);
 
         /// <summary>
         /// Checks if it's enough sp and mp in order to use a skill.
@@ -94,11 +94,16 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Clears skills and adds skill points.
         /// </summary>
-        Task<bool> TryResetSkills();
+        void ResetSkills();
 
         /// <summary>
         /// Triggers send reset skills for player.
         /// </summary>
         event Action OnResetSkills;
+
+        /// <summary>
+        /// Clears debuffs.
+        /// </summary>
+        AttackResult UsedDispelSkill(Skill skill, IKillable target);
     }
 }

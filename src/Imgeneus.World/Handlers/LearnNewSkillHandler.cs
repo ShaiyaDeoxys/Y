@@ -19,9 +19,9 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.LEARN_NEW_SKILL)]
-        public async Task Handle(WorldClient client, LearnNewSkillPacket packet)
+        public void Handle(WorldClient client, LearnNewSkillPacket packet)
         {
-            var result = await _skillsManager.TryLearnNewSkill(packet.SkillId, packet.SkillLevel);
+            var result = _skillsManager.TryLearnNewSkill(packet.SkillId, packet.SkillLevel);
             _packetFactory.SendLearnedNewSkill(client, result.Ok, result.Skill);
         }
     }

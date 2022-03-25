@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
 
         #region Init & Clear
 
-        public void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow)
+        public void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points)
         {
             _ownerId = ownerId;
 
@@ -47,6 +48,19 @@ namespace Imgeneus.World.Game.AdditionalInfo
             Height = height;
             Gender = gender;
             Grow = grow;
+            Points = points;
+        }
+
+        public async Task Clear()
+        {
+            var character = await _database.Characters.Include(x => x.User).FirstAsync(x => x.Id == _ownerId);
+            if (character is null)
+                throw new Exception($"Could not save additional info changes for {_ownerId}");
+
+            character.Mode = Grow;
+            character.User.Points = Points;
+
+            await _database.SaveChangesAsync();
         }
 
         #endregion
@@ -118,28 +132,13 @@ namespace Imgeneus.World.Game.AdditionalInfo
 
         #region Grow
 
-        public Mode Grow { get; private set; }
+        public Mode Grow { get; set; }
 
-        public async Task<bool> TrySetGrow(Mode grow)
-        {
-            if (Grow == grow)
-                return true;
+        #endregion
 
-            if (grow > Mode.Ultimate)
-                return false;
+        #region Points
 
-            var character = await _database.Characters.FindAsync(_ownerId);
-            if (character is null)
-                return false;
-
-            character.Mode = grow;
-
-            var ok = (await _database.SaveChangesAsync()) > 0;
-            if (ok)
-                Grow = grow;
-
-            return ok;
-        }
+        public uint Points { get; set; }
 
         #endregion
     }

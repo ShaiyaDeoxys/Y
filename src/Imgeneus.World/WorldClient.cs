@@ -1,6 +1,8 @@
 ﻿using Imgeneus.Network.Client;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Server.Crypto;
+using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Guild;
@@ -72,6 +74,8 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<ILevelingManager>().Clear());
             tasks.Add(x.GetService<IGuildManager>().Clear());
             tasks.Add(x.GetService<IQuestsManager>().Clear());
+            tasks.Add(x.GetService<IAdditionalInfoManager>().Clear());
+            tasks.Add(x.GetService<IBankManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

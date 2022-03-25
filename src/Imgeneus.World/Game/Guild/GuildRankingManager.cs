@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone.MapConfig;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -290,7 +291,7 @@ namespace Imgeneus.World.Game.Guild
         public async Task CalculateRanks()
         {
             // Clear old ranks.
-            var guilds = _database.Guilds.ToList();
+            var guilds = await _database.Guilds.ToListAsync();
             foreach (var g in guilds)
                 g.Rank = 31;
 

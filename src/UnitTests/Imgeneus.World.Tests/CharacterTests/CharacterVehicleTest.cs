@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Xunit;
 
@@ -12,14 +13,14 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
-            character.Mount = character.InventoryItems[(1, 0)];
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
+            character.InventoryManager.Mount = character.InventoryManager.InventoryItems[(1, 0)];
 
-            character.CallVehicle(true);
-            Assert.Equal((int)MoveSpeedEnum.VeryFast, character.MoveSpeed);
+            character.VehicleManager.CallVehicle(true);
+            Assert.Equal(MoveSpeed.VeryFast, character.SpeedManager.TotalMoveSpeed);
 
-            character.RemoveVehicle();
-            Assert.Equal((int)MoveSpeedEnum.Normal, character.MoveSpeed);
+            character.VehicleManager.RemoveVehicle();
+            Assert.Equal(MoveSpeed.Normal, character.SpeedManager.TotalMoveSpeed);
         }
 
         [Fact]
@@ -28,17 +29,17 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
-            character.AddItemToInventory(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
 
             // Equip mount 1
-            character.Mount = character.InventoryItems[(1, 0)];
-            character.CallVehicle(true);
-            Assert.Equal((int)MoveSpeedEnum.VeryFast, character.MoveSpeed);
+            character.InventoryManager.Mount = character.InventoryManager.InventoryItems[(1, 0)];
+            character.VehicleManager.CallVehicle(true);
+            Assert.Equal(MoveSpeed.VeryFast, character.SpeedManager.TotalMoveSpeed);
 
             // Equip mount 2
-            character.Mount = character.InventoryItems[(1, 1)];
-            Assert.Equal((int)MoveSpeedEnum.Normal, character.MoveSpeed);
+            character.InventoryManager.Mount = character.InventoryManager.InventoryItems[(1, 1)];
+            Assert.Equal(MoveSpeed.Normal, character.SpeedManager.TotalMoveSpeed);
         }
     }
 }
