@@ -12,12 +12,12 @@ pool:
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  buildConfiguration: 'SHAIYA_US'
 
 steps:
   - checkout: self
     submodules: true
-    
+
   - task: UseDotNet@2
     displayName: 'Use .NET 6 Core sdk'
     inputs:
