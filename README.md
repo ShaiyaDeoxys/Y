@@ -32,9 +32,6 @@ Core contains some common helpers, extensions etc.
 ##### Imgeneus.Database
 We are using EF Core for database connections and migrations. You can read more about EF [here](https://docs.microsoft.com/en-us/ef/core/).
 
-##### Imgeneus.DatabaseBackgroundService
-Background service, that constantly saves changes to the database. You can read more about background services [here](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=visual-studio#queued-background-tasks).
-
 ##### Imgeneus.Network
 Includes packet definition from client to server and cryptography implementation.
 
@@ -85,6 +82,7 @@ Our main goal is learning, clients are used only for testing. We are not trying 
 * __matigramirez__ - helped with the implementation of different features.
 * __Bowie__ - provided solid asm support.
 * __ZheinGlitch__ - helped with Chaotic square packet structure.
+* __Eastrall__ - helped with project structure and provider awesome libraries [LiteNetwork](https://github.com/aosyatnik/LiteNetwork) and [Sylver.HandlerInvoker](https://github.com/aosyatnik/Sylver.HandlerInvoker).
 * maybe __YOU__?
 
 ## Known issues
