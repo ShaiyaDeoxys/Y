@@ -1,20 +1,20 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct DyeConfirmPacket : IDeserializedPacket
+    public record DyeConfirmPacket : IPacketDeserializer
     {
-        public byte DyeItemBag;
-        public byte DyeItemSlot;
-        public byte TargetItemBag;
-        public byte TargetItemSlot;
+        public byte DyeItemBag { get; private set; }
+        public byte DyeItemSlot { get; private set; }
+        public byte TargetItemBag { get; private set; }
+        public byte TargetItemSlot { get; private set; }
 
-        public DyeConfirmPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            DyeItemBag = packet.Read<byte>();
-            DyeItemSlot = packet.Read<byte>();
-            TargetItemBag = packet.Read<byte>();
-            TargetItemSlot = packet.Read<byte>();
+            DyeItemBag = packetStream.Read<byte>();
+            DyeItemSlot = packetStream.Read<byte>();
+            TargetItemBag = packetStream.Read<byte>();
+            TargetItemSlot = packetStream.Read<byte>();
         }
     }
 }

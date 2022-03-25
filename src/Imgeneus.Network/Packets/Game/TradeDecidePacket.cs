@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct TradeDecidePacket : IDeserializedPacket
+    public record TradeDecidePacket : IPacketDeserializer
     {
-        public bool IsDecided { get; }
+        public bool IsDecided { get; private set; }
 
-        public TradeDecidePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            IsDecided = packet.Read<bool>();
+            IsDecided = packetStream.Read<bool>();
         }
     }
 }

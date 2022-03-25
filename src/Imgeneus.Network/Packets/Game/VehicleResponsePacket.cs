@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct VehicleResponsePacket : IDeserializedPacket
+    public record VehicleResponsePacket : IPacketDeserializer
     {
-        public bool Rejected;
+        public bool Rejected { get; private set; }
 
-        public VehicleResponsePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Rejected = packet.Read<bool>();
+            Rejected = packetStream.Read<bool>();
         }
     }
 }

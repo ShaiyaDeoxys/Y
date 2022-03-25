@@ -1,8 +1,6 @@
-﻿using Imgeneus.Database;
-using Imgeneus.Database.Entities;
-using Imgeneus.Network.Packets.Game;
-using Imgeneus.Network.Server;
+﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.PartyAndRaid;
@@ -17,7 +15,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game
 {
@@ -29,23 +26,28 @@ namespace Imgeneus.World.Game
         private readonly ILogger<GameWorld> _logger;
         private readonly IMapsLoader _mapsLoader;
         private readonly IMapFactory _mapFactory;
-        private readonly ICharacterFactory _characterFactory;
         private readonly ITimeService _timeService;
         private readonly IGuildRankingManager _guildRankingManager;
         private MapDefinitions _mapDefinitions;
 
-        public GameWorld(ILogger<GameWorld> logger, IMapsLoader mapsLoader, IMapFactory mapFactory, ICharacterFactory characterFactory, ITimeService timeService, IGuildRankingManager guildRankingManager)
+        public GameWorld(ILogger<GameWorld> logger, IMapsLoader mapsLoader, IMapFactory mapFactory, ITimeService timeService, IGuildRankingManager guildRankingManager)
         {
             _logger = logger;
             _mapsLoader = mapsLoader;
             _mapFactory = mapFactory;
-            _characterFactory = characterFactory;
             _timeService = timeService;
             _guildRankingManager = guildRankingManager;
+        }
 
+        #region Init
+
+        public void Init()
+        {
             InitMaps();
             InitGRB();
         }
+
+        #endregion
 
         #region Maps
 
@@ -73,7 +75,7 @@ namespace Imgeneus.World.Game
 
                     var map = _mapFactory.CreateMap(mapDefinition.Id, mapDefinition, config);
                     if (Maps.TryAdd(mapDefinition.Id, map))
-                        _logger.LogInformation($"Map {map.Id} was successfully loaded.");
+                        _logger.LogInformation("Map {id} was successfully loaded.", map.Id);
                 }
 
                 AvailableMapIds.Add(mapDefinition.Id);
@@ -85,7 +87,7 @@ namespace Imgeneus.World.Game
         {
             reason = PortalTeleportNotAllowedReason.Unknown;
 
-            if (Maps.ContainsKey(destinationMapId))
+            if (Maps.ContainsKey(destinationMapId) || player.Map.Id == destinationMapId)
             {
                 return true;
             }
@@ -95,19 +97,19 @@ namespace Imgeneus.World.Game
 
                 if (destinationMapDef is null)
                 {
-                    _logger.LogWarning($"Map {destinationMapId} is not found in map definitions.");
+                    _logger.LogWarning("Map {id} is not found in map definitions.", destinationMapId);
                     return false;
                 }
 
                 if (destinationMapDef.CreateType == CreateType.Party)
                 {
-                    if (player.Party is null)
+                    if (player.PartyManager.Party is null)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyForParty;
                         return false;
                     }
 
-                    if (player.Party != null && (player.Party.Members.Count < destinationMapDef.MinMembersCount || (destinationMapDef.MaxMembersCount != 0 && player.Party.Members.Count > destinationMapDef.MaxMembersCount)))
+                    if (player.PartyManager.Party != null && (player.PartyManager.Party.Members.Count < destinationMapDef.MinMembersCount || (destinationMapDef.MaxMembersCount != 0 && player.PartyManager.Party.Members.Count > destinationMapDef.MaxMembersCount)))
                     {
                         reason = PortalTeleportNotAllowedReason.NotEnoughPartyMembers;
                         return false;
@@ -118,19 +120,19 @@ namespace Imgeneus.World.Game
 
                 if (destinationMapDef.CreateType == CreateType.GuildHouse)
                 {
-                    if (!player.HasGuild)
+                    if (!player.GuildManager.HasGuild)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyForGuilds;
                         return false;
                     }
 
-                    if (!player.GuildHasHouse)
+                    if (!player.GuildManager.HasGuildHouse)
                     {
                         reason = PortalTeleportNotAllowedReason.NoGuildHouse;
                         return false;
                     }
 
-                    if (!player.GuildHasTopRank)
+                    if (!player.GuildManager.HasTopRank)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyTop30Guilds;
                         return false;
@@ -143,7 +145,7 @@ namespace Imgeneus.World.Game
 
                 if (destinationMapDef.CreateType == CreateType.GRB)
                 {
-                    if (!player.HasGuild)
+                    if (!player.GuildManager.HasGuild)
                     {
                         reason = PortalTeleportNotAllowedReason.OnlyForGuilds;
                         return false;
@@ -183,7 +185,7 @@ namespace Imgeneus.World.Game
             // Map was completely deleted from the server. Fallback to map 0.
             if (!AvailableMapIds.Contains(dbCharacter.Map))
             {
-                var coordinates = Maps[0].GetNearestSpawn(0, 0, 0, dbCharacter.User.Faction);
+                var coordinates = Maps[0].GetNearestSpawn(0, 0, 0, dbCharacter.User.Faction == Fraction.Light ? CountryType.Light : CountryType.Dark);
                 dbCharacter.Map = 0;
                 dbCharacter.PosX = coordinates.X;
                 dbCharacter.PosY = coordinates.Y;
@@ -224,7 +226,7 @@ namespace Imgeneus.World.Game
                 }
             }
 
-            _logger.LogError($"Couldn't ensure map {dbCharacter.Map} for player {dbCharacter.Id}! Check it manually!");
+            _logger.LogError("Couldn't ensure map {id} for player {characterId}! Check it manually!", dbCharacter.Map, dbCharacter.Id);
         }
 
 
@@ -298,7 +300,7 @@ namespace Imgeneus.World.Game
         {
             foreach (var player in Players.Values.ToList())
             {
-                player.ReloadGuildRanks(results);
+                player.GuildManager.ReloadGuildRanks(results);
                 player.SendGuildRanksCalculated(results);
             }
         }
@@ -310,59 +312,37 @@ namespace Imgeneus.World.Game
         /// <inheritdoc />
         public ConcurrentDictionary<int, Character> Players { get; private set; } = new ConcurrentDictionary<int, Character>();
 
-        public ConcurrentDictionary<int, TradeManager> TradeManagers { get; private set; } = new ConcurrentDictionary<int, TradeManager>();
-
-        public ConcurrentDictionary<int, PartyManager> PartyManagers { get; private set; } = new ConcurrentDictionary<int, PartyManager>();
-
-        public ConcurrentDictionary<int, DuelManager> DuelManagers { get; private set; } = new ConcurrentDictionary<int, DuelManager>();
-
         /// <inheritdoc />
-        public async Task<Character> LoadPlayer(int characterId, WorldClient client)
+        public bool TryLoadPlayer(Character newPlayer)
         {
-            var newPlayer = await _characterFactory.CreateCharacter(characterId, client);
-            if (newPlayer is null)
-                return null;
+            var result = Players.TryAdd(newPlayer.Id, newPlayer);
 
-            Players.TryAdd(newPlayer.Id, newPlayer);
-            TradeManagers.TryAdd(newPlayer.Id, new TradeManager(this, newPlayer));
-            PartyManagers.TryAdd(newPlayer.Id, new PartyManager(this, newPlayer));
-            DuelManagers.TryAdd(newPlayer.Id, new DuelManager(this, newPlayer));
+            if(result)
+                _logger.LogDebug("Player {id} connected to game world", newPlayer.Id);
+            else
+                _logger.LogError("Could not load player {id} to game world", newPlayer.Id);
 
-            _logger.LogDebug($"Player {newPlayer.Id} connected to game world");
-            newPlayer.Client.OnPacketArrived += Client_OnPacketArrived;
-
-            return newPlayer;
-        }
-
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
-        {
-            switch (packet)
-            {
-                case CharacterEnteredMapPacket enteredMapPacket:
-                    LoadPlayerInMap(((WorldClient)sender).CharID);
-                    break;
-            }
-
+            return result;
         }
 
         /// <inheritdoc />
         public void LoadPlayerInMap(int characterId)
         {
             var player = Players[characterId];
-            if (Maps.ContainsKey(player.MapId))
+            if (Maps.ContainsKey(player.MapProvider.NextMapId))
             {
-                Maps[player.MapId].LoadPlayer(player);
+                Maps[player.MapProvider.NextMapId].LoadPlayer(player);
             }
             else
             {
-                var mapDef = _mapDefinitions.Maps.FirstOrDefault(d => d.Id == player.MapId);
+                var mapDef = _mapDefinitions.Maps.FirstOrDefault(d => d.Id == player.MapProvider.NextMapId);
 
                 // Map is not found.
                 if (mapDef is null)
                 {
-                    _logger.LogWarning($"Unknown map {player.MapId} for character {player.Id}. Fallback to 0 map.");
-                    var town = Maps[0].GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.Country);
-                    player.Teleport(0, town.X, town.Y, town.Z);
+                    _logger.LogWarning("Unknown map {id} for character {characterId}. Fallback to 0 map.", player.MapProvider.NextMapId, player.Id);
+                    var town = Maps[0].GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.CountryProvider.Country);
+                    player.TeleportationManager.Teleport(0, town.X, town.Y, town.Z);
                     return;
                 }
 
@@ -371,22 +351,22 @@ namespace Imgeneus.World.Game
                     IPartyMap map;
                     Guid partyId;
 
-                    if (player.Party is null)
+                    if (player.PartyManager.Party is null)
                     // This is very uncommon, but if:
                     // * player is an admin he can load into map even without party.
                     // * player entered portal, while being in party, but while he was loading, all party members left.
                     {
-                        partyId = player.PreviousPartyId;
+                        partyId = player.PartyManager.PreviousPartyId;
                     }
                     else
                     {
-                        partyId = player.Party.Id;
+                        partyId = player.PartyManager.Party.Id;
                     }
 
                     PartyMaps.TryGetValue(partyId, out map);
                     if (map is null)
                     {
-                        map = _mapFactory.CreatePartyMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), player.Party);
+                        map = _mapFactory.CreatePartyMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), player.PartyManager.Party);
                         map.OnAllMembersLeft += PartyMap_OnAllMembersLeft;
                         PartyMaps.TryAdd(partyId, map);
                     }
@@ -397,13 +377,13 @@ namespace Imgeneus.World.Game
                 if (mapDef.CreateType == CreateType.GuildHouse || mapDef.CreateType == CreateType.GRB)
                 {
                     int guildId = 0;
-                    if (player.GuildId is null) // probably guild id has changed during loading in portal? Or it's admin without guild tries to load into GBR map.
+                    if (!player.GuildManager.HasGuild) // probably guild id has changed during loading in portal? Or it's admin without guild tries to load into GBR map.
                     {
-                        _logger.LogWarning($"Trying to load character {player.Id} without guild id to guild specific map. Fallback to 0.");
+                        _logger.LogWarning("Trying to load character {id} without guild id to guild specific map. Fallback to 0.", player.Id);
                     }
                     else
                     {
-                        guildId = (int)player.GuildId;
+                        guildId = player.GuildManager.GuildId;
                     }
 
                     if (mapDef.CreateType == CreateType.GuildHouse)
@@ -443,37 +423,26 @@ namespace Imgeneus.World.Game
             Character player;
             if (Players.TryRemove(characterId, out player))
             {
-                _logger.LogDebug($"Player {characterId} left game world");
-
-                TradeManagers.TryRemove(characterId, out var tradeManager);
-                tradeManager.Dispose();
-
-                PartyManagers.TryRemove(characterId, out var partyManager);
-                partyManager.Dispose();
-
-                DuelManagers.TryRemove(characterId, out var duelManager);
-                duelManager.Dispose();
-
-                player.Client.OnPacketArrived -= Client_OnPacketArrived;
+                _logger.LogDebug("Player {characterId} left game world", characterId);
 
                 IMap map = null;
 
                 // Try find player's map.
-                if (Maps.ContainsKey(player.MapId))
-                    map = Maps[player.MapId];
-                else if (player.Party != null && PartyMaps.ContainsKey(player.Party.Id))
-                    map = PartyMaps[player.Party.Id];
-                else if (PartyMaps.ContainsKey(player.PreviousPartyId))
-                    map = PartyMaps[player.PreviousPartyId];
-                else if (player.HasGuild && GuildHouseMaps.ContainsKey((int)player.GuildId))
-                    map = GuildHouseMaps[(int)player.GuildId];
-                else if (player.HasGuild && GRBMaps.ContainsKey((int)player.GuildId))
-                    map = GRBMaps[(int)player.GuildId];
+                if (Maps.ContainsKey(player.MapProvider.NextMapId))
+                    map = Maps[player.MapProvider.NextMapId];
+                else if (player.PartyManager.Party != null && PartyMaps.ContainsKey(player.PartyManager.Party.Id))
+                    map = PartyMaps[player.PartyManager.Party.Id];
+                else if (PartyMaps.ContainsKey(player.PartyManager.PreviousPartyId))
+                    map = PartyMaps[player.PartyManager.PreviousPartyId];
+                else if (player.GuildManager.HasGuild && GuildHouseMaps.ContainsKey(player.GuildManager.GuildId))
+                    map = GuildHouseMaps[player.GuildManager.GuildId];
+                else if (player.GuildManager.HasGuild && GRBMaps.ContainsKey(player.GuildManager.GuildId))
+                    map = GRBMaps[player.GuildManager.GuildId];
 
                 if (map is null)
-                    _logger.LogError($"Couldn't find character's {characterId} map {player.MapId}.");
+                    _logger.LogError("Couldn't find character's {characterId} map {mapId}.", characterId, player.MapProvider.Map.Id);
                 else
-                    map.UnloadPlayer(player);
+                    map.UnloadPlayer(player.Id);
 
                 player.Dispose();
             }
@@ -482,7 +451,7 @@ namespace Imgeneus.World.Game
                 // 0 means, that connection with client was lost, when he was in character selection screen.
                 if (characterId != 0)
                 {
-                    _logger.LogError($"Couldn't remove player {characterId} from game world");
+                    _logger.LogError("Couldn't remove player {characterId} from game world", characterId);
                 }
             }
 

@@ -75,7 +75,7 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// Rebirth mob, when it's dead.
         /// </summary>
-        private void MobRebirth_OnDead(IKillable sender, IKiller killer)
+        private void MobRebirth_OnDead(int senderId, IKiller killer)
         {
             if (!ShouldRebirth)
                 return;

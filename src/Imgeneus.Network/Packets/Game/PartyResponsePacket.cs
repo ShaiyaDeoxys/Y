@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct PartyResponsePacket : IDeserializedPacket
+    public record PartyResponsePacket : IPacketDeserializer
     {
-        public bool IsDeclined { get; }
+        public bool IsDeclined { get; private set; }
 
-        public int CharacterId { get; }
+        public int CharacterId { get; private set; }
 
-        public PartyResponsePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            IsDeclined = packet.Read<bool>();
-            CharacterId = packet.Read<int>();
+            IsDeclined = packetStream.Read<bool>();
+            CharacterId = packetStream.Read<int>();
         }
     }
 }

@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GuildAgreePacket : IDeserializedPacket
+    public record GuildAgreePacket : IPacketDeserializer
     {
         /// <summary>
         /// Player agrees to create a guild.
         /// </summary>
-        public bool Ok { get; }
+        public bool Ok { get; private set; }
 
-        public GuildAgreePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Ok = packet.Read<bool>();
+            Ok = packetStream.Read<bool>();
         }
     }
 }

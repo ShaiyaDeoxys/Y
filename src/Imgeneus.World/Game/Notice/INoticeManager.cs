@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Game.Notice
 {
@@ -19,7 +20,7 @@ namespace Imgeneus.World.Game.Notice
         /// <param name="message">Notice message</param>
         /// <param name="faction">Target faction</param>
         /// <param name="timeInterval">Time interval in seconds</param>
-        public void SendFactionNotice(string message, Fraction faction, short timeInterval = 0);
+        public void SendFactionNotice(string message, CountryType faction, short timeInterval = 0);
 
         /// <summary>
         /// Sends a notice to all online players that are located in a specific map.

@@ -1,18 +1,18 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMWarningPacket : IDeserializedPacket
+    public record GMWarningPacket : IPacketDeserializer
     {
-        public string Name;
-        public string Message;
+        public string Name { get; private set; }
+        public string Message { get; private set; }
 
-        public GMWarningPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Name = packet.ReadString(21);
+            Name = packetStream.ReadString(21);
 
-            var messageLength = packet.Read<byte>();
-            Message = packet.ReadString(messageLength);
+            var messageLength = packetStream.Read<byte>();
+            Message = packetStream.ReadString(messageLength);
         }
     }
 }

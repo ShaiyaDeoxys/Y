@@ -1,22 +1,16 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RenameCharacterPacket : IDeserializedPacket
+    public record RenameCharacterPacket : IPacketDeserializer
     {
-        public int CharacterId;
-        public string NewName;
+        public int CharacterId { get; private set; }
+        public string NewName { get; private set; }
 
-        public RenameCharacterPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            CharacterId = packet.Read<int>();
-            NewName = packet.ReadString(21);
-        }
-
-        public void Deconstruct(out int characterId, out string newName)
-        {
-            characterId = CharacterId;
-            newName = NewName;
+            CharacterId = packetStream.Read<int>();
+            NewName = packetStream.ReadString(21);
         }
     }
 }

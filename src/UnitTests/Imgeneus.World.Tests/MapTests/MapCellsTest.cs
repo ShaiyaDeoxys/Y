@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Monster;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Zone;
@@ -22,7 +23,7 @@ namespace Imgeneus.World.Tests.MapTests
                 CellSize = 100
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(20, map.Rows);
             Assert.Equal(20, map.Columns);
         }
@@ -37,7 +38,7 @@ namespace Imgeneus.World.Tests.MapTests
                 CellSize = 100
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(21, map.Rows);
             Assert.Equal(21, map.Columns);
         }
@@ -51,7 +52,7 @@ namespace Imgeneus.World.Tests.MapTests
                 Size = 100,
                 CellSize = 100
             };
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Single(map.Cells);
         }
 
@@ -78,10 +79,10 @@ namespace Imgeneus.World.Tests.MapTests
                 Size = 1002,
                 CellSize = 100
             };
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             var character = CreateCharacter();
-            character.PosX = x;
-            character.PosZ = z;
+            character.MovementManager.PosX = x;
+            character.MovementManager.PosZ = z;
 
             Assert.Equal(expectedCellIndex, map.GetCellIndex(character));
         }
@@ -112,7 +113,7 @@ namespace Imgeneus.World.Tests.MapTests
                 CellSize = 1
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(expectedNeigbors.OrderBy(i => i), map.GetNeighborCellIndexes(cellId).ToArray());
         }
 
@@ -122,7 +123,7 @@ namespace Imgeneus.World.Tests.MapTests
         {
             var map = testMap;
             var cell = new MapCell(0, new List<int>(), map);
-            cell.AddMob(new Mob(Wolf.Id, false, new MoveArea(), map, mobLoggerMock.Object, databasePreloader.Object));
+            cell.AddMob(CreateMob(Wolf.Id, map));
 
             Assert.NotEmpty(cell.GetAllMobs(false));
 

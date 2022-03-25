@@ -1,7 +1,9 @@
 ﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Packets;
 using Imgeneus.World.Serialization;
 using System;
 using System.Collections.Concurrent;
@@ -21,7 +23,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         protected override IList<Character> _members { get => _membersDict.Keys.ToList(); set => throw new NotImplementedException(); }
 
-        public Raid(bool autoJoin, RaidDropType dropType)
+        public Raid(bool autoJoin, RaidDropType dropType, IGamePacketFactory packetFactory) : base(packetFactory)
         {
             _autoJoin = autoJoin;
             _dropType = dropType;
@@ -52,7 +54,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             foreach (var m in Members.ToList())
             {
-                SendAutoJoinChanged(m.Client);
+                _packetFactory.SendAutoJoinChanged(m.GameSession.Client, AutoJoin);
             }
         }
 
@@ -82,7 +84,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
             foreach (var m in Members.ToList())
             {
-                SendDropType(m.Client);
+                _packetFactory.SendDropType(m.GameSession.Client, DropType);
             }
         }
 
@@ -141,12 +143,12 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 {
                     if (item.Type != Item.MONEY_ITEM_TYPE)
                     {
-                        var inventoryItem = Leader.AddItemToInventory(item);
+                        var inventoryItem = Leader.InventoryManager.AddItem(item);
                         if (inventoryItem != null)
                         {
                             Leader.SendAddItemToInventory(inventoryItem);
                             foreach (var member in Members.Where(m => m != Leader))
-                                SendMemberGetItem(member.Client, Leader.Id, inventoryItem);
+                                _packetFactory.SendMemberGetItem(member.GameSession.Client, Leader.Id, inventoryItem);
                         }
                         else
                         {
@@ -156,7 +158,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     }
                     else
                     {
-                        Leader.ChangeGold((uint)(Leader.Gold + item.Gem1.TypeId));
+                        Leader.InventoryManager.Gold = (uint)(Leader.InventoryManager.Gold + item.Gem1.TypeId);
                         Leader.SendAddItemToInventory(item);
                     }
                 }
@@ -189,13 +191,13 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     {
                         if (item.Type != Item.MONEY_ITEM_TYPE)
                         {
-                            var inventoryItem = dropReceiver.AddItemToInventory(item);
+                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item);
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;
                                 dropReceiver.SendAddItemToInventory(inventoryItem);
                                 foreach (var member in Members.Where(m => m != dropReceiver))
-                                    SendMemberGetItem(member.Client, dropReceiver.Id, inventoryItem);
+                                    _packetFactory.SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                             }
                         }
                         else
@@ -241,13 +243,13 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     {
                         if (item.Type != Item.MONEY_ITEM_TYPE)
                         {
-                            var inventoryItem = dropReceiver.AddItemToInventory(item);
+                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item);
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;
                                 dropReceiver.SendAddItemToInventory(inventoryItem);
                                 foreach (var member in Members.Where(m => m != dropReceiver))
-                                    SendMemberGetItem(member.Client, dropReceiver.Id, inventoryItem);
+                                    _packetFactory.SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                             }
                         }
                         else
@@ -271,7 +273,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         public override void MemberGetItem(Character player, Item item)
         {
             foreach (var member in Members.Where(m => m != player))
-                SendMemberGetItem(member.Client, player.Id, item);
+                _packetFactory.SendMemberGetItem(member.GameSession.Client, player.Id, item);
         }
 
         #endregion
@@ -360,7 +362,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
                 // Notify others, that new raid member joined.
                 foreach (var member in Members)
-                    SendPlayerJoinedParty(member.Client, newPartyMember);
+                    _packetFactory.SendPlayerJoinedRaid(member.GameSession.Client, newPartyMember, (ushort)index);
 
                 return true;
             }
@@ -371,7 +373,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    SendPlayerLeftRaid(member.Client, leftPartyMember);
+                    _packetFactory.SendPlayerLeftRaid(member.GameSession.Client, leftPartyMember);
 
                 RemoveMember(leftPartyMember);
                 CallMemberLeft();
@@ -383,7 +385,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             lock (_syncObject)
             {
                 foreach (var member in Members)
-                    SendKickMember(member.Client, player);
+                    _packetFactory.SendRaidKickMember(member.GameSession.Client, player);
 
                 RemoveMember(player);
             }
@@ -397,8 +399,8 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 _membersDict.Clear();
                 foreach (var m in members)
                 {
-                    m.SetParty(null);
-                    SendRaidDismantle(m.Client);
+                    m.PartyManager.Party = null;
+                    _packetFactory.SendRaidDismantle(m.GameSession.Client);
                 }
             }
         }
@@ -416,8 +418,8 @@ namespace Imgeneus.World.Game.PartyAndRaid
             {
                 var lastMember = Members[0];
                 _membersDict.Clear();
-                lastMember.SetParty(null);
-                SendPlayerLeftRaid(lastMember.Client, lastMember);
+                lastMember.PartyManager.Party = null;
+                _packetFactory.SendPlayerLeftRaid(lastMember.GameSession.Client, lastMember);
                 CallAllMembersLeft();
             }
             else if (character == Leader)
@@ -460,80 +462,30 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 }
 
                 foreach (var member in Members)
-                    SendPlayerMove(member.Client, sourceIndex, destinationIndex, GetIndex(Leader), GetIndex(SubLeader));
+                    _packetFactory.SendPlayerMove(member.GameSession.Client, sourceIndex, destinationIndex, GetIndex(Leader), GetIndex(SubLeader));
             }
         }
 
         #region Senders
 
-        private void SendPlayerJoinedParty(IWorldClient client, Character character)
-        {
-            using var packet = new Packet(PacketType.RAID_ENTER);
-            packet.Write(new RaidMember(character, (ushort)GetIndex(character)).Serialize());
-            client.SendPacket(packet);
-        }
-
-        private void SendRaidDismantle(IWorldClient client)
-        {
-            using var packet = new Packet(PacketType.RAID_DISMANTLE);
-            client.SendPacket(packet);
-        }
-
-        private void SendPlayerLeftRaid(IWorldClient client, Character character)
-        {
-            using var packet = new Packet(PacketType.RAID_LEAVE);
-            packet.Write(character.Id);
-            client.SendPacket(packet);
-        }
-
-        private void SendAutoJoinChanged(IWorldClient client)
-        {
-            using var packet = new Packet(PacketType.RAID_CHANGE_AUTOINVITE);
-            packet.Write(AutoJoin);
-            client.SendPacket(packet);
-        }
-
-        private void SendDropType(IWorldClient client)
-        {
-            using var packet = new Packet(PacketType.RAID_CHANGE_LOOT);
-            packet.Write((int)DropType);
-            client.SendPacket(packet);
-        }
-
         protected override void SendAddBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
         {
-            using var packet = new Packet(PacketType.RAID_ADDED_BUFF);
-            packet.Write(senderId);
-            packet.Write(skillId);
-            packet.Write(skillLevel);
-            client.SendPacket(packet);
+            _packetFactory.SendAddRaidBuff(client, senderId, skillId, skillLevel);
         }
 
         protected override void SendRemoveBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
         {
-            using var packet = new Packet(PacketType.RAID_REMOVED_BUFF);
-            packet.Write(senderId);
-            packet.Write(skillId);
-            packet.Write(skillLevel);
-            client.SendPacket(packet);
+            _packetFactory.SendRemoveRaidBuff(client, senderId, skillId, skillLevel);
         }
 
         protected override void Send_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type)
         {
-            using var packet = new Packet(PacketType.RAID_CHARACTER_SP_MP);
-            packet.Write(id);
-            packet.Write(type);
-            packet.Write(value);
-            client.SendPacket(packet);
+            _packetFactory.SendRaid_Single_HP_SP_MP(client, id, value, type);
         }
 
         protected override void Send_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
         {
-            using var packet = new Packet(PacketType.RAID_SET_MAX);
-            packet.Write(id);
-            packet.Write(type);
-            packet.Write(value);
-            client.SendPacket(packet);
+            _packetFactory.SendRaid_Single_Max_HP_SP_MP(client, id, value, type);
         }
 
         protected override void Send_HP_SP_MP(IWorldClient client, Character partyMember)
@@ -548,45 +500,15 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         protected override void SendNewLeader(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RAID_CHANGE_LEADER);
-            packet.Write(character.Id);
-            client.SendPacket(packet);
+            _packetFactory.SendRaidNewLeader(client, character);
         }
 
         protected override void SendNewSubLeader(IWorldClient client, Character character)
         {
-            using var packet = new Packet(PacketType.RAID_CHANGE_SUBLEADER);
-            packet.Write(character.Id);
-            client.SendPacket(packet);
+            _packetFactory.SendNewRaidSubLeader(client, character);
         }
 
-        private void SendKickMember(IWorldClient client, Character character)
-        {
-            using var packet = new Packet(PacketType.RAID_KICK);
-            packet.Write(character.Id);
-            client.SendPacket(packet);
-        }
-
-        private void SendPlayerMove(IWorldClient client, int sourceIndex, int destinationIndex, int leaderIndex, int subLeaderIndex)
-        {
-            using var packet = new Packet(PacketType.RAID_MOVE_PLAYER);
-            packet.Write(sourceIndex);
-            packet.Write(destinationIndex);
-            packet.Write(leaderIndex);
-            packet.Write(subLeaderIndex);
-            client.SendPacket(packet);
-        }
-
-        private void SendMemberGetItem(IWorldClient client, int characterId, Item item)
-        {
-            using var packet = new Packet(PacketType.RAID_MEMBER_GET_ITEM);
-            packet.Write(characterId);
-            packet.Write(item.Type);
-            packet.Write(item.TypeId);
-            client.SendPacket(packet);
-        }
-
-        protected override void SendLevel(IWorldClient client, Character sender)
+        protected override void SendLevel(IWorldClient client, int senderId, ushort level)
         {
             throw new NotImplementedException();
         }

@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Network.Serialization;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 
 namespace Imgeneus.World.Serialization.SHAIYA_US
@@ -18,7 +19,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
         public Motion Motion { get; }
 
         [FieldOrder(3)]
-        public Fraction Country { get; }
+        public CountryType Country { get; }
 
         [FieldOrder(4)]
         public Race Race { get; }
@@ -54,13 +55,13 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
         public bool[] EquipmentItemHasColor { get; } = new bool[17];
 
         [FieldOrder(15)]
-        public int UnknownInt { get; }
+        public byte[] UnknownBytes1 = new byte[3];
 
         [FieldOrder(16)]
         public DyeColorSerialized[] EquipmentItemColor { get; } = new DyeColorSerialized[17];
 
         [FieldOrder(17)]
-        public byte[] UnknownBytes2 { get; } = new byte[451];
+        public byte[] UnknownBytes2 { get; } = new byte[452];
 
         [FieldOrder(18)]
         public byte[] Name;
@@ -74,35 +75,39 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
         public CharacterShape(Character character)
         {
             CharId = character.Id;
-            IsDead = character.IsDead;
+            IsDead = character.HealthManager.IsDead;
             Motion = character.Motion;
-            Country = character.Country;
-            Race = character.Race;
-            Hair = character.Hair;
-            Face = character.Face;
-            Height = character.Height;
-            Class = character.Class;
-            Gender = character.Gender;
-            Mode = character.Mode;
-            Kills = character.Kills;
+            Country = character.CountryProvider.Country;
+            Race = character.AdditionalInfoManager.Race;
+            Hair = character.AdditionalInfoManager.Hair;
+            Face = character.AdditionalInfoManager.Face;
+            Height = character.AdditionalInfoManager.Height;
+            Class = character.AdditionalInfoManager.Class;
+            Gender = character.AdditionalInfoManager.Gender;
+            Mode = character.AdditionalInfoManager.Grow;
+            Kills = character.KillsManager.Kills;
             Name = character.NameAsByteArray;
 
             for (byte i = 0; i < 17; i++)
             {
-                character.InventoryItems.TryGetValue((0, i), out var item);
+                character.InventoryManager.InventoryItems.TryGetValue((0, i), out var item);
                 EquipmentItems[i] = new EquipmentItem(item);
 
                 if (item != null)
                 {
                     EquipmentItemHasColor[i] = item.DyeColor.IsEnabled;
                     if (item.DyeColor.IsEnabled)
-                        EquipmentItemColor[i] = new DyeColorSerialized(item.DyeColor.Saturation, item.DyeColor.R, item.DyeColor.G, item.DyeColor.B);
+                        EquipmentItemColor[i] = new DyeColorSerialized(item.DyeColor.Alpha, item.DyeColor.R, item.DyeColor.G, item.DyeColor.B, item.DyeColor.Saturation);
+                    else
+                        EquipmentItemColor[i] = new DyeColorSerialized();
                 }
+                else
+                    EquipmentItemColor[i] = new DyeColorSerialized();
             }
 
-            if (character.HasParty)
+            if (character.PartyManager.HasParty)
             {
-                if (character.IsPartyLead)
+                if (character.PartyManager.IsPartyLead)
                 {
                     PartyDefinition = 2;
                 }
@@ -116,7 +121,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
                 PartyDefinition = 0;
             }
 
-            var chars = character.GuildName.ToCharArray();
+            var chars = character.GuildManager.GuildName.ToCharArray();
             for (var i = 0; i < chars.Length; i++)
             {
                 GuildName[i] = (byte)chars[i];

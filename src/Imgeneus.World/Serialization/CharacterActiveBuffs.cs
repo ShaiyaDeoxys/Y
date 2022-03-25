@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Buffs;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +15,7 @@ namespace Imgeneus.World.Serialization
         [FieldCount(nameof(Length))]
         public List<SerializedActiveBuff> Buffs { get; }
 
-        public CharacterActiveBuffs(ICollection<ActiveBuff> buffs)
+        public CharacterActiveBuffs(ICollection<Buff> buffs)
         {
             Buffs = buffs.Select(b => new SerializedActiveBuff(b)).ToList();
         }

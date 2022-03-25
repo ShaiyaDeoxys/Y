@@ -1,12 +1,11 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RaidLeavePacket : IDeserializedPacket
+    public record RaidLeavePacket : IPacketDeserializer
     {
-        public RaidLeavePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-
         }
     }
 }

@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct TradeResponsePacket : IDeserializedPacket
+    public record TradeResponsePacket : IPacketDeserializer
     {
-        public bool IsDeclined { get; }
+        public bool IsDeclined { get; private set; }
 
-        public TradeResponsePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            IsDeclined = packet.Read<bool>();
+            IsDeclined = packetStream.Read<bool>();
         }
     }
 }

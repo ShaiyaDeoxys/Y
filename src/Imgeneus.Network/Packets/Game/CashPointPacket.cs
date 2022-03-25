@@ -1,12 +1,11 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct CashPointPacket : IDeserializedPacket
+    public record CashPointPacket : IPacketDeserializer
     {
-        public CashPointPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-
         }
     }
 }

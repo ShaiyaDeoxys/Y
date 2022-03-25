@@ -1,401 +1,202 @@
-﻿using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets;
-using Imgeneus.Network.Packets.Game;
-using Imgeneus.Network.Server;
+﻿using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
-using Imgeneus.World.Serialization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Trade
 {
     /// <summary>
     /// Trade manager takes care of all trade requests.
     /// </summary>
-    public class TradeManager : IDisposable
+    public class TradeManager : ITradeManager
     {
+        private readonly ILogger<TradeManager> _logger;
         private readonly IGameWorld _gameWorld;
-        private readonly Character _player;
+        private readonly IInventoryManager _inventoryManager;
 
-        public TradeManager(IGameWorld gameWorld, Character player)
+        private int _ownerId;
+
+        public TradeManager(ILogger<TradeManager> logger, IGameWorld gameWorld, IInventoryManager inventoryManager)
         {
+            _logger = logger;
             _gameWorld = gameWorld;
-            _player = player;
-            _player.Client.OnPacketArrived += Client_OnPacketArrived;
+            _inventoryManager = inventoryManager;
+#if DEBUG
+            _logger.LogDebug("TradeManager {hashcode} created", GetHashCode());
+#endif
         }
 
-        public void Dispose()
+#if DEBUG
+        ~TradeManager()
         {
-            _player.Client.OnPacketArrived -= Client_OnPacketArrived;
+            _logger.LogDebug("TradeManager {hashcode} collected by GC", GetHashCode());
         }
+#endif
 
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
+        #region Init & Clear
+
+        public void Init(int ownerId)
         {
-            switch (packet)
-            {
-                case TradeRequestPacket tradeRequestPacket:
-                    HandleTradeRequestPacket((WorldClient)sender, tradeRequestPacket.TradeToWhomId);
-                    break;
-
-                case TradeResponsePacket tradeResponsePacket:
-                    if (tradeResponsePacket.IsDeclined)
-                    {
-                        // TODO: do something with decline?
-                    }
-                    else
-                    {
-                        var client = (WorldClient)sender;
-                        var tradeReceiver = _gameWorld.Players[client.CharID];
-                        var tradeRequester = tradeReceiver.TradePartner;
-
-                        StartTrade(tradeRequester, tradeReceiver);
-                    }
-                    break;
-
-                case TradeAddItemPacket tradeAddItemPacket:
-                    AddedItemToTrade((WorldClient)sender, tradeAddItemPacket);
-                    break;
-
-                case TradeRemoveItemPacket tradeRemoveItemPacket:
-                    RemoveItemFromTrade((WorldClient)sender, tradeRemoveItemPacket);
-                    break;
-
-                case TradeAddMoneyPacket tradeAddMoneyPacket:
-                    AddMoneyToTrade((WorldClient)sender, tradeAddMoneyPacket);
-                    break;
-
-                case TradeDecidePacket tradeDecidePacket:
-                    if (tradeDecidePacket.IsDecided)
-                        TraderDecideConfirm((WorldClient)sender);
-                    else
-                        TradeDecideDecline((WorldClient)sender);
-                    break;
-
-                case TradeFinishPacket tradeFinishPacket:
-                    if (tradeFinishPacket.Result == 2)
-                    {
-                        TradeCancel((WorldClient)sender);
-                    }
-                    else if (tradeFinishPacket.Result == 1)
-                    {
-                        TradeConfirmDeclined((WorldClient)sender);
-                    }
-                    else if (tradeFinishPacket.Result == 0)
-                    {
-                        TradeConfirmed((WorldClient)sender);
-                    }
-                    break;
-            }
+            _ownerId = ownerId;
         }
 
-        /// <summary>
-        /// Handles trade request from player to player.
-        /// </summary>
-        /// <param name="sender">Player, that starts trade</param>
-        /// <param name="targetId">id of player to whom trade was sent</param>
-        private void HandleTradeRequestPacket(WorldClient sender, int targetId)
+        public Task Clear()
         {
-            var tradeRequester = _gameWorld.Players[sender.CharID];
-            var tradeReceiver = _gameWorld.Players[targetId];
-
-            tradeRequester.TradePartner = tradeReceiver;
-            tradeReceiver.TradePartner = tradeRequester;
-
-            SendTradeRequest(tradeReceiver.Client, tradeRequester.Id);
+            Cancel();
+            return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Starts trade between 2 players.
-        /// </summary>
-        private void StartTrade(Character player1, Character player2)
+        #endregion
+
+        #region Trade start
+
+        public int PartnerId { get; set; }
+
+        public TradeRequest Request { get; set; }
+
+        public void Start(Character player1, Character player2)
         {
             var request = new TradeRequest();
-            player1.TradeRequest = request;
-            player2.TradeRequest = request;
-
-            SendTradeStart(player1.Client, player1.TradePartner.Id);
-            SendTradeStart(player2.Client, player2.TradePartner.Id);
+            player1.TradeManager.Request = request;
+            player2.TradeManager.Request = request;
         }
 
-        /// <summary>
-        /// Handles event, when player adds something to trade window. 
-        /// </summary>
-        /// <param name="sender">player, that added something</param>
-        private void AddedItemToTrade(WorldClient sender, TradeAddItemPacket tradeAddItemPacket)
+        #endregion
+
+        #region Trade finish
+
+        public void Cancel()
         {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
-
-            trader.InventoryItems.TryGetValue((tradeAddItemPacket.Bag, tradeAddItemPacket.Slot), out var tradeItem);
-            if (tradeItem is null)
-            {
-                // Possible cheating?
-                return;
-            }
-            if (trader.TradeItems.Where(x => x.Value == tradeItem).Count() != 0)
-            {
-                // Possible cheating? Player tries add item to trade twice.
-                return;
-
-            }
-
-            tradeItem.TradeQuantity = tradeItem.Count > tradeAddItemPacket.Quantity ? tradeAddItemPacket.Quantity : tradeItem.Count;
-            trader.TradeItems.TryAdd(tradeAddItemPacket.SlotInTradeWindow, tradeItem);
-
-            SendAddedItemToTrade(trader.Client, tradeAddItemPacket.Bag, tradeAddItemPacket.Slot, tradeAddItemPacket.Quantity, tradeAddItemPacket.SlotInTradeWindow);
-            SendAddedItemToTrade(partner.Client, tradeItem, tradeAddItemPacket.Quantity, tradeAddItemPacket.SlotInTradeWindow);
+            ClearTrade();
         }
 
-        /// <summary>
-        /// Removes item from trade.
-        /// </summary>
-        /// <param name="sender">player, that removed item</param>
-        private void RemoveItemFromTrade(WorldClient sender, TradeRemoveItemPacket tradeRemoveItemPacket)
+        private void ClearTrade()
         {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
+            PartnerId = 0;
 
-            trader.TradeItems.TryRemove(tradeRemoveItemPacket.SlotInTradeWindow, out var removed);
+            if (Request is null)
+                return;
+
+            foreach (var key in Request.TradeItems.Keys.Where(x => x.CharacterId == _ownerId).ToList())
+                Request.TradeItems.TryRemove(key, out var itm);
+
+            Request.TradeMoney.TryRemove(_ownerId, out var m);
+
+            if (Request.TradeItems.IsEmpty && Request.TradeMoney.IsEmpty)
+                Request = null;
+        }
+
+        public void FinishSuccessful()
+        {
+            foreach (var item in Request.TradeItems.Where(x => x.Key.CharacterId == _ownerId))
+            {
+                var tradeItem = item.Value;
+                var resultItm = _inventoryManager.RemoveItem(tradeItem);
+
+                if (_gameWorld.Players[PartnerId].InventoryManager.AddItem(resultItm) is null) // No place for this item.
+                {
+                    _inventoryManager.AddItem(resultItm);
+                }
+            }
+
+            if (Request.TradeMoney.ContainsKey(_ownerId) && Request.TradeMoney[_ownerId] > 0)
+            {
+                _inventoryManager.Gold = _inventoryManager.Gold - Request.TradeMoney[_ownerId];
+                _gameWorld.Players[PartnerId].InventoryManager.Gold = _gameWorld.Players[PartnerId].InventoryManager.Gold + Request.TradeMoney[_ownerId];
+            }
+
+            ClearTrade();
+        }
+
+        #endregion
+
+        #region Add & Remove item
+
+        public bool TryAddItem(byte bag, byte slot, byte quantity, byte slotInWindow, out Item tradeItem)
+        {
+            _inventoryManager.InventoryItems.TryGetValue((bag, slot), out var item);
+            tradeItem = item;
+            if (item is null)
+            {
+                _logger.LogWarning("Player {id} does not contain such item in inventory", _ownerId);
+                return false;
+            }
+
+            if (Request.TradeItems.Any(x => x.Value == item))
+            {
+                _logger.LogWarning("Player {id} tries add item to trade twice", _ownerId);
+                return false;
+            }
+
+            item.TradeQuantity = item.Count > quantity ? quantity : item.Count;
+            Request.TradeItems.TryAdd((_ownerId, slotInWindow), item);
+            return true;
+        }
+
+        public bool TryRemoveItem(byte slotInWindow)
+        {
+            Request.TradeItems.TryRemove((_ownerId, slotInWindow), out var removed);
             if (removed is null)
             {
-                // Possible cheating?
-                return;
+                _logger.LogWarning("Player {id} has no item at this slot", _ownerId);
+                return false;
             }
 
-            TradeDecideDecline(sender);
-
-            SendRemovedItemFromTrade(trader.Client, 1);
-            SendRemovedItemFromTrade(partner.Client, 2);
+            TradeDecideDecline();
+            return true;
         }
 
-        /// <summary>
-        /// Adds money to trade.
-        /// </summary>
-        /// <param name="sender">player, that added money</param>
-        private void AddMoneyToTrade(IWorldClient sender, TradeAddMoneyPacket tradeAddMoneyPacket)
+        public bool TryAddMoney(uint money, out uint resultMoney)
         {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
-
-            trader.TradeMoney = tradeAddMoneyPacket.Money < trader.Gold ? tradeAddMoneyPacket.Money : trader.Gold;
-
-            SendAddedMoneyToTrade(trader.Client, 1, trader.TradeMoney);
-            SendAddedMoneyToTrade(partner.Client, 2, trader.TradeMoney);
-        }
-
-        private void SendTradeRequest(IWorldClient client, int tradeRequesterId)
-        {
-            using var packet = new Packet(PacketType.TRADE_REQUEST);
-            packet.Write(tradeRequesterId);
-            client.SendPacket(packet);
-        }
-
-        private void SendTradeStart(IWorldClient client, int traderId)
-        {
-            using var packet = new Packet(PacketType.TRADE_START);
-            packet.Write(traderId);
-            client.SendPacket(packet);
-        }
-
-        private void SendAddedItemToTrade(IWorldClient client, byte bag, byte slot, byte quantity, byte slotInTradeWindow)
-        {
-            using var packet = new Packet(PacketType.TRADE_OWNER_ADD_ITEM);
-            packet.Write(bag);
-            packet.Write(slot);
-            packet.Write(quantity);
-            packet.Write(slotInTradeWindow);
-            client.SendPacket(packet);
-        }
-
-        private void SendAddedItemToTrade(IWorldClient client, Item tradeItem, byte quantity, byte slotInTradeWindow)
-        {
-            using var packet = new Packet(PacketType.TRADE_RECEIVER_ADD_ITEM);
-            packet.Write(new TradeItem(slotInTradeWindow, quantity, tradeItem).Serialize());
-            client.SendPacket(packet);
-        }
-
-
-        private void SendRemovedItemFromTrade(IWorldClient client, byte byWho)
-        {
-            using var packet = new Packet(PacketType.TRADE_REMOVE_ITEM);
-            packet.Write(byWho);
-            client.SendPacket(packet);
-        }
-
-        private void SendAddedMoneyToTrade(IWorldClient client, byte traderId, uint tradeMoney)
-        {
-            using var packet = new Packet(PacketType.TRADE_ADD_MONEY);
-            packet.Write(traderId);
-            packet.Write(tradeMoney);
-            client.SendPacket(packet);
-        }
-
-        /// <summary>
-        /// Called, when user clicks "Decide" button.
-        /// </summary>
-        private void TraderDecideConfirm(WorldClient sender)
-        {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
-
-            if (trader.TradeRequest.IsDecided_1)
-                trader.TradeRequest.IsDecided_2 = true;
+            if (money < _inventoryManager.Gold)
+            {
+                Request.TradeMoney[_ownerId] = money;
+            }
             else
-                trader.TradeRequest.IsDecided_1 = true;
+            {
+                _logger.LogWarning("Player {id} tries to add more money that he has in inventory", _ownerId);
+                Request.TradeMoney[_ownerId] = _inventoryManager.Gold;
+            }
 
-            // 1 means sender, 2 means partner.
-            SendTradeDecide(1, true, sender);
-            SendTradeDecide(2, true, partner.Client);
+            resultMoney = Request.TradeMoney[_ownerId];
+            return true;
         }
 
-        /// <summary>
-        /// Called, when user clicks "Decide" button again, which declines previous decide.
-        /// </summary>
-        private void TradeDecideDecline(WorldClient sender)
+        #endregion
+
+        #region Decide & Confirm
+
+        public void TraderDecideConfirm()
         {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
-
-            trader.TradeRequest.IsDecided_1 = false;
-            trader.TradeRequest.IsDecided_2 = false;
-
-            // Decline both.
-            SendTradeDecide(1, false, sender);
-            SendTradeDecide(2, false, partner.Client);
-            SendTradeDecide(2, false, sender);
-            SendTradeDecide(1, false, partner.Client);
-        }
-
-        private void SendTradeDecide(byte senderId, bool isDecided, IWorldClient client)
-        {
-            using var packet = new Packet(PacketType.TRADE_DECIDE);
-            packet.WriteByte(senderId);
-            packet.Write(isDecided);
-            client.SendPacket(packet);
-        }
-
-        private void TradeCancel(WorldClient sender)
-        {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
-
-            trader.ClearTrade();
-            partner.ClearTrade();
-
-            SendTradeCanceled(sender);
-            SendTradeCanceled(partner.Client);
-        }
-
-        private void TradeConfirmed(WorldClient sender)
-        {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
-
-            if (trader.TradeRequest.IsConfirmed_1)
-                trader.TradeRequest.IsConfirmed_2 = true;
+            if (Request.IsDecided_1)
+                Request.IsDecided_2 = true;
             else
-                trader.TradeRequest.IsConfirmed_1 = true;
-
-            // 1 means sender, 2 means partner.
-            SendTradeConfirm(1, false, sender);
-            SendTradeConfirm(2, false, partner.Client);
-
-            if (trader.TradeRequest.IsConfirmed_1 && trader.TradeRequest.IsConfirmed_2)
-            {
-                FinishTradeSuccessful(trader, partner);
-            }
+                Request.IsDecided_1 = true;
         }
 
-        private void TradeConfirmDeclined(WorldClient sender)
+        public void TradeDecideDecline()
         {
-            var trader = _gameWorld.Players[sender.CharID];
-            var partner = trader.TradePartner;
-
-            trader.TradeRequest.IsConfirmed_1 = false;
-            trader.TradeRequest.IsConfirmed_2 = false;
-
-            // Decline both.
-            SendTradeConfirm(1, true, sender);
-            SendTradeConfirm(2, true, partner.Client);
-            SendTradeConfirm(2, true, sender);
-            SendTradeConfirm(1, true, partner.Client);
+            Request.IsDecided_1 = false;
+            Request.IsDecided_2 = false;
         }
 
-        private void SendTradeConfirm(byte senderId, bool isDeclined, IWorldClient client)
+
+        public void Confirmed()
         {
-            using var packet = new Packet(PacketType.TRADE_FINISH);
-            packet.WriteByte(senderId);
-            packet.Write(isDeclined);
-            client.SendPacket(packet);
+            if (Request.IsConfirmed_1)
+                Request.IsConfirmed_2 = true;
+            else
+                Request.IsConfirmed_1 = true;
         }
 
-        private void FinishTradeSuccessful(Character trader, Character partner)
+        public void ConfirmDeclined()
         {
-            foreach (var item in trader.TradeItems)
-            {
-                var tradeItem = item.Value;
-                var removedItem = tradeItem.Clone();
-                var resultItm = trader.RemoveItemFromInventory(tradeItem);
-                if (partner.AddItemToInventory(resultItm) is null) // No place for this item.
-                {
-                    trader.AddItemToInventory(resultItm);
-                }
-                else
-                {
-                    removedItem.Count -= resultItm.Count;
-                    trader.SendRemoveItemFromInventory(removedItem, removedItem.Count == 0);
-                    partner.SendAddItemToInventory(resultItm);
-                }
-            }
-
-            foreach (var item in partner.TradeItems)
-            {
-                var tradeItem = item.Value;
-                var removedItem = tradeItem.Clone();
-                var resultItm = partner.RemoveItemFromInventory(tradeItem);
-                if (trader.AddItemToInventory(resultItm) is null) // No place for this item.
-                {
-                    partner.AddItemToInventory(resultItm);
-                }
-                else
-                {
-                    removedItem.Count -= resultItm.Count;
-                    partner.SendRemoveItemFromInventory(removedItem, removedItem.Count == 0);
-                    trader.SendAddItemToInventory(resultItm);
-                }
-            }
-
-            if (trader.TradeMoney > 0)
-            {
-                trader.ChangeGold(trader.Gold - trader.TradeMoney);
-                partner.ChangeGold(partner.Gold + trader.TradeMoney);
-            }
-
-            if (partner.TradeMoney > 0)
-            {
-                partner.ChangeGold(partner.Gold - partner.TradeMoney);
-                trader.ChangeGold(trader.Gold + partner.TradeMoney);
-            }
-
-            trader.ClearTrade();
-            partner.ClearTrade();
-
-            SendTradeFinished(trader.Client);
-            SendTradeFinished(partner.Client);
+            Request.IsConfirmed_1 = false;
+            Request.IsConfirmed_2 = false;
         }
 
-        private void SendTradeFinished(IWorldClient client)
-        {
-            using var packet = new Packet(PacketType.TRADE_STOP);
-            packet.WriteByte(0);
-            client.SendPacket(packet);
-        }
-
-        private void SendTradeCanceled(IWorldClient client)
-        {
-            using var packet = new Packet(PacketType.TRADE_STOP);
-            packet.WriteByte(2);
-            client.SendPacket(packet);
-        }
+        #endregion
     }
 }

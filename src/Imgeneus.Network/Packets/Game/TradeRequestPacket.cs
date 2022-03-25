@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct TradeRequestPacket : IDeserializedPacket
+    public record TradeRequestPacket : IPacketDeserializer
     {
-        public int TradeToWhomId { get; }
+        public int TradeToWhomId { get; private set; }
 
-        public TradeRequestPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            TradeToWhomId = packet.Read<int>();
+            TradeToWhomId = packetStream.Read<int>();
         }
     }
 }

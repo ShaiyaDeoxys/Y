@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RaidChangeSubLeaderPacket : IDeserializedPacket
+    public record RaidChangeSubLeaderPacket : IPacketDeserializer
     {
-        public int CharacterId;
+        public int CharacterId { get; private set; }
 
-        public RaidChangeSubLeaderPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            CharacterId = packet.Read<int>();
+            CharacterId = packetStream.Read<int>();
         }
     }
 }

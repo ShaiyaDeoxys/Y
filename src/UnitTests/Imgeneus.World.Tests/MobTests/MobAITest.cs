@@ -1,5 +1,6 @@
-﻿using Imgeneus.World.Game.Monster;
-using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Skills;
 using Xunit;
 
 namespace Imgeneus.World.Tests.MobTests
@@ -10,7 +11,7 @@ namespace Imgeneus.World.Tests.MobTests
         public void MobCanFindPlayerOnMap()
         {
             var map = testMap;
-            var mob = new Mob(Wolf.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), map, mobLoggerMock.Object, databasePreloader.Object);
+            var mob = CreateMob(Wolf.Id, map);
 
             var character = CreateCharacter();
 
@@ -25,12 +26,12 @@ namespace Imgeneus.World.Tests.MobTests
         public void MobCanKillPlayer()
         {
             var map = testMap;
-            var mob = new Mob(CrypticImmortal.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), map, mobLoggerMock.Object, databasePreloader.Object);
+            var mob = CreateMob(CrypticImmortal.Id, map);
 
             var character = CreateCharacter();
 
-            character.IncreaseHP(1);
-            Assert.True(character.CurrentHP > 0);
+            character.HealthManager.IncreaseHP(1);
+            Assert.True(character.HealthManager.CurrentHP > 0);
 
             map.LoadPlayer(character);
             map.AddMob(mob);
@@ -38,7 +39,7 @@ namespace Imgeneus.World.Tests.MobTests
             Assert.True(mob.TryGetPlayer());
             mob.Attack(character, 0, Database.Constants.Element.None, 100, 100);
 
-            Assert.True(character.IsDead);
+            Assert.True(character.HealthManager.IsDead);
             Assert.Equal(MobState.BackToBirthPosition, mob.State);
         }
 
@@ -46,10 +47,10 @@ namespace Imgeneus.World.Tests.MobTests
         public void MobWontSeePlayerInStealth()
         {
             var map = testMap;
-            var mob = new Mob(CrypticImmortal.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), map, mobLoggerMock.Object, databasePreloader.Object);
+            var mob = CreateMob(CrypticImmortal.Id, map);
 
             var character = CreateCharacter();
-            character.UsedStealthSkill(new Skill(Stealth, 0, 0), character);
+            character.SkillsManager.PerformSkill(new Skill(Stealth, 0, 0), character, character, character, new AttackResult());
 
             map.LoadPlayer(character);
             map.AddMob(mob);

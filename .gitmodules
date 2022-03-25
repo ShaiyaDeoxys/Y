@@ -1,0 +1,6 @@
+[submodule "submodules/LiteNetwork"]
+	path = submodules/LiteNetwork
+	url = https://github.com/aosyatnik/LiteNetwork
+[submodule "submodules/Sylver.HandlerInvoker"]
+	path = submodules/Sylver.HandlerInvoker
+	url = https://github.com/aosyatnik/Sylver.HandlerInvoker.git

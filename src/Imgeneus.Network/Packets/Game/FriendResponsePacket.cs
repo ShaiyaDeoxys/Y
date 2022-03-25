@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct FriendResponsePacket : IDeserializedPacket
+    public record FriendResponsePacket : IPacketDeserializer
     {
-        public bool Accepted;
+        public bool Accepted { get; private set; }
 
-        public FriendResponsePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Accepted = packet.Read<bool>();
+            Accepted = packetStream.Read<bool>();
         }
     }
 }

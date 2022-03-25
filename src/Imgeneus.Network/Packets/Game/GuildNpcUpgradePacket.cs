@@ -1,20 +1,20 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GuildNpcUpgradePacket : IDeserializedPacket
+    public record GuildNpcUpgradePacket : IPacketDeserializer
     {
-        public byte NpcType { get; }
+        public byte NpcType { get; private set; }
 
-        public byte NpcGroup { get; }
+        public byte NpcGroup { get; private set; }
 
-        public byte NpcLevel { get; }
+        public byte NpcLevel { get; private set; }
 
-        public GuildNpcUpgradePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            NpcType = packet.Read<byte>();
-            NpcGroup = packet.Read<byte>();
-            NpcLevel = packet.Read<byte>();
+            NpcType = packetStream.Read<byte>();
+            NpcGroup = packetStream.Read<byte>();
+            NpcLevel = packetStream.Read<byte>();
         }
     }
 }

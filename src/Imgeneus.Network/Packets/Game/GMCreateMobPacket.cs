@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMCreateMobPacket : IDeserializedPacket
+    public record GMCreateMobPacket : IPacketDeserializer
     {
-        public ushort MobId { get; }
+        public ushort MobId { get; private set; }
 
-        public byte NumberOfMobs { get; }
+        public byte NumberOfMobs { get; private set; }
 
-        public GMCreateMobPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            MobId = packet.Read<ushort>();
-            NumberOfMobs = packet.Read<byte>();
+            MobId = packetStream.Read<ushort>();
+            NumberOfMobs = packetStream.Read<byte>();
         }
     }
 }

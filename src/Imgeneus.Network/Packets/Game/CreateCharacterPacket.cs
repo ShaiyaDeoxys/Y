@@ -1,39 +1,39 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct CreateCharacterPacket : IDeserializedPacket
+    public record CreateCharacterPacket : IPacketDeserializer
     {
-        public byte Slot { get; }
+        public byte Slot { get; private set; }
 
-        public Race Race { get; }
+        public Race Race { get; private set; }
 
-        public Mode Mode { get; }
+        public Mode Mode { get; private set; }
 
-        public byte Hair { get; }
+        public byte Hair { get; private set; }
 
-        public byte Face { get; }
+        public byte Face { get; private set; }
 
-        public byte Height { get; }
+        public byte Height { get; private set; }
 
-        public CharacterProfession Class { get; }
+        public CharacterProfession Class { get; private set; }
 
-        public Gender Gender { get; }
+        public Gender Gender { get; private set; }
 
-        public string CharacterName { get; }
+        public string CharacterName { get; private set; }
 
-        public CreateCharacterPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Slot = packet.Read<byte>();
-            Race = (Race)packet.Read<byte>();
-            Mode = (Mode)packet.Read<byte>();
-            Hair = packet.Read<byte>();
-            Face = packet.Read<byte>();
-            Height = packet.Read<byte>();
-            Class = (CharacterProfession)packet.Read<byte>();
-            Gender = (Gender)packet.Read<byte>();
-            CharacterName = packet.ReadString((int)packet.Length - 1);
+            Slot = packetStream.Read<byte>();
+            Race = (Race)packetStream.Read<byte>();
+            Mode = (Mode)packetStream.Read<byte>();
+            Hair = packetStream.Read<byte>();
+            Face = packetStream.Read<byte>();
+            Height = packetStream.Read<byte>();
+            Class = (CharacterProfession)packetStream.Read<byte>();
+            Gender = (Gender)packetStream.Read<byte>();
+            CharacterName = packetStream.ReadString((int)packetStream.Length - 1);
         }
     }
 }

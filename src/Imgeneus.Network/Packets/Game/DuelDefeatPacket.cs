@@ -1,12 +1,11 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct DuelDefeatPacket : IDeserializedPacket
+    public record DuelDefeatPacket : IPacketDeserializer
     {
-        public DuelDefeatPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-
         }
     }
 }

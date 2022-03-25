@@ -1,15 +1,15 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct AccountFractionPacket : IDeserializedPacket
+    public record AccountFractionPacket : IPacketDeserializer
     {
-        public Fraction Fraction { get; }
+        public Fraction Fraction { get; private set; }
 
-        public AccountFractionPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Fraction = (Fraction)packet.Read<byte>();
+            Fraction = (Fraction)packetStream.Read<byte>();
         }
     }
 }

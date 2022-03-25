@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Blessing;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
                                     Map);
 
             Map.AddMob(ObeliskAI);
-            ObeliskAI.OnDead += ObeliskAI_OnDead;
+            ObeliskAI.HealthManager.OnDead += ObeliskAI_OnDead;
             InitGuards();
 
             _rebirthTimer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
@@ -87,11 +88,11 @@ namespace Imgeneus.World.Game.Zone.Obelisks
         /// </summary>
         public Mob ObeliskAI { get; private set; }
 
-        private void ObeliskAI_OnDead(IKillable sender, IKiller killer)
+        private void ObeliskAI_OnDead(int senderId, IKiller killer)
         {
-            ObeliskAI.OnDead -= ObeliskAI_OnDead;
+            ObeliskAI.HealthManager.OnDead -= ObeliskAI_OnDead;
 
-            ObeliskCountry = killer.Country == Fraction.Light ? ObeliskCountry.Light : ObeliskCountry.Dark;
+            ObeliskCountry = killer.CountryProvider.Country == CountryType.Light ? ObeliskCountry.Light : ObeliskCountry.Dark;
             OnObeliskBroken?.Invoke(this);
 
             if (ObeliskCountry == ObeliskCountry.Light)
@@ -131,7 +132,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
                                     Map);
             }
 
-            ObeliskAI.OnDead += ObeliskAI_OnDead;
+            ObeliskAI.HealthManager.OnDead += ObeliskAI_OnDead;
             Map.AddMob(ObeliskAI);
             InitGuards();
         }
@@ -150,10 +151,10 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
         private object _syncObjectGuardTimer = new object();
 
-        private void Guard_OnDead(IKillable sender, IKiller killer)
+        private void Guard_OnDead(int senderId, IKiller killer)
         {
-            var mob = sender as Mob;
-            mob.OnDead -= Guard_OnDead;
+            var mob = Guards.First(x => x.Id == senderId);
+            mob.HealthManager.OnDead -= Guard_OnDead;
 
             var rebirthTimer = new Timer();
             rebirthTimer.AutoReset = false;
@@ -175,15 +176,15 @@ namespace Imgeneus.World.Game.Zone.Obelisks
             var mob = timerMob.Mob;
             var shouldAdd = false;
 
-            if (mob.Country == Fraction.NotSelected && ObeliskCountry == ObeliskCountry.None)
+            if (mob.CountryProvider.Country == CountryType.None && ObeliskCountry == ObeliskCountry.None)
             {
                 shouldAdd = true;
             }
-            else if (mob.Country == Fraction.Light && ObeliskCountry == ObeliskCountry.Light)
+            else if (mob.CountryProvider.Country == CountryType.Light && ObeliskCountry == ObeliskCountry.Light)
             {
                 shouldAdd = true;
             }
-            else if (mob.Country == Fraction.Dark && ObeliskCountry == ObeliskCountry.Dark)
+            else if (mob.CountryProvider.Country == CountryType.Dark && ObeliskCountry == ObeliskCountry.Dark)
             {
                 shouldAdd = true;
             }
@@ -191,7 +192,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
             if (shouldAdd)
             {
                 var newMob = mob.Clone();
-                newMob.OnDead += Guard_OnDead;
+                newMob.HealthManager.OnDead += Guard_OnDead;
                 Guards.Add(newMob);
                 Map.AddMob(newMob);
             }
@@ -224,7 +225,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
                                       Map);
                 Map.AddMob(guardAI);
                 Guards.Add(guardAI);
-                guardAI.OnDead += Guard_OnDead;
+                guardAI.HealthManager.OnDead += Guard_OnDead;
             }
         }
 
@@ -236,7 +237,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
             foreach (var guard in Guards)
             {
                 Map.RemoveMob(guard);
-                guard.OnDead -= Guard_OnDead;
+                guard.HealthManager.OnDead -= Guard_OnDead;
             }
             foreach (var guardTimer in _guardRebirthTimers)
             {
@@ -266,7 +267,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
             ClearGuards();
 
-            ObeliskAI.OnDead -= ObeliskAI_OnDead;
+            ObeliskAI.HealthManager.OnDead -= ObeliskAI_OnDead;
             ObeliskAI = null;
 
             _rebirthTimer.Elapsed -= ObeliskRebirthTimer_Elapsed;

@@ -1,20 +1,20 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMRemoveNpcPacket : IDeserializedPacket
+    public record GMRemoveNpcPacket : IPacketDeserializer
     {
-        public byte Type;
+        public byte Type { get; private set; }
 
-        public ushort TypeId;
+        public ushort TypeId { get; private set; }
 
-        public byte Count;
+        public byte Count { get; private set; }
 
-        public GMRemoveNpcPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Type = packet.Read<byte>();
-            TypeId = packet.Read<ushort>();
-            Count = packet.Read<byte>();
+            Type = packetStream.Read<byte>();
+            TypeId = packetStream.Read<ushort>();
+            Count = packetStream.Read<byte>();
         }
     }
 }

@@ -79,32 +79,32 @@ namespace Imgeneus.Network.Serialization
 
         public CharacterDetails(Character character)
         {
-#if EP8_V1 // ep8 V2 crashes if these values are set.
-            Strength = character.Strength;
-            Dexterity = character.Dexterity;
-            Rec = character.Reaction;
-            Intelligence = character.Intelligence;
-            Wisdom = character.Wisdom;
-            Luck = character.Luck;
+#if !EP8_V2 // ep8 V2 crashes if these values are set.
+            Strength = character.StatsManager.Strength;
+            Dexterity = character.StatsManager.Dexterity;
+            Rec = character.StatsManager.Reaction;
+            Intelligence = character.StatsManager.Intelligence;
+            Wisdom = character.StatsManager.Wisdom;
+            Luck = character.StatsManager.Luck;
 #endif
-            StatPoint = character.StatPoint;
-            SkillPoint = character.SkillPoint;
+            StatPoint = character.StatsManager.StatPoint;
+            SkillPoint = character.SkillsManager.SkillPoints;
             Angle = character.Angle;
-            StartLvlExp = character.MinLevelExp / 10; // Normalize experience for ep8 game
-            EndLvlExp = character.NextLevelExp / 10; // Normalize experience for ep8 game
-            CurrentExp = character.Exp / 10; // Normalize experience for ep8 game
-            Gold = character.Gold;
+            StartLvlExp = character.LevelingManager.MinLevelExp / 10; // Normalize experience for ep8 game
+            EndLvlExp = character.LevelingManager.NextLevelExp / 10; // Normalize experience for ep8 game
+            CurrentExp = character.LevelingManager.Exp / 10; // Normalize experience for ep8 game
+            Gold = character.InventoryManager.Gold;
             PosX = character.PosX;
             PosY = character.PosY;
             PosZ = character.PosZ;
-            Kills = character.Kills;
-            Deaths = character.Deaths;
-            Victories = character.Victories;
-            Defeats = character.Defeats;
-            MaxHP = character.MaxHP;
-            MaxMP = character.MaxMP;
-            MaxSP = character.MaxSP;
-            GuildName = character.GuildName;
+            Kills = character.KillsManager.Kills;
+            Deaths = character.KillsManager.Deaths;
+            Victories = character.KillsManager.Victories;
+            Defeats = character.KillsManager.Defeats;
+            MaxHP = character.HealthManager.MaxHP;
+            MaxMP = character.HealthManager.MaxMP;
+            MaxSP = character.HealthManager.MaxSP;
+            GuildName = character.GuildManager.GuildName;
         }
     }
 }

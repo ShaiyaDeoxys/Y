@@ -1,13 +1,16 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
+using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -27,11 +30,14 @@ namespace Imgeneus.World.Game.Zone
         private readonly MapDefinition _definition;
         private readonly MapConfiguration _config;
         private readonly ILogger<Map> _logger;
+        private readonly IGamePacketFactory _packetFactory;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IMobFactory _mobFactory;
         private readonly INpcFactory _npcFactory;
         private readonly IObeliskFactory _obeliskfactory;
         private readonly ITimeService _timeService;
+
+        public IGamePacketFactory PacketFactory { get => _packetFactory; }
 
         /// <summary>
         /// Map id.
@@ -55,12 +61,13 @@ namespace Imgeneus.World.Game.Zone
 
         public static readonly ushort TEST_MAP_ID = 9999;
 
-        public Map(ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+        public Map(ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
         {
             Id = id;
             _definition = definition;
             _config = config;
             _logger = logger;
+            _packetFactory = packetFactory;
             _databasePreloader = databasePreloader;
             _mobFactory = mobFactory;
             _npcFactory = npcFactory;
@@ -78,11 +85,15 @@ namespace Imgeneus.World.Game.Zone
             CalculateCells(_config.Size, _config.CellSize);
 
             InitWeather();
+            InitPortals();
+
+#if !DEBUG
+            
             InitNPCs();
             InitMobs();
             InitObelisks();
-            InitPortals();
             InitOpenCloseTimers();
+#endif
         }
 
         #endregion
@@ -204,9 +215,9 @@ namespace Imgeneus.World.Game.Zone
             return neighbors.OrderBy(i => i);
         }
 
-        #endregion
+#endregion
 
-        #region Players
+#region Players
 
         /// <summary>
         /// Thread-safe dictionary of connected players. Key is character id, value is character.
@@ -241,7 +252,7 @@ namespace Imgeneus.World.Game.Zone
                 character.Map = this;
                 Cells[GetCellIndex(character)].AddPlayer(character);
 
-                character.OnPositionChanged += Character_OnPositionChanged;
+                character.MovementManager.OnMove += Character_OnMove;
                 _logger.LogDebug($"Player {character.Id} connected to map {Id}, cell index {character.CellId}.");
             }
             else
@@ -255,25 +266,26 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Unloads player from map.
         /// </summary>
-        /// <param name="character">player, that we need to unload</param>
+        /// <param name="characterId">player, that we need to unload</param>
         /// <returns>returns true if we could unload player to map, otherwise false</returns>
-        public virtual bool UnloadPlayer(Character character)
+        public virtual bool UnloadPlayer(int characterId)
         {
-            var success = Players.TryRemove(character.Id, out var removedCharacter);
+            var success = Players.TryRemove(characterId, out var character);
 
             if (success)
             {
-                character.RemoveVehicle();
+                character.VehicleManager.RemoveVehicle();
 
-                if (character.IsDead)
+                if (character.HealthManager.IsDead)
                 {
                     var rebirthMap = GetRebirthMap(character);
-                    character.Rebirth(rebirthMap.MapId, rebirthMap.X, rebirthMap.Y, rebirthMap.Z);
+                    character.TeleportationManager.Teleport(rebirthMap.MapId, rebirthMap.X, rebirthMap.Y, rebirthMap.Z);
+                    character.HealthManager.Rebirth();
                 }
 
                 Cells[character.CellId].RemovePlayer(character, true);
                 UnregisterSearchForParty(character);
-                character.OnPositionChanged -= Character_OnPositionChanged;
+                character.MovementManager.OnMove -= Character_OnMove;
                 character.OldCellId = -1;
                 character.CellId = -1;
                 _logger.LogDebug($"Player {character.Id} left map {Id}");
@@ -283,44 +295,31 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <summary>
-        /// Teleports player to selected position on map.
-        /// </summary>
-        /// <param name="playerId">Id of player</param>
-        /// <param name="teleportedByAdmin">Indicates whether the teleport was issued by an admin or not</param>
-        public void TeleportPlayer(int playerId, bool teleportedByAdmin)
-        {
-            if (!Players.ContainsKey(playerId))
-            {
-                _logger.LogError("Trying to get player, that is not presented on the map.");
-            }
-
-            var player = Players[playerId];
-            Cells[player.CellId].TeleportPlayer(player, teleportedByAdmin);
-        }
-
-        /// <summary>
         /// When player's position changes, we are checking if player's map cell should be changed.
         /// </summary>
-        private void Character_OnPositionChanged(Character sender)
+        private void Character_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
+            var sender = Players[senderId];
             var newCellId = GetCellIndex(sender);
             var oldCellId = sender.CellId;
             if (oldCellId == newCellId) // All is fine, character is in the right cell
                 return;
 
             // Need to calculate new cell...
-            _logger.LogDebug($"Character {sender.Id} change map cell from {oldCellId} to {newCellId}.");
+#if DEBUG
+            _logger.LogDebug("Character {characterId} change map cell from {oldCellId} to {newCellId}.", sender.Id, oldCellId, newCellId);
+#endif
             Cells[oldCellId].RemovePlayer(sender, false);
             Cells[newCellId].AddPlayer(sender);
         }
 
         /// <inheritdoc/>
-        public (float X, float Y, float Z) GetNearestSpawn(float currentX, float currentY, float currentZ, Fraction fraction)
+        public (float X, float Y, float Z) GetNearestSpawn(float currentX, float currentY, float currentZ, CountryType country)
         {
             SpawnConfiguration nearestSpawn = null;
             foreach (var spawn in _config.Spawns)
             {
-                if (spawn.Faction == 1 && fraction == Fraction.Light || spawn.Faction == 2 && fraction == Fraction.Dark)
+                if (spawn.Faction == 1 && country == CountryType.Light || spawn.Faction == 2 && country == CountryType.Dark)
                 {
                     if (nearestSpawn is null)
                     {
@@ -335,7 +334,8 @@ namespace Imgeneus.World.Game.Zone
 
             if (nearestSpawn is null)
             {
-                _logger.LogError($"Spawn for map {Id} is not found.");
+                _logger.LogError($"Spawn for map {Id} is not found. Rebirth at the same coordinate.");
+                return (currentX, currentY, currentZ);
             }
 
             var random = new Random();
@@ -351,18 +351,18 @@ namespace Imgeneus.World.Game.Zone
             if (_definition.RebirthMap != null)
                 return (_definition.RebirthMap.MapId, _definition.RebirthMap.PosX, _definition.RebirthMap.PosY, _definition.RebirthMap.PosZ);
 
-            if (_definition.LightRebirthMap != null && player.Country == Fraction.Light)
+            if (_definition.LightRebirthMap != null && player.CountryProvider.Country == CountryType.Light)
                 return (_definition.LightRebirthMap.MapId, _definition.LightRebirthMap.PosX, _definition.LightRebirthMap.PosY, _definition.LightRebirthMap.PosZ);
 
-            if (_definition.DarkRebirthMap != null && player.Country == Fraction.Dark)
+            if (_definition.DarkRebirthMap != null && player.CountryProvider.Country == CountryType.Dark)
                 return (_definition.DarkRebirthMap.MapId, _definition.DarkRebirthMap.PosX, _definition.DarkRebirthMap.PosY, _definition.DarkRebirthMap.PosZ);
 
             // There is no rebirth map, use the nearest spawn.
-            var spawn = GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.Country);
+            var spawn = GetNearestSpawn(player.PosX, player.PosY, player.PosZ, player.CountryProvider.Country);
             return (Id, spawn.X, spawn.Y, spawn.Z);
         }
 
-        #region Party search
+#region Party search
 
         /// <summary>
         /// Collection of players, that are looking for party.
@@ -378,7 +378,8 @@ namespace Imgeneus.World.Game.Zone
         {
             lock (_partySearchSync)
             {
-                PartySearchers.Add(character);
+                if (!PartySearchers.Contains(character))
+                    PartySearchers.Add(character);
             }
         }
 
@@ -393,13 +394,13 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Mobs
+#region Mobs
 
-        private int _currentGlobalMobId;
+        private static int _currentGlobalMobId;
         private readonly object _currentGlobalMobIdMutex = new object();
 
         /// <summary>
@@ -424,9 +425,10 @@ namespace Imgeneus.World.Game.Zone
                 throw new ObjectDisposedException(nameof(Map));
 
             Cells[GetCellIndex(mob)].AddMob(mob);
-            //_logger.LogDebug($"Mob {mob.MobId} with global id {mob.Id} entered map {Id}");
 
-            mob.OnDead += Mob_OnDead;
+#if DEBUG
+            _logger.LogDebug("Mob {mobId} with global id {id} entered map {mapId}", mob.MobId, mob.Id, Id);
+#endif
         }
 
         /// <summary>
@@ -436,11 +438,6 @@ namespace Imgeneus.World.Game.Zone
         public void RemoveMob(Mob mob)
         {
             Cells[mob.CellId].RemoveMob(mob);
-
-            mob.OnDead -= Mob_OnDead;
-            mob.TimeToRebirth -= RebirthMob;
-
-            mob.Dispose();
         }
 
         /// <summary>
@@ -455,40 +452,6 @@ namespace Imgeneus.World.Game.Zone
                 throw new ObjectDisposedException(nameof(Map));
 
             return Cells[cellId].GetMob(mobId, true);
-        }
-
-        /// <summary>
-        /// Rebirth mob if needed.
-        /// </summary>
-        /// <param name="sender">mob</param>
-        /// <param name="killer">mob's killer</param>
-        protected virtual void Mob_OnDead(IKillable sender, IKiller killer)
-        {
-            var mob = (Mob)sender;
-            mob.OnDead -= Mob_OnDead;
-            mob.Dispose();
-
-            if (mob.ShouldRebirth)
-                mob.TimeToRebirth += RebirthMob;
-        }
-
-        /// <summary>
-        /// Called, when mob respawns.
-        /// </summary>
-        /// <param name="sender">respawned mob</param>
-        public void RebirthMob(Mob sender)
-        {
-            sender.TimeToRebirth -= RebirthMob;
-
-            // Create mob clone, because we can not reuse the same id.
-            var mob = sender.Clone();
-
-            // TODO: generate rebirth coordinates based on the spawn area.
-            mob.PosX = sender.PosX;
-            mob.PosY = sender.PosY;
-            mob.PosZ = sender.PosZ;
-
-            AddMob(mob);
         }
 
         private void InitMobs()
@@ -517,9 +480,9 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogInformation($"Map {Id} created {finalMobsCount} mobs.");
         }
 
-        #endregion
+#endregion
 
-        #region Items
+#region Items
 
         /// <summary>
         /// Adds item on map.
@@ -562,9 +525,9 @@ namespace Imgeneus.World.Game.Zone
             RemoveItem(item.CellId, item.Id);
         }
 
-        #endregion
+#endregion
 
-        #region NPC
+#region NPC
 
         /// <summary>
         /// Adds npc to the map.
@@ -614,9 +577,9 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogInformation($"Map {Id} created {finalNPCsCount} NPCs.");
         }
 
-        #endregion
+#endregion
 
-        #region Weather
+#region Weather
 
         private readonly System.Timers.Timer _weatherTimer = new System.Timers.Timer();
 
@@ -684,14 +647,14 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogDebug($"Map {Id} changed weather to {_weatherState}.");
 
             foreach (var player in Players.Values)
-                player.SendWeather();
+                PacketFactory.SendWeather(player.GameSession.Client, this);
 
             _weatherTimer.Start();
         }
 
-        #endregion
+#endregion
 
-        #region Obelisks
+#region Obelisks
 
         /// <summary>
         /// Obelisks on this map.
@@ -719,9 +682,9 @@ namespace Imgeneus.World.Game.Zone
                 character.SendObeliskBroken(obelisk);
         }
 
-        #endregion
+#endregion
 
-        #region Portals
+#region Portals
 
         public IList<Portal> Portals { get; private set; } = new List<Portal>();
 
@@ -738,9 +701,9 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogInformation($"Map {Id} created {Portals.Count} portals.");
         }
 
-        #endregion
+#endregion
 
-        #region Open/Closed
+#region Open/Closed
 
         private Timer _openTimer = new Timer();
 
@@ -783,13 +746,13 @@ namespace Imgeneus.World.Game.Zone
             foreach (var player in Players.Values.ToList())
             {
                 var map = GetRebirthMap(player);
-                player.Teleport(map.MapId, map.X, map.Y, map.Z);
+                player.TeleportationManager.Teleport(map.MapId, map.X, map.Y, map.Z);
             }
         }
 
-        #endregion
+#endregion
 
-        #region Dispose
+#region Dispose
 
         private bool _isDisposed = false;
 
@@ -838,6 +801,6 @@ namespace Imgeneus.World.Game.Zone
             _closeTimer.Elapsed -= CloseTimer_Elapsed;
         }
 
-        #endregion
+#endregion
     }
 }

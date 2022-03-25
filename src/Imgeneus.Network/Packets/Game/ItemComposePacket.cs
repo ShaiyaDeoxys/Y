@@ -1,20 +1,20 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct ItemComposeAbsolutePacket : IDeserializedPacket
+    public record ItemComposeAbsolutePacket : IPacketDeserializer
     {
-        public byte RuneBag;
-        public byte RuneSlot;
-        public byte ItemBag;
-        public byte ItemSlot;
+        public byte RuneBag { get; private set; }
+        public byte RuneSlot { get; private set; }
+        public byte ItemBag { get; private set; }
+        public byte ItemSlot { get; private set; }
 
-        public ItemComposeAbsolutePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            RuneBag = packet.Read<byte>();
-            RuneSlot = packet.Read<byte>();
-            ItemBag = packet.Read<byte>();
-            ItemSlot = packet.Read<byte>();
+            RuneBag = packetStream.Read<byte>();
+            RuneSlot = packetStream.Read<byte>();
+            ItemBag = packetStream.Read<byte>();
+            ItemSlot = packetStream.Read<byte>();
         }
     }
 }

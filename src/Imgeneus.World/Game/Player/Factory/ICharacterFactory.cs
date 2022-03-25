@@ -1,5 +1,4 @@
-﻿using Imgeneus.Database.Entities;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Player
 {
@@ -8,6 +7,6 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates player instance from db character id.
         /// </summary>
-        public Task<Character> CreateCharacter(int id, WorldClient client);
+        public Task<Character> CreateCharacter(int userId, int id);
     }
 }

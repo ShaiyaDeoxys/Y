@@ -1,18 +1,18 @@
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMSetAttributePacket : IDeserializedPacket
+    public record GMSetAttributePacket : IPacketDeserializer
     {
-        public CharacterAttributeEnum Attribute;
-        public uint Value;
-        public string Name;
+        public CharacterAttributeEnum Attribute { get; private set; }
+        public uint Value { get; private set; }
+        public string Name { get; private set; }
 
-        public GMSetAttributePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Attribute = (CharacterAttributeEnum)packet.Read<byte>();
-            Value = packet.Read<uint>();
-            Name = packet.ReadString(21);
+            Attribute = (CharacterAttributeEnum)packetStream.Read<byte>();
+            Value = packetStream.Read<uint>();
+            Name = packetStream.ReadString(21);
         }
 
         public void Deconstruct(out CharacterAttributeEnum attribute, out uint value, out string charname)

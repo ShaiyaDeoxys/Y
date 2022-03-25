@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Text;
-using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 using Microsoft.Extensions.Logging;
 
@@ -27,15 +27,19 @@ namespace Imgeneus.World.Game.Notice
 
             foreach (var player in worldPlayers)
             {
+#if SHAIYA_US
+                SendNoticeToPlayer(player, PacketType.GM_SHAIYA_US_NOTICE_WORLD, message);
+#else
                 SendNoticeToPlayer(player, PacketType.NOTICE_WORLD, message);
+#endif
             }
         }
 
         /// <inheritdoc/>
         // TODO: Implement notice timer with time interval
-        public void SendFactionNotice(string message, Fraction faction, short timeInterval = 0)
+        public void SendFactionNotice(string message, CountryType faction, short timeInterval = 0)
         {
-            var factionPlayers = _gameWorld.Players.Values.Where(p => p.Country == faction);
+            var factionPlayers = _gameWorld.Players.Values.Where(p => p.CountryProvider.Country == faction);
 
             foreach (var player in factionPlayers)
             {
@@ -47,7 +51,7 @@ namespace Imgeneus.World.Game.Notice
         // TODO: Implement notice timer with time interval
         public void SendMapNotice(string message, ushort mapId, short timeInterval = 0)
         {
-            var mapPlayers = _gameWorld.Players.Values.Where(p => p.MapId == mapId);
+            var mapPlayers = _gameWorld.Players.Values.Where(p => p.Map.Id == mapId);
 
             foreach (var player in mapPlayers)
             {
@@ -71,7 +75,7 @@ namespace Imgeneus.World.Game.Notice
         /// <inheritdoc/>
         public void SendAdminNotice(string message)
         {
-            var admins = _gameWorld.Players.Values.Where(p => p.IsAdmin);
+            var admins = _gameWorld.Players.Values.Where(p => p.GameSession.IsAdmin);
 
             foreach (var player in admins)
             {
@@ -86,7 +90,7 @@ namespace Imgeneus.World.Game.Notice
             _logger.LogError("Area notice is not implemented yet. Notice failed.");
         }
 
-        #region Senders
+#region Senders
 
         /// <summary>
         /// Sends a notice to a player
@@ -96,19 +100,19 @@ namespace Imgeneus.World.Game.Notice
         /// <param name="message">Notice's message text</param>
         private void SendNoticeToPlayer(Character character, PacketType noticeType, string message)
         {
-            using var packet = new Packet(noticeType);
+            using var packet = new ImgeneusPacket(noticeType);
 
             packet.WriteByte((byte)message.Length);
 
-#if (EP8_V2 || SHAIYA_US)
-            packet.WriteString(message, Encoding.Unicode);
+#if EP8_V2 || SHAIYA_US
+            packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);
 #endif
 
-            character.Client.SendPacket(packet);
+            character.GameSession.Client.Send(packet);
         }
 
-        #endregion
+#endregion
     }
 }

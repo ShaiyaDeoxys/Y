@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace Imgeneus.Network.Server.Crypto
 {
-    public class CryptoManager
+    public class CryptoManager : ICryptoManager
     {
         public CryptoManager()
         {
@@ -18,9 +18,7 @@ namespace Imgeneus.Network.Server.Crypto
         private RSAParameters PrivateKey;
 
         private byte[] _rsaPublicExponent;
-        /// <summary>
-        /// Public exponent as little endian.
-        /// </summary>
+
         public byte[] RSAPublicExponent
         {
             get
@@ -38,9 +36,7 @@ namespace Imgeneus.Network.Server.Crypto
         }
 
         private byte[] _rsaModulus;
-        /// <summary>
-        /// Modulus as little endian.
-        /// </summary>
+
         public byte[] RSAModulus
         {
             get
@@ -94,11 +90,6 @@ namespace Imgeneus.Network.Server.Crypto
             };
         }
 
-        /// <summary>
-        /// Decrypts bog int with rsa key. Pure rsa decryption, no padding.
-        /// </summary>
-        /// <param name="encrypted">encrypted big int</param>
-        /// <returns>decrypted big int</returns>
         public BigInteger DecryptRSA(BigInteger encrypted)
         {
             // And again endian problem. There should be 0 before array.
@@ -123,11 +114,6 @@ namespace Imgeneus.Network.Server.Crypto
 
         private readonly object sendMutext = new object();
 
-        /// <summary>
-        /// Generates aes based on rsa decrypted number.
-        /// Used only in login server.
-        /// </summary>
-        /// <param name="DecryptedMessage">big integer number, that we get from game.exe</param>
         public void GenerateAES(BigInteger DecryptedMessage)
         {
             HMACSHA256 hmac = new HMACSHA256(DecryptedMessage.ToByteArray());
@@ -147,12 +133,6 @@ namespace Imgeneus.Network.Server.Crypto
             CryptoSend = AesSend.CreateEncryptor(Key, null);
         }
 
-        /// <summary>
-        /// Generates aes based on key and iv, that we get from login server.
-        /// Used only in world server.
-        /// </summary>
-        /// <param name="key">bytes for key</param>
-        /// <param name="iv">bytes for iv</param>
         public void GenerateAES(byte[] key, byte[] iv)
         {
             Key = key;
@@ -169,11 +149,6 @@ namespace Imgeneus.Network.Server.Crypto
             CryptoSend = AesSend.CreateEncryptor(Key, null);
         }
 
-        /// <summary>
-        /// AES ctr decryption.
-        /// </summary>
-        /// <param name="encryptedBytes">encrypted bytes</param>
-        /// <returns>decrypted bytes</returns>
         public byte[] Decrypt(byte[] encryptedBytes)
         {
             lock (receiveMutext)
@@ -184,11 +159,6 @@ namespace Imgeneus.Network.Server.Crypto
             }
         }
 
-        /// <summary>
-        /// AES ctr encryption or xor encryption if character is in game.
-        /// </summary>
-        /// <param name="bytesToEnrypt">bytes we want to encrypt.</param>
-        /// <returns>encrypted bytes</returns>
         public byte[] Encrypt(byte[] bytesToEnrypt)
         {
             lock (sendMutext)
@@ -234,7 +204,7 @@ namespace Imgeneus.Network.Server.Crypto
             }
         }
 
-        public bool UseExpandedKey;
+        public bool UseExpandedKey { get; set; }
 
         #endregion
     }

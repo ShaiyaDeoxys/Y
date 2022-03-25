@@ -1,6 +1,7 @@
 ﻿using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,53 +26,32 @@ namespace Imgeneus.World.Tests.MapTests
         [Description("Mobs are cleared, when the map is destroyed.")]
         public void MapDispose_Mobs()
         {
-            var map = new Map(Map.TEST_MAP_ID,
-                    new MapDefinition(),
-                    new MapConfiguration()
-                    {
-                        Size = 100,
-                        CellSize = 100,
-                        MobAreas = new List<MobAreaConfiguration>()
-                        {
-                            new MobAreaConfiguration()
-                            {
-                                X1 = 0,
-                                X2 = 10,
-                                Y1 = 0,
-                                Y2 = 10,
-                                Z1 = 0,
-                                Z2 = 10,
-                                Mobs = new List<MobConfiguration>()
-                                {
-                                    new MobConfiguration()
-                                    {
-                                        MobCount = 5,
-                                        MobId = Wolf.Id
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    mapLoggerMock.Object,
-                    databasePreloader.Object,
-                    new MobFactory(mobLoggerMock.Object, databasePreloader.Object),
-                    npcFactoryMock.Object,
-                    obeliskFactoryMock.Object,
-                    timeMock.Object);
+            var map = testMap;
+            var mob1 = CreateMob(Wolf.Id, map);
+            var mob2 = CreateMob(Wolf.Id, map);
+            var mob3 = CreateMob(Wolf.Id, map);
+            var mob4 = CreateMob(Wolf.Id, map);
+            var mob5 = CreateMob(Wolf.Id, map);
 
-            Assert.NotNull(map.GetMob(0, 1));
-            Assert.NotNull(map.GetMob(0, 2));
-            Assert.NotNull(map.GetMob(0, 3));
-            Assert.NotNull(map.GetMob(0, 4));
-            Assert.NotNull(map.GetMob(0, 5));
+            map.AddMob(mob1);
+            map.AddMob(mob2);
+            map.AddMob(mob3);
+            map.AddMob(mob4);
+            map.AddMob(mob5);
+
+            Assert.NotNull(map.GetMob(0, mob1.Id));
+            Assert.NotNull(map.GetMob(0, mob2.Id));
+            Assert.NotNull(map.GetMob(0, mob3.Id));
+            Assert.NotNull(map.GetMob(0, mob4.Id));
+            Assert.NotNull(map.GetMob(0, mob5.Id));
 
             map.Dispose();
 
-            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, 1));
-            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, 2));
-            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, 3));
-            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, 4));
-            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, 5));
+            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, mob1.Id));
+            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, mob2.Id));
+            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, mob3.Id));
+            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, mob4.Id));
+            Assert.Throws<ObjectDisposedException>(() => map.GetMob(0, mob5.Id));
         }
 
         [Fact]

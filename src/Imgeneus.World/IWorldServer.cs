@@ -1,9 +1,14 @@
-﻿using Imgeneus.Network.Server;
+﻿using System.Collections.Generic;
 
 namespace Imgeneus.World
 {
-    public interface IWorldServer : IServer
+    public interface IWorldServer
     {
+        /// <summary>
+        /// Start server.
+        /// </summary>
+        void Start();
 
+        IEnumerable<WorldClient> ConnectedUsers { get; }
     }
 }

@@ -1,6 +1,6 @@
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Monster;
 using Xunit;
 
 namespace Imgeneus.World.Tests.CharacterTests
@@ -13,16 +13,16 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
-            character.TryChangeLevel(1);
-            character.TryChangeExperience(0);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character.LevelingManager.TryChangeLevel(1);
+            character.LevelingManager.TryChangeExperience(0);
 
-            Assert.Equal((uint)0, character.Exp);
+            Assert.Equal((uint)0, character.LevelingManager.Exp);
 
-            character.TryAddExperience(200);
+            character.LevelingManager.TryChangeExperience(200);
 
-            Assert.Equal((uint)200, character.Exp);
-            Assert.Equal(2, character.Level);
+            Assert.Equal((uint)200, character.LevelingManager.Exp);
+            Assert.Equal(2, character.LevelProvider.Level);
         }
 
         [Fact]
@@ -31,18 +31,18 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            var maxLevel = config.Object.GetMaxLevelConfig(character.Mode).Level;
+            var maxLevel = config.Object.GetMaxLevelConfig(Mode.Ultimate).Level;
 
-            character.TrySetMode(Mode.Ultimate);
-            character.TryChangeLevel(maxLevel, true);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character.LevelingManager.TryChangeLevel(maxLevel);
 
-            Assert.Equal(maxLevel, character.Level);
+            Assert.Equal(maxLevel, character.LevelProvider.Level);
 
-            var maxLevelExp = databasePreloader.Object.Levels[(character.Mode, character.Level)].Exp;
+            var maxLevelExp = databasePreloader.Object.Levels[(character.AdditionalInfoManager.Grow, character.LevelProvider.Level)].Exp;
 
-            Assert.Equal(maxLevelExp, character.Exp);
-            Assert.False(character.TryAddExperience(10));
-            Assert.Equal(maxLevelExp, character.Exp);
+            Assert.Equal(maxLevelExp, character.LevelingManager.Exp);
+            character.LevelingManager.AddMobExperience(maxLevel, 10);
+            Assert.Equal(maxLevelExp, character.LevelingManager.Exp);
         }
 
         [Fact]
@@ -50,24 +50,24 @@ namespace Imgeneus.World.Tests.CharacterTests
         public void ExperienceGainFromMobTest()
         {
             var map = testMap;
-            var mob = new Mob(Wolf.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), map, mobLoggerMock.Object, databasePreloader.Object);
+            var mob = CreateMob(Wolf.Id, map);
 
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
-            character.TryChangeLevel(mob.Level, true);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
+            character.LevelProvider.Level = mob.LevelProvider.Level;
 
-            var previousExp = character.Exp;
+            var previousExp = character.LevelingManager.Exp;
 
             map.LoadPlayer(character);
             map.AddMob(mob);
-            mob.DecreaseHP(20000000, character);
+            mob.HealthManager.DecreaseHP(20000000, character);
 
-            Assert.True(mob.IsDead);
+            Assert.True(mob.HealthManager.IsDead);
 
             var expectedExperience = previousExp + 120;
 
-            Assert.Equal(expectedExperience, character.Exp);
+            Assert.Equal(expectedExperience, character.LevelingManager.Exp);
         }
     }
 }

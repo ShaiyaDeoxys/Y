@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct LearnNewSkillPacket : IDeserializedPacket
+    public record LearnNewSkillPacket : IPacketDeserializer
     {
-        public ushort SkillId { get; set; }
+        public ushort SkillId { get; private set; }
 
-        public byte SkillLevel { get; set; }
+        public byte SkillLevel { get; private set; }
 
-        public LearnNewSkillPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            SkillId = packet.Read<ushort>();
-            SkillLevel = packet.Read<byte>();
+            SkillId = packetStream.Read<ushort>();
+            SkillLevel = packetStream.Read<byte>();
         }
     }
 }

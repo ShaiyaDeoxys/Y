@@ -21,6 +21,9 @@ namespace Imgeneus.Database.Preload
         public Dictionary<(ushort SkillId, byte SkillLevel), DbSkill> Skills { get; private set; } = new Dictionary<(ushort SkillId, byte SkillLevel), DbSkill>();
 
         /// <inheritdoc />
+        public Dictionary<int, DbSkill> SkillsById { get; private set; } = new Dictionary<int, DbSkill>();
+
+        /// <inheritdoc />
         public Dictionary<ushort, DbMob> Mobs { get; private set; } = new Dictionary<ushort, DbMob>();
 
         /// <inheritdoc />
@@ -96,6 +99,7 @@ namespace Imgeneus.Database.Preload
             foreach (var skill in skills)
             {
                 Skills.Add((skill.SkillId, skill.SkillLevel), skill);
+                SkillsById.Add(skill.Id, skill);
             }
         }
 

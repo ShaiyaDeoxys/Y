@@ -1,28 +1,28 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 using System.Text;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct ChatWhisperPacket : IDeserializedPacket
+    public record ChatWhisperPacket : IPacketDeserializer
     {
-        public string TargetName;
+        public string TargetName { get;private set; }
 
-        public string Message;
+        public string Message { get; private set; }
 
-        public ChatWhisperPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            TargetName = packet.ReadString(21);
+            TargetName = packetStream.ReadString(21);
 
 #if EP8_V2
-            var length0 = packet.Read<byte>();
+            var length0 = packetStream.Read<byte>();
 #endif
 
-            var messageLength = packet.Read<byte>();
+            var messageLength = packetStream.Read<byte>();
 
-#if EP8_V2 || SHAIYA_US
-            Message = packet.ReadString(messageLength, Encoding.Unicode);
+#if EP8_V2 || SHAIYA_US || DEBUG
+            Message = packetStream.ReadString(messageLength, Encoding.Unicode);
 #else
-            Message = packet.ReadString(messageLength);
+            Message = packetStream.ReadString(messageLength);
 #endif
         }
     }

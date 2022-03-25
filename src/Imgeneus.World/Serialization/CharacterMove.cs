@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Movement;
 
 namespace Imgeneus.World.Serialization
 {
@@ -10,7 +10,7 @@ namespace Imgeneus.World.Serialization
         public int CharId { get; }
 
         [FieldOrder(1)]
-        public byte Motion { get; }
+        public MoveMotion Motion { get; }
 
         [FieldOrder(2)]
         public ushort Angle { get; }
@@ -24,14 +24,14 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(5)]
         public float PosZ { get; }
 
-        public CharacterMove(Character character)
+        public CharacterMove(int characterId, float x, float y, float z, ushort a, MoveMotion motion)
         {
-            CharId = character.Id;
-            Motion = character.MoveMotion;
-            Angle = character.Angle;
-            PosX = character.PosX;
-            PosY = character.PosY;
-            PosZ = character.PosZ;
+            CharId = characterId;
+            Motion = motion;
+            Angle = a;
+            PosX = x;
+            PosY = y;
+            PosZ = z;
         }
     }
 }

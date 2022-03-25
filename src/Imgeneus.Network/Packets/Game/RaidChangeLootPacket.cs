@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RaidChangeLootPacket : IDeserializedPacket
+    public record RaidChangeLootPacket : IPacketDeserializer
     {
-        public int LootType;
+        public int LootType { get; private set; }
 
-        public RaidChangeLootPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            LootType = packet.Read<int>();
+            LootType = packetStream.Read<int>();
         }
     }
 }

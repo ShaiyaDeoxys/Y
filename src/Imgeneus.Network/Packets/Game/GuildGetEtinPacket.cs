@@ -1,10 +1,10 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GuildGetEtinPacket : IDeserializedPacket
+    public record GuildGetEtinPacket : IPacketDeserializer
     {
-        public GuildGetEtinPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
         }
     }

@@ -5,7 +5,6 @@ using Imgeneus.World.Game.Zone.Portals;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game
 {
@@ -14,6 +13,11 @@ namespace Imgeneus.World.Game
     /// </summary>
     public interface IGameWorld
     {
+        /// <summary>
+        /// Starts game world.
+        /// </summary>
+        void Init();
+
         /// <summary>
         /// Connected players. Key is character id, value is character.
         /// </summary>
@@ -45,10 +49,9 @@ namespace Imgeneus.World.Game
         /// <summary>
         /// Loads player into game world.
         /// </summary>
-        /// <param name="characterId">id of character in database</param>
-        /// <param name="client">TCP connection with client</param>
-        /// <returns>character, that is loaded into game world</returns>
-        Task<Character> LoadPlayer(int characterId, WorldClient client);
+        /// <param name="newPlayer">player, that should be loaded into game world</param>
+        /// <returns>true if loaded, otherwise false</returns>
+        bool TryLoadPlayer(Character newPlayer);
 
         /// <summary>
         /// Loads player into map and send notification other players.

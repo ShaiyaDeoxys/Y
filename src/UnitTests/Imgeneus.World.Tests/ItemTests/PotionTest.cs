@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Player;
 using System.ComponentModel;
 using Xunit;
 
@@ -13,24 +14,24 @@ namespace Imgeneus.World.Tests.ItemTests
             var character = CreateCharacter();
             var character2 = CreateCharacter();
 
-            Assert.Equal(100, character.MaxHP);
-            Assert.Equal(200, character.MaxMP);
-            Assert.Equal(300, character.MaxSP);
+            Assert.Equal(100, character.HealthManager.MaxHP);
+            Assert.Equal(200, character.HealthManager.MaxMP);
+            Assert.Equal(300, character.HealthManager.MaxSP);
 
-            character.IncreaseHP(100);
-            Assert.Equal(100, character.CurrentHP);
-            Assert.Equal(0, character.CurrentMP);
-            Assert.Equal(0, character.CurrentSP);
+            character.HealthManager.IncreaseHP(100);
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+            Assert.Equal(0, character.HealthManager.CurrentMP);
+            Assert.Equal(0, character.HealthManager.CurrentSP);
 
-            character.DecreaseHP(90, character2);
-            Assert.Equal(10, character.CurrentHP);
+            character.HealthManager.DecreaseHP(90, character2);
+            Assert.Equal(10, character.HealthManager.CurrentHP);
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, EtainPotion.Type, EtainPotion.TypeId));
-            character.TryUseItem(1, 0);
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, EtainPotion.Type, EtainPotion.TypeId));
+            character.InventoryManager.TryUseItem(1, 0);
 
-            Assert.Equal(85, character.CurrentHP);
-            Assert.Equal(150, character.CurrentMP);
-            Assert.Equal(225, character.CurrentSP);
+            Assert.Equal(85, character.HealthManager.CurrentHP);
+            Assert.Equal(150, character.HealthManager.CurrentMP);
+            Assert.Equal(225, character.HealthManager.CurrentSP);
         }
 
         [Fact]
@@ -40,22 +41,22 @@ namespace Imgeneus.World.Tests.ItemTests
             var character = CreateCharacter();
             var character2 = CreateCharacter();
 
-            Assert.Equal(100, character.MaxHP);
-            Assert.Equal(200, character.MaxMP);
-            Assert.Equal(300, character.MaxSP);
+            Assert.Equal(100, character.HealthManager.MaxHP);
+            Assert.Equal(200, character.HealthManager.MaxMP);
+            Assert.Equal(300, character.HealthManager.MaxSP);
 
-            character.IncreaseHP(100);
-            Assert.Equal(100, character.CurrentHP);
-            Assert.Equal(0, character.CurrentMP);
-            Assert.Equal(0, character.CurrentSP);
+            character.HealthManager.IncreaseHP(100);
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+            Assert.Equal(0, character.HealthManager.CurrentMP);
+            Assert.Equal(0, character.HealthManager.CurrentSP);
 
-            character.DecreaseHP(90, character2);
-            Assert.Equal(10, character.CurrentHP);
+            character.HealthManager.DecreaseHP(90, character2);
+            Assert.Equal(10, character.HealthManager.CurrentHP);
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, RedApple.Type, RedApple.TypeId));
-            character.TryUseItem(1, 0);
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.TryUseItem(1, 0);
 
-            Assert.Equal(60, character.CurrentHP);
+            Assert.Equal(60, character.HealthManager.CurrentHP);
         }
 
         [Fact]
@@ -64,19 +65,19 @@ namespace Imgeneus.World.Tests.ItemTests
         {
             var character = CreateCharacter();
 
-            character.AddItemToInventory(new Item(databasePreloader.Object, RedApple.Type, RedApple.TypeId));
-            character.AddItemToInventory(new Item(databasePreloader.Object, GreenApple.Type, GreenApple.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, GreenApple.Type, GreenApple.TypeId));
 
             // Can use green apple
-            Assert.True(character.CanUseItem(character.InventoryItems[(1, 1)]));
+            Assert.True(character.InventoryManager.CanUseItem(character.InventoryManager.InventoryItems[(1, 1)]));
 
             // Used red apple.
-            character.TryUseItem(1, 0);
-            Assert.False(character.CanUseItem(character.InventoryItems[(1, 1)]));
+            character.InventoryManager.TryUseItem(1, 0);
+            Assert.False(character.InventoryManager.CanUseItem(character.InventoryManager.InventoryItems[(1, 1)]));
 
             // Green apple is still in inventory.
-            character.TryUseItem(1, 1);
-            Assert.NotNull(character.InventoryItems[(1, 1)]);
+            character.InventoryManager.TryUseItem(1, 1);
+            Assert.NotNull(character.InventoryManager.InventoryItems[(1, 1)]);
         }
     }
 }

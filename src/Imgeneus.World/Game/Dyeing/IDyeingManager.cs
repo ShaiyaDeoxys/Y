@@ -1,23 +1,30 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Inventory;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Dyeing
 {
     public interface IDyeingManager
     {
         /// <summary>
-        /// Item, that we are going to dye.
-        /// </summary>
-        public Item DyeingItem { get; set; }
-
-        /// <summary>
         /// Rerolls random colors.
         /// </summary>
-        public void Reroll();
+        void Reroll();
 
         /// <summary>
         /// Available colors for dyeing.
         /// </summary>
-        public List<DyeColor> AvailableColors { get; }
+        List<DyeColor> AvailableColors { get; }
+
+        /// <summary>
+        /// Selects item for dyeing
+        /// </summary>
+        /// <returns>true if item can be painted, otherwise false</returns>
+        bool SelectItem(byte dyeItemBag, byte dyeItemSlot, byte targetItemBag, byte targetItemSlot);
+
+        /// <summary>
+        /// Paints item to random color.
+        /// </summary>
+        Task<(bool Ok, DyeColor Color)> Dye(byte dyeItemBag, byte dyeItemSlot, byte targetItemBag, byte targetItemSlot);
     }
 }

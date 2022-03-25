@@ -1,28 +1,71 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Session;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Guild
 {
-    public interface IGuildManager
+    public interface IGuildManager : ISessionedService
     {
+        void Init(int ownerId, int guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null);
+
+        /// <summary>
+        /// Owner guild id.
+        /// </summary>
+        int GuildId { get; set; }
+
+        /// <summary>
+        /// Bool indicator, that shows if character is guild member.
+        /// </summary>
+        bool HasGuild { get; }
+
+        /// <summary>
+        /// Current guild name.
+        /// </summary>
+        string GuildName { get; set; }
+
+        /// <summary>
+        /// Character rank in the current guild.
+        /// </summary>
+        byte GuildRank { get; set; }
+
+        /// <summary>
+        /// Guild has guild house?
+        /// </summary>
+        bool HasGuildHouse { get; }
+
+        /// <summary>
+        /// Guild has top 30 rank?
+        /// </summary>
+        bool HasTopRank { get; }
+
+        /// <summary>
+        /// Guild member ids for easy notification.
+        /// </summary>
+        List<DbCharacter> GuildMembers { get; }
+
         /// <summary>
         /// Checks if character can create a guild.
         /// </summary>
-        public Task<GuildCreateFailedReason> CanCreateGuild(Character guildCreator, string guildName);
+        Task<GuildCreateFailedReason> CanCreateGuild(string guildName);
 
         /// <summary>
-        /// Sends guild create request to all party members.
+        /// Saves all party members and checks if they leave party.
         /// </summary>
-        public void SendGuildRequest(Character guildCreator, string guildName, string guildMessage);
+        void InitCreateRequest(string guildName, string guildMessage);
 
         /// <summary>
-        /// Sets result of request to player.
+        /// Guild creation request.
         /// </summary>
-        /// <param name="character">player to whom the request was sent</param>
-        /// <param name="agree">player's answer</param>
-        public void SetAgreeRequest(Character character, bool agree);
+        GuildCreateRequest CreationRequest { get; set; }
+
+        /// <summary>
+        /// Creates guild in database.
+        /// </summary>
+        /// <returns>Db guild, if it was created, otherwise null.</returns>
+        Task<DbGuild> TryCreateGuild(string name, string message, int masterId);
 
         /// <summary>
         /// Tries to add character to guild.
@@ -31,96 +74,83 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="characterId">new character</param>
         /// <param name="rank">character rank in guild</param>
         /// <returns>db character, if character was added to guild, otherwise null</returns>
-        public Task<DbCharacter> TryAddMember(int guildId, int characterId, byte rank = 9);
+        Task<DbCharacter> TryAddMember(int characterId, byte rank = 9);
 
         /// <summary>
         /// Tries to remove character from guild.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="characterId">character id</param>
         /// <returns>db character, if character was removed, otherwise null</returns>
-        public Task<DbCharacter> TryRemoveMember(int guildId, int characterId);
+        Task<bool> TryRemoveMember(int characterId);
 
         /// <summary>
         /// Get all guilds in this server.
         /// </summary>
         /// <param name="country">optional param, fraction light or dark</param>
         /// <returns>collection of guilds</returns>
-        public DbGuild[] GetAllGuilds(Fraction country = Fraction.NotSelected);
-
-        /// <summary>
-        /// Finds guild by id.
-        /// </summary>
-        public Task<DbGuild> GetGuild(int guildId);
+        Task<DbGuild[]> GetAllGuilds(Fraction country = Fraction.NotSelected);
 
         /// <summary>
         /// Gets guild members.
         /// </summary>
         /// <returns>collection of memebers</returns>
-        public Task<IEnumerable<DbCharacter>> GetMemebers(int guildId);
+        Task<IEnumerable<DbCharacter>> GetMemebers(int guildId);
 
         /// <summary>
         /// Player requests to join a guild.
         /// </summary>
         /// <returns>true is success</returns>
-        public Task<bool> RequestJoin(int guildId, int playerId);
+        Task<bool> RequestJoin(int guildId, Character player);
 
         /// <summary>
         /// Removes player from join requests.
         /// </summary>
-        public Task RemoveRequestJoin(int playerId);
+        Task RemoveRequestJoin(int playerId);
 
         /// <summary>
         /// Change guild rank of character.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="characterId">character id</param>
         /// <param name="demote">decrease or increase rank?</param>
-        /// <returns>db character, if rank was changed, otherwise null</returns>
-        public Task<DbCharacter> TryChangeRank(int guildId, int characterId, bool demote);
+        /// <returns>new rank</returns>
+        Task<byte> TryChangeRank(int characterId, bool demote);
 
         /// <summary>
         /// Tries to remove guild.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <returns>true if was removed</returns>
-        public Task<bool> TryDeleteGuild(int guildId);
+        Task<bool> TryDeleteGuild();
 
         /// <summary>
         /// Tries to buy guild house.
         /// </summary>
-        public Task<GuildHouseBuyReason> TryBuyHouse(Character character);
-
-        /// <summary>
-        /// Checks if guild has house.
-        /// </summary>
-        public bool HasHouse(int guildId);
+        Task<GuildHouseBuyReason> TryBuyHouse();
 
         /// <summary>
         /// Gets guild rank.
         /// </summary>
-        public byte GetRank(int guildId);
+        byte GetRank(int guildId);
 
         /// <summary>
         /// Reloads guild ranks after GRB.
         /// </summary>
-        public void ReloadGuildRanks(IEnumerable<(int GuildId, int Points, byte Rank)> results);
+        void ReloadGuildRanks(IEnumerable<(int GuildId, int Points, byte Rank)> results);
 
         /// <summary>
         /// Gets guild's etin.
         /// </summary>
-        public Task<int> GetEtin(int guildId);
+        Task<int> GetEtin();
 
         /// <summary>
         /// Gives etin from character inventory to guild. Saves changes to database.
         /// </summary>
         /// <returns>List of removed etin items.</returns>
-        public Task<IList<Item>> ReturnEtin(Character character);
+        Task<IList<Item>> ReturnEtin();
 
         /// <summary>
         /// Finds npcs & their levels assigned to this guild.
         /// </summary>
-        public IEnumerable<DbGuildNpcLvl> GetGuildNpcs(int guildId);
+        Task<IEnumerable<DbGuildNpcLvl>> GetGuildNpcs();
 
         /// <summary>
         /// Checks if guild has enough rank in order to use NPC.
@@ -130,30 +160,27 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="typeId">npc type is</param>
         /// <param name="requiredRank">guild's rank, that needed for this NPC</param>
         /// <returns>true, if player can use it</returns>
-        public bool CanUseNpc(int guildId, byte type, ushort typeId, out byte requiredRank);
+        bool CanUseNpc(byte type, ushort typeId, out byte requiredRank);
 
         /// <summary>
         /// Checks if guild has bought NPC of the right level.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="type">npc type</param>
         /// <param name="typeId">npc type is</param>
         /// <returns>true, if guild has right NPC level</returns>
-        public bool HasNpcLevel(int guildId, byte type, ushort typeId);
+        bool HasNpcLevel(byte type, ushort typeId);
 
         /// <summary>
         /// Tries to upgrade NPC. Updates guild etin as well.
         /// </summary>
-        /// <param name="guildId">guild id</param>
         /// <param name="npcType">npc type</param>
         /// <param name="npcGroup">npc group</param>
         /// <param name="npcLevel">npc next level</param>
-        public Task<GuildNpcUpgradeReason> TryUpgradeNPC(int guildId, byte npcType, byte npcGroup, byte npcLevel);
+        Task<GuildNpcUpgradeReason> TryUpgradeNPC(byte npcType, byte npcGroup, byte npcLevel);
 
         /// <summary>
         /// Gets blacksmith npc extra rates based on NPC level.
         /// </summary>
-        /// <param name="guildId">guild id</param>
-        public (byte LinkRate, byte RepaireRate) GetBlacksmithRates(int guildId);
+        (byte LinkRate, byte RepaireRate) GetBlacksmithRates();
     }
 }

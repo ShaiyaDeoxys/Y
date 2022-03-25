@@ -1,10 +1,10 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct QuitGamePacket : IDeserializedPacket
+    public record QuitGamePacket : IPacketDeserializer
     {
-        public QuitGamePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
             // This is empty packet. Needed for server.
         }

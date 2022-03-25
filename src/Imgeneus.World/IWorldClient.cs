@@ -1,30 +1,23 @@
-﻿using Imgeneus.Network.Packets.Game;
-using Imgeneus.Network.Server;
-using Imgeneus.Network.Server.Crypto;
-using System;
+﻿using Imgeneus.Network.PacketProcessor;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World
 {
-    public interface IWorldClient : IServerClient
+    public interface IWorldClient
     {
         /// <summary>
         /// Gets the client's logged user id.
         /// </summary>
-        int UserID { get; }
+        int UserId { get; }
 
         /// <summary>
-        /// Gets the client's logged char id.
+        /// Send packet to TCP connection.
         /// </summary>
-        int CharID { get; }
+        void Send(ImgeneusPacket packet, bool shouldEncrypt = true);
 
         /// <summary>
-        /// Crypto manager is responsible for the whole cryptography.
+        /// Clears all session specific services.
         /// </summary>
-        CryptoManager CryptoManager { get; }
-
-        /// <summary>
-        /// Event, that is fired, when new packet arrives.
-        /// </summary>
-        event Action<ServerClient, IDeserializedPacket> OnPacketArrived;
+        Task ClearSession(bool quitGame = false);
     }
 }

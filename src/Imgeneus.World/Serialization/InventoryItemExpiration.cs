@@ -2,7 +2,7 @@ using System;
 using BinarySerialization;
 using Imgeneus.Core.Extensions;
 using Imgeneus.Network.Serialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Inventory;
 
 namespace Imgeneus.World.Serialization
 {

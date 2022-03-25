@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct CheckCharacterAvailableNamePacket : IDeserializedPacket
+    public record CheckCharacterAvailableNamePacket : IPacketDeserializer
     {
         /// <summary>
         /// Character name which the client sends.
         /// </summary>
-        public string CharacterName { get; }
+        public string CharacterName { get; private set; }
 
-        public CheckCharacterAvailableNamePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            CharacterName = packet.ReadString((int)packet.Length - 1);
+            CharacterName = packetStream.ReadString((int)packetStream.Length - 1);
         }
     }
 }

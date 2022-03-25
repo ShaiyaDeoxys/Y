@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct UseItemPacket : IDeserializedPacket
+    public record UseItemPacket : IPacketDeserializer
     {
-        public byte Bag { get; }
+        public byte Bag { get; private set; }
 
-        public byte Slot { get; }
+        public byte Slot { get; private set; }
 
-        public UseItemPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Bag = packet.Read<byte>();
-            Slot = packet.Read<byte>();
+            Bag = packetStream.Read<byte>();
+            Slot = packetStream.Read<byte>();
         }
     }
 }

@@ -3,6 +3,10 @@ using Microsoft.Extensions.Hosting;
 using NLog.Web;
 using Microsoft.Extensions.Logging;
 using System;
+using Sylver.HandlerInvoker;
+using LiteNetwork.Protocol.Abstractions;
+using Imgeneus.Network.Packets;
+using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Login
 {
@@ -13,7 +17,14 @@ namespace Imgeneus.Login
             var logger = NLogBuilder.ConfigureNLog("NLog.Config").GetCurrentClassLogger();
             try
             {
-                CreateHostBuilder(args).Build().Run();
+                CreateHostBuilder(args)
+                    .Build()
+                    .AddHandlerParameterTransformer<ImgeneusPacket, IPacketDeserializer>((source, dest) =>
+                    {
+                        dest?.Deserialize(source);
+                        return dest;
+                    })
+                    .Run();
             }
             catch (Exception ex)
             {

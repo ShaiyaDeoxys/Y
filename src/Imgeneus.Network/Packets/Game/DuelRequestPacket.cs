@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct DuelRequestPacket : IDeserializedPacket
+    public record DuelRequestPacket : IPacketDeserializer
     {
-        public int DuelToWhomId { get; }
+        public int DuelToWhomId { get; private set; }
 
-        public DuelRequestPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            DuelToWhomId = packet.Read<int>();
+            DuelToWhomId = packetStream.Read<int>();
         }
     }
 }

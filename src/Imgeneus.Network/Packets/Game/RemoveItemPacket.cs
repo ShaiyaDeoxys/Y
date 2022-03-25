@@ -1,20 +1,20 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RemoveItemPacket : IDeserializedPacket
+    public record RemoveItemPacket : IPacketDeserializer
     {
-        public byte Bag;
+        public byte Bag { get; private set; }
 
-        public byte Slot;
+        public byte Slot { get; private set; }
 
-        public byte Count;
+        public byte Count { get; private set; }
 
-        public RemoveItemPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Bag = packet.Read<byte>();
-            Slot = packet.Read<byte>();
-            Count = packet.Read<byte>();
+            Bag = packetStream.Read<byte>();
+            Slot = packetStream.Read<byte>();
+            Count = packetStream.Read<byte>();
         }
     }
 }

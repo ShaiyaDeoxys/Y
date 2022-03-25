@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Game.Zone.Portals
 {
@@ -26,15 +27,15 @@ namespace Imgeneus.World.Game.Zone.Portals
         /// <summary>
         /// Checks if character of some fraction can use this portal.
         /// </summary>
-        public bool IsSameFaction(Fraction faction)
+        public bool IsSameFaction(CountryType faction)
         {
             if (_config.Faction == 0)
                 return true;
 
-            if (faction == Fraction.Light && _config.Faction == 1)
+            if (faction == CountryType.Light && _config.Faction == 1)
                 return true;
 
-            if (faction == Fraction.Dark && _config.Faction == 2)
+            if (faction == CountryType.Dark && _config.Faction == 2)
                 return true;
 
             if (_config.Faction > 2) // TODO: portal activated with boss death.

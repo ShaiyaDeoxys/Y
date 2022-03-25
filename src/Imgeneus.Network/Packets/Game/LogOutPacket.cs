@@ -1,10 +1,10 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct LogOutPacket : IDeserializedPacket
+    public record LogOutPacket : IPacketDeserializer
     {
-        public LogOutPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
             // Logout packet is called, when user  leaves game or goes back to selection screen.
         }

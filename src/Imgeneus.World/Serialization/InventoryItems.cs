@@ -1,5 +1,5 @@
 ﻿using BinarySerialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Inventory;
 using System.Collections.Generic;
 
 namespace Imgeneus.Network.Serialization

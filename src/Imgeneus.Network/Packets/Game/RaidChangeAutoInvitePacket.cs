@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RaidChangeAutoInvitePacket : IDeserializedPacket
+    public record RaidChangeAutoInvitePacket : IPacketDeserializer
     {
         public bool IsAutoInvite;
 
-        public RaidChangeAutoInvitePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            IsAutoInvite = packet.Read<bool>();
+            IsAutoInvite = packetStream.Read<bool>();
         }
     }
 }

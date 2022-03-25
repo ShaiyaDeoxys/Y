@@ -1,6 +1,5 @@
-﻿using Imgeneus.World.Game;
-using Imgeneus.World.Game.Monster;
-using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Skills;
 using System.ComponentModel;
 using Xunit;
 
@@ -13,15 +12,15 @@ namespace Imgeneus.World.Tests.MobTests
         [Description("Mob sends notification, when it gets some buff/debuff.")]
         public void MobNotifiesWhenItGetsBuff()
         {
-            var mob = new Mob(Wolf.Id, true, new MoveArea(0, 0, 0, 0, 0, 0), testMap, mobLoggerMock.Object, databasePreloader.Object);
-            ActiveBuff buff = null;
-            mob.OnBuffAdded += (IKillable sender, ActiveBuff newBuff) =>
+            var mob = CreateMob(Wolf.Id, testMap);
+            Buff buff = null;
+            mob.BuffsManager.OnBuffAdded += (int senderId, Buff newBuff) =>
             {
                 buff = newBuff;
             };
 
-            mob.AddActiveBuff(new Skill(MagicRoots_Lvl1, 0, 0), null);
-            Assert.Single(mob.ActiveBuffs);
+            mob.BuffsManager.AddBuff(new Skill(MagicRoots_Lvl1, 0, 0), null);
+            Assert.Single(mob.BuffsManager.ActiveBuffs);
             Assert.NotNull(buff);
         }
     }

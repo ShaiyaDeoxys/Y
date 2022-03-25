@@ -1,13 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct ItemComposeAbsoluteSelectPacket : IDeserializedPacket
+    public record ItemComposeAbsoluteSelectPacket : IPacketDeserializer
     {
-        public byte Option;
-        public ItemComposeAbsoluteSelectPacket(IPacketStream packet)
+        public byte Option { get; private set; }
+
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Option = packet.Read<byte>();
+            Option = packetStream.Read<byte>();
         }
     }
 }

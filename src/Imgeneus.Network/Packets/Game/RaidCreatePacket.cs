@@ -1,20 +1,20 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct RaidCreatePacket : IDeserializedPacket
+    public record RaidCreatePacket : IPacketDeserializer
     {
-        public bool RaidType;
+        public bool RaidType { get; private set; }
 
-        public bool AutoJoin;
+        public bool AutoJoin { get; private set; }
 
-        public int DropType;
+        public int DropType { get; private set; }
 
-        public RaidCreatePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            RaidType = packet.Read<bool>();
-            AutoJoin = packet.Read<bool>();
-            DropType = packet.Read<int>();
+            RaidType = packetStream.Read<bool>();
+            AutoJoin = packetStream.Read<bool>();
+            DropType = packetStream.Read<int>();
         }
     }
 }

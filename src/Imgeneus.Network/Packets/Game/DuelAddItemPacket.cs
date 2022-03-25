@@ -1,24 +1,23 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct DuelAddItemPacket : IDeserializedPacket
+    public record DuelAddItemPacket : IPacketDeserializer
     {
-        public byte Bag;
+        public byte Bag { get; private set; }
 
-        public byte Slot;
+        public byte Slot { get; private set; }
 
-        public byte Quantity;
+        public byte Quantity { get; private set; }
 
-        public byte SlotInTradeWindow;
+        public byte SlotInTradeWindow { get; private set; }
 
-        public DuelAddItemPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Bag = packet.Read<byte>();
-            Slot = packet.Read<byte>();
-            Quantity = packet.Read<byte>();
-            SlotInTradeWindow = packet.Read<byte>();
+            Bag = packetStream.Read<byte>();
+            Slot = packetStream.Read<byte>();
+            Quantity = packetStream.Read<byte>();
+            SlotInTradeWindow = packetStream.Read<byte>();
         }
-
     }
 }

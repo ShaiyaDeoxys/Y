@@ -1,7 +1,10 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
-using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
@@ -45,7 +48,10 @@ namespace Imgeneus.World.Game.Monster
             private set
             {
                 _state = value;
-                //_logger.LogDebug($"Mob {Id} changed state to {_state}.");
+
+#if DEBUG
+                _logger.LogDebug("Mob {id} changed state to {state}.", Id, _state);
+#endif
 
                 switch (_state)
                 {
@@ -57,6 +63,8 @@ namespace Imgeneus.World.Game.Monster
                         // If this is combat mob start watching as soon as it's in idle state.
                         if (AI != MobAI.Peaceful && AI != MobAI.Peaceful2)
                             _watchTimer.Start();
+
+                        UntouchableManager.IsUntouchable = false;
                         break;
 
                     case MobState.Chase:
@@ -70,10 +78,11 @@ namespace Imgeneus.World.Game.Monster
                     case MobState.BackToBirthPosition:
                         StopChasing();
                         ReturnToBirthPosition();
+                        UntouchableManager.IsUntouchable = true;
                         break;
 
                     default:
-                        _logger.LogWarning($"Not implemented mob state: {_state}.");
+                        _logger.LogWarning("Not implemented mob state: {state}.", _state);
                         break;
                 }
             }
@@ -135,48 +144,27 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// Returns fraction of those players, who are enemies to this mob.
         /// </summary>
-        public Fraction EnemyPlayersFraction
+        public CountryType EnemyPlayersFraction
         {
             get
             {
-                Fraction playerFraction;
+                CountryType playerFraction;
                 switch (_dbMob.Fraction)
                 {
                     case MobFraction.Dark:
-                        playerFraction = Fraction.Light;
+                        playerFraction = CountryType.Light;
                         break;
 
                     case MobFraction.Light:
-                        playerFraction = Fraction.Dark;
+                        playerFraction = CountryType.Dark;
                         break;
 
                     default:
-                        playerFraction = Fraction.NotSelected;
+                        playerFraction = CountryType.None;
                         break;
                 }
 
                 return playerFraction;
-            }
-        }
-
-        /// <summary>
-        /// Mob's fraction.
-        /// </summary>
-        public Fraction Country
-        {
-            get
-            {
-                switch (_dbMob.Fraction)
-                {
-                    case MobFraction.Dark:
-                        return Fraction.Dark;
-
-                    case MobFraction.Light:
-                        return Fraction.Light;
-
-                    default:
-                        return Fraction.NotSelected;
-                }
             }
         }
 
@@ -193,14 +181,14 @@ namespace Imgeneus.World.Game.Monster
                     break;
 
                 case MobAI.Relic:
-                    if (Target != null && MathExtensions.Distance(PosX, Target.PosX, PosZ, Target.PosZ) <= _dbMob.ChaseRange)
+                    if (Target != null && MathExtensions.Distance(PosX, Target.MovementManager.PosX, PosZ, Target.MovementManager.PosZ) <= _dbMob.ChaseRange)
                         State = MobState.ReadyToAttack;
                     else
                         State = MobState.Idle;
                     break;
 
                 default:
-                    _logger.LogWarning($"Mob {MobId} has not implement ai type - {AI}, falling back to combative type.");
+                    _logger.LogWarning("Mob {MobId} has not implement ai type - {AI}, falling back to combative type.", MobId, AI);
                     State = MobState.Chase;
                     break;
             }
@@ -209,15 +197,15 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// When user hits mob, it automatically turns on ai.
         /// </summary>
-        protected override void DecreaseHP(IKiller damageMaker)
+        private void OnDecreaseHP(int senderId, IKiller damageMaker)
         {
-            if (!IsDead)
+            if (!HealthManager.IsDead)
             {
                 SelectActionBasedOnAI();
 
                 // TODO: calculate not only max damage, but also amount or rec and argo skills.
-                if (MaxDamageMaker is IKillable)
-                    Target = (MaxDamageMaker as IKillable);
+                if (HealthManager.MaxDamageMaker is IKillable)
+                    Target = (HealthManager.MaxDamageMaker as IKillable);
             }
         }
 
@@ -271,25 +259,19 @@ namespace Imgeneus.World.Game.Monster
             if (z2 < MoveArea.Z2)
                 z2 = MoveArea.Z2;
 
-            PosX = new Random().NextFloat(x1, x2);
-            PosZ = new Random().NextFloat(z1, z2);
+            MovementManager.PosX = new Random().NextFloat(x1, x2);
+            MovementManager.PosZ = new Random().NextFloat(z1, z2);
 
-            //_logger.LogDebug($"Mob {Id} walks to new position x={PosX} y={PosY} z={PosZ}.");
+#if DEBUG
+            _logger.LogDebug("Mob {Id} walks to new position x={PosX} y={PosY} z={PosZ}.", Id, PosX, PosY, PosZ);
+#endif
 
-            OnMove?.Invoke(this);
+            MovementManager.RaisePositionChanged();
         }
 
         #endregion
 
         #region Move
-
-        /// <inheritdoc />
-        public override int MoveSpeed { get; protected set; } = 2;
-
-        /// <summary>
-        /// Event, that is fired, when mob moves.
-        /// </summary>
-        public event Action<Mob> OnMove;
 
         /// <summary>
         /// Since when we sent the last update to players about mob position.
@@ -300,29 +282,6 @@ namespace Imgeneus.World.Game.Monster
         /// Used for calculation delta time.
         /// </summary>
         private DateTime _lastMoveUpdate;
-
-        /// <summary>
-        /// Describes if mob is "walking" or "running".
-        /// </summary>
-        public MobMotion MoveMotion
-        {
-            get
-            {
-                switch (State)
-                {
-                    case MobState.Idle:
-                        return MobMotion.Walk;
-
-                    case MobState.Chase:
-                    case MobState.BackToBirthPosition:
-                    case MobState.ReadyToAttack:
-                        return MobMotion.Run;
-
-                    default:
-                        return MobMotion.Run;
-                }
-            }
-        }
 
         /// <summary>
         /// Moves mob to the specified position.
@@ -345,15 +304,15 @@ namespace Imgeneus.World.Game.Monster
             var deltaTime = now.Subtract(_lastMoveUpdate);
             var deltaMilliseconds = deltaTime.TotalMilliseconds > 2000 ? 500 : deltaTime.TotalMilliseconds;
             var temp = normalizedVector * (float)(_dbMob.ChaseStep * 1.0 / _dbMob.ChaseTime * deltaMilliseconds);
-            PosX += float.IsNaN(temp.X) ? 0 : temp.X;
-            PosZ += float.IsNaN(temp.Y) ? 0 : temp.Y;
+            MovementManager.PosX += float.IsNaN(temp.X) ? 0 : temp.X;
+            MovementManager.PosZ += float.IsNaN(temp.Y) ? 0 : temp.Y;
 
             _lastMoveUpdate = now;
 
             // Send update to players, that mob position has changed.
             if (DateTime.UtcNow.Subtract(_lastMoveUpdateSent).TotalMilliseconds > 1000)
             {
-                OnMove?.Invoke(this);
+                MovementManager.RaisePositionChanged();
                 _lastMoveUpdateSent = now;
             }
         }
@@ -384,7 +343,7 @@ namespace Imgeneus.World.Game.Monster
             var players = Map.Cells[CellId].GetPlayers(PosX, PosZ, _dbMob.ChaseRange, EnemyPlayersFraction);
 
             // No players, keep watching.
-            if (!players.Any(x => !(x as Character).IsStealth))
+            if (!players.Any(x => !(x as Character).StealthManager.IsStealth))
             {
                 _watchTimer.Start();
                 return false;
@@ -409,6 +368,8 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         private void StartChasing()
         {
+            MovementManager.MoveMotion = MoveMotion.Run;
+
             _chaseTimer.Start();
 
             if (StartPosX == -1)
@@ -433,7 +394,7 @@ namespace Imgeneus.World.Game.Monster
                 return;
             }
 
-            var distanceToPlayer = MathExtensions.Distance(PosX, Target.PosX, PosZ, Target.PosZ);
+            var distanceToPlayer = MathExtensions.Distance(PosX, Target.MovementManager.PosX, PosZ, Target.MovementManager.PosZ);
             if (distanceToPlayer <= _dbMob.AttackRange1 || distanceToPlayer <= _dbMob.AttackRange2 || distanceToPlayer <= _dbMob.AttackRange3)
             {
                 State = MobState.ReadyToAttack;
@@ -441,11 +402,13 @@ namespace Imgeneus.World.Game.Monster
                 return;
             }
 
-            Move(Target.PosX, Target.PosZ);
+            Move(Target.MovementManager.PosX, Target.MovementManager.PosZ);
 
             if (IsTooFarAway)
             {
-                _logger.LogDebug($"Mob {Id} is too far away from its' birth position, returing home.");
+#if DEBUG
+                _logger.LogDebug("Mob {Id} is too far away from its' birth position, returing home.", Id);
+#endif
                 State = MobState.BackToBirthPosition;
             }
             else
@@ -504,11 +467,14 @@ namespace Imgeneus.World.Game.Monster
             }
             else
             {
-                _logger.LogDebug($"Mob {Id} reached birth position, back to idle state.");
+#if DEBUG
+                _logger.LogDebug("Mob {Id} reached birth position, back to idle state.", Id);
+#endif
                 StartPosX = -1;
                 StartPosZ = -1;
-                FullRecover();
+                HealthManager.FullRecover();
                 State = MobState.Idle;
+                MovementManager.MoveMotion = MoveMotion.Walk;
             }
         }
 
@@ -532,15 +498,15 @@ namespace Imgeneus.World.Game.Monster
             {
                 if (_target != null)
                 {
-                    _target.OnDead -= Target_OnDead;
-                    (_target as Character).OnShapeChange -= Target_OnShapeChange;
+                    _target.HealthManager.OnDead -= Target_OnDead;
+                    (_target as Character).StealthManager.OnStealthChange -= Target_OnStealth;
                 }
                 _target = value;
 
                 if (_target != null)
                 {
-                    _target.OnDead += Target_OnDead;
-                    (_target as Character).OnShapeChange += Target_OnShapeChange;
+                    _target.HealthManager.OnDead += Target_OnDead;
+                    (_target as Character).StealthManager.OnStealthChange += Target_OnStealth;
                 }
             }
         }
@@ -548,24 +514,21 @@ namespace Imgeneus.World.Game.Monster
         /// <summary>
         /// When target (player) goes into stealth or turns into a mob, mob returns to its' original place.
         /// </summary>
-        private void Target_OnShapeChange(Character sender)
+        private void Target_OnStealth(int sender)
         {
-            if (sender.IsStealth)
+            if ((_target as Character).StealthManager.IsStealth)
                 ClearTarget();
         }
 
         /// <summary>
         /// When target is dead, mob returns to its' original place.
         /// </summary>
-        /// <param name="sender">player, that is dead</param>
+        /// <param name="senderId">player, that is dead</param>
         /// <param name="killer">player's killer</param>
-        private void Target_OnDead(IKillable sender, IKiller killer)
+        private void Target_OnDead(int senderId, IKiller killer)
         {
             ClearTarget();
         }
-
-        /// <inheritdoc />
-        public override AttackSpeed AttackSpeed => AttackSpeed.Normal;
 
         /// <summary>
         /// Event, that is fired, when mob attacks some user.
@@ -604,7 +567,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public void UseAttack()
         {
-            var distanceToPlayer = MathExtensions.Distance(PosX, Target.PosX, PosZ, Target.PosZ);
+            var distanceToPlayer = MathExtensions.Distance(PosX, Target.MovementManager.PosX, PosZ, Target.MovementManager.PosZ);
             var now = DateTime.UtcNow;
             int delay = 1000;
             var attackId = RandomiseAttack(now);
@@ -614,7 +577,9 @@ namespace Imgeneus.World.Game.Monster
 
             if (useAttack1 && (distanceToPlayer <= _dbMob.AttackRange1 || _dbMob.AttackRange1 == 0))
             {
-                _logger.LogDebug($"Mob {Id} used attack 1.");
+#if DEBUG
+                _logger.LogDebug("Mob {Id} used attack 1.", Id);
+#endif
                 Attack(Target, _dbMob.AttackType1, _dbMob.AttackAttrib1, _dbMob.Attack1, _dbMob.AttackPlus1);
                 _lastAttack1Time = now;
                 delay = AI == MobAI.Relic ? 5000 : _dbMob.AttackTime1;
@@ -622,7 +587,9 @@ namespace Imgeneus.World.Game.Monster
 
             if (useAttack2 && (distanceToPlayer <= _dbMob.AttackRange2 || _dbMob.AttackRange2 == 0))
             {
-                _logger.LogDebug($"Mob {Id} used attack 2.");
+#if DEBUG
+                _logger.LogDebug("Mob {Id} used attack 2.", Id);
+#endif
                 Attack(Target, _dbMob.AttackType2, _dbMob.AttackAttrib2, _dbMob.Attack2, _dbMob.AttackPlus2);
                 _lastAttack2Time = now;
                 delay = AI == MobAI.Relic ? 5000 : _dbMob.AttackTime2;
@@ -630,7 +597,9 @@ namespace Imgeneus.World.Game.Monster
 
             if (useAttack3 && (distanceToPlayer <= _dbMob.AttackRange3 || _dbMob.AttackRange3 == 0))
             {
-                _logger.LogDebug($"Mob {Id} used attack 3.");
+#if DEBUG
+                _logger.LogDebug("Mob {Id} used attack 3.", Id);
+#endif
                 Attack(Target, _dbMob.AttackType3, Element.None, _dbMob.Attack3, _dbMob.AttackPlus3);
                 _lastAttack3Time = now;
                 delay = AI == MobAI.Relic ? 5000 : _dbMob.AttackTime3;
@@ -746,7 +715,7 @@ namespace Imgeneus.World.Game.Monster
                 else
                 {
                     isMeleeAttack = true;
-                    _logger.LogError($"Mob {Id} ({MobId}) used unknow skill {skillId}, fallback to melee attack.");
+                    _logger.LogError("Mob {Id} ({MobId}) used unknow skill {skillId}, fallback to melee attack.", Id, MobId, skillId);
                 }
             }
 
@@ -788,11 +757,11 @@ namespace Imgeneus.World.Game.Monster
                         break;
 
                     case TargetType.EnemiesNearTarget:
-                        targets.AddRange(Map.Cells[CellId].GetPlayers(target.PosX, target.PosZ, skill.ApplyRange, EnemyPlayersFraction));
+                        targets.AddRange(Map.Cells[CellId].GetPlayers(target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange, EnemyPlayersFraction));
                         break;
 
                     default:
-                        _logger.LogError($"Unimplemented target type: {skill.TargetType}");
+                        _logger.LogError("Unimplemented target type: {type}", skill.TargetType);
                         break;
                 }
 
@@ -803,30 +772,29 @@ namespace Imgeneus.World.Game.Monster
                     //if (t.IsDead)
                     //continue;
 
-                    if (!((IKiller)this).AttackSuccessRate(t, skill.TypeAttack, skill))
+                    if (!AttackManager.AttackSuccessRate(t, skill.TypeAttack, skill))
                     {
                         // Send missed skill.
                         OnUsedSkill?.Invoke(this, t, skill, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
                         continue;
                     }
 
-                    //var attackResult = ((IKiller)this).CalculateAttackResult(skill, t, element, minAttack, minAttack + additionalDamage, minAttack, minAttack + additionalDamage);
-                    var attackResult = new AttackResult(AttackSuccess.Normal, new Damage(1, 0, 0));
+                    var attackResult = AttackManager.CalculateAttackResult(skill, t, element, minAttack, minAttack + additionalDamage, minAttack, minAttack + additionalDamage);
 
                     if (attackResult.Damage.HP > 0)
-                        t.DecreaseHP(attackResult.Damage.HP, this);
+                        t.HealthManager.DecreaseHP(attackResult.Damage.HP, this);
                     if (attackResult.Damage.SP > 0)
-                        t.CurrentSP -= attackResult.Damage.SP;
+                        t.HealthManager.CurrentSP -= attackResult.Damage.SP;
                     if (attackResult.Damage.MP > 0)
-                        t.CurrentMP -= attackResult.Damage.MP;
+                        t.HealthManager.CurrentMP -= attackResult.Damage.MP;
 
                     try
                     {
-                        ((IKiller)this).PerformSkill(skill, target, t, attackResult, n);
+                        SkillsManager.PerformSkill(skill, target, t, this, attackResult, n);
                     }
                     catch (NotImplementedException)
                     {
-                        _logger.LogError($"Not implemented skill type {skill.Type}");
+                        _logger.LogError("Not implemented skill type {type}", skill.Type);
                     }
                 }
             }
@@ -835,26 +803,31 @@ namespace Imgeneus.World.Game.Monster
 
         private void MeleeAttack(IKillable target, Element element, short minAttack, ushort additionalDamage)
         {
-            if (!((IKiller)this).AttackSuccessRate(target, TypeAttack.PhysicalAttack))
+            if (!AttackManager.AttackSuccessRate(target, TypeAttack.PhysicalAttack))
             {
                 // Send missed attack.
                 OnAttack?.Invoke(this, target, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
-                _logger.LogDebug($"Mob {Id} missed attack on character {target.Id}");
+
+#if DEBUG
+                _logger.LogDebug("Mob {Id} missed attack on character {targetId}", Id, target.Id);
+#endif
                 return;
             }
 
-            var res = ((IKiller)this).CalculateDamage(target,
+            var res = AttackManager.CalculateDamage(target,
                                                       TypeAttack.PhysicalAttack,
                                                       element,
                                                       minAttack,
                                                       minAttack + additionalDamage,
                                                       minAttack,
                                                       minAttack + additionalDamage);
-            _logger.LogDebug($"Mob {Id} deals damage to player {target.Id}: {res.Damage.HP} HP; {res.Damage.MP} MP; {res.Damage.SP} SP ");
+#if DEBUG
+            _logger.LogDebug("Mob {Id} deals damage to player {targetId}: {hp} HP; {mp} MP; {sp} SP ", Id, target.Id, res.Damage.HP, res.Damage.MP, res.Damage.SP);
+#endif
 
-            target.CurrentMP -= res.Damage.MP;
-            target.CurrentSP -= res.Damage.SP;
-            target.DecreaseHP(res.Damage.HP, this);
+            target.HealthManager.CurrentMP -= res.Damage.MP;
+            target.HealthManager.CurrentSP -= res.Damage.SP;
+            target.HealthManager.DecreaseHP(res.Damage.HP, this);
 
             OnAttack?.Invoke(this, target, res);
         }
@@ -900,36 +873,6 @@ namespace Imgeneus.World.Game.Monster
         /// Indicator of attack 3.
         /// </summary>
         private readonly bool IsAttack3Enabled;
-
-        #endregion
-
-        #region Stealth
-
-        /// <inheritdoc />
-        public override bool IsStealth { get; protected set; } = false;
-
-        public AttackResult UsedStealthSkill(Skill skill, IKillable target)
-        {
-            throw new NotImplementedException("Mobs do not support stealth for now.");
-        }
-
-        #endregion
-
-        #region Healing
-
-        public AttackResult UsedHealingSkill(Skill skill, IKillable target)
-        {
-            throw new NotImplementedException("Mob doesn't support healing for now.");
-        }
-
-        #endregion
-
-        #region Dispel
-
-        public AttackResult UsedDispelSkill(Skill skill, IKillable target)
-        {
-            throw new NotImplementedException("Mob doesn't support dispel for now.");
-        }
 
         #endregion
     }

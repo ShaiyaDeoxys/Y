@@ -1,29 +1,29 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct ChangeAppearancePacket : IDeserializedPacket
+    public record ChangeAppearancePacket : IPacketDeserializer
     {
-        public byte Bag;
+        public byte Bag { get; private set; }
 
-        public byte Slot;
+        public byte Slot { get; private set; }
 
-        public byte Hair;
+        public byte Hair { get; private set; }
 
-        public byte Face;
+        public byte Face { get; private set; }
 
-        public byte Size;
+        public byte Size { get; private set; }
 
-        public byte Sex;
+        public byte Sex { get; private set; }
 
-        public ChangeAppearancePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            Bag = packet.Read<byte>();
-            Slot = packet.Read<byte>();
-            Hair = packet.Read<byte>();
-            Face = packet.Read<byte>();
-            Size = packet.Read<byte>();
-            Sex = packet.Read<byte>();
+            Bag = packetStream.Read<byte>();
+            Slot = packetStream.Read<byte>();
+            Hair = packetStream.Read<byte>();
+            Face = packetStream.Read<byte>();
+            Size = packetStream.Read<byte>();
+            Sex = packetStream.Read<byte>();
         }
     }
 }

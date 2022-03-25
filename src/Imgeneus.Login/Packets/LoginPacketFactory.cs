@@ -1,85 +1,95 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
+using Imgeneus.Network.PacketProcessor;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Login;
 using System.Linq;
 
 namespace Imgeneus.Login.Packets
 {
-    internal static class LoginPacketFactory
+    internal class LoginPacketFactory : ILoginPacketFactory
     {
-        public static void SendLoginHandshake(LoginClient client)
+        private readonly ILoginServer _server;
+
+        public LoginPacketFactory(ILoginServer server)
         {
-            using Packet packet = new Packet(PacketType.LOGIN_HANDSHAKE);
+            _server = server;
+        }
+
+        public void SendLoginHandshake(LoginClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.LOGIN_HANDSHAKE);
 
             packet.Write<byte>(0);
-            packet.Write<byte>((byte)client.CryptoManager.RSAPublicExponent.Length); // Exponent length
+            packet.Write((byte)client.CryptoManager.RSAPublicExponent.Length); // Exponent length
             packet.Write((byte)client.CryptoManager.RSAModulus.Length);
             packet.WritePaddedBytes(client.CryptoManager.RSAPublicExponent, 64);
             packet.WritePaddedBytes(client.CryptoManager.RSAModulus, 128);
 
-            client.SendPacket(packet, false);
+            client.Send(packet, false);
         }
 
-        public static void AuthenticationFailed(LoginClient client, AuthenticationResult result)
+        public void AuthenticationFailed(LoginClient client, AuthenticationResult result)
         {
-            using var packet = new Packet(PacketType.LOGIN_REQUEST);
+            using var packet = new ImgeneusPacket(PacketType.LOGIN_REQUEST);
 
-            packet.Write<byte>((byte)result);
-            packet.Write<byte[]>(new byte[21]);
+            packet.Write((byte)result);
+            packet.Write(new byte[21]);
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
 
-        public static void SendServerList(LoginClient client)
+        public void AuthenticationSuccess(LoginClient client, AuthenticationResult result, DbUser user)
         {
-            using var packet = new Packet(PacketType.SERVER_LIST);
+            using var packet = new ImgeneusPacket(PacketType.LOGIN_REQUEST);
 
-            var worlds = (client.Server as LoginServer).GetConnectedWorlds();
+            packet.Write((byte)result);
+            packet.Write(user.Id);
+            packet.Write(user.Authority);
+            packet.Write(client.Id.ToByteArray());
 
-            packet.Write<byte>((byte)worlds.Count());
+            client.Send(packet);
 
-            foreach (var world in worlds)
-            {
-                packet.Write<byte>((byte)world.Id);
-                packet.Write<byte>((byte)world.WorldStatus);
-                packet.Write<ushort>(world.ConnectedUsers);
-                packet.Write<ushort>(world.MaxAllowedUsers);
-                packet.WriteString(world.Name, 32);
-            }
-
-            client.SendPacket(packet);
-        }
-
-        public static void AuthenticationSuccess(LoginClient client, AuthenticationResult result, DbUser user)
-        {
-            using var packet = new Packet(PacketType.LOGIN_REQUEST);
-
-            packet.Write<byte>((byte)result);
-            packet.Write<int>(user.Id);
-            packet.Write<byte>(user.Authority);
-            packet.Write<byte[]>(client.Id.ToByteArray());
-
-            client.SendPacket(packet);
             SendServerList(client);
         }
 
-        public static void SelectServerFailed(LoginClient client, SelectServer error)
+        public void SendServerList(LoginClient client)
         {
-            using var packet = new Packet(PacketType.SELECT_SERVER);
-            packet.Write<sbyte>((sbyte)error);
-            packet.Write(new byte[4]);
+            using var packet = new ImgeneusPacket(PacketType.SERVER_LIST);
 
-            client.SendPacket(packet);
+            var worlds = _server.GetConnectedWorlds();
+
+            packet.Write((byte)worlds.Count());
+
+            foreach (var world in worlds)
+            {
+                packet.Write(world.Id);
+                packet.Write((byte)world.WorldStatus);
+                packet.Write(world.ConnectedUsers);
+                packet.Write(world.MaxAllowedUsers);
+                packet.WriteString(world.Name, 32);
+            }
+
+            client.Send(packet);
         }
 
-        public static void SelectServerSuccess(LoginClient client, byte[] worldIp)
+        public void SelectServerFailed(LoginClient client, SelectServer error)
         {
-            using var packet = new Packet(PacketType.SELECT_SERVER);
-            packet.Write<sbyte>((sbyte)SelectServer.Success);
+            using var packet = new ImgeneusPacket(PacketType.SELECT_SERVER);
+
+            packet.Write((sbyte)error);
+            packet.Write(new byte[4]);
+
+            client.Send(packet);
+        }
+
+        public void SelectServerSuccess(LoginClient client, byte[] worldIp)
+        {
+            using var packet = new ImgeneusPacket(PacketType.SELECT_SERVER);
+
+            packet.Write((sbyte)SelectServer.Success);
             packet.Write(worldIp);
 
-            client.SendPacket(packet);
+            client.Send(packet);
         }
     }
 }

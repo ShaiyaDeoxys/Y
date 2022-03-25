@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
+using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -27,8 +28,8 @@ namespace Imgeneus.World.Game.Zone
         /// <inheritdoc/>
         public event Action<IPartyMap> OnAllMembersLeft;
 
-        public PartyMap(IParty party, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
-            : base(id, definition, config, logger, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
+        public PartyMap(IParty party, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+            : base(id, definition, config, logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
         {
             _party = party;
 
@@ -44,9 +45,9 @@ namespace Imgeneus.World.Game.Zone
                 OnAllMembersLeft?.Invoke(this);
         }
 
-        public override bool UnloadPlayer(Character character)
+        public override bool UnloadPlayer(int characterId)
         {
-            var result = base.UnloadPlayer(character);
+            var result = base.UnloadPlayer(characterId);
 
             if (_party is null || (_party.Members.Count <= 1 && Players.Count == 0))
             {

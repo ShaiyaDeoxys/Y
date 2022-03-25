@@ -1,6 +1,7 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 
 namespace Imgeneus.World.Serialization
 {
@@ -10,7 +11,7 @@ namespace Imgeneus.World.Serialization
         public int GlobalId { get; }
 
         [FieldOrder(1)]
-        public MobMotion Motion { get; }
+        public MoveMotion Motion { get; }
 
         [FieldOrder(2)]
         public float PosX { get; }
@@ -18,12 +19,12 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(3)]
         public float PosZ { get; }
 
-        public MobMove(Mob mob)
+        public MobMove(int senderId, float x, float z, MoveMotion motion)
         {
-            GlobalId = mob.Id;
-            Motion = mob.MoveMotion;
-            PosX = mob.PosX;
-            PosZ = mob.PosZ;
+            GlobalId = senderId;
+            Motion = motion;
+            PosX = x;
+            PosZ = z;
         }
     }
 }

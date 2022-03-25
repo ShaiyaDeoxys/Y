@@ -1,11 +1,15 @@
-﻿using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets;
-using Imgeneus.Network.Packets.Game;
-using Imgeneus.Network.Server;
-using Imgeneus.World.Game.Player;
-using Imgeneus.World.Serialization;
+﻿using Imgeneus.Core.Extensions;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Kills;
+using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.Teleport;
+using Imgeneus.World.Game.Trade;
+using Imgeneus.World.Game.Zone;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace Imgeneus.World.Game.Duel
@@ -13,24 +17,33 @@ namespace Imgeneus.World.Game.Duel
     /// <summary>
     /// Duel manager takes care of all duel requests.
     /// </summary>
-    public class DuelManager : IDisposable
+    public class DuelManager : IDuelManager
     {
+        private readonly ILogger<DuelManager> _logger;
         private readonly IGameWorld _gameWorld;
+        private readonly ITradeManager _tradeManager;
+        private readonly IMovementManager _movementManager;
+        private readonly IHealthManager _healthManager;
+        private readonly IKillsManager _killsManager;
+        private readonly IMapProvider _mapProvider;
+        private readonly IInventoryManager _inventoryManager;
+        private readonly ITeleportationManager _teleportationManager;
         private readonly Timer _duelRequestTimer = new Timer();
         private readonly Timer _duelStartTimer = new Timer();
 
-        /// <summary>
-        /// Character, that wants duel.
-        /// </summary>
-        private Character Sender;
+        private int _ownerId;
 
-        public DuelManager(IGameWorld gameWorld, Character player)
+        public DuelManager(ILogger<DuelManager> logger, IGameWorld gameWorld, ITradeManager tradeManager, IMovementManager movementManager, IHealthManager healthManager, IKillsManager killsManager, IMapProvider mapProvider, IInventoryManager inventoryManager, ITeleportationManager teleportationManager)
         {
+            _logger = logger;
             _gameWorld = gameWorld;
-            Sender = player;
-            Sender.OnDuelFinish += Sender_OnDuelFinish;
-            Sender.Client.OnPacketArrived += Client_OnPacketArrived;
-
+            _tradeManager = tradeManager;
+            _movementManager = movementManager;
+            _healthManager = healthManager;
+            _killsManager = killsManager;
+            _mapProvider = mapProvider;
+            _inventoryManager = inventoryManager;
+            _teleportationManager = teleportationManager;
             _duelRequestTimer.Interval = 10000; // 10 seconds.
             _duelRequestTimer.Elapsed += DuelRequestTimer_Elapsed;
             _duelRequestTimer.AutoReset = false;
@@ -38,426 +51,251 @@ namespace Imgeneus.World.Game.Duel
             _duelStartTimer.Interval = 5000; // 5 seconds.
             _duelStartTimer.Elapsed += DuelStartTimer_Elapsed;
             _duelStartTimer.AutoReset = false;
+#if DEBUG
+            _logger.LogDebug("DuelManager {hashcode} created", GetHashCode());
+#endif
         }
 
+#if DEBUG
+        ~DuelManager()
+        {
+            _logger.LogDebug("DuelManager {hashcode} collected by GC", GetHashCode());
+        }
+#endif
+
+        #region Init & Clear
+
+        public void Init(int ownerId)
+        {
+            _ownerId = ownerId;
+        }
+
+        public Task Clear()
+        {
+            Cancel(_ownerId, DuelCancelReason.OpponentDisconnected);
+            return Task.CompletedTask;
+        }
 
         public void Dispose()
         {
-            if (Sender.IsDuelApproved)
-                Sender_OnDuelFinish(DuelCancelReason.OpponentDisconnected);
-
-            Sender.Client.OnPacketArrived -= Client_OnPacketArrived;
-            Sender.OnDuelFinish -= Sender_OnDuelFinish;
             _duelRequestTimer.Elapsed -= DuelRequestTimer_Elapsed;
             _duelStartTimer.Elapsed -= DuelStartTimer_Elapsed;
         }
 
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
+        #endregion
+
+        #region Request duel
+
+        private int _opponentId;
+        public int OpponentId
         {
-            switch (packet)
+            get => _opponentId;
+            set
             {
-                case DuelRequestPacket duelRequestPacket:
-                    HandleDuelRequest(duelRequestPacket.DuelToWhomId);
-                    break;
+                _opponentId = value;
 
-                case DuelResponsePacket duelResponsePacket:
-                    HandleDuelResponse(duelResponsePacket.IsDuelApproved);
-                    break;
+                if (_opponentId == 0)
+                    _duelRequestTimer.Stop();
+                else
+                    _duelRequestTimer.Start();
 
-                case DuelAddItemPacket duelAddItemPacket:
-                    HandleAddItem(duelAddItemPacket.Bag, duelAddItemPacket.Slot, duelAddItemPacket.Quantity, duelAddItemPacket.SlotInTradeWindow);
-                    break;
-
-                case DuelRemoveItemPacket duelRemoveItemPacket:
-                    HandleRemoveItem(duelRemoveItemPacket.SlotInTradeWindow);
-                    break;
-
-                case DuelAddMoneyPacket duelAddMoneyPacket:
-                    HandleAddMoney(duelAddMoneyPacket.Money);
-                    break;
-
-                case DuelOkPacket duelOkPacket:
-                    HandleDuelWindowClick(duelOkPacket.Result);
-                    break;
             }
         }
 
-        #region Handlers
-
-        /// <summary>
-        /// Starts duel timer and handles duel request.
-        /// </summary>
-        /// <param name="duelToWhomId">id of player to whom duel was sent</param>
-        private void HandleDuelRequest(int duelToWhomId)
+        private void DuelRequestTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var opponent = _gameWorld.Players[duelToWhomId];
-            Sender.DuelOpponent = opponent;
-            opponent.DuelOpponent = Sender;
-
-            SendWaitingDuel(Sender.Client, Sender.Id, Sender.DuelOpponent.Id);
-            SendWaitingDuel(Sender.DuelOpponent.Client, Sender.Id, Sender.DuelOpponent.Id);
-            Sender.DuelOpponent.AnsweredDuelRequest = false;
-            _duelRequestTimer.Start();
+            ProcessResponse(OpponentId, DuelResponse.NoResponse);
         }
 
-        /// <summary>
-        /// Handles opponent response.
-        /// </summary>
-        private void HandleDuelResponse(bool isDuelApproved)
-        {
-            Sender.AnsweredDuelRequest = true;
+        public event Action<int, DuelResponse> OnDuelResponse;
 
-            if (isDuelApproved)
+        public void ProcessResponse(int senderId, DuelResponse response)
+        {
+            _duelRequestTimer.Stop();
+
+            if (senderId != _ownerId)
+                OnDuelResponse?.Invoke(senderId, response);
+
+            if (response == DuelResponse.Approved)
             {
-                SendDuelResponse(Sender.Client, DuelResponse.Approved, Sender.Id);
-                SendDuelResponse(Sender.DuelOpponent.Client, DuelResponse.Approved, Sender.Id);
-                StartTrade();
+                _tradeManager.Start(_gameWorld.Players[_ownerId], _gameWorld.Players[OpponentId]);
             }
             else
             {
-                SendDuelResponse(Sender.Client, DuelResponse.Rejected, Sender.Id);
-                SendDuelResponse(Sender.DuelOpponent.Client, DuelResponse.Rejected, Sender.Id);
-                StopDuel();
+                Stop();
             }
-        }
-
-        /// <summary>
-        /// Adds item from inventory to duel trade.
-        /// </summary>
-        /// <param name="bag">inventory tab</param>
-        /// <param name="slot">inventory slot</param>
-        /// <param name="quantity">number of items</param>
-        /// <param name="slotInTradeWindow">slot in trade window</param>
-        private void HandleAddItem(byte bag, byte slot, byte quantity, byte slotInTradeWindow)
-        {
-            Sender.InventoryItems.TryGetValue((bag, slot), out var tradeItem);
-            if (tradeItem is null)
-            {
-                // Possible cheating, maybe log it?
-                return;
-            }
-            tradeItem.TradeQuantity = tradeItem.Count > quantity ? quantity : tradeItem.Count;
-            Sender.TradeItems.TryAdd(slotInTradeWindow, tradeItem);
-
-            SendAddedItemToTrade(Sender.Client, bag, slot, quantity, slotInTradeWindow);
-            SendAddedItemToTrade(Sender.DuelOpponent.Client, tradeItem, quantity, slotInTradeWindow);
-        }
-
-        /// <summary>
-        /// Removes item from trade.
-        /// </summary>
-        /// <param name="slotInTradeWindow">slot in trade window</param>
-        private void HandleRemoveItem(byte slotInTradeWindow)
-        {
-            if (Sender.TradeItems.ContainsKey(slotInTradeWindow))
-                Sender.TradeItems.TryRemove(slotInTradeWindow, out var removed);
-            else
-            {
-                // Possible cheating, maybe log it?
-                return;
-            }
-
-            SendRemovedItemFromTrade(Sender.Client, slotInTradeWindow, 1);
-            SendRemovedItemFromTrade(Sender.DuelOpponent.Client, slotInTradeWindow, 2);
-        }
-
-        /// <summary>
-        /// Adds money to trade.
-        /// </summary>
-        private void HandleAddMoney(uint money)
-        {
-            Sender.TradeMoney = money < Sender.Gold ? money : Sender.Gold;
-            SendAddedMoneyToTrade(Sender.Client, 1, Sender.TradeMoney);
-            SendAddedMoneyToTrade(Sender.DuelOpponent.Client, 2, Sender.TradeMoney);
-        }
-
-        /// <summary>
-        /// Handles ok/close button click.
-        /// </summary>
-        private void HandleDuelWindowClick(byte result)
-        {
-            if (result == 0) // ok clicked.
-            {
-                Sender.IsDuelApproved = true;
-                SendDuelApprove(Sender.Client, 1, !Sender.IsDuelApproved);
-                SendDuelApprove(Sender.DuelOpponent.Client, 2, !Sender.IsDuelApproved);
-
-                if (Sender.IsDuelApproved && Sender.DuelOpponent.IsDuelApproved)
-                {
-                    // Start duel!
-                    SendCloseDuelTrade(Sender.Client, DuelCloseWindowReason.DuelStart);
-                    SendCloseDuelTrade(Sender.DuelOpponent.Client, DuelCloseWindowReason.DuelStart);
-                    StartDuel();
-                }
-            }
-            else if (result == 1) // ok clicked twice == declined
-            {
-                Sender.IsDuelApproved = false;
-
-                SendDuelApprove(Sender.Client, 1, !Sender.IsDuelApproved);
-                SendDuelApprove(Sender.DuelOpponent.Client, 2, !Sender.IsDuelApproved);
-            }
-            else if (result == 2) // close window was clicked.
-            {
-                Sender.TradeItems.Clear();
-                Sender.DuelOpponent.TradeItems.Clear();
-                Sender.TradeMoney = 0;
-                Sender.DuelOpponent.TradeMoney = 0;
-
-                SendCloseDuelTrade(Sender.Client, DuelCloseWindowReason.SenderClosedWindow);
-                SendCloseDuelTrade(Sender.DuelOpponent.Client, DuelCloseWindowReason.OpponentClosedWindow);
-
-                StopDuel();
-            }
-        }
-
-        /// <summary>
-        /// Starts duel between 2 players.
-        /// </summary>
-        private void StartDuel()
-        {
-            // Calculate duel position.
-            var x = (Sender.PosX + Sender.DuelOpponent.PosX) / 2;
-            var z = (Sender.PosZ + Sender.DuelOpponent.PosZ) / 2;
-            Sender.DuelX = x;
-            Sender.DuelZ = z;
-            Sender.DuelOpponent.DuelX = x;
-            Sender.DuelOpponent.DuelZ = z;
-            SendReady(Sender.Client, x, z);
-            SendReady(Sender.DuelOpponent.Client, x, z);
-            _duelStartTimer.Start();
         }
 
         #endregion
 
-        #region Senders
+        #region Start
 
-        /// <summary>
-        /// Send duel approval request.
-        /// </summary>
-        private void SendWaitingDuel(IWorldClient client, int duelStarterId, int duelOpponentId)
+        public bool IsApproved { get; set; }
+
+        private float _x;
+        private float _z;
+
+        public void Ready(float x, float z)
         {
-            using var packet = new Packet(PacketType.DUEL_REQUEST);
-            packet.Write(duelStarterId);
-            packet.Write(duelOpponentId);
-            client.SendPacket(packet);
+            _x = x;
+            _z = z;
+
+            _duelStartTimer.Start();
         }
 
-        /// <summary>
-        /// Sends duel response.
-        /// </summary>
-        private void SendDuelResponse(IWorldClient client, DuelResponse response, int characterId)
+        private void DuelStartTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            using var packet = new Packet(PacketType.DUEL_RESPONSE);
-            packet.Write((byte)response);
-            packet.Write(characterId);
-            client.SendPacket(packet);
+            Start();
         }
 
-        /// <summary>
-        /// Adds item to trade window.
-        /// </summary>
-        private void SendAddedItemToTrade(IWorldClient client, Item tradeItem, byte quantity, byte slotInTradeWindow)
+        public event Action OnStart;
+        public void Start()
         {
-            using var packet = new Packet(PacketType.DUEL_TRADE_OPPONENT_ADD_ITEM);
-            packet.Write(new TradeItem(slotInTradeWindow, quantity, tradeItem).Serialize());
-            client.SendPacket(packet);
+            _movementManager.OnMove += MovementManager_OnMove;
+            _healthManager.OnGotDamage += HealthManager_OnGotDamage;
+            _healthManager.OnDead += HealthManager_OnDead;
+            _teleportationManager.OnTeleporting += TeleportationManager_OnTeleporting;
+
+            OnStart?.Invoke();
         }
 
-        /// <summary>
-        /// Adds item to trade window.
-        /// </summary>
-        private void SendAddedItemToTrade(IWorldClient client, byte bag, byte slot, byte quantity, byte slotInTradeWindow)
+        #endregion
+
+        #region Cancel
+
+        public event Action<int, DuelCancelReason> OnCanceled;
+
+        public void Cancel(int senderId, DuelCancelReason reason)
         {
-            using var packet = new Packet(PacketType.DUEL_TRADE_ADD_ITEM);
-            packet.Write(bag);
-            packet.Write(slot);
-            packet.Write(quantity);
-            packet.Write(slotInTradeWindow);
-            client.SendPacket(packet);
+            if (OpponentId == 0)
+                return;
+
+            if (reason == DuelCancelReason.AdmitDefeat)
+            {
+                if (senderId == _ownerId)
+                    _killsManager.Defeats++;
+                else
+                    _killsManager.Victories++;
+            }
+
+            if (senderId == _ownerId)
+            {
+                _gameWorld.Players.TryGetValue(OpponentId, out var opponent);
+                if (opponent is not null)
+                    opponent.DuelManager.Cancel(senderId, reason);
+            }
+
+            Stop();
+
+            OnCanceled?.Invoke(senderId, reason);
         }
 
-        /// <summary>
-        /// Removes item from trade.
-        /// </summary>
-        private void SendRemovedItemFromTrade(IWorldClient client, byte slotInTradeWindow, byte senderType)
+        private void Stop()
         {
-            using var packet = new Packet(PacketType.DUEL_TRADE_REMOVE_ITEM);
-            packet.Write(senderType);
-            packet.Write(slotInTradeWindow);
-            client.SendPacket(packet);
+            _movementManager.OnMove -= MovementManager_OnMove;
+            _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
+            _healthManager.OnDead -= HealthManager_OnDead;
+            _teleportationManager.OnTeleporting -= TeleportationManager_OnTeleporting;
+
+            _tradeManager.Cancel();
+
+            _x = 0;
+            _z = 0;
+
+            OpponentId = 0;
+            IsApproved = false;
         }
 
-        /// <summary>
-        /// Closes duel trade window.
-        /// </summary>
-        /// <param name="reason">reason why it should be closed.</param>
-        private void SendCloseDuelTrade(IWorldClient client, DuelCloseWindowReason reason)
+        #endregion
+
+        #region Lose & Win
+
+        public event Action<bool> OnFinish;
+
+        public void Lose()
         {
-            using var packet = new Packet(PacketType.DUEL_CLOSE_TRADE);
-            packet.Write((byte)reason);
-            client.SendPacket(packet);
+            _killsManager.Defeats++;
+            OnFinish?.Invoke(false);
+
+            _gameWorld.Players.TryGetValue(OpponentId, out var opponent);
+
+            foreach (var itemPair in _tradeManager.Request.TradeItems)
+            {
+                if (itemPair.Key.CharacterId == _ownerId)
+                {
+                    var item = _inventoryManager.RemoveItem(itemPair.Value);
+                    _mapProvider.Map.AddItem(new MapItem(item, opponent, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ));
+                }
+            }
+
+            _tradeManager.Request.TradeMoney.TryGetValue(_ownerId, out var gold);
+            if (gold > 0)
+            {
+                var money = new Item((int)gold);
+                _mapProvider.Map.AddItem(new MapItem(money, opponent, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ));
+
+                var looser = _gameWorld.Players[_ownerId];
+                looser.InventoryManager.Gold -= gold;
+                looser.SendGoldUpdate();
+            }
+
+            opponent.DuelManager.Win();
+
+            Stop();
         }
 
-        /// <summary>
-        /// "Ok" button change in trade window.
-        /// </summary>
-        private void SendDuelApprove(IWorldClient client, byte senderType, bool isDuelDeclined)
+        public void Win()
         {
-            using var packet = new Packet(PacketType.DUEL_TRADE_OK);
-            packet.Write(senderType);
-            packet.Write(isDuelDeclined);
-            client.SendPacket(packet);
-        }
+            _killsManager.Victories++;
+            OnFinish?.Invoke(true);
 
-        /// <summary>
-        /// Sends duel result.
-        /// </summary>
-        private void SendDuelFinish(IWorldClient client, bool isWin)
-        {
-            using var packet = new Packet(PacketType.DUEL_WIN_LOSE);
-            packet.WriteByte(isWin ? (byte)1 : (byte)2); // 1 - win, 2 - lose
-            client.SendPacket(packet);
-        }
-
-        /// <summary>
-        /// Cancels duel.
-        /// </summary>
-        /// <param name="cancelReason">player is too far away; player was attacked etc.</param>
-        private void SendDuelCancel(IWorldClient client, DuelCancelReason cancelReason, int playerId)
-        {
-            using var packet = new Packet(PacketType.DUEL_CANCEL);
-            packet.Write((byte)cancelReason);
-            packet.Write(playerId);
-            client.SendPacket(packet);
+            Stop();
         }
 
         #endregion
 
         #region Trade
 
-        /// <summary>
-        /// Starts trade before duel.
-        /// </summary>
-        private void StartTrade()
+        public bool TryAddItem(byte bag, byte slot, byte quantity, byte slotInTradeWindow, out Item item)
         {
-            SendStartTrade(Sender.Client, Sender.DuelOpponent.Id);
-            SendStartTrade(Sender.DuelOpponent.Client, Sender.Id);
+            return _tradeManager.TryAddItem(bag, slot, quantity, slotInTradeWindow, out item);
         }
 
-        private void SendStartTrade(IWorldClient client, int characterId)
+        public bool TryRemoveItem(byte slotInTradeWindow)
         {
-            using var packet = new Packet(PacketType.DUEL_TRADE);
-            packet.Write(characterId);
-            packet.WriteByte(0); // ?
-            client.SendPacket(packet);
+            return _tradeManager.TryRemoveItem(slotInTradeWindow);
         }
 
-        /// <summary>
-        /// Adds money to trade.
-        /// </summary>
-        private void SendAddedMoneyToTrade(IWorldClient client, byte senderType, uint tradeMoney)
+        public bool TryAddMoney(uint money, out uint resultMoney)
         {
-            using var packet = new Packet(PacketType.DUEL_TRADE_ADD_MONEY);
-            packet.Write(senderType);
-            packet.Write(tradeMoney);
-            client.SendPacket(packet);
-        }
-
-        /// <summary>
-        /// Sends duel position, in 5 seconds duel will start.
-        /// </summary>
-        private void SendReady(IWorldClient client, float x, float z)
-        {
-            using var packet = new Packet(PacketType.DUEL_READY);
-            packet.Write(x);
-            packet.Write(z);
-            client.SendPacket(packet);
-        }
-
-        /// <summary>
-        /// Start duel.
-        /// </summary>
-        private void SendDuelStart(IWorldClient client)
-        {
-            using var packet = new Packet(PacketType.DUEL_START);
-            client.SendPacket(packet);
+            return _tradeManager.TryAddMoney(money, out resultMoney);
         }
 
         #endregion
 
         #region Helpers
 
-        private void DuelRequestTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
-            if (Sender.DuelOpponent != null && !Sender.DuelOpponent.AnsweredDuelRequest)
-            {
-                // Duel within 10 seconds was not approved.
-                SendDuelResponse(Sender.Client, DuelResponse.NoResponse, Sender.DuelOpponent.Id);
-                SendDuelResponse(Sender.DuelOpponent.Client, DuelResponse.NoResponse, Sender.DuelOpponent.Id);
-                StopDuel();
-            }
+            if (MathExtensions.Distance(x, _x, z, _z) >= 45)
+                Cancel(_ownerId, DuelCancelReason.TooFarAway);
         }
 
-        private void DuelStartTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker)
         {
-            SendDuelStart(Sender.Client);
-            SendDuelStart(Sender.DuelOpponent.Client);
+            if (damageMaker is Mob || damageMaker.Id != OpponentId)
+                Cancel(_ownerId, DuelCancelReason.MobAttack);
         }
 
-        private void Sender_OnDuelFinish(DuelCancelReason reason)
+        private void HealthManager_OnDead(int senderId, IKiller killer)
         {
-            switch (reason)
-            {
-                case DuelCancelReason.Lose:
-                    FinishTradeSuccessful(Sender.DuelOpponent, Sender);
-                    SendDuelFinish(Sender.Client, false);
-                    SendDuelFinish(Sender.DuelOpponent.Client, true);
-                    break;
-
-                case DuelCancelReason.TooFarAway:
-                    SendDuelCancel(Sender.Client, DuelCancelReason.TooFarAway, Sender.Id);
-                    SendDuelCancel(Sender.DuelOpponent.Client, DuelCancelReason.TooFarAway, Sender.Id);
-                    break;
-
-                case DuelCancelReason.OpponentDisconnected:
-                    SendDuelCancel(Sender.DuelOpponent.Client, DuelCancelReason.OpponentDisconnected, Sender.Id);
-                    break;
-
-                case DuelCancelReason.AdmitDefeat:
-                    SendDuelCancel(Sender.Client, DuelCancelReason.AdmitDefeat, Sender.Id);
-                    SendDuelCancel(Sender.DuelOpponent.Client, DuelCancelReason.AdmitDefeat, Sender.Id);
-                    break;
-
-                    // TODO: implement MobAttack.
-            }
-
-            StopDuel();
+            Lose();
         }
 
-        /// <summary>
-        /// Finished duel trade.
-        /// </summary>
-        /// <param name="winner">Duel winner</param>
-        /// <param name="loser">Duel loser</param>
-        private void FinishTradeSuccessful(Character winner, Character loser)
+        private void TeleportationManager_OnTeleporting(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
         {
-            // TODO: drop loser's items on the floor.
-
-            winner.ClearTrade();
-            loser.ClearTrade();
-        }
-
-        private void StopDuel()
-        {
-            Sender.DuelOpponent.AnsweredDuelRequest = false;
-            Sender.AnsweredDuelRequest = false;
-
-            Sender.DuelOpponent.IsDuelApproved = false;
-            Sender.IsDuelApproved = false;
-
-            Sender.DuelOpponent.DuelOpponent = null;
-            Sender.DuelOpponent = null;
+            if (_mapProvider.Map.Id != mapId|| MathExtensions.Distance(x, _x, z, _z) >= 45)
+                Cancel(_ownerId, DuelCancelReason.TooFarAway);
         }
 
         #endregion

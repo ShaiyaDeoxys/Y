@@ -1,29 +1,29 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct MoveCharacterPacket : IDeserializedPacket
+    public record MoveCharacterPacket : IPacketDeserializer
     {
         /// <summary>
         /// If it's 132 character stopped moving, if it's 129 character is continuously moving.
         /// </summary>
-        public MovementType MovementType { get; }
+        public MovementType MovementType { get; private set; }
 
-        public ushort Angle { get; }
+        public ushort Angle { get; private set; }
 
-        public float X { get; }
+        public float X { get; private set; }
 
-        public float Y { get; }
+        public float Y { get; private set; }
 
-        public float Z { get; }
+        public float Z { get; private set; }
 
-        public MoveCharacterPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            MovementType = (MovementType)packet.Read<byte>();
-            Angle = packet.Read<ushort>();
-            X = packet.Read<float>();
-            Y = packet.Read<float>();
-            Z = packet.Read<float>();
+            MovementType = (MovementType)packetStream.Read<byte>();
+            Angle = packetStream.Read<ushort>();
+            X = packetStream.Read<float>();
+            Y = packetStream.Read<float>();
+            Z = packetStream.Read<float>();
         }
     }
 

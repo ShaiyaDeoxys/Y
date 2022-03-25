@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct SelectCharacterPacket : IDeserializedPacket
+    public record SelectCharacterPacket : IPacketDeserializer
     {
         /// <summary>
         /// Id of character, that should be loaded.
         /// </summary>
-        public int CharacterId { get; }
+        public int CharacterId { get; private set; }
 
-        public SelectCharacterPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            CharacterId = packet.Read<int>();
+            CharacterId = packetStream.Read<int>();
         }
     }
 }

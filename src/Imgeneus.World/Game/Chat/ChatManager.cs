@@ -1,13 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using Imgeneus.Database.Entities;
-using Imgeneus.DatabaseBackgroundService;
-using Imgeneus.DatabaseBackgroundService.Handlers;
-using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets;
+﻿using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Imgeneus.World.Game.Chat
 {
@@ -15,13 +10,13 @@ namespace Imgeneus.World.Game.Chat
     {
         private readonly ILogger<IChatManager> _logger;
         private readonly IGameWorld _gameWorld;
-        private readonly IBackgroundTaskQueue _taskQueue;
+        private readonly IGamePacketFactory _packetFactory;
 
-        public ChatManager(ILogger<IChatManager> logger, IGameWorld gameWorld, IBackgroundTaskQueue taskQueue)
+        public ChatManager(ILogger<IChatManager> logger, IGameWorld gameWorld, IGamePacketFactory packetFactory)
         {
             _logger = logger;
             _gameWorld = gameWorld;
-            _taskQueue = taskQueue;
+            _packetFactory = packetFactory;
         }
 
         public void SendMessage(Character sender, MessageType messageType, string message, string targetName = "")
@@ -29,69 +24,62 @@ namespace Imgeneus.World.Game.Chat
             switch (messageType)
             {
                 case MessageType.Normal:
-                    var players = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 50, Fraction.NotSelected, true);
+                    var players = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 50, CountryType.None, true).Cast<Character>();
                     foreach (var player in players)
                     {
-                        SendNormal((Character)player, sender.Id, message);
+                       _packetFactory.SendNormal(player.GameSession.Client, sender.Id, message, player.GameSession.IsAdmin);
                     }
-                    _taskQueue.Enqueue(ActionType.LOG_SAVE_CHAT_MESSAGE, sender.Client.UserID, sender.Id, sender.Name, MessageType.Normal.ToString(), message);
                     break;
 
                 case MessageType.Whisper:
                     var target = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == targetName);
-                    if (target != null && target.Id != sender.Id && target.Country == sender.Country)
+                    if (target != null && target.Id != sender.Id && target.CountryProvider.Country == sender.CountryProvider.Country)
                     {
-                        SendWhisper(sender, sender.Name, message);
-                        SendWhisper(target, sender.Name, message);
-                        _taskQueue.Enqueue(ActionType.LOG_SAVE_CHAT_MESSAGE, sender.Client.UserID, sender.Id, sender.Name, MessageType.Whisper.ToString(), message, target.Id, target.Name);
+                        _packetFactory.SendWhisper(sender.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
+                        _packetFactory.SendWhisper(target.GameSession.Client, sender.Name, message,sender.GameSession.IsAdmin);
                     }
                     break;
 
                 case MessageType.Party:
-                    if (sender.Party != null)
+                    if (sender.PartyManager.Party != null)
                     {
-                        foreach (var player in sender.Party.Members.ToList())
+                        foreach (var player in sender.PartyManager.Party.Members.ToList())
                         {
-                            SendParty(player, sender.Id, message);
+                            _packetFactory.SendParty(player.GameSession.Client, sender.Id, message, sender.GameSession.IsAdmin);
                         }
-                        _taskQueue.Enqueue(ActionType.LOG_SAVE_CHAT_MESSAGE, sender.Client.UserID, sender.Id, sender.Name, MessageType.Party.ToString(), message);
                     }
                     break;
 
                 case MessageType.Map:
-                    var mapPlayers = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 0, sender.Country, true);
+                    var mapPlayers = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 0, sender.CountryProvider.Country, true).Cast<Character>();
                     foreach (var player in mapPlayers)
                     {
-                        SendMap((Character)player, sender.Name, message);
+                        _packetFactory.SendMap(player.GameSession.Client, sender.Name, message);
                     }
-                    _taskQueue.Enqueue(ActionType.LOG_SAVE_CHAT_MESSAGE, sender.Client.UserID, sender.Id, sender.Name, MessageType.Map.ToString(), message);
                     break;
 
                 case MessageType.World:
-                    if (sender.Level > 10)
+                    if (sender.LevelProvider.Level > 10)
                     {
-                        var worldPlayers = _gameWorld.Players.Values.Where(p => p.Country == sender.Country);
+                        var worldPlayers = _gameWorld.Players.Values.Where(p => p.CountryProvider.Country == sender.CountryProvider.Country);
                         foreach (var player in worldPlayers)
                         {
-                            SendWorld(player, sender.Name, message);
+                            _packetFactory.SendWorld(player.GameSession.Client, sender.Name, message);
                         }
-                        _taskQueue.Enqueue(ActionType.LOG_SAVE_CHAT_MESSAGE, sender.Client.UserID, sender.Id, sender.Name, MessageType.World.ToString(), message);
                     }
                     break;
 
                 case MessageType.Guild:
-                    if (sender.HasGuild)
+                    if (sender.GuildManager.HasGuild)
                     {
-                        foreach (var guildMember in sender.GuildMembers.ToList())
+                        foreach (var guildMember in sender.GuildManager.GuildMembers.ToList())
                         {
                             if (!_gameWorld.Players.ContainsKey(guildMember.Id))
                                 continue;
 
                             var player = _gameWorld.Players[guildMember.Id];
-                            SendGuild(player, sender.Name, message);
+                            _packetFactory.SendGuild(player.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
                         }
-
-                        _taskQueue.Enqueue(ActionType.LOG_SAVE_CHAT_MESSAGE, sender.Client.UserID, sender.Id, sender.Name, MessageType.Guild.ToString(), message);
                     }
 
                     break;
@@ -101,118 +89,5 @@ namespace Imgeneus.World.Game.Chat
                     break;
             }
         }
-
-        #region Senders
-
-        /// <summary>
-        /// Send normal message.
-        /// </summary>
-        /// <param name="character">To whom we are sending.</param>
-        /// <param name="senderId">Message creator id.</param>
-        /// <param name="message">Message text.</param>
-        private void SendNormal(Character character, int senderId, string message)
-        {
-            SendMessage(PacketType.CHAT_NORMAL_ADMIN, character, senderId, message);
-        }
-
-        /// <summary>
-        /// Send whisper to someone.
-        /// </summary>
-        /// <param name="character">To whom we are sending.</param>
-        /// <param name="senderName">Message creator name.</param>
-        /// <param name="message">Message text.</param>
-        private void SendWhisper(Character character, string senderName, string message)
-        {
-            SendMessage(PacketType.CHAT_WHISPER_ADMIN, character, senderName, message, true);
-        }
-
-        /// <summary>
-        /// Send message to party members.
-        /// </summary>
-        /// <param name="character">To whom we are sending.</param>
-        /// <param name="senderId">Message creator id.</param>
-        /// <param name="message">Message text.</param>
-        private void SendParty(Character character, int senderId, string message)
-        {
-            SendMessage(PacketType.CHAT_PARTY, character, senderId, message);
-        }
-
-        /// <summary>
-        /// Send message to all players on map.
-        /// </summary>
-        /// <param name="character">To whom we are sending.</param>
-        /// <param name="senderName">Message creator name.</param>
-        /// <param name="message">Message text.</param>
-        private void SendMap(Character character, string senderName, string message)
-        {
-            SendMessage(PacketType.CHAT_MAP, character, senderName, message);
-        }
-
-        /// <summary>
-        /// Sends message to all players of the same fraction.
-        /// </summary>
-        /// <param name="character">To whom we are sending</param>
-        /// <param name="senderName">Message creator name</param>
-        /// <param name="message">Message text</param>
-        private void SendWorld(Character character, string senderName, string message)
-        {
-            SendMessage(PacketType.CHAT_WORLD, character, senderName, message);
-        }
-
-        /// <summary>
-        /// Sends message to guild members.
-        /// </summary>
-        /// <param name="character">To whom we are sending</param>
-        /// <param name="name">Message creator name</param>
-        /// <param name="message">Message text</param>
-        private void SendGuild(Character character, string senderName, string message)
-        {
-            SendMessage(PacketType.CHAT_GUILD, character, senderName, message);
-        }
-
-        private void SendMessage(PacketType packetType, Character character, string senderName, string message, bool includeNameFlag = false)
-        {
-            using var packet = new Packet(packetType);
-
-            if (includeNameFlag)
-                packet.Write(false); // false == use sender name, if set to true, sender name will be ignored
-
-            packet.WriteString(senderName, 21);
-
-#if EP8_V2
-            packet.WriteByte((byte)(message.Length + 1));
-#endif
-
-            packet.WriteByte((byte)message.Length);
-
-#if (EP8_V2 || SHAIYA_US)
-            packet.WriteString(message, Encoding.Unicode);
-#else
-            packet.WriteString(message);
-#endif
-            character.Client.SendPacket(packet);
-        }
-
-        private void SendMessage(PacketType packetType, Character character, int senderId, string message)
-        {
-            using var packet = new Packet(packetType);
-            packet.Write(senderId);
-
-#if EP8_V2
-            packet.WriteByte((byte)(message.Length + 1));
-#endif
-
-            packet.WriteByte((byte)message.Length);
-
-#if (EP8_V2 || SHAIYA_US)
-            packet.WriteString(message, Encoding.Unicode);
-#else
-            packet.WriteString(message);
-#endif
-
-            character.Client.SendPacket(packet);
-        }
-
-        #endregion
     }
 }

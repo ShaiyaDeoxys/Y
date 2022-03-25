@@ -1,7 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
-using Imgeneus.DatabaseBackgroundService;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Dyeing;
@@ -21,56 +20,210 @@ using Imgeneus.Database;
 using Imgeneus.World.Game.Time;
 using System.Collections.Concurrent;
 using Imgeneus.World.Game.Player.Config;
+using Imgeneus.World.Packets;
+using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Untouchable;
+using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.PartyAndRaid;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Teleport;
+using Imgeneus.World.Game.Kills;
+using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Trade;
+using Imgeneus.World.Game.Friends;
+using Imgeneus.World.Game.Duel;
+using Imgeneus.World.Game.Bank;
+using Imgeneus.World.Game.Quests;
+using Imgeneus.World.Game.Session;
+using System.Threading;
+using System.Threading.Tasks;
+using Imgeneus.World.Game.Etin;
 
 namespace Imgeneus.World.Tests
 {
     public abstract class BaseTest
     {
-        protected Mock<ILogger<Character>> loggerMock = new Mock<ILogger<Character>>();
         protected Mock<IGameWorld> gameWorldMock = new Mock<IGameWorld>();
-        protected Mock<IBackgroundTaskQueue> taskQueuMock = new Mock<IBackgroundTaskQueue>();
         protected Mock<IDatabasePreloader> databasePreloader = new Mock<IDatabasePreloader>();
         protected Mock<IDatabase> databaseMock = new Mock<IDatabase>();
         protected Mock<ITimeService> timeMock = new Mock<ITimeService>();
         protected Mock<IMapsLoader> mapsLoaderMock = new Mock<IMapsLoader>();
+        protected Mock<IGamePacketFactory> packetFactoryMock = new Mock<IGamePacketFactory>();
         protected Mock<ICharacterConfiguration> config = new Mock<ICharacterConfiguration>();
         protected Mock<ILogger<Map>> mapLoggerMock = new Mock<ILogger<Map>>();
         protected Mock<ILogger<Mob>> mobLoggerMock = new Mock<ILogger<Mob>>();
         protected Mock<ILogger<Npc>> npcLoggerMock = new Mock<ILogger<Npc>>();
         protected Mock<ILogger<IGuildManager>> guildLoggerMock = new Mock<ILogger<IGuildManager>>();
         protected Mock<IChatManager> chatMock = new Mock<IChatManager>();
-        protected Mock<ILinkingManager> linkingMock = new Mock<ILinkingManager>();
         protected Mock<IDyeingManager> dyeingMock = new Mock<IDyeingManager>();
         protected Mock<IWorldClient> worldClientMock = new Mock<IWorldClient>();
         protected Mock<IMobFactory> mobFactoryMock = new Mock<IMobFactory>();
         protected Mock<INpcFactory> npcFactoryMock = new Mock<INpcFactory>();
         protected Mock<IObeliskFactory> obeliskFactoryMock = new Mock<IObeliskFactory>();
         protected Mock<INoticeManager> noticeManagerMock = new Mock<INoticeManager>();
-        protected Mock<IGuildManager> guidManagerMock = new Mock<IGuildManager>();
+        protected Mock<IGameSession> gameSessionMock = new Mock<IGameSession>();
+        protected Mock<IEtinManager> etinMock = new Mock<IEtinManager>();
 
         protected Map testMap => new Map(
                     Map.TEST_MAP_ID,
                     new MapDefinition(),
                     new MapConfiguration() { Size = 100, CellSize = 100 },
                     mapLoggerMock.Object,
+                    packetFactoryMock.Object,
                     databasePreloader.Object,
                     mobFactoryMock.Object,
                     npcFactoryMock.Object,
                     obeliskFactoryMock.Object,
                     timeMock.Object);
 
-        private static int CharacterId;
-        protected Character CreateCharacter(Map map = null)
+        private int _characterId;
+        protected Character CreateCharacter(Map map = null, Fraction country = Fraction.Light, GuildConfiguration guildConfiguration = null, GuildHouseConfiguration guildHouseConfiguration = null)
         {
-            var character = new Character(loggerMock.Object, gameWorldMock.Object, config.Object, taskQueuMock.Object, databasePreloader.Object, mapsLoaderMock.Object, chatMock.Object, linkingMock.Object, dyeingMock.Object, mobFactoryMock.Object, npcFactoryMock.Object, noticeManagerMock.Object, guidManagerMock.Object);
+            _characterId++;
 
-            character.Client = worldClientMock.Object;
-            character.Id = CharacterId++;
+            var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
+            countryProvider.Init(_characterId, country);
+
+            var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
+            var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
+            var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object);
+            var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
+
+            var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
+            levelProvider.Level = 1;
+
+            var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, mapProvider, config.Object, databaseMock.Object);
+            healthManager.Init(_characterId, 0, 0, 0, null, null, null, CharacterProfession.Fighter);
+
+            var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
+            var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
+            var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, buffsManager, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
+
+            var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, gameWorldMock.Object, mapProvider);
+            partyManager.Init(_characterId);
+
+            var levelingManager = new LevelingManager(new Mock<ILogger<LevelingManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, statsManager, skillsManager, healthManager, config.Object, databasePreloader.Object, partyManager, mapProvider, movementManager);
+            levelingManager.Init(_characterId, 0);
+
+            var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
+
+            var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object);
+            teleportManager.Init(_characterId);
+
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
+            inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
+
+            var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object);
+            var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager, inventoryManager);
+            var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, databaseMock.Object, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object);
+            guildManager.Init(_characterId);
+
+            var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, databasePreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider);
+            var tradeManager = new TradeManager(new Mock<ILogger<TradeManager>>().Object, gameWorldMock.Object, inventoryManager);
+            var friendsManager = new FriendsManager(new Mock<ILogger<FriendsManager>>().Object, databaseMock.Object, gameWorldMock.Object);
+            var duelManager = new DuelManager(new Mock<ILogger<DuelManager>>().Object, gameWorldMock.Object, tradeManager, movementManager, healthManager, killsManager, mapProvider, inventoryManager, teleportManager);
+            var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, inventoryManager);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, databasePreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager);
+
+            var character = new Character(
+                new Mock<ILogger<Character>>().Object,
+                databasePreloader.Object,
+                guildManager,
+                countryProvider,
+                speedManager,
+                statsManager,
+                additionalInfoManager,
+                healthManager,
+                levelProvider,
+                levelingManager,
+                inventoryManager,
+                stealthManager,
+                attackManager,
+                skillsManager,
+                buffsManager,
+                elementProvider,
+                killsManager,
+                vehicleManager,
+                shapeManager,
+                movementManager,
+                linkingManager,
+                mapProvider,
+                teleportManager,
+                partyManager,
+                tradeManager,
+                friendsManager,
+                duelManager,
+                bankManager,
+                questsManager,
+                untouchableManager,
+                gameSessionMock.Object,
+                packetFactoryMock.Object);
+
+
+            character.Id = _characterId;
 
             if (map != null)
                 map.LoadPlayer(character);
 
+            gameWorldMock.Object.Players.TryAdd(character.Id, character);
+
             return character;
+        }
+
+        protected Mob CreateMob(ushort mobId, Map map, Fraction country = Fraction.NotSelected)
+        {
+            var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
+            countryProvider.Init(0, country);
+
+            var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
+            var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object);
+            var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
+            var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, mapProvider, config.Object, databaseMock.Object);
+            var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
+            var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
+            var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
+            var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, buffsManager, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
+            var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
+
+            var mob = new Mob(
+                mobId,
+                true,
+                new MoveArea(0, 0, 0, 0, 0, 0),
+                map,
+                mobLoggerMock.Object,
+                databasePreloader.Object,
+                countryProvider,
+                statsManager,
+                healthManager,
+                levelProvider,
+                speedManager,
+                attackManager,
+                skillsManager,
+                buffsManager,
+                elementProvider,
+                movementManager,
+                untouchableManager,
+                mapProvider);
+            return mob;
         }
 
         public BaseTest()
@@ -216,6 +369,10 @@ namespace Imgeneus.World.Tests
                 {
                     { (1, 1), WeaponMerchant }
                 });
+
+            databaseMock
+                .Setup(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(1));
         }
 
         #region Test mobs

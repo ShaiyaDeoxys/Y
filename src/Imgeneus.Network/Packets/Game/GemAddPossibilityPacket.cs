@@ -1,24 +1,24 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GemAddPossibilityPacket : IDeserializedPacket
+    public record GemAddPossibilityPacket : IPacketDeserializer
     {
-        public byte GemBag;
-        public byte GemSlot;
-        public byte DestinationBag;
-        public byte DestinationSlot;
-        public byte HammerBag;
-        public byte HammerSlot;
+        public byte GemBag { get; private set; }
+        public byte GemSlot { get; private set; }
+        public byte DestinationBag { get; private set; }
+        public byte DestinationSlot { get; private set; }
+        public byte HammerBag { get; private set; }
+        public byte HammerSlot { get; private set; }
 
-        public GemAddPossibilityPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            GemBag = packet.Read<byte>();
-            GemSlot = packet.Read<byte>();
-            DestinationBag = packet.Read<byte>();
-            DestinationSlot = packet.Read<byte>();
-            HammerBag = packet.Read<byte>();
-            HammerSlot = packet.Read<byte>();
+            GemBag = packetStream.Read<byte>();
+            GemSlot = packetStream.Read<byte>();
+            DestinationBag = packetStream.Read<byte>();
+            DestinationSlot = packetStream.Read<byte>();
+            HammerBag = packetStream.Read<byte>();
+            HammerSlot = packetStream.Read<byte>();
         }
     }
 }

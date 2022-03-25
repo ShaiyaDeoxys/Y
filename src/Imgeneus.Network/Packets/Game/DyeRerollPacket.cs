@@ -1,10 +1,10 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct DyeRerollPacket : IDeserializedPacket
+    public record DyeRerollPacket : IPacketDeserializer
     {
-        public DyeRerollPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
         }
     }

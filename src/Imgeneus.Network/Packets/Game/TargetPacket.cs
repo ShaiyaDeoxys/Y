@@ -1,24 +1,31 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct MobInTargetPacket : IDeserializedPacket
+    public record MobInTargetPacket : IPacketDeserializer
     {
-        public int TargetId { get; }
+        public int TargetId { get; private set; }
 
-        public MobInTargetPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            TargetId = packet.Read<int>();
+            TargetId = packetStream.Read<int>();
         }
     }
 
-    public struct PlayerInTargetPacket : IDeserializedPacket
+    public record PlayerInTargetPacket : IPacketDeserializer
     {
-        public int TargetId { get; }
+        public int TargetId { get; private set; }
 
-        public PlayerInTargetPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            TargetId = packet.Read<int>();
+            TargetId = packetStream.Read<int>();
+        }
+    }
+
+    public record TargetClearPacket : IPacketDeserializer
+    {
+        public void Deserialize(ImgeneusPacket packetStream)
+        {
         }
     }
 }

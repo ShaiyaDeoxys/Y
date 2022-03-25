@@ -1,23 +1,23 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct MoveItemInInventoryPacket : IDeserializedPacket
+    public record MoveItemInInventoryPacket : IPacketDeserializer
     {
-        public byte CurrentBag { get; }
+        public byte CurrentBag { get; private set; }
 
-        public byte CurrentSlot { get; }
+        public byte CurrentSlot { get; private set; }
 
-        public byte DestinationBag { get; }
+        public byte DestinationBag { get; private set; }
 
-        public byte DestinationSlot { get; }
+        public byte DestinationSlot { get; private set; }
 
-        public MoveItemInInventoryPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            CurrentBag = packet.Read<byte>();
-            CurrentSlot = packet.Read<byte>();
-            DestinationBag = packet.Read<byte>();
-            DestinationSlot = packet.Read<byte>();
+            CurrentBag = packetStream.Read<byte>();
+            CurrentSlot = packetStream.Read<byte>();
+            DestinationBag = packetStream.Read<byte>();
+            DestinationSlot = packetStream.Read<byte>();
         }
     }
 }

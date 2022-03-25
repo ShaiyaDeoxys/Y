@@ -1,186 +1,105 @@
-﻿using Imgeneus.Database;
+﻿using Imgeneus.Core.Extensions;
+using Imgeneus.Database;
 using Imgeneus.Database.Entities;
-using Imgeneus.Network.Data;
-using Imgeneus.Network.Packets;
+using Imgeneus.Database.Preload;
 using Imgeneus.Network.Packets.Game;
-
-#if EP8_V1
-using Imgeneus.World.Serialization.EP_8_V1;
-#elif EP8_V2
-using Imgeneus.World.Serialization.EP_8_V2;
-#else
-using Imgeneus.World.Serialization.EP_8_V1;
-#endif
-
-using Imgeneus.Network.Server;
 using Imgeneus.World.Game;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Player.Config;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Imgeneus.Core.Extensions;
-using Imgeneus.World.Game.Player.Config;
-using Imgeneus.Database.Preload;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.SelectionScreen
 {
     /// <inheritdoc/>
     public class SelectionScreenManager : ISelectionScreenManager
     {
-#if EP8_V1
-        public const byte MaxCharacterNumber = 5;
-#elif EP8_V2
+#if EP8_V2
         public const byte MaxCharacterNumber = 6;
 #else
         public const byte MaxCharacterNumber = 5;
 #endif
 
 
-        private readonly WorldClient _client;
+        private readonly ILogger<SelectionScreenManager> _logger;
         private readonly IGameWorld _gameWorld;
         private readonly ICharacterConfiguration _characterConfiguration;
         private readonly IDatabase _database;
         private readonly IDatabasePreloader _databasePreloader;
 
-        public SelectionScreenManager(WorldClient client, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database, IDatabasePreloader databasePreloader)
+        public SelectionScreenManager(ILogger<SelectionScreenManager> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database, IDatabasePreloader databasePreloader)
         {
-            _client = client;
+            _logger = logger;
             _gameWorld = gameWorld;
             _characterConfiguration = characterConfiguration;
             _database = database;
             _databasePreloader = databasePreloader;
-            _client.OnPacketArrived += Client_OnPacketArrived;
-        }
 
-        public void Dispose()
-        {
-            _client.OnPacketArrived -= Client_OnPacketArrived;
-            _database.Dispose();
-        }
-
-        private void Client_OnPacketArrived(ServerClient sender, IDeserializedPacket packet)
-        {
-            switch (packet)
-            {
-                case AccountFractionPacket accountFractionPacket:
-                    HandleChangeFraction(accountFractionPacket);
-                    break;
-
-                case CheckCharacterAvailableNamePacket checkNamePacket:
-                    HandleCheckName(checkNamePacket);
-                    break;
-
-                case CreateCharacterPacket createCharacterPacket:
-                    HandleCreateCharacter(createCharacterPacket);
-                    break;
-
-                case SelectCharacterPacket selectCharacterPacket:
-                    HandleSelectCharacter(selectCharacterPacket);
-                    break;
-
-                case DeleteCharacterPacket characterDeletePacket:
-                    HandleDeleteCharacter(characterDeletePacket);
-                    break;
-
-                case RestoreCharacterPacket restoreCharacterPacket:
-                    HandleRestoreCharacter(restoreCharacterPacket);
-                    break;
-
-                case RenameCharacterPacket renameCharacterPacket:
-                    HandleRenameCharacter(renameCharacterPacket);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Call this right after gameshake to get user characters.
-        /// </summary>
-        public async void SendSelectionScrenInformation(int userId)
-        {
-            DbUser user = await _database.Users.Include(u => u.Characters)
-                                        .ThenInclude(c => c.Items)
-                                        .Where(u => u.Id == userId)
-                                        .FirstOrDefaultAsync();
-            Mode maxMode = Mode.Normal;
-#if EP8_V1
-            maxMode = user.MaxMode;
-#elif EP8_V2
-            maxMode = Mode.Ultimate;
+#if DEBUG
+            _logger.LogDebug($"SelectionScreenManager {GetHashCode()} created");
 #endif
-            SendCharacterList(user.Characters);
-            SendFaction(user.Faction, maxMode);
         }
 
-        /// <summary>
-        /// Handles fraction change. Saves change to database.
-        /// </summary>
-        private async void HandleChangeFraction(AccountFractionPacket accountFractionPacket)
+#if DEBUG
+        ~SelectionScreenManager()
         {
-            DbUser user = _database.Users.Find(_client.UserID);
-            user.Faction = accountFractionPacket.Fraction;
-
-            await _database.SaveChangesAsync();
+            _logger.LogDebug($"SelectionScreenManager {GetHashCode()} collected by GC");
         }
+#endif
 
-        /// <summary>
-        /// Handles event, when user clicks "check name button".
-        /// </summary>
-        private void HandleCheckName(CheckCharacterAvailableNamePacket checkNamePacket)
+        public async Task<IEnumerable<DbCharacter>> GetCharacters(int userId)
         {
-            DbCharacter character = _database.Characters.FirstOrDefault(c => c.Name == checkNamePacket.CharacterName);
+            var characters = await _database.Characters
+                                        .AsNoTracking()
+                                        .Include(c => c.Items)
+                                        .Where(u => u.UserId == userId)
+                                        .ToListAsync();
 
-            var isAvailable = character is null && checkNamePacket.CharacterName.IsValidCharacterName();
+            foreach (var character in characters)
+                _gameWorld.EnsureMap(character);
 
-            using var packet = new Packet(PacketType.CHECK_CHARACTER_AVAILABLE_NAME);
-            packet.Write(isAvailable);
-            _client.SendPacket(packet);
+            return characters;
         }
 
-        /// <summary>
-        /// Handles creation of character.
-        /// </summary>
-        private async void HandleCreateCharacter(CreateCharacterPacket createCharacterPacket)
+        public async Task<bool> TryCreateCharacter(int userId, CreateCharacterPacket createCharacterPacket)
         {
             // Get number of user characters.
-            var characters = _database.Characters.Where(x => x.UserId == _client.UserID).ToList();
+            var characters = await _database.Characters.Where(x => x.UserId == userId).ToListAsync();
             if (characters.Where(c => !c.IsDelete).Count() == MaxCharacterNumber)
             {
                 // Max number of characters reached.
-                SendCreatedCharacter(false);
-                return;
+                return false;
             }
 
             byte freeSlot = createCharacterPacket.Slot;
             if (characters.Any(c => c.Slot == freeSlot && !c.IsDelete))
             {
                 // Wrong slot.
-                SendCreatedCharacter(false);
-                return;
+                return false;
             }
 
             var defaultStats = _characterConfiguration.DefaultStats.FirstOrDefault(s => s.Job == createCharacterPacket.Class);
             if (defaultStats is null)
             {
                 // Something went very wrong. No default stats for this job.
-                SendCreatedCharacter(false);
-                return;
+                return false;
             }
 
-            var user = _database.Users.Find(_client.UserID);
+            var user = await _database.Users.FindAsync(userId);
             var createConfig = _characterConfiguration.CreateConfigs.FirstOrDefault(p => p.Country == user.Faction && p.Job == createCharacterPacket.Class);
             if (createConfig is null)
             {
                 // Something went very wrong. No default position for this job.
-                SendCreatedCharacter(false);
-                return;
+                return false;
             }
 
             // Validate CharacterName
             if (!createCharacterPacket.CharacterName.IsValidCharacterName())
             {
-                SendCreatedCharacter(false);
-                return;
+                return false;
             }
 
             DbCharacter character = new DbCharacter()
@@ -201,7 +120,7 @@ namespace Imgeneus.World.SelectionScreen
                 Luck = defaultStats.Luc,
                 Level = 1,
                 Slot = freeSlot,
-                UserId = _client.UserID,
+                UserId = userId,
                 Map = createConfig.MapId,
                 PosX = createConfig.X,
                 PosY = createConfig.Y,
@@ -232,151 +151,65 @@ namespace Imgeneus.World.SelectionScreen
                 await _database.SaveChangesAsync();
 
                 characters.Add(character);
-                SendCreatedCharacter(true);
-                SendCharacterList(characters);
+                return true;
             }
             else
             {
-                SendCreatedCharacter(false);
-            }
-        }
-
-        /// <summary>
-        /// Sends to client list of available characters.
-        /// </summary>
-        private void SendCharacterList(ICollection<DbCharacter> characters)
-        {
-            var nonExistingCharacters = new List<Packet>();
-            var existingCharacters = new List<Packet>();
-
-            for (byte i = 0; i < MaxCharacterNumber; i++)
-            {
-                var packet = new Packet(PacketType.CHARACTER_LIST);
-                packet.Write(i);
-                var character = characters.FirstOrDefault(c => c.Slot == i && (!c.IsDelete || c.IsDelete && c.DeleteTime != null && DateTime.UtcNow.Subtract((DateTime)c.DeleteTime) < TimeSpan.FromHours(2)));
-                if (character is null)
-                {
-                    // No char at this slot.
-                    packet.Write(0);
-                    nonExistingCharacters.Add(packet);
-                }
-                else
-                {
-                    _gameWorld.EnsureMap(character);
-                    packet.Write(new CharacterSelectionScreen(character).Serialize());
-                    existingCharacters.Add(packet);
-                }
-            }
-
-            foreach (var p in nonExistingCharacters)
-                _client.SendPacket(p);
-
-            foreach (var p in existingCharacters)
-                _client.SendPacket(p);
-        }
-
-        /// <summary>
-        /// Sends faction to selection screen.
-        /// </summary>
-        private void SendFaction(Fraction faction, Mode maxMode)
-        {
-            using var packet = new Packet(PacketType.ACCOUNT_FACTION);
-            packet.Write((byte)faction);
-            packet.Write((byte)maxMode);
-            _client.SendPacket(packet);
-        }
-
-        /// <summary>
-        /// Sends response to client if character was created or not.
-        /// </summary>
-        private void SendCreatedCharacter(bool isCreated)
-        {
-            using var packet = new Packet(PacketType.CREATE_CHARACTER);
-
-            if (isCreated)
-            {
-                packet.Write(0); // 0 means character was created.
-            }
-            else
-            {
-                // Send nothing.
-            }
-
-
-            _client.SendPacket(packet);
-        }
-
-        /// <summary>
-        /// Selects character and loads it into game world.
-        /// </summary>
-        private async void HandleSelectCharacter(SelectCharacterPacket selectCharacterPacket)
-        {
-            var character = await _gameWorld.LoadPlayer(selectCharacterPacket.CharacterId, _client);
-
-            if (character != null)
-            {
-                _client.CharID = character.Id;
-
-                using var packet = new Packet(PacketType.SELECT_CHARACTER);
-                packet.WriteByte(0); // ok response
-                packet.Write(character.Id);
-                _client.SendPacket(packet);
-
-                character.SendCharacterInfo();
+                return false;
             }
         }
 
 
-        /// <summary>
-        /// Marks character as deleted.
-        /// </summary>
-        private async void HandleDeleteCharacter(DeleteCharacterPacket characterDeletePacket)
+        public async Task<Fraction> GetFaction(int userId)
         {
-            var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == _client.UserID && c.Id == characterDeletePacket.CharacterId);
+            var user = await _database.Users.FindAsync(userId);
+            return user.Faction;
+        }
+
+        public async Task<Mode> GetMaxMode(int userId)
+        {
+            var user = await _database.Users.FindAsync(userId);
+
+            Mode maxMode = Mode.Normal;
+#if EP8_V2
+            maxMode = Mode.Ultimate;
+#else
+            maxMode = user.MaxMode;
+#endif
+            return maxMode;
+        }
+
+        public async Task<bool> TryDeleteCharacter(int userId, int id)
+        {
+            var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == id);
             if (character is null)
-                return;
+                return false;
 
             character.IsDelete = true;
             character.DeleteTime = DateTime.UtcNow;
 
-            await _database.SaveChangesAsync();
-
-            using var packet = new Packet(PacketType.DELETE_CHARACTER);
-            packet.WriteByte(0); // ok response
-            packet.Write(character.Id);
-            _client.SendPacket(packet);
+            var count = await _database.SaveChangesAsync();
+            return count == 1;
         }
 
-        /// <summary>
-        /// Restores dead character.
-        /// </summary>
-        private async void HandleRestoreCharacter(RestoreCharacterPacket restoreCharacterPacket)
+        public async Task<bool> TryRestoreCharacter(int userId, int id)
         {
-            var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == _client.UserID && c.Id == restoreCharacterPacket.CharacterId);
+            var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == id);
             if (character is null)
-                return;
+                return false;
 
             character.IsDelete = false;
             character.DeleteTime = null;
 
-            await _database.SaveChangesAsync();
-
-            using var packet = new Packet(PacketType.RESTORE_CHARACTER);
-            packet.WriteByte(0); // ok response
-            packet.Write(character.Id);
-            _client.SendPacket(packet);
+            var count = await _database.SaveChangesAsync();
+            return count == 1;
         }
 
-        /// <summary>
-        /// Changes the name of a character
-        /// </summary>
-        private async void HandleRenameCharacter(RenameCharacterPacket renameCharacterPacket)
+        public async Task<bool> TryRenameCharacter(int userId, int id, string newName)
         {
-            var (characterId, newName) = renameCharacterPacket;
-
-            var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == _client.UserID && c.Id == characterId);
+            var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == id);
             if (character is null)
-                return;
+                return false;
 
             // Validate the new name
             var nameIsValid = newName.IsValidCharacterName();
@@ -384,24 +217,14 @@ namespace Imgeneus.World.SelectionScreen
             // Check that name isn't in use
             var characterWithNewName = await _database.Characters.FirstOrDefaultAsync(c => c.Name == newName);
 
-            using var packet = new Packet(PacketType.RENAME_CHARACTER);
-
             if (!nameIsValid || characterWithNewName != null)
-            {
-                packet.WriteByte(2); // error response
-                packet.Write(character.Id);
-                _client.SendPacket(packet);
-                return;
-            }
+                return false;
 
             character.Name = newName;
             character.IsRename = false;
 
-            await _database.SaveChangesAsync();
-
-            packet.WriteByte(1); // ok response
-            packet.Write(character.Id);
-            _client.SendPacket(packet);
+            var count = await _database.SaveChangesAsync();
+            return count == 1;
         }
     }
 }

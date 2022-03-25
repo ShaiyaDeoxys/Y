@@ -30,6 +30,7 @@ namespace InterServer.Client
 
             _connection = new HubConnectionBuilder()
                 .WithUrl(_config.Endpoint)
+                .WithAutomaticReconnect()
                 .Build();
 
             _connection.On<SessionResponse>(nameof(OnAesKeyResponse), OnAesKeyResponse);

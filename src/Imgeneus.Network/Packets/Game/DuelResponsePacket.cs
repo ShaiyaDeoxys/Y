@@ -1,14 +1,14 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct DuelResponsePacket : IDeserializedPacket
+    public record DuelResponsePacket : IPacketDeserializer
     {
-        public bool IsDuelApproved;
+        public bool IsDuelApproved { get; private set; }
 
-        public DuelResponsePacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            IsDuelApproved = packet.Read<bool>();
+            IsDuelApproved = packetStream.Read<bool>();
         }
     }
 }

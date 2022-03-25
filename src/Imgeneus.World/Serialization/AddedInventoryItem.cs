@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 using Imgeneus.Network.Serialization;
-using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Inventory;
 
 namespace Imgeneus.World.Serialization
 {
@@ -25,7 +25,7 @@ namespace Imgeneus.World.Serialization
         public ushort Quality { get; }
 
         [FieldOrder(6)]
-        public int UnknownInt { get; }
+        public int Gold { get; }
 
         [FieldOrder(7)]
         public int[] Gems { get; }
@@ -44,12 +44,13 @@ namespace Imgeneus.World.Serialization
 
         public AddedInventoryItem(Item item)
         {
-            Bag = item.Bag;
+            Bag = item.Type == Item.MONEY_ITEM_TYPE ? (byte)1 : item.Bag;
             Slot = item.Slot;
             Type = item.Type;
             TypeId = item.TypeId;
             Count = item.Count;
-            Quality = item.Quality;
+            Quality = item.Quality; // In prev episodes Quality or Gem1.TypeId was used for gold amount. with Bag == 1 and count == 1
+            Gold = item.Gold;
             Gems = new int[] {
                 item.Gem1 is null ? 0 : item.Gem1.TypeId,
                 item.Gem2 is null ? 0 : item.Gem2.TypeId,

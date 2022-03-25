@@ -25,11 +25,6 @@
         /// <summary>
         /// When other, duel is canceled with no reason.
         /// </summary>
-        Other = 4,
-
-        /// <summary>
-        /// Player lost this duel.
-        /// </summary>
-        Lose = 10,
+        Other = 4
     }
 }

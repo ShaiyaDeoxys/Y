@@ -1,17 +1,17 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct QuestEndPacket : IDeserializedPacket
+    public record QuestEndPacket : IPacketDeserializer
     {
-        public int NpcId;
+        public int NpcId { get; private set; }
 
-        public ushort QuestId;
+        public ushort QuestId { get; private set; }
 
-        public QuestEndPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            NpcId = packet.Read<int>();
-            QuestId = packet.Read<ushort>();
+            NpcId = packetStream.Read<int>();
+            QuestId = packetStream.Read<ushort>();
         }
     }
 }

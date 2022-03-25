@@ -1,20 +1,20 @@
-﻿using Imgeneus.Network.Data;
+﻿using Imgeneus.Network.PacketProcessor;
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public struct GMTeleportMapCoordinatesPacket : IDeserializedPacket
+    public record GMTeleportMapCoordinatesPacket : IPacketDeserializer
     {
-        public float X;
+        public float X { get; private set; }
 
-        public float Z;
+        public float Z { get; private set; }
 
-        public ushort MapId;
+        public ushort MapId { get; private set; }
 
-        public GMTeleportMapCoordinatesPacket(IPacketStream packet)
+        public void Deserialize(ImgeneusPacket packetStream)
         {
-            X = packet.Read<float>();
-            Z = packet.Read<float>();
-            MapId = packet.Read<ushort>();
+            X = packetStream.Read<float>();
+            Z = packetStream.Read<float>();
+            MapId = packetStream.Read<ushort>();
         }
 
         public void Deconstruct(out float x, out float z, out ushort mapId)
@@ -23,5 +23,6 @@ namespace Imgeneus.Network.Packets.Game
             z = Z;
             mapId = MapId;
         }
+
     }
 }

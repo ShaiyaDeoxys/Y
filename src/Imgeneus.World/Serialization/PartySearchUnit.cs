@@ -18,8 +18,8 @@ namespace Imgeneus.World.Serialization
 
         public PartySearchUnit(Character character)
         {
-            Level = (byte)character.Level;
-            Job = character.Class;
+            Level = (byte)character.LevelProvider.Level;
+            Job = character.AdditionalInfoManager.Class;
             Name = character.NameAsByteArray;
         }
     }

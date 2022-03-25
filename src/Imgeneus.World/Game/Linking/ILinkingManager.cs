@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Inventory;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Linking
 {
@@ -8,35 +9,20 @@ namespace Imgeneus.World.Game.Linking
     public interface ILinkingManager
     {
         /// <summary>
-        /// Selected item.
-        /// </summary>
-        public Item Item { get; set; }
-
-        /// <summary>
         /// Tries to add gem to item.
         /// </summary>
-        /// <param name="item">item to which we should link gem</param>
-        /// <param name="gem">linking gem</param>
-        /// <param name="hammer">linking hammer, can be null</param>
-        /// <param name="extraRate">extra rate, that doesn't depend on gem or hammer. E.g. guild house blacksmith or bless rate</param>
         /// <returns>true, if gem was successfully linked, otherwise false; also returns slot, where gem was linked</returns>
-        public (bool Success, byte Slot) AddGem(Item item, Item gem, Item hammer, byte extraRate = 0);
+        public (bool Success, byte Slot, Item Gem, Item Item, Item Hammer) AddGem(byte bag, byte slot, byte destinationBag, byte destinationSlot, byte hammerBag, byte hammerSlot);
 
         /// <summary>
         /// Removes gem from item.
         /// </summary>
-        /// <param name="item">item, that contains gem</param>
-        /// <param name="gem">gem, that we need to remove</param>
-        /// <param name="hammer">extracting hammer, can be null</param>
-        /// <param name="extraRate">extra rate, that doesn't depend on gem or hammer. E.g. guild house blacksmith or bless rate</param>
-        /// <returns>true, if gem is not broken</returns>
-        public bool RemoveGem(Item item, Gem gem, Item hammer, byte extraRate = 0);
+        public (bool Success, byte Slot, List<Item> SavedGems, Item Item) RemoveGem(byte bag, byte slot, bool shouldRemoveSpecificGem, byte gemPosition, byte hammerBag, byte hammerSlot);
 
         /// <summary>
         /// Gets success rate based on gem and hammer(if presented).
         /// </summary>
-        /// <param name="extraRate">extra rate, that doesn't depend on gem or hammer. E.g. guild house blacksmith or bless rate</param>
-        public double GetRate(Item gem, Item hammer, byte extraRate = 0);
+        public double GetRate(Item gem, Item hammer);
 
         /// <summary>
         /// Gets success rate of removing gem based on gem and hammer(if presented).
@@ -57,6 +43,11 @@ namespace Imgeneus.World.Game.Linking
         /// <summary>
         /// 3 random stats.
         /// </summary>
-        public void Compose(Item recRune);
+        public (bool Success, Item Item) Compose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot);
+
+        /// <summary>
+        /// ?
+        /// </summary>
+        public (bool Success, Item Item) AbsoluteCompose(byte runeBag, byte runeSlot, byte itemBag, byte itemSlot);
     }
 }

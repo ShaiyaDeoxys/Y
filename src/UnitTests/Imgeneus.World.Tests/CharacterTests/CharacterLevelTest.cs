@@ -1,5 +1,4 @@
 using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Player;
 using System.ComponentModel;
 using Xunit;
 
@@ -13,18 +12,18 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
 
             ushort maxLevel = 80;
 
-            Assert.False(character.TryChangeLevel(0));
-            Assert.NotEqual(0, character.Level);
+            character.LevelingManager.TryChangeLevel(0);
+            Assert.NotEqual(0, character.LevelProvider.Level);
 
-            Assert.False(character.TryChangeLevel((ushort)(maxLevel + 1)));
-            Assert.NotEqual(maxLevel + 1, character.Level);
+            character.LevelingManager.TryChangeLevel((ushort)(maxLevel + 1));
+            Assert.NotEqual(maxLevel + 1, character.LevelProvider.Level);
 
-            Assert.False(character.TryChangeLevel(1000));
-            Assert.NotEqual(1000, character.Level);
+            character.LevelingManager.TryChangeLevel(1000);
+            Assert.NotEqual(1000, character.LevelProvider.Level);
         }
 
         [Fact]
@@ -33,17 +32,17 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.TrySetMode(Mode.Ultimate);
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
 
             ushort maxLevel = 80;
 
-            Assert.True(character.TryChangeLevel(2));
-            Assert.False(character.TryChangeLevel(2));
-            Assert.Equal(2, character.Level);
+            Assert.True(character.LevelingManager.TryChangeLevel(2));
+            Assert.False(character.LevelingManager.TryChangeLevel(2));
+            Assert.Equal(2, character.LevelProvider.Level);
 
-            Assert.True(character.TryChangeLevel(maxLevel));
-            Assert.False(character.TryChangeLevel(maxLevel));
-            Assert.Equal(maxLevel, character.Level);
+            Assert.True(character.LevelingManager.TryChangeLevel(maxLevel));
+            Assert.False(character.LevelingManager.TryChangeLevel(maxLevel));
+            Assert.Equal(maxLevel, character.LevelProvider.Level);
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿using Imgeneus.Network.Server;
-using InterServer.Client;
+﻿using InterServer.Client;
+using System;
 using System.Collections.Generic;
 
 namespace Imgeneus.Login
 {
-    public interface ILoginServer : IServer
+    public interface ILoginServer
     {
         /// <summary>
         /// Gets a list of all connected worlds.
@@ -19,7 +19,7 @@ namespace Imgeneus.Login
         WorldServerInfo GetWorldByID(byte id);
 
         /// <summary>
-        /// Gets a connected client by his username.
+        /// Gets a connected client by his user id.
         /// </summary>
         /// <param name="userID">The user id.</param>
         /// <returns>The connected client.</returns>
@@ -31,5 +31,15 @@ namespace Imgeneus.Login
         /// <param name="userID">The user id.</param>
         /// <returns>True if client is connected.</returns>
         bool IsClientConnected(int userID);
+
+        /// <summary>
+        /// Disconnects client from server.
+        /// </summary>
+        void DisconnectUser(Guid userId);
+
+        /// <summary>
+        /// Start server.
+        /// </summary>
+        void Start();
     }
 }

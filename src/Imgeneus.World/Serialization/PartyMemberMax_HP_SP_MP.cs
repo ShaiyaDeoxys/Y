@@ -21,9 +21,9 @@ namespace Imgeneus.World.Serialization
         public PartyMemberMax_HP_SP_MP(Character partyMember)
         {
             CharacterId = partyMember.Id;
-            MaxHP = partyMember.MaxHP;
-            MaxSP = partyMember.MaxSP;
-            MaxMP = partyMember.MaxMP;
+            MaxHP = partyMember.HealthManager.MaxHP;
+            MaxSP = partyMember.HealthManager.MaxSP;
+            MaxMP = partyMember.HealthManager.MaxMP;
         }
     }
 }
