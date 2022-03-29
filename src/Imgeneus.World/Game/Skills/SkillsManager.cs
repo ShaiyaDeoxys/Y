@@ -292,13 +292,7 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (!_attackManager.IsWeaponAvailable || (!skill.RequiredWeapons.Contains(_attackManager.WeaponType) && skill.RequiredWeapons.Count != 0))
-            {
-                success = AttackSuccess.WrongEquipment;
-                return false;
-            }
-
-            if (skill.NeedShield && !_attackManager.IsShieldAvailable)
+            if (!_attackManager.IsWeaponAvailable || (!skill.RequiredWeapons.Contains(_attackManager.WeaponType) && skill.RequiredWeapons.Count != 0 && skill.NeedShield && !_attackManager.IsShieldAvailable))
             {
                 success = AttackSuccess.WrongEquipment;
                 return false;

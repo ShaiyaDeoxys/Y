@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Player;
 using System.ComponentModel;
 using Xunit;
 
@@ -48,6 +49,24 @@ namespace Imgeneus.World.Tests.ItemTests
             damage = (character2 as IKiller).AttackManager.CalculateDamage(character, TypeAttack.PhysicalAttack, Element.None, 100, 100, 0, 0, null);
             Assert.Equal(130, damage.Damage.HP);
             Assert.Equal(20, damage.Absorb);
+        }
+
+        [Fact]
+        [Description("Speedy Remedy should increase speed.")]
+        public void SpeedPotionTest()
+        {
+            var character = CreateCharacter();
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.MoveItem(1, 0, 0, 5);
+
+            Assert.Equal(MoveSpeed.Normal, character.SpeedManager.TotalMoveSpeed);
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
+
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, SpeedyRemedy.Type, SpeedyRemedy.TypeId));
+            character.InventoryManager.TryUseItem(1, 0);
+
+            Assert.Equal(MoveSpeed.Fast, character.SpeedManager.TotalMoveSpeed);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
         }
     }
 }

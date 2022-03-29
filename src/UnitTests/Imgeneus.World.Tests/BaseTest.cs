@@ -300,7 +300,8 @@ namespace Imgeneus.World.Tests
                     { (418, 11), BlastAbsorbRedemySkill },
                     { (655, 1), Untouchable },
                     { (724, 1), BullsEye },
-                    { (63, 1), Stealth }
+                    { (63, 1), Stealth },
+                    { (249, 1), SpeedRemedy_Lvl1 }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -325,7 +326,8 @@ namespace Imgeneus.World.Tests
                     { (101, 71), Item_AbsorbRemedy },
                     { (30, 240), Gem_Absorption_Level_4 },
                     { (30, 241), Gem_Absorption_Level_5 },
-                    { (43, 3), Etin_100 }
+                    { (43, 3), Etin_100 },
+                    { (100, 107), SpeedyRemedy }
                 });
 
             databasePreloader
@@ -643,6 +645,22 @@ namespace Imgeneus.World.Tests
             TargetType = TargetType.Caster
         };
 
+        protected DbSkill SpeedRemedy_Lvl1 = new DbSkill()
+        {
+            SkillId = 249,
+            SkillLevel = 1,
+            SkillName = "Speedy Remedy",
+            SuccessValue = 100,
+            TypeDetail = TypeDetail.Buff,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            TargetType = TargetType.Caster,
+            AbilityType1 = AbilityType.MoveSpeed,
+            AbilityValue1 = 1,
+            NeedWeapon1 = 1,
+            NeedWeapon2 = 1,
+            NeedShield = 1
+        };
+
         #endregion
 
         #region Items
@@ -832,6 +850,16 @@ namespace Imgeneus.World.Tests
             TypeId = 71,
             Range = 418,
             AttackTime = 11,
+            Country = ItemClassType.AllFactions
+        };
+
+        protected DbItem SpeedyRemedy = new DbItem()
+        {
+            Type = 100,
+            TypeId = 107,
+            Special = SpecialEffect.None,
+            Range = 249,
+            AttackTime = 1,
             Country = ItemClassType.AllFactions
         };
 
