@@ -1,8 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.NPCs;
-using Imgeneus.World.Game.Player;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,7 +11,7 @@ namespace Imgeneus.World.Game.Monster
     {
         private Random _dropRandom = new Random();
 
-        protected override IList<Item> GenerateDrop(IKiller killer)
+        public override IList<Item> GenerateDrop(IKiller killer)
         {
             if (killer is Npc)
                 return new List<Item>();
@@ -24,7 +22,7 @@ namespace Imgeneus.World.Game.Monster
             {
                 if (!_databasePreloader.MobItems.ContainsKey((MobId, i)))
                 {
-                    _logger.LogWarning($"Mob {MobId} doesn't contain drop. Is it expected?");
+                    _logger.LogWarning("Mob {id} doesn't contain drop. Is it expected?", MobId);
                     continue;
                 }
 
@@ -57,7 +55,7 @@ namespace Imgeneus.World.Game.Monster
             {
                 if (!_databasePreloader.ItemsByGrade.ContainsKey(dropItem.Grade))
                 {
-                    _logger.LogWarning($"Mob {MobId} has unknown grade {dropItem.Grade}.");
+                    _logger.LogWarning("Mob {id} has unknown grade {grade}.", MobId, dropItem.Grade);
                     return null;
                 }
                 var availableItems = _databasePreloader.ItemsByGrade[dropItem.Grade];

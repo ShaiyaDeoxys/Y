@@ -375,23 +375,6 @@ namespace Imgeneus.World.Game.Health
                     var killer = MaxDamageMaker;
                     OnDead?.Invoke(_ownerId, killer);
                     DamageMakers.Clear();
-
-                    // Generate drop.
-                    /*var dropItems = GenerateDrop(killer);
-                    if (dropItems.Count > 0 && killer is Character)
-                    {
-                        var dropOwner = killer as Character;
-                        if (dropOwner.PartyManager.Party is null)
-                        {
-                            AddItemsDropOnMap(dropItems, dropOwner);
-                        }
-                        else
-                        {
-                            var notDistributedItems = dropOwner.PartyManager.Party.DistributeDrop(dropItems, dropOwner);
-                            AddItemsDropOnMap(notDistributedItems, dropOwner);
-
-                        }
-                    }*/
                 }
             }
         }

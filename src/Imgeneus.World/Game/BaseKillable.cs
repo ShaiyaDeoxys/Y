@@ -6,7 +6,6 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
-using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
@@ -74,25 +73,12 @@ namespace Imgeneus.World.Game
 
         #endregion
 
-        #region Death
-
-        /// <summary>
-        /// Add items on map.
-        /// </summary>
-        private void AddItemsDropOnMap(IList<Item> dropItems, Character owner)
-        {
-            byte i = 0;
-            foreach (var itm in dropItems)
-            {
-                MapProvider.Map.AddItem(new MapItem(itm, owner, PosX + i, PosY, PosZ));
-                i++;
-            }
-        }
+        #region Drop
 
         /// <summary>
         /// Generates drop for killer.
         /// </summary>
-        protected abstract IList<Item> GenerateDrop(IKiller killer);
+        public abstract IList<Item> GenerateDrop(IKiller killer);
 
         #endregion
 

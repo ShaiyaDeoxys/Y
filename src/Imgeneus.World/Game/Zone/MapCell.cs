@@ -1,6 +1,5 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
-using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
@@ -14,7 +13,6 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
-using Imgeneus.World.Packets;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -257,7 +255,7 @@ namespace Imgeneus.World.Game.Zone
         {
             // Send other clients notification, that user is moving.
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendCharacterMoves(player.GameSession.Client, senderId, x, y, z ,a, motion);
+                Map.PacketFactory.SendCharacterMoves(player.GameSession.Client, senderId, x, y, z, a, motion);
         }
 
         /// <summary>
@@ -343,6 +341,14 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendCharacterKilled(player.GameSession.Client, senderId, killer);
+
+            if (killer is Character killerCharacter)
+            {
+                var killed = Players[senderId];
+                var items = killed.GenerateDrop(killerCharacter);
+                foreach (var item in items)
+                    Map.AddItem(new MapItem(item, killerCharacter, killed.PosX, 0, killed.PosZ));
+            }
         }
 
         /// <summary>
@@ -591,6 +597,19 @@ namespace Imgeneus.World.Game.Zone
             {
                 killerCharacter.LevelingManager.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
                 killerCharacter.QuestsManager.UpdateQuestMobCount(mob.MobId);
+
+                var items = mob.GenerateDrop(killerCharacter);
+                if (killerCharacter.PartyManager.Party is null)
+                {
+                    foreach (var item in items)
+                        Map.AddItem(new MapItem(item, killerCharacter, mob.PosX, 0, mob.PosZ));
+                }
+                else
+                {
+                    var notDistributedItems = killerCharacter.PartyManager.Party.DistributeDrop(items, killerCharacter);
+                    foreach (var item in notDistributedItems)
+                        Map.AddItem(new MapItem(item, killerCharacter, mob.PosX, 0, mob.PosZ));
+                }                  
             }
 
             if (Map is GRBMap)
