@@ -216,6 +216,11 @@
         RAID_REMOVED_BUFF = 0x0C10, // 3088
         RAID_MEMBER_GET_ITEM = 0x0C14, // 3092
 
+        // Summon
+        PARTY_CALL_CASTING = 0x0221, // 545
+        PARTY_CALL_REQUEST = 0x0223, // 547
+        PARTY_CALL_ANSWER = 0x0224, // 548
+
         // Chat
         CHAT_NORMAL_ADMIN = 0xF101, // 61697, -3837
         CHAT_WHISPER_ADMIN = 0xF102, // 61698, -3838

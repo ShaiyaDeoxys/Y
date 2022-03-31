@@ -125,7 +125,7 @@ namespace Imgeneus.World.Game.Dyeing
             {
                 item.DyeColor = color;
 
-                await _inventoryManager.TryUseItem(dyeItem.Bag, dyeItem.Slot);
+                await _inventoryManager.TryUseItem(dyeItem.Bag, dyeItem.Slot, skillApplyingItemEffect: true);
 
                 return (success, color);
             }

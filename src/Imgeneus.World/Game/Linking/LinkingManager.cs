@@ -77,11 +77,11 @@ namespace Imgeneus.World.Game.Linking
             {
                 saveItem = _inventoryManager.InventoryItems.Select(itm => itm.Value).FirstOrDefault(itm => itm.Special == SpecialEffect.LuckyCharm);
                 if (saveItem != null)
-                    _inventoryManager.TryUseItem(saveItem.Bag, saveItem.Slot);
+                    _inventoryManager.TryUseItem(saveItem.Bag, saveItem.Slot, skillApplyingItemEffect: true);
             }
 
             if (hammer != null)
-                _inventoryManager.TryUseItem(hammer.Bag, hammer.Slot);
+                _inventoryManager.TryUseItem(hammer.Bag, hammer.Slot, skillApplyingItemEffect: true);
 
             _inventoryManager.Gold = (uint)(_inventoryManager.Gold - linkingGold);
 
@@ -251,7 +251,7 @@ namespace Imgeneus.World.Game.Linking
 
                 _inventoryManager.InventoryItems.TryGetValue((hammerBag, hammerSlot), out var hammer);
                 if (hammer != null)
-                    _inventoryManager.TryUseItem(hammer.Bag, hammer.Slot);
+                    _inventoryManager.TryUseItem(hammer.Bag, hammer.Slot, skillApplyingItemEffect: true);
 
                 success = RemoveGem(item, gem, hammer);
                 spentGold += GetRemoveGold(gem);
@@ -688,7 +688,7 @@ namespace Imgeneus.World.Game.Linking
                 _statsManager.RaiseAdditionalStatsUpdate();
             }
 
-            _inventoryManager.TryUseItem(rune.Bag, rune.Slot);
+            _inventoryManager.TryUseItem(rune.Bag, rune.Slot, skillApplyingItemEffect: true);
 
             return (true, item);
         }

@@ -325,6 +325,14 @@ namespace Imgeneus.World.Packets
         void SendCharacterRebirth(IWorldClient client, int senderId);
         #endregion
 
+        #region Summon
+
+        void SendPartycallCasting(IWorldClient client, int senderId);
+        void SendPartycallRequest(IWorldClient client, int senderId);
+        void SendSummonAnswer(IWorldClient client, int senderId, bool ok);
+
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

@@ -214,6 +214,7 @@ namespace Imgeneus.World.Game.Zone
             character.LevelingManager.OnLevelUp += Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting += Character_OnTeleport;
+            character.PartyManager.OnSummonning += Character_OnSummon;
         }
 
         /// <summary>
@@ -244,6 +245,7 @@ namespace Imgeneus.World.Game.Zone
             character.LevelingManager.OnLevelUp -= Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting -= Character_OnTeleport;
+            character.PartyManager.OnSummonning -= Character_OnSummon;
         }
 
         #region Character listeners
@@ -465,6 +467,12 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendCharacterTeleport(p.GameSession.Client, senderId, mapId, x, y, z, teleportedByAdmin);
+        }
+
+        private void Character_OnSummon(int senderId)
+        {
+            foreach (var p in GetAllPlayers(true))
+                Map.PacketFactory.SendPartycallCasting(p.GameSession.Client, senderId);
         }
 
         #endregion

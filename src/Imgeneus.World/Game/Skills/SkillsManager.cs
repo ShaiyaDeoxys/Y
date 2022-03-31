@@ -213,7 +213,7 @@ namespace Imgeneus.World.Game.Skills
 
         public event Action OnResetSkills;
 
-        public void ResetSkills()
+        public bool ResetSkills()
         {
             var skillFactor = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow).SkillPoint;
 
@@ -225,6 +225,8 @@ namespace Imgeneus.World.Game.Skills
                 passive.CancelBuff();
 
             Skills.Clear();
+
+            return true;
         }
 
         #endregion

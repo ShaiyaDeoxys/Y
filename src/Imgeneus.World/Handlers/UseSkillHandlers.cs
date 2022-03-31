@@ -1,13 +1,10 @@
-﻿using Imgeneus.Database.Preload;
-using Imgeneus.Network.Packets;
+﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
-using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
@@ -18,19 +15,13 @@ namespace Imgeneus.World.Handlers
     public class UseSkillHandlers : BaseHandler
     {
         private readonly IGameWorld _gameWorld;
-        private readonly IDatabasePreloader _databasePreloader;
-        private readonly IStealthManager _stealthManager;
-        private readonly IBuffsManager _buffsManager;
         private readonly ISkillsManager _skillsManager;
         private readonly IAttackManager _attackManager;
         private readonly IMapProvider _mapProvider;
 
-        public UseSkillHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IDatabasePreloader databasePreloader, IStealthManager stealthManager, IBuffsManager buffsManager, ISkillsManager skillsManager, IAttackManager attackManager, IMapProvider mapProvider) : base(packetFactory, gameSession)
+        public UseSkillHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, ISkillsManager skillsManager, IAttackManager attackManager, IMapProvider mapProvider) : base(packetFactory, gameSession)
         {
             _gameWorld = gameWorld;
-            _databasePreloader = databasePreloader;
-            _stealthManager = stealthManager;
-            _buffsManager = buffsManager;
             _skillsManager = skillsManager;
             _attackManager = attackManager;
             _mapProvider = mapProvider;

@@ -293,6 +293,12 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         #endregion
 
+        #region Summon
+
+        public SummonRequest SummonRequest { get; set; }
+
+        #endregion
+
         #region Absctracts
 
         public abstract bool EnterParty(Character player);

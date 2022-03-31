@@ -1,10 +1,11 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
 using System;
 
 namespace Imgeneus.World.Game.PartyAndRaid
 {
-    public interface IPartyManager : ISessionedService
+    public interface IPartyManager : ISessionedService, IDisposable
     {
         void Init(int ownerId);
 
@@ -42,5 +43,30 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// Event, that is fired, when player enters, leaves party or gets party leader.
         /// </summary>
         event Action<Character> OnPartyChanged;
+
+        /// <summary>
+        /// Sends summon request to party members.
+        /// </summary>
+        void SummonMembers(bool skeepTimer = false, Item summonItem = null);
+
+        /// <summary>
+        /// Event, that is fired, when summoning is started.
+        /// </summary>
+        event Action<int> OnSummonning;
+
+        /// <summary>
+        /// Event, that is fired, when summoning is finished.
+        /// </summary>
+        event Action<int> OnSummoned;
+
+        /// <summary>
+        /// Summoning is progress?
+        /// </summary>
+        bool IsSummoning { get; set; }
+
+        /// <summary>
+        /// Sets summon answer of this party member;
+        /// </summary>
+        void SetSummonAnswer(bool isOk);
     }
 }

@@ -88,5 +88,10 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <param name="player">player, that got item</param>
         /// <param name="item">new item, that player got</param>
         public void MemberGetItem(Character player, Item item);
+
+        /// <summary>
+        /// Request, that is sent to all party members, when 1 member summons them.
+        /// </summary>
+        public SummonRequest SummonRequest { get; set; }
     }
 }

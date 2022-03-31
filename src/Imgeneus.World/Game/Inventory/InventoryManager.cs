@@ -13,7 +13,6 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player.Config;
-using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -74,6 +73,7 @@ namespace Imgeneus.World.Game.Inventory
             _partyManager = partyManager;
             _teleportationManager = teleportationManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
+            _partyManager.OnSummoned += PartyManager_OnSummoned;
 
 #if DEBUG
             _logger.LogDebug("InventoryManager {hashcode} created", GetHashCode());
@@ -233,6 +233,7 @@ namespace Imgeneus.World.Game.Inventory
         public void Dispose()
         {
             _speedManager.OnPassiveModificatorChanged -= SpeedManager_OnPassiveModificatorChanged;
+            _partyManager.OnSummoned -= PartyManager_OnSummoned;
         }
 
         #endregion
@@ -953,7 +954,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public event Action<int, Item> OnUsedItem;
 
-        public async Task<bool> TryUseItem(byte bag, byte slot, int? targetId = null)
+        public async Task<bool> TryUseItem(byte bag, byte slot, int? targetId = null, bool skillApplyingItemEffect = false)
         {
             InventoryItems.TryGetValue((bag, slot), out var item);
             if (item is null)
@@ -975,17 +976,24 @@ namespace Imgeneus.World.Game.Inventory
                 }
             }
 
-            item.Count--;
-            _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
-            await ApplyItemEffect(item, targetId);
-            OnUsedItem?.Invoke(_ownerId, item);
+            bool ok;
+            if (skillApplyingItemEffect)
+                ok = true;
+            else
+                ok = await ApplyItemEffect(item, targetId);
 
-            if (item.Count == 0)
+            if (ok)
             {
-                InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
+                item.Count--;
+                _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
+
+                OnUsedItem?.Invoke(_ownerId, item);
+
+                if (item.Count == 0)
+                    InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
             }
 
-            return true;
+            return ok;
         }
 
         public bool CanUseItem(Item item)
@@ -1106,13 +1114,18 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Adds the effect of the item to the character.
         /// </summary>
-        private async Task ApplyItemEffect(Item item, int? targetId = null)
+        private async Task<bool> ApplyItemEffect(Item item, int? targetId = null)
         {
+            var ok = false;
+
             switch (item.Special)
             {
                 case SpecialEffect.None:
                     if (item.HP > 0 || item.MP > 0 || item.SP > 0)
+                    {
                         UseHealingPotion(item);
+                        ok = true;
+                    }
 
                     if (item.SkillId != 0)
                     {
@@ -1120,122 +1133,110 @@ namespace Imgeneus.World.Game.Inventory
                         var me = _gameWorld.Players[_ownerId];
 
                         if (_skillsManager.CanUseSkill(skill, me, out var s))
+                        {
                             _skillsManager.UseSkill(skill, me);
+                            ok = true;
+                        }
                     }
 
                     break;
 
                 case SpecialEffect.PercentHealingPotion:
-                    UsePercentHealingPotion(item);
+                    ok = UsePercentHealingPotion(item);
                     break;
 
                 case SpecialEffect.HypnosisCure:
-                    UseCureDebuffPotion(StateType.Sleep);
+                    ok = UseCureDebuffPotion(StateType.Sleep);
                     break;
 
                 case SpecialEffect.StunCure:
-                    UseCureDebuffPotion(StateType.Stun);
+                    ok = UseCureDebuffPotion(StateType.Stun);
                     break;
 
                 case SpecialEffect.SilenceCure:
-                    UseCureDebuffPotion(StateType.Silence);
+                    ok = UseCureDebuffPotion(StateType.Silence);
                     break;
 
                 case SpecialEffect.DarknessCure:
-                    UseCureDebuffPotion(StateType.Darkness);
+                    ok = UseCureDebuffPotion(StateType.Darkness);
                     break;
 
                 case SpecialEffect.StopCure:
-                    UseCureDebuffPotion(StateType.Immobilize);
+                    ok = UseCureDebuffPotion(StateType.Immobilize);
                     break;
 
                 case SpecialEffect.SlowCure:
-                    UseCureDebuffPotion(StateType.Slow);
+                    ok = UseCureDebuffPotion(StateType.Slow);
                     break;
 
                 case SpecialEffect.VenomCure:
-                    UseCureDebuffPotion(StateType.HPDamageOverTime);
+                    ok = UseCureDebuffPotion(StateType.HPDamageOverTime);
                     break;
 
                 case SpecialEffect.DiseaseCure:
-                    UseCureDebuffPotion(StateType.SPDamageOverTime);
-                    UseCureDebuffPotion(StateType.MPDamageOverTime);
+                    ok = UseCureDebuffPotion(StateType.SPDamageOverTime) &&
+                         UseCureDebuffPotion(StateType.MPDamageOverTime);
                     break;
 
                 case SpecialEffect.IllnessDelusionCure:
-                    UseCureDebuffPotion(StateType.HPDamageOverTime);
-                    UseCureDebuffPotion(StateType.SPDamageOverTime);
-                    UseCureDebuffPotion(StateType.MPDamageOverTime);
+                    ok = UseCureDebuffPotion(StateType.HPDamageOverTime) &&
+                         UseCureDebuffPotion(StateType.SPDamageOverTime) &&
+                         UseCureDebuffPotion(StateType.MPDamageOverTime);
                     break;
 
                 case SpecialEffect.SleepStunStopSlowCure:
-                    UseCureDebuffPotion(StateType.Sleep);
-                    UseCureDebuffPotion(StateType.Stun);
-                    UseCureDebuffPotion(StateType.Immobilize);
-                    UseCureDebuffPotion(StateType.Slow);
+                    ok = UseCureDebuffPotion(StateType.Sleep) &&
+                         UseCureDebuffPotion(StateType.Stun) &&
+                         UseCureDebuffPotion(StateType.Immobilize) &&
+                         UseCureDebuffPotion(StateType.Slow);
                     break;
 
                 case SpecialEffect.SilenceDarknessCure:
-                    UseCureDebuffPotion(StateType.Silence);
-                    UseCureDebuffPotion(StateType.Darkness);
+                    ok = UseCureDebuffPotion(StateType.Silence) &&
+                         UseCureDebuffPotion(StateType.Darkness);
                     break;
 
                 case SpecialEffect.DullBadLuckCure:
-                    UseCureDebuffPotion(StateType.DexDecrease);
-                    UseCureDebuffPotion(StateType.Misfortunate);
+                    ok = UseCureDebuffPotion(StateType.DexDecrease) &&
+                         UseCureDebuffPotion(StateType.Misfortunate);
                     break;
 
                 case SpecialEffect.DoomFearCure:
-                    UseCureDebuffPotion(StateType.MentalSmasher);
-                    UseCureDebuffPotion(StateType.LowerAttackOrDefence);
+                    ok = UseCureDebuffPotion(StateType.MentalSmasher) &&
+                         UseCureDebuffPotion(StateType.LowerAttackOrDefence);
                     break;
 
                 case SpecialEffect.FullCure:
-                    UseCureDebuffPotion(StateType.Sleep);
-                    UseCureDebuffPotion(StateType.Stun);
-                    UseCureDebuffPotion(StateType.Silence);
-                    UseCureDebuffPotion(StateType.Darkness);
-                    UseCureDebuffPotion(StateType.Immobilize);
-                    UseCureDebuffPotion(StateType.Slow);
-                    UseCureDebuffPotion(StateType.HPDamageOverTime);
-                    UseCureDebuffPotion(StateType.SPDamageOverTime);
-                    UseCureDebuffPotion(StateType.MPDamageOverTime);
-                    UseCureDebuffPotion(StateType.DexDecrease);
-                    UseCureDebuffPotion(StateType.Misfortunate);
-                    UseCureDebuffPotion(StateType.MentalSmasher);
-                    UseCureDebuffPotion(StateType.LowerAttackOrDefence);
+                    ok = UseCureDebuffPotion(StateType.Sleep) &&
+                         UseCureDebuffPotion(StateType.Stun) &&
+                         UseCureDebuffPotion(StateType.Silence) &&
+                         UseCureDebuffPotion(StateType.Darkness) &&
+                         UseCureDebuffPotion(StateType.Immobilize) &&
+                         UseCureDebuffPotion(StateType.Slow) &&
+                         UseCureDebuffPotion(StateType.HPDamageOverTime) &&
+                         UseCureDebuffPotion(StateType.SPDamageOverTime) &&
+                         UseCureDebuffPotion(StateType.MPDamageOverTime) &&
+                         UseCureDebuffPotion(StateType.DexDecrease) &&
+                         UseCureDebuffPotion(StateType.Misfortunate) &&
+                         UseCureDebuffPotion(StateType.MentalSmasher) &&
+                         UseCureDebuffPotion(StateType.LowerAttackOrDefence);
                     break;
 
                 case SpecialEffect.DisorderCure:
                     // ?
+                    ok = false;
                     break;
 
                 case SpecialEffect.StatResetStone:
-                    TryResetStats();
+                    ok = TryResetStats();
                     break;
 
                 case SpecialEffect.GoddessBlessing:
-                    UseBlessItem();
-                    break;
-
-                case SpecialEffect.AppearanceChange:
-                case SpecialEffect.SexChange:
-                    // Used in ChangeAppearance call.
-                    break;
-
-                case SpecialEffect.LinkingHammer:
-                case SpecialEffect.PerfectLinkingHammer:
-                case SpecialEffect.RecreationRune:
-                case SpecialEffect.AbsoluteRecreationRune:
-                    // Effect is added in linking manager.
-                    break;
-
-                case SpecialEffect.Dye:
-                    // Effect is handled in dyeing manager.
+                    ok = UseBlessItem();
                     break;
 
                 case SpecialEffect.NameChange:
-                    await UseNameChangeStone();
+                    ok = await UseNameChangeStone();
                     break;
 
                 case SpecialEffect.AnotherItemGenerator:
@@ -1243,18 +1244,27 @@ namespace Imgeneus.World.Game.Inventory
                     break;
 
                 case SpecialEffect.SkillResetStone:
-                    _skillsManager.ResetSkills();
+                    ok = _skillsManager.ResetSkills();
                     break;
 
                 case SpecialEffect.MovementRune:
                     if (_gameWorld.Players.TryGetValue((int)targetId, out var target))
+                    {
                         _teleportationManager.Teleport(target.Map.Id, target.PosX, target.PosY, target.PosZ);
+                        ok = true;
+                    }
+                    break;
+
+                case SpecialEffect.PartySummon:
+                    _partyManager.SummonMembers(summonItem: item);
                     break;
 
                 default:
                     _logger.LogError($"Uninplemented item effect {item.Special}.");
                     break;
             }
+
+            return ok;
         }
 
         /// <summary>
@@ -1268,52 +1278,56 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Cures character from some debuff.
         /// </summary>
-        private void UseCureDebuffPotion(StateType debuffType)
+        private bool UseCureDebuffPotion(StateType debuffType)
         {
             var debuffs = _buffsManager.ActiveBuffs.Where(b => b.StateType == debuffType).ToList();
             foreach (var d in debuffs)
-            {
                 d.CancelBuff();
-            }
+
+            return true;
         }
 
         /// <summary>
         /// Uses potion, that restores % of hp,sp,mp.
         /// </summary>
-        private void UsePercentHealingPotion(Item potion)
+        private bool UsePercentHealingPotion(Item potion)
         {
             var hp = Convert.ToInt32(_healthManager.MaxHP * potion.HP / 100);
             var mp = Convert.ToInt32(_healthManager.MaxMP * potion.MP / 100);
             var sp = Convert.ToInt32(_healthManager.MaxSP * potion.SP / 100);
 
             _healthManager.Recover(hp, mp, sp);
+            return true;
         }
 
         /// <summary>
         /// Initiates name change process
         /// </summary>
-        public async Task UseNameChangeStone()
+        public async Task<bool> UseNameChangeStone()
         {
             var character = await _database.Characters.FindAsync(_ownerId);
             if (character is null)
             {
                 _logger.LogError("Character {id} is not found", _ownerId);
-                return;
+                return false;
             }
 
             character.IsRename = true;
-            await _database.SaveChangesAsync();
+            var count = await _database.SaveChangesAsync();
+            return count > 0;
         }
 
         /// <summary>
         /// GM item ,that increases bless amount of player's fraction.
         /// </summary>
-        private void UseBlessItem()
+        private bool UseBlessItem()
         {
             if (_countryProvider.Country == CountryType.Light)
                 Bless.Instance.LightAmount += 500;
             else
                 Bless.Instance.DarkAmount += 500;
+
+            return true;
         }
 
         public bool TryResetStats()
@@ -1335,6 +1349,21 @@ namespace Imgeneus.World.Game.Inventory
 
             _statsManager.RaiseResetStats();
             return ok;
+        }
+
+        private void PartyManager_OnSummoned(int senderId)
+        {
+            if (_ownerId != senderId || _partyManager.Party.SummonRequest.SummonItem is null)
+                return;
+
+            var item = _partyManager.Party.SummonRequest.SummonItem;
+            item.Count--;
+            _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
+
+            OnUsedItem?.Invoke(_ownerId, item);
+
+            if (item.Count == 0)
+                InventoryItems.TryRemove((item.Bag, item.Slot), out var _);
         }
 
         #endregion

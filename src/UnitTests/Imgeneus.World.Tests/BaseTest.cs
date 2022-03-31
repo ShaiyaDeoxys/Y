@@ -114,7 +114,7 @@ namespace Imgeneus.World.Tests
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
 
-            var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, gameWorldMock.Object, mapProvider);
+            var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, packetFactoryMock.Object, gameWorldMock.Object, mapProvider, healthManager);
             partyManager.Init(_characterId);
 
             var levelingManager = new LevelingManager(new Mock<ILogger<LevelingManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, statsManager, skillsManager, healthManager, config.Object, databasePreloader.Object, partyManager, mapProvider, movementManager);
@@ -327,7 +327,8 @@ namespace Imgeneus.World.Tests
                     { (30, 240), Gem_Absorption_Level_4 },
                     { (30, 241), Gem_Absorption_Level_5 },
                     { (43, 3), Etin_100 },
-                    { (100, 107), SpeedyRemedy }
+                    { (100, 107), SpeedyRemedy },
+                    { (100, 45), PartySummonRune }
                 });
 
             databasePreloader
@@ -868,6 +869,13 @@ namespace Imgeneus.World.Tests
             Type = 43,
             TypeId = 3,
             Special = SpecialEffect.Etin_100
+        };
+
+        protected DbItem PartySummonRune = new DbItem()
+        {
+            Type = 100,
+            TypeId = 45,
+            Special = SpecialEffect.PartySummon
         };
 
         #endregion
