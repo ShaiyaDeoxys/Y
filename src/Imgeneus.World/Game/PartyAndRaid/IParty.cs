@@ -16,9 +16,14 @@ namespace Imgeneus.World.Game.PartyAndRaid
         public Guid Id { get; }
 
         /// <summary>
-        /// Party members.
+        /// All party members.
         /// </summary>
         public IList<Character> Members { get; }
+
+        /// <summary>
+        /// Short list is in raid, when party is made of 5 members.
+        /// </summary>
+        public IList<Character> GetShortMembersList(Character member);
 
         /// <summary>
         /// Event, that is fired, as soon as member enters party.

@@ -117,9 +117,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
             AllMembersLeft?.Invoke();
         }
 
-        /// <summary>
-        /// Party members.
-        /// </summary>
         public IList<Character> Members
         {
             get
@@ -127,6 +124,8 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 return new ReadOnlyCollection<Character>(_members);
             }
         }
+
+        public abstract IList<Character> GetShortMembersList(Character member);
 
         /// <summary>
         /// Subscribes to hp, mp, sp changes.

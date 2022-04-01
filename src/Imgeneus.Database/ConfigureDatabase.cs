@@ -10,7 +10,12 @@ namespace Imgeneus.Database
     {
         public static DbContextOptionsBuilder ConfigureCorrectDatabase(this DbContextOptionsBuilder optionsBuilder, DatabaseConfiguration configuration)
         {
-            optionsBuilder.UseMySql(configuration.ToString(), new MySqlServerVersion(new Version(8, 0, 22)));
+            optionsBuilder.UseMySql(
+                configuration.ToString(),
+                new MySqlServerVersion(new Version(8, 0, 22)),
+                builder => {
+                    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(5), null);
+                });
             return optionsBuilder;
         }
 

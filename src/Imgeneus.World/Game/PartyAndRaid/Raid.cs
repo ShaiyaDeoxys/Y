@@ -1,10 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Network.PacketProcessor;
-using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Packets;
-using Imgeneus.World.Serialization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,6 +19,26 @@ namespace Imgeneus.World.Game.PartyAndRaid
         private readonly ConcurrentDictionary<int, Character> _indexesDict = new ConcurrentDictionary<int, Character>();
 
         protected override IList<Character> _members { get => _membersDict.Keys.ToList(); set => throw new NotImplementedException(); }
+
+        public override IList<Character> GetShortMembersList(Character character)
+        {
+            var result = new List<Character>();
+
+            if (!_membersDict.ContainsKey(character))
+                return result;
+
+            var index = _membersDict[character];
+            var normalizedIndex = index % 5;
+
+            var startIndex = index - normalizedIndex;
+            var endIndex = startIndex + 5;
+
+            for (var i = startIndex; i < endIndex; i++)
+                if (_indexesDict.ContainsKey(i))
+                    result.Add(_indexesDict[i]);
+
+            return result;
+        }
 
         public Raid(bool autoJoin, RaidDropType dropType, IGamePacketFactory packetFactory) : base(packetFactory)
         {

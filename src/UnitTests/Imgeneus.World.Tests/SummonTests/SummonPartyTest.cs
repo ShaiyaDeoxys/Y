@@ -138,5 +138,30 @@ namespace Imgeneus.World.Tests.SummonTests
             character3.PartyManager.SetSummonAnswer(false);
             Assert.Null(character1.PartyManager.Party.SummonRequest);
         }
+
+        [Fact]
+        [Description("Summonraid should summon only 5 raid members.")]
+        public void SummonRaid()
+        {
+            var map = testMap;
+            var character1 = CreateCharacter(map);
+            var character2 = CreateCharacter(map);
+            var character3 = CreateCharacter(map);
+
+            var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);
+            character1.PartyManager.Party = raid;
+            character2.PartyManager.Party = raid;
+            character3.PartyManager.Party = raid;
+
+            Assert.Equal(2, raid.GetIndex(character3));
+
+            raid.MoveCharacter(2, 5); // Move to the second group
+            Assert.Equal(5, raid.GetIndex(character3));
+
+            character1.PartyManager.SummonMembers(true);
+            Assert.Single(character1.PartyManager.Party.SummonRequest.MemberAnswers);
+            Assert.Null(character1.PartyManager.Party.SummonRequest.MemberAnswers[character2.Id]);
+            Assert.False(character1.PartyManager.Party.SummonRequest.MemberAnswers.ContainsKey(character3.Id));
+        }
     }
 }

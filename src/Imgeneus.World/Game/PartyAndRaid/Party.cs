@@ -18,6 +18,8 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         protected override IList<Character> _members { get; set; } = new List<Character>();
 
+        public override IList<Character> GetShortMembersList(Character character) => _members;
+
         private object _syncObject = new object();
 
         /// <summary>

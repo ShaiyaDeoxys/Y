@@ -154,7 +154,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             if (HasParty && IsSummoning)
             {
 
-                foreach (var member in Party.Members.Where(x => x.Id != _ownerId))
+                foreach (var member in Party.GetShortMembersList(_gameWorld.Players[_ownerId]).Where(x => x.Id != _ownerId))
                 {
                     Party.SummonRequest.MemberAnswers[member.Id] = null;
                     _packetFactory.SendPartycallRequest(member.GameSession.Client, Party.SummonRequest.OwnerId);
