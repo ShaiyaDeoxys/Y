@@ -28,10 +28,10 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 return result;
 
             var index = _membersDict[character];
-            var normalizedIndex = index % 5;
+            var normalizedIndex = index % 6;
 
             var startIndex = index - normalizedIndex;
-            var endIndex = startIndex + 5;
+            var endIndex = startIndex + 6;
 
             for (var i = startIndex; i < endIndex; i++)
                 if (_indexesDict.ContainsKey(i))
