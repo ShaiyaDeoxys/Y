@@ -155,8 +155,8 @@ namespace Imgeneus.World.Tests.SummonTests
 
             Assert.Equal(2, raid.GetIndex(character3));
 
-            raid.MoveCharacter(2, 5); // Move to the second group
-            Assert.Equal(5, raid.GetIndex(character3));
+            raid.MoveCharacter(2, 6); // Move to the second group
+            Assert.Equal(6, raid.GetIndex(character3));
 
             character1.PartyManager.SummonMembers(true);
             Assert.Single(character1.PartyManager.Party.SummonRequest.MemberAnswers);
