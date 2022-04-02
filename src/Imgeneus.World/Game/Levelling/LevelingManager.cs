@@ -134,9 +134,6 @@ namespace Imgeneus.World.Game.Levelling
         {
             // TODO: Multiply exp by global exp multiplier
 
-            if (ExpGainRate > 0)
-                exp = exp * ExpGainRate / 100;
-
             // Round exp to nearest multiple of 10
             exp = MathExtensions.RoundToTenMultiple(exp);
 
@@ -238,6 +235,9 @@ namespace Imgeneus.World.Game.Levelling
 
             // Calculate experience based on exp formula
             var exp = (ushort)((-24 * levelDifference + 167) / 100f * mobExp);
+
+            if (ExpGainRate > 0)
+                exp = (ushort)(exp * ExpGainRate / 100);
 
             return exp;
         }
