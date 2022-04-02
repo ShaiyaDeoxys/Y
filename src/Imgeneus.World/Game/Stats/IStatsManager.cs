@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Stats
 {
-    public interface IStatsManager : ISessionedService
+    public interface IStatsManager : ISessionedService, IDisposable
     {
         /// <summary>
         /// Inits constant stats.
@@ -261,6 +261,18 @@ namespace Imgeneus.World.Game.Stats
         /// Tries to set const stats.
         /// </summary>
         bool TrySetStats(ushort? str = null, ushort? dex = null, ushort? rec = null, ushort? intl = null, ushort? wis = null, ushort? luc = null, ushort? statPoints = null);
+
+        /// <summary>
+        /// Increases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        void IncreasePrimaryStat(ushort amount = 1);
+
+        /// <summary>
+        /// Decreases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        void DecreasePrimaryStat(ushort amount = 1);
 
         /// <summary>
         /// Initiates <see cref="OnAdditionalStatsUpdate"/>

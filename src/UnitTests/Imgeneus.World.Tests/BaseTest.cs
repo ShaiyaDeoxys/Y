@@ -95,31 +95,32 @@ namespace Imgeneus.World.Tests
             var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
             countryProvider.Init(_characterId, country);
 
+            var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
+            levelProvider.Init(_characterId, 1);
+
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
             var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
-            var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object);
             var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
+            var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object);
 
-            var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
-            levelProvider.Level = 1;
-
-            var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, mapProvider, config.Object, databaseMock.Object);
+            var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, config.Object, databaseMock.Object);
             healthManager.Init(_characterId, 0, 0, 0, null, null, null, CharacterProfession.Fighter);
 
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, buffsManager, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
-            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
 
             var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, packetFactoryMock.Object, gameWorldMock.Object, mapProvider, healthManager);
             partyManager.Init(_characterId);
 
-            var levelingManager = new LevelingManager(new Mock<ILogger<LevelingManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, statsManager, skillsManager, healthManager, config.Object, databasePreloader.Object, partyManager, mapProvider, movementManager);
+            var levelingManager = new LevelingManager(new Mock<ILogger<LevelingManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object, databasePreloader.Object, partyManager, mapProvider, movementManager);
             levelingManager.Init(_characterId, 0);
 
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager);
+            
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
 
             var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object);
@@ -191,16 +192,17 @@ namespace Imgeneus.World.Tests
             countryProvider.Init(0, country);
 
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
-            var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object);
             var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
-            var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, mapProvider, config.Object, databaseMock.Object);
+            var levelingManager = new Mock<ILevelingManager>();
+            var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
+            var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object);
+            var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, config.Object, databaseMock.Object);
             var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, buffsManager, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
-            var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
 
@@ -301,7 +303,8 @@ namespace Imgeneus.World.Tests
                     { (655, 1), Untouchable },
                     { (724, 1), BullsEye },
                     { (63, 1), Stealth },
-                    { (249, 1), SpeedRemedy_Lvl1 }
+                    { (249, 1), SpeedRemedy_Lvl1 },
+                    { (250, 1), MinSunStone_Lvl1 }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -328,7 +331,8 @@ namespace Imgeneus.World.Tests
                     { (30, 241), Gem_Absorption_Level_5 },
                     { (43, 3), Etin_100 },
                     { (100, 107), SpeedyRemedy },
-                    { (100, 45), PartySummonRune }
+                    { (100, 45), PartySummonRune },
+                    { (100, 108), MinSunExpStone }
                 });
 
             databasePreloader
@@ -662,6 +666,19 @@ namespace Imgeneus.World.Tests
             NeedShield = 1
         };
 
+        protected DbSkill MinSunStone_Lvl1 = new DbSkill()
+        {
+            SkillId = 250,
+            SkillLevel = 1,
+            SkillName = "Mini Sun EXP Stone",
+            SuccessValue = 100,
+            TypeDetail = TypeDetail.Buff,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            TargetType = TargetType.Caster,
+            AbilityType1 = AbilityType.ExpGainRate,
+            AbilityValue1 = 150
+        };
+
         #endregion
 
         #region Items
@@ -876,6 +893,15 @@ namespace Imgeneus.World.Tests
             Type = 100,
             TypeId = 45,
             Special = SpecialEffect.PartySummon
+        };
+
+        protected DbItem MinSunExpStone = new DbItem()
+        {
+            Type = 100,
+            TypeId = 108,
+            Country = ItemClassType.AllFactions,
+            Range = 250,
+            AttackTime = 1
         };
 
         #endregion

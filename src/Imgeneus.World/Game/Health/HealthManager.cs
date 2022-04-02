@@ -1,12 +1,8 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Levelling;
-using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
-using Imgeneus.World.Game.Stealth;
-using Imgeneus.World.Game.Vehicle;
-using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -19,27 +15,28 @@ namespace Imgeneus.World.Game.Health
         private readonly ILogger<HealthManager> _logger;
         private readonly IStatsManager _statsManager;
         private readonly ILevelProvider _levelProvider;
-        private readonly IMapProvider _mapProvider;
         private readonly ICharacterConfiguration _characterConfiguration;
         private readonly IDatabase _database;
         private int _ownerId;
 
-        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IMapProvider mapProvider, ICharacterConfiguration characterConfiguration, IDatabase database)
+        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration, IDatabase database)
         {
             _logger = logger;
             _statsManager = statsManager;
             _levelProvider = levelProvider;
-            _mapProvider = mapProvider;
             _characterConfiguration = characterConfiguration;
             _database = database;
+
             _statsManager.OnRecUpdate += StatsManager_OnRecUpdate;
             _statsManager.OnDexUpdate += StatsManager_OnDexUpdate;
             _statsManager.OnWisUpdate += StatsManager_OnWisUpdate;
+            _levelProvider.OnLevelUp += OnLevelUp;
 
 #if DEBUG
             _logger.LogDebug("HealthManager {hashcode} created", GetHashCode());
 #endif
         }
+
 
 #if DEBUG
         ~HealthManager()
@@ -87,6 +84,7 @@ namespace Imgeneus.World.Game.Health
             _statsManager.OnRecUpdate -= StatsManager_OnRecUpdate;
             _statsManager.OnDexUpdate -= StatsManager_OnDexUpdate;
             _statsManager.OnWisUpdate -= StatsManager_OnWisUpdate;
+            _levelProvider.OnLevelUp -= OnLevelUp;
         }
 
         #endregion
@@ -293,13 +291,6 @@ namespace Imgeneus.World.Game.Health
             private set => _constMP = value;
         }
 
-        public void RaiseMaxChange()
-        {
-            OnMaxHPChanged?.Invoke(_ownerId, MaxHP);
-            OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
-            OnMaxSPChanged?.Invoke(_ownerId, MaxSP);
-        }
-
         #endregion
 
         #region Recover
@@ -316,6 +307,15 @@ namespace Imgeneus.World.Game.Health
         public void FullRecover()
         {
             Recover(MaxHP, MaxMP, MaxSP);
+        }
+
+        private void OnLevelUp(int senderId, ushort level, ushort oldLevel)
+        {
+            OnMaxHPChanged?.Invoke(_ownerId, MaxHP);
+            OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
+            OnMaxSPChanged?.Invoke(_ownerId, MaxSP);
+
+            FullRecover();
         }
 
         #endregion

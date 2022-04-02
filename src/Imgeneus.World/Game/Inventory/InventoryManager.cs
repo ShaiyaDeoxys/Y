@@ -1345,9 +1345,9 @@ namespace Imgeneus.World.Game.Inventory
             if (!ok)
                 return false;
 
-            _levelingManager.IncreasePrimaryStat((ushort)(_levelProvider.Level - 1));
-
+            _statsManager.IncreasePrimaryStat((ushort)(_levelProvider.Level - 1));
             _statsManager.RaiseResetStats();
+
             return ok;
         }
 

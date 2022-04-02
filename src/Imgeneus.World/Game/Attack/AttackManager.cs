@@ -18,7 +18,6 @@ namespace Imgeneus.World.Game.Attack
     public class AttackManager : IAttackManager
     {
         private readonly ILogger<AttackManager> _logger;
-        private readonly IBuffsManager _buffsManager;
         private readonly IStatsManager _statsManager;
         private readonly ILevelProvider _levelProvider;
         private readonly IElementProvider _elementManager;
@@ -27,10 +26,9 @@ namespace Imgeneus.World.Game.Attack
         private readonly IStealthManager _stealthManager;
         private int _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IBuffsManager buffsManager, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager)
+        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager)
         {
             _logger = logger;
-            _buffsManager = buffsManager;
             _statsManager = statsManager;
             _levelProvider = levelProvider;
             _elementManager = elementManager;
@@ -147,12 +145,6 @@ namespace Imgeneus.World.Game.Attack
         {
             _nextAttackTime = DateTime.UtcNow.AddMilliseconds(NextAttackTime);
             OnStartAttack?.Invoke();
-
-            if (_stealthManager.IsStealth && !_stealthManager.IsAdminStealth)
-            {
-                var stealthBuff = _buffsManager.ActiveBuffs.FirstOrDefault(b => b.IsStealth);
-                stealthBuff.CancelBuff();
-            }
         }
 
         public event Action OnStartAttack;
@@ -164,6 +156,8 @@ namespace Imgeneus.World.Game.Attack
         public byte WeaponType { get; set; }
 
         public bool IsShieldAvailable { get; set; } = true;
+
+        public bool IsAbleToAttack { get; set; } = true;
 
         public bool CanAttack(byte skillNumber, IKillable target, out AttackSuccess success)
         {
@@ -199,7 +193,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && !IsAbleToAttack)
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;

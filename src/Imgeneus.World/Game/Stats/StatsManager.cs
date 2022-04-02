@@ -1,5 +1,8 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Player.Config;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -10,13 +13,20 @@ namespace Imgeneus.World.Game.Stats
     {
         private readonly ILogger<StatsManager> _logger;
         private readonly IDatabase _database;
-
+        private readonly ILevelProvider _levelProvider;
+        private readonly IAdditionalInfoManager _additionalInfoManager;
+        private readonly ICharacterConfiguration _characterConfig;
         private int _ownerId;
 
-        public StatsManager(ILogger<StatsManager> logger, IDatabase database)
+        public StatsManager(ILogger<StatsManager> logger, IDatabase database, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, ICharacterConfiguration charactedConfig)
         {
             _logger = logger;
             _database = database;
+            _levelProvider = levelProvider;
+            _additionalInfoManager = additionalInfoManager;
+            _characterConfig = charactedConfig;
+
+            _levelProvider.OnLevelUp += OnLevelUp;
 
 #if DEBUG
             _logger.LogDebug("StatsManager {hashcode} created", GetHashCode());
@@ -87,6 +97,11 @@ namespace Imgeneus.World.Game.Stats
             character.StatPoint = StatPoint;
 
             await _database.SaveChangesAsync();
+        }
+
+        public void Dispose()
+        {
+            _levelProvider.OnLevelUp -= OnLevelUp;
         }
 
         #endregion
@@ -389,6 +404,101 @@ namespace Imgeneus.World.Game.Stats
             StatPoint = statPoint ?? StatPoint;
 
             return true;
+        }
+
+        private void OnLevelUp(int senderId, ushort level, ushort oldLevel)
+        {
+            var levelDifference = level - oldLevel;
+
+            if (levelDifference > 0)
+                IncreasePrimaryStat((ushort)levelDifference);
+            else
+                DecreasePrimaryStat((ushort)Math.Abs(levelDifference));
+
+            var levelStats = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow);
+            TrySetStats(statPoint: (ushort)(StatPoint + levelStats.StatPoint));
+        }
+
+        #endregion
+
+        #region Primary stats
+
+        /// <summary>
+        /// Increases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        public void IncreasePrimaryStat(ushort amount = 1)
+        {
+            var primaryAttribute = _additionalInfoManager.GetPrimaryStat();
+
+            switch (primaryAttribute)
+            {
+                case CharacterStatEnum.Strength:
+                    TrySetStats(str: (ushort)(Strength + amount));
+                    break;
+
+                case CharacterStatEnum.Dexterity:
+                    TrySetStats(dex: (ushort)(Dexterity + amount));
+                    break;
+
+                case CharacterStatEnum.Reaction:
+                    TrySetStats(rec: (ushort)(Reaction + amount));
+                    break;
+
+                case CharacterStatEnum.Intelligence:
+                    TrySetStats(intl: (ushort)(Intelligence + amount));
+                    break;
+
+                case CharacterStatEnum.Wisdom:
+                    TrySetStats(wis: (ushort)(Wisdom + amount));
+                    break;
+
+                case CharacterStatEnum.Luck:
+                    TrySetStats(luc: (ushort)(Luck + amount));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Decreases a character's main stat by a certain amount
+        /// </summary>
+        /// <param name="amount">Decrease amount</param>
+        public void DecreasePrimaryStat(ushort amount = 1)
+        {
+            var primaryAttribute = _additionalInfoManager.GetPrimaryStat();
+
+            switch (primaryAttribute)
+            {
+                case CharacterStatEnum.Strength:
+                    TrySetStats(str: (ushort)(Strength - amount));
+                    break;
+
+                case CharacterStatEnum.Dexterity:
+                    TrySetStats(dex: (ushort)(Dexterity - amount));
+                    break;
+
+                case CharacterStatEnum.Reaction:
+                    TrySetStats(rec: (ushort)(Reaction - amount));
+                    break;
+
+                case CharacterStatEnum.Intelligence:
+                    TrySetStats(intl: (ushort)(Intelligence - amount));
+                    break;
+
+                case CharacterStatEnum.Wisdom:
+                    TrySetStats(wis: (ushort)(Wisdom - amount));
+                    break;
+
+                case CharacterStatEnum.Luck:
+                    TrySetStats(luc: (ushort)(Luck - amount));
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         #endregion

@@ -140,7 +140,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             character.HealthManager.OnMaxHPChanged += Member_MaxHP_Changed;
             character.HealthManager.OnMaxMPChanged += Member_MaxMP_Changed;
             character.HealthManager.OnMaxSPChanged += Member_MaxSP_Changed;
-            character.LevelingManager.OnLevelUp += Member_OnLevelChange;
+            character.LevelProvider.OnLevelUp += Member_OnLevelChange;
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             character.HealthManager.OnMaxHPChanged -= Member_MaxHP_Changed;
             character.HealthManager.OnMaxMPChanged -= Member_MaxMP_Changed;
             character.HealthManager.OnMaxSPChanged -= Member_MaxSP_Changed;
-            character.LevelingManager.OnLevelUp -= Member_OnLevelChange;
+            character.LevelProvider.OnLevelUp -= Member_OnLevelChange;
         }
 
         #endregion
@@ -284,7 +284,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// Notifies party member that a member's level changed
         /// </summary>
         /// <param name="sender">Character whose level changed</param>
-        private void Member_OnLevelChange(int senderId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
+        private void Member_OnLevelChange(int senderId, ushort level, ushort oldLevel)
         {
             foreach (var member in Members.Where(m => m.Id != senderId))
                 SendLevel(member.GameSession.Client, senderId, level);

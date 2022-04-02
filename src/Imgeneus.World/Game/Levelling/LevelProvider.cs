@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 
 namespace Imgeneus.World.Game.Levelling
 {
     public class LevelProvider : ILevelProvider
     {
         private readonly ILogger<LevelProvider> _logger;
+        private int _ownerId;
 
         public LevelProvider(ILogger<LevelProvider> logger)
         {
@@ -22,6 +24,28 @@ namespace Imgeneus.World.Game.Levelling
         }
 #endif
 
-        public ushort Level { get; set; }
+        #region Init & Clear
+
+        public void Init(int ownerId, ushort level)
+        {
+            _ownerId = ownerId;
+            _level = level;
+        }
+
+        #endregion
+
+        private ushort _level;
+        public ushort Level
+        {
+            get => _level; 
+            set
+            {
+                var oldLevel = value;
+                _level = value;
+                OnLevelUp?.Invoke(_ownerId, _level, oldLevel);
+            }
+        }
+
+        public event Action<int, ushort, ushort> OnLevelUp;
     }
 }

@@ -33,23 +33,6 @@ namespace Imgeneus.World.Game.Levelling
         event Action<uint> OnExpChanged;
 
         /// <summary>
-        /// Event that's fired when a player level's up
-        /// </summary>
-        event Action<int, ushort, ushort, ushort, uint, uint> OnLevelUp;
-
-        /// <summary>
-        /// Increases a character's main stat by a certain amount
-        /// </summary>
-        /// <param name="amount">Decrease amount</param>
-        void IncreasePrimaryStat(ushort amount = 1);
-
-        /// <summary>
-        /// Decreases a character's main stat by a certain amount
-        /// </summary>
-        /// <param name="amount">Decrease amount</param>
-        void DecreasePrimaryStat(ushort amount = 1);
-
-        /// <summary>
         /// Attempts to set a new level for a character and handles the levelling logic (exp, stat points, skill points, etc)
         /// </summary>
         /// <param name="newLevel">New player level</param>
@@ -71,5 +54,10 @@ namespace Imgeneus.World.Game.Levelling
         /// <param name="mobLevel">Killed mob's level</param>
         /// <param name="mobExp">Killed mob's experience</param>
         void AddMobExperience(ushort mobLevel, ushort mobExp);
+
+        /// <summary>
+        /// Exp multiplier.
+        /// </summary>
+        uint ExpGainRate { get; set; }
     }
 }

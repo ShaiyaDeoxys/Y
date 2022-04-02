@@ -211,7 +211,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRebirthed += Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged += Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle += Character_OnStartSummonVehicle;
-            character.LevelingManager.OnLevelUp += Character_OnLevelUp;
+            character.LevelProvider.OnLevelUp += Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting += Character_OnTeleport;
             character.PartyManager.OnSummonning += Character_OnSummon;
@@ -242,7 +242,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRebirthed -= Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged -= Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
-            character.LevelingManager.OnLevelUp -= Character_OnLevelUp;
+            character.LevelProvider.OnLevelUp -= Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting -= Character_OnTeleport;
             character.PartyManager.OnSummonning -= Character_OnSummon;
@@ -442,13 +442,13 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that player levelled up
         /// </summary>
-        private void Character_OnLevelUp(int senderId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
+        private void Character_OnLevelUp(int senderId, ushort level, ushort oldLevel)
         {
-            var hasParty = Players[senderId].PartyManager.HasParty;
+            var sender = Players[senderId];
 
             foreach (var player in GetAllPlayers(true))
                 // If sender has party, send admin level up
-                Map.PacketFactory.SendLevelUp(player.GameSession.Client, senderId, level, statPoint, skillPoint, minExp, nextExp, hasParty);
+                Map.PacketFactory.SendLevelUp(player.GameSession.Client, senderId, level, sender.StatsManager.StatPoint, sender.SkillsManager.SkillPoints, sender.LevelingManager.MinLevelExp, sender.LevelingManager.NextLevelExp, sender.PartyManager.HasParty);
         }
 
         /// <summary>

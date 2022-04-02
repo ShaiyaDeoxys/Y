@@ -10,7 +10,6 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
-using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
@@ -61,6 +60,7 @@ namespace Imgeneus.World.Game.Skills
             _gameWorld = gameWorld;
             _mapProvider = mapProvider;
             _castTimer.Elapsed += CastTimer_Elapsed;
+            _levelProvider.OnLevelUp += OnLevelUp;
 
 #if DEBUG
             _logger.LogDebug("SkillsManager {hashcode} created", GetHashCode());
@@ -115,6 +115,7 @@ namespace Imgeneus.World.Game.Skills
         public void Dispose()
         {
             _castTimer.Elapsed -= CastTimer_Elapsed;
+            _levelProvider.OnLevelUp -= OnLevelUp;
         }
 
         #endregion
@@ -135,6 +136,12 @@ namespace Imgeneus.World.Game.Skills
         {
             SkillPoints = value;
             return true;
+        }
+
+        private void OnLevelUp(int arg1, ushort arg2, ushort arg3)
+        {
+            var levelStats = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow);
+            TrySetSkillPoints((ushort)(SkillPoints + levelStats.SkillPoint));
         }
 
         #endregion

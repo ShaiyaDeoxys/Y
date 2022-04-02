@@ -5,6 +5,7 @@ using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -31,9 +32,11 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IElementProvider _elementProvider;
         private readonly IUntouchableManager _untouchableManager;
         private readonly IStealthManager _stealthManager;
+        private readonly ILevelingManager _levelingManager;
+        private readonly IAttackManager _attackManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager)
         {
             _logger = logger;
             _database = database;
@@ -44,9 +47,11 @@ namespace Imgeneus.World.Game.Buffs
             _elementProvider = elementProvider;
             _untouchableManager = untouchableManager;
             _stealthManager = stealthManager;
-
+            _levelingManager = levelingManager;
+            _attackManager = attackManager;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
+            _attackManager.OnStartAttack += CancelStealth;
 
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
@@ -111,6 +116,7 @@ namespace Imgeneus.World.Game.Buffs
             PassiveBuffs.CollectionChanged -= PassiveBuffs_CollectionChanged;
             _healthManager.OnDead -= HealthManager_OnDead;
             _healthManager.HP_Changed -= HealthManager_HP_Changed;
+            _attackManager.OnStartAttack -= CancelStealth;
         }
 
         #endregion
@@ -331,8 +337,10 @@ namespace Imgeneus.World.Game.Buffs
                     _speedManager.Immobilize = true;
                     break;
 
+                case TypeDetail.Sleep:
+                case TypeDetail.Stun:
                 case TypeDetail.PreventAttack:
-                    // ?
+                    _attackManager.IsAbleToAttack = false;
                     break;
 
                 case TypeDetail.Stealth:
@@ -440,8 +448,14 @@ namespace Imgeneus.World.Game.Buffs
                     _speedManager.Immobilize = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Immobilize);
                     break;
 
+                case TypeDetail.Sleep:
+                case TypeDetail.Stun:
                 case TypeDetail.PreventAttack:
-                    // ?
+                    _attackManager.IsAbleToAttack = ActiveBuffs.Any(b =>
+                    {
+                        var dbSkill = _databasePreloader.Skills[(b.SkillId, b.SkillLevel)];
+                        return dbSkill.TypeDetail == TypeDetail.Sleep || dbSkill.TypeDetail == TypeDetail.Stun || dbSkill.TypeDetail == TypeDetail.PreventAttack;
+                    });
                     break;
 
                 case TypeDetail.Stealth:
@@ -642,6 +656,13 @@ namespace Imgeneus.World.Game.Buffs
                         _statsManager.Absorption -= abilityValue;
                     return;
 
+                case AbilityType.ExpGainRate:
+                    if (addAbility)
+                        _levelingManager.ExpGainRate += abilityValue;
+                    else
+                        _levelingManager.ExpGainRate -= abilityValue;
+                    return;
+
                 default:
                     throw new NotImplementedException($"Not implemented ability type {abilityType}");
             }
@@ -691,6 +712,15 @@ namespace Imgeneus.World.Game.Buffs
             var buffs = ActiveBuffs.Where(b => b.IsStealth).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
+        }
+
+        private void CancelStealth()
+        {
+            if (_stealthManager.IsStealth && !_stealthManager.IsAdminStealth)
+            {
+                var stealthBuff = ActiveBuffs.FirstOrDefault(b => b.IsStealth);
+                stealthBuff.CancelBuff();
+            }
         }
 
         #endregion

@@ -6,8 +6,6 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player.Config;
-using Imgeneus.World.Game.Skills;
-using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,9 +20,6 @@ namespace Imgeneus.World.Game.Levelling
         private readonly IDatabase _database;
         private readonly ILevelProvider _levelProvider;
         private readonly IAdditionalInfoManager _additionalInfoManager;
-        private readonly IStatsManager _statsManager;
-        private readonly ISkillsManager _skillsManager;
-        private readonly IHealthManager _healthManager;
         private readonly ICharacterConfiguration _characterConfig;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IPartyManager _partyManager;
@@ -32,15 +27,12 @@ namespace Imgeneus.World.Game.Levelling
         private readonly IMovementManager _movementManager;
         private int _ownerId;
 
-        public LevelingManager(ILogger<LevelingManager> logger, IDatabase database, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IStatsManager statsManager, ISkillsManager skillsManager, IHealthManager healthManager, ICharacterConfiguration charConfig, IDatabasePreloader databasePreloader, IPartyManager partyManager, IMapProvider mapProvider, IMovementManager movementManager)
+        public LevelingManager(ILogger<LevelingManager> logger, IDatabase database, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, ICharacterConfiguration charConfig, IDatabasePreloader databasePreloader, IPartyManager partyManager, IMapProvider mapProvider, IMovementManager movementManager)
         {
             _logger = logger;
             _database = database;
             _levelProvider = levelProvider;
             _additionalInfoManager = additionalInfoManager;
-            _statsManager = statsManager;
-            _skillsManager = skillsManager;
-            _healthManager = healthManager;
             _characterConfig = charConfig;
             _databasePreloader = databasePreloader;
             _partyManager = partyManager;
@@ -78,88 +70,6 @@ namespace Imgeneus.World.Game.Levelling
             await _database.SaveChangesAsync();
         }
 
-        #region Primary stats
-
-        /// <summary>
-        /// Increases a character's main stat by a certain amount
-        /// </summary>
-        /// <param name="amount">Decrease amount</param>
-        public void IncreasePrimaryStat(ushort amount = 1)
-        {
-            var primaryAttribute = _additionalInfoManager.GetPrimaryStat();
-
-            switch (primaryAttribute)
-            {
-                case CharacterStatEnum.Strength:
-                    _statsManager.TrySetStats(str: (ushort)(_statsManager.Strength + amount));
-                    break;
-
-                case CharacterStatEnum.Dexterity:
-                    _statsManager.TrySetStats(dex: (ushort)(_statsManager.Dexterity + amount));
-                    break;
-
-                case CharacterStatEnum.Reaction:
-                    _statsManager.TrySetStats(rec: (ushort)(_statsManager.Reaction + amount));
-                    break;
-
-                case CharacterStatEnum.Intelligence:
-                    _statsManager.TrySetStats(intl: (ushort)(_statsManager.Intelligence + amount));
-                    break;
-
-                case CharacterStatEnum.Wisdom:
-                    _statsManager.TrySetStats(wis: (ushort)(_statsManager.Wisdom + amount));
-                    break;
-
-                case CharacterStatEnum.Luck:
-                    _statsManager.TrySetStats(luc: (ushort)(_statsManager.Luck + amount));
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Decreases a character's main stat by a certain amount
-        /// </summary>
-        /// <param name="amount">Decrease amount</param>
-        public void DecreasePrimaryStat(ushort amount = 1)
-        {
-            var primaryAttribute = _additionalInfoManager.GetPrimaryStat();
-
-            switch (primaryAttribute)
-            {
-                case CharacterStatEnum.Strength:
-                    _statsManager.TrySetStats(str: (ushort)(_statsManager.Strength - amount));
-                    break;
-
-                case CharacterStatEnum.Dexterity:
-                    _statsManager.TrySetStats(dex: (ushort)(_statsManager.Dexterity - amount));
-                    break;
-
-                case CharacterStatEnum.Reaction:
-                    _statsManager.TrySetStats(rec: (ushort)(_statsManager.Reaction - amount));
-                    break;
-
-                case CharacterStatEnum.Intelligence:
-                    _statsManager.TrySetStats(intl: (ushort)(_statsManager.Intelligence - amount));
-                    break;
-
-                case CharacterStatEnum.Wisdom:
-                    _statsManager.TrySetStats(wis: (ushort)(_statsManager.Wisdom - amount));
-                    break;
-
-                case CharacterStatEnum.Luck:
-                    _statsManager.TrySetStats(luc: (ushort)(_statsManager.Luck - amount));
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        #endregion
-
         #region Leveling
 
         private uint _exp;
@@ -177,16 +87,14 @@ namespace Imgeneus.World.Game.Levelling
 
         public event Action<uint> OnExpChanged;
 
+        public uint ExpGainRate { get; set; }
+
         public uint MinLevelExp => _levelProvider.Level > 1 ? _databasePreloader.Levels[(_additionalInfoManager.Grow, (ushort)(_levelProvider.Level - 1))].Exp : 0;
 
         public uint NextLevelExp => _databasePreloader.Levels[(_additionalInfoManager.Grow, _levelProvider.Level)].Exp;
 
-        public event Action<int, ushort, ushort, ushort, uint, uint> OnLevelUp;
-
         public bool TryChangeLevel(ushort newLevel, bool changedByAdmin = false)
         {
-            var previousLevel = _levelProvider.Level;
-
             // Set character's new level
             if (!CanSetLevel(newLevel))
                 return false;
@@ -197,32 +105,6 @@ namespace Imgeneus.World.Game.Levelling
             if (Exp < MinLevelExp)
                 // Change player experience to 0% of current level
                 Exp = MinLevelExp;
-
-            // Recover
-            _healthManager.RaiseMaxChange();
-            _healthManager.FullRecover();
-
-            // Update primary attribute
-            if (changedByAdmin)
-            {
-                var levelDifference = newLevel - previousLevel;
-
-                if (levelDifference > 0)
-                    IncreasePrimaryStat((ushort)levelDifference);
-                else
-                    DecreasePrimaryStat((ushort)Math.Abs(levelDifference));
-            }
-            else
-            {
-                IncreasePrimaryStat(1);
-
-                // Increase stats and skill points based on character's mode
-                var levelStats = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow);
-                _statsManager.TrySetStats(statPoints: (ushort)(_statsManager.StatPoint + levelStats.StatPoint));
-                _skillsManager.TrySetSkillPoints((ushort)(_skillsManager.SkillPoints + levelStats.SkillPoint));
-            }
-
-            OnLevelUp?.Invoke(_ownerId, _levelProvider.Level, _statsManager.StatPoint, _skillsManager.SkillPoints, MinLevelExp, NextLevelExp);
 
             return true;
         }
@@ -251,7 +133,9 @@ namespace Imgeneus.World.Game.Levelling
         public bool TryChangeExperience(uint exp, bool changedByAdmin = false)
         {
             // TODO: Multiply exp by global exp multiplier
-            // TODO: Multiply exp by exp buff multipliers
+
+            if (ExpGainRate > 0)
+                exp = exp * ExpGainRate / 100;
 
             // Round exp to nearest multiple of 10
             exp = MathExtensions.RoundToTenMultiple(exp);

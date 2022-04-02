@@ -55,7 +55,7 @@ namespace Imgeneus.World.Game.Monster
             ShouldRebirth = shouldRebirth;
 
             StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, def: _dbMob.Defense, res: _dbMob.Magic);
-            LevelProvider.Level = _dbMob.Level;
+            LevelProvider.Init(Id, _dbMob.Level);
             HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
             BuffsManager.Init(Id);
 

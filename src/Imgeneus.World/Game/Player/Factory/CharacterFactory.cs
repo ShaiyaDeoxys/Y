@@ -173,6 +173,8 @@ namespace Imgeneus.World.Game.Player
                 return null;
             }
 
+            _levelProvider.Init(dbCharacter.Id, dbCharacter.Level);
+
             _gameSession.CharId = dbCharacter.Id;
             _gameSession.IsAdmin = dbCharacter.User.Authority == 0;
 
@@ -195,8 +197,6 @@ namespace Imgeneus.World.Game.Player
                                autoInt: dbCharacter.AutoInt,
                                autoWis: dbCharacter.AutoWis,
                                autoLuc: dbCharacter.AutoLuc);
-
-            _levelProvider.Level = dbCharacter.Level;
 
             _levelingManager.Init(dbCharacter.Id, dbCharacter.Exp);
 
