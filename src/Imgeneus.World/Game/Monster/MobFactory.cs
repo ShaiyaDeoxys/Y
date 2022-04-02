@@ -54,10 +54,13 @@ namespace Imgeneus.World.Game.Monster
                               scope.ServiceProvider.GetRequiredService<IMovementManager>(),
                               scope.ServiceProvider.GetRequiredService<IUntouchableManager>(),
                               scope.ServiceProvider.GetRequiredService<IMapProvider>());
-            mob.HealthManager.OnDead += Mob_OnDead;
 
-            _mobScopes.Add(mob.Id, scope);
-            _mobs.Add(mob.Id, mob);
+            if (!mob.ShouldRebirth)
+            {
+                mob.HealthManager.OnDead += Mob_OnDead;
+                _mobScopes.Add(mob.Id, scope);
+                _mobs.Add(mob.Id, mob);
+            }
 
             return mob;
         }
@@ -65,8 +68,6 @@ namespace Imgeneus.World.Game.Monster
         private void Mob_OnDead(int senderId, IKiller killer)
         {
             _mobs.TryGetValue(senderId, out var mob);
-            if (mob.ShouldRebirth)
-                return;
 
             mob.HealthManager.OnDead -= Mob_OnDead;
             _mobs.Remove(senderId);

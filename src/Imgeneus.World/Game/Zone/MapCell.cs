@@ -549,6 +549,8 @@ namespace Imgeneus.World.Game.Zone
             mob.MovementManager.PosY = sender.PosY;
             mob.MovementManager.PosZ = sender.PosZ;
 
+            mob.HealthManager.Rebirth();
+
             AddMob(mob);
         }
 

@@ -1,5 +1,4 @@
-﻿using Imgeneus.World.Game.Monster;
-using System.Linq;
+﻿using System.Linq;
 using Xunit;
 
 namespace Imgeneus.World.Tests
@@ -26,6 +25,7 @@ namespace Imgeneus.World.Tests
             var mobs = map.Cells[0].GetAllMobs(false);
             Assert.Single(mobs);
             Assert.Equal(Wolf.HP, mobs.ElementAt(0).HealthManager.CurrentHP);
+            Assert.False(mobs.ElementAt(0).HealthManager.IsDead);
         }
     }
 }
