@@ -141,6 +141,12 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Enchantment
+
+        void SendEnchantRate(IWorldClient client, IEnumerable<byte> lapisiaBag, IEnumerable<byte> lapisiaSlot, uint rate, uint gold);
+
+        #endregion
+
         #region Party
         void SendPartyRequest(IWorldClient client, int requesterId);
         void SendDeclineParty(IWorldClient client, int charId);

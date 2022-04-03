@@ -45,10 +45,10 @@ namespace Imgeneus.World.Tests.ItemTests
 
         [Theory]
         [Description("If item has composed stats, we can create craft name.")]
-        [InlineData(0, 0, 0, 0, 0, 0, 100, 200, 300, "00000000000001020300")]
-        [InlineData(1, 2, 3, 4, 5, 6, 100, 200, 300, "01020304050601020300")]
-        [InlineData(10, 22, 33, 44, 55, 66, 1000, 2000, 3000, "10223344556610203000")]
-        public void ComposedStatsCanBeTranslatedToCraftName(int str, int dex, int rec, int intl, int wis, int luc, int hp, int mp, int sp, string expected)
+        [InlineData(0, 0, 0, 0, 0, 0, 100, 200, 300, 0, "00000000000001020300")]
+        [InlineData(1, 2, 3, 4, 5, 6, 100, 200, 300, 1, "01020304050601020301")]
+        [InlineData(10, 22, 33, 44, 55, 66, 1000, 2000, 3000, 20, "10223344556610203020")]
+        public void ComposedStatsCanBeTranslatedToCraftName(int str, int dex, int rec, int intl, int wis, int luc, int hp, int mp, int sp, byte enchantmentLevel, string expected)
         {
             var item = new Item(databasePreloader.Object, JustiaArmor.Type, JustiaArmor.TypeId);
             item.ComposedStr = str;
@@ -60,6 +60,7 @@ namespace Imgeneus.World.Tests.ItemTests
             item.ComposedHP = hp;
             item.ComposedMP = mp;
             item.ComposedSP = sp;
+            item.EnchantmentLevel = enchantmentLevel;
 
             Assert.Equal(expected, item.GetCraftName());
         }

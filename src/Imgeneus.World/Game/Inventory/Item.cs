@@ -41,6 +41,8 @@ namespace Imgeneus.World.Game.Inventory
 
         public byte Count;
 
+        public byte EnchantmentLevel;
+
         public Item(IDatabasePreloader databasePreloader, DbCharacterItems dbCharacterItem) : this(databasePreloader, dbCharacterItem.Type, dbCharacterItem.TypeId, dbCharacterItem.Count)
         {
             Bag = dbCharacterItem.Bag;
@@ -730,7 +732,10 @@ namespace Imgeneus.World.Game.Inventory
             else
                 strBuilder.Append($"0{sp}");
 
-            strBuilder.Append("00"); // TODO: support enchanted level
+            if (EnchantmentLevel > 9)
+                strBuilder.Append($"{EnchantmentLevel}");
+            else
+                strBuilder.Append($"0{EnchantmentLevel}");
 
             return strBuilder.ToString();
         }
@@ -748,7 +753,7 @@ namespace Imgeneus.World.Game.Inventory
                 var strBuilder = new StringBuilder();
                 strBuilder.Append(craftname[i]);
                 strBuilder.Append(craftname[i + 1]);
-                if (int.TryParse(strBuilder.ToString(), out var number))
+                if (byte.TryParse(strBuilder.ToString(), out var number))
                 {
                     switch (i)
                     {
@@ -789,7 +794,7 @@ namespace Imgeneus.World.Game.Inventory
                             break;
 
                         case 18:
-                            // TODO: support enchanted level
+                            EnchantmentLevel = number;
                             break;
                     }
                 }

@@ -25,8 +25,9 @@ namespace Imgeneus.World.Game.Linking
         private readonly ISpeedManager _speedManager;
         private readonly IGuildManager _guildManager;
         private readonly IMapProvider _mapProvider;
+        private readonly IItemEnchantConfiguration _itemEnchantConfig;
 
-        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider)
+        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider, IItemEnchantConfiguration itemEnchantConfig)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -36,6 +37,7 @@ namespace Imgeneus.World.Game.Linking
             _speedManager = speedManager;
             _guildManager = guildManager;
             _mapProvider = mapProvider;
+            _itemEnchantConfig = itemEnchantConfig;
 
 #if DEBUG
             _logger.LogDebug("LinkingManager {hashcode} created", GetHashCode());
@@ -862,6 +864,33 @@ namespace Imgeneus.World.Game.Linking
             // TODO: I'm not sure how absolute composite works and what to do next.
 
             return (true, itemClone);
+        }
+
+        #endregion
+
+        #region Enchantment
+
+        public uint GetEnchantmentRate(Item item)
+        {
+            uint rate = 0;
+
+            if (item.EnchantmentLevel == 20)
+                return rate;
+
+            var suffix = item.EnchantmentLevel > 9 ? $"{item.EnchantmentLevel}" : $"0{item.EnchantmentLevel}";
+
+            if (item.IsWeapon)
+                _itemEnchantConfig.LapisianEnchantPercentRate.TryGetValue($"WeaponStep{suffix}", out rate);
+            else
+                if (item.IsArmor)
+                _itemEnchantConfig.LapisianEnchantPercentRate.TryGetValue($"DefenseStep{suffix}", out rate);
+
+            return rate;
+        }
+
+        public uint GetEnchantmentGold(Item item)
+        {
+            return (uint)(item.IsArmor ? 1040000 : 2500000);
         }
 
         #endregion

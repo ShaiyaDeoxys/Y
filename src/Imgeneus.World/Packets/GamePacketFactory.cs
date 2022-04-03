@@ -944,6 +944,30 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Enchantment
+
+        public void SendEnchantRate(IWorldClient client, IEnumerable<byte> lapisiaBag, IEnumerable<byte> lapisiaSlot, uint rate, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.ENCHANT_RATE);
+            
+            foreach(var bag in lapisiaBag)
+                packet.WriteByte(bag);
+
+            foreach (var slot in lapisiaSlot)
+                packet.WriteByte(slot);
+
+            // NB! In 8 ep each lapisia has its' own rate, but I'm implementing as in ep 4, when rate is the same for all lapisias.
+            for (var i = 0; i < 10; i++)
+                packet.Write(rate);
+
+            for (var i = 0; i < 10; i++)
+                packet.Write(gold);
+
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region Party
 
         public void SendPartyRequest(IWorldClient client, int requesterId)
