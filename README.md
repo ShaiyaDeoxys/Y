@@ -83,6 +83,8 @@ Our main goal is learning, clients are used only for testing. We are not trying 
 * __Bowie__ - provided solid asm support.
 * __ZheinGlitch__ - helped with Chaotic square packet structure.
 * __Eastrall__ - helped with project structure and provider awesome libraries [LiteNetwork](https://github.com/aosyatnik/LiteNetwork) and [Sylver.HandlerInvoker](https://github.com/aosyatnik/Sylver.HandlerInvoker).
+* __Kreon__ - helped with enchant packet structure.
+* __Razor__ & __Kegi__ - created guides for beginners.
 * maybe __YOU__?
 
 ## Known issues
