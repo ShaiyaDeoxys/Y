@@ -11,7 +11,7 @@ namespace Imgeneus.World.Tests.ItemTests
         public void TemporaryItem_Expiration()
         {
             var character = CreateCharacter();
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, Nimbus1d.Type, Nimbus1d.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, Nimbus1d.Type, Nimbus1d.TypeId));
 
             character.InventoryManager.InventoryItems.TryGetValue((1, 0), out var item);
             var expectedExpirationTime = item.CreationTime.AddSeconds(Nimbus1d.Duration);

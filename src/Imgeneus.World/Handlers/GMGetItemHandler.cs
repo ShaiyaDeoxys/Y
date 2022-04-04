@@ -2,6 +2,7 @@
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
@@ -12,11 +13,13 @@ namespace Imgeneus.World.Handlers
     public class GMGetItemHandler : BaseHandler
     {
         private readonly IDatabasePreloader _databasePreloader;
+        private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IInventoryManager _inventoryManager;
 
-        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
+        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
         {
             _databasePreloader = databasePreloader;
+            _enchantConfig = enchantConfig;
             _inventoryManager = inventoryManager;
         }
 
@@ -31,7 +34,7 @@ namespace Imgeneus.World.Handlers
 
             while (itemCount > 0)
             {
-                var newItem = new Item(_databasePreloader, packet.Type, packet.TypeId, itemCount);
+                var newItem = new Item(_databasePreloader, _enchantConfig, packet.Type, packet.TypeId, itemCount);
 
                 var item = _inventoryManager.AddItem(newItem);
                 if (item != null)

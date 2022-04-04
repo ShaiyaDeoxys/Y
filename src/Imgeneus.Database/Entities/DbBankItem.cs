@@ -48,12 +48,6 @@ namespace Imgeneus.Database.Entities
         public bool IsDeleted { get; set; }
 
         /// <summary>
-        /// The bank item's associated item.
-        /// </summary>
-        [ForeignKey(nameof(Type) + "," + nameof(TypeId))]
-        public DbItem Item { get; set; }
-
-        /// <summary>
         /// The bank item's associated user.
         /// </summary>
         [ForeignKey(nameof(UserId))]

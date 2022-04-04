@@ -13,7 +13,7 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
             character.InventoryManager.Mount = character.InventoryManager.InventoryItems[(1, 0)];
 
             character.VehicleManager.CallVehicle(true);
@@ -29,8 +29,8 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, HorseSummonStone.Type, HorseSummonStone.TypeId));
 
             // Equip mount 1
             character.InventoryManager.Mount = character.InventoryManager.InventoryItems[(1, 0)];

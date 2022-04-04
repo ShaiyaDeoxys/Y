@@ -23,7 +23,7 @@ namespace Imgeneus.World.Tests.SummonTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, PartySummonRune.Type, PartySummonRune.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, PartySummonRune.Type, PartySummonRune.TypeId));
             Assert.Single(character.InventoryManager.InventoryItems);
 
             character.InventoryManager.TryUseItem(1, 0);
@@ -103,7 +103,7 @@ namespace Imgeneus.World.Tests.SummonTests
             character1.PartyManager.Party = party;
             character2.PartyManager.Party = party;
 
-            var summonItem = character1.InventoryManager.AddItem(new Item(databasePreloader.Object, PartySummonRune.Type, PartySummonRune.TypeId));
+            var summonItem = character1.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, PartySummonRune.Type, PartySummonRune.TypeId));
             Assert.Single(character1.InventoryManager.InventoryItems);
 
             character1.PartyManager.SummonMembers(true, summonItem);

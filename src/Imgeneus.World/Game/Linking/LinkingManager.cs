@@ -75,7 +75,7 @@ namespace Imgeneus.World.Game.Linking
                 _inventoryManager.InventoryItems.TryGetValue((hammerBag, hammerSlot), out hammer);
 
             Item saveItem = null;
-            if (gem.ReqVg > 0)
+            if (gem.CanBreakItem)
             {
                 saveItem = _inventoryManager.InventoryItems.Select(itm => itm.Value).FirstOrDefault(itm => itm.Special == SpecialEffect.LuckyCharm);
                 if (saveItem != null)
@@ -110,7 +110,7 @@ namespace Imgeneus.World.Game.Linking
                     _statsManager.RaiseAdditionalStatsUpdate();
             }
 
-            if (!result.Success && saveItem == null && gem.ReqVg > 0)
+            if (!result.Success && saveItem == null && gem.CanBreakItem)
             {
                 _inventoryManager.RemoveItem(item);
 
@@ -261,7 +261,7 @@ namespace Imgeneus.World.Game.Linking
                 if (success)
                 {
                     savedGems.Add(gem);
-                    var gemItem = new Item(_databasePreloader, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                    var gemItem = new Item(_databasePreloader, _itemEnchantConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                     _inventoryManager.AddItem(gemItem);
 
                     if (gemItem != null)
@@ -301,7 +301,7 @@ namespace Imgeneus.World.Game.Linking
                     if (success)
                     {
                         savedGems.Add(gem);
-                        var gemItem = new Item(_databasePreloader, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                        var gemItem = new Item(_databasePreloader, _itemEnchantConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                         _inventoryManager.AddItem(gemItem);
 
                         if (gemItem != null)
@@ -320,7 +320,7 @@ namespace Imgeneus.World.Game.Linking
             var itemDestroyed = false;
             foreach (var gem in removedGems)
             {
-                if (gem.ReqVg > 0 && !savedGems.Contains(gem))
+                if (gem.LinkingRate > 0 && !savedGems.Contains(gem))
                 {
                     itemDestroyed = true;
                     break;
@@ -447,7 +447,7 @@ namespace Imgeneus.World.Game.Linking
             {
                 if (hammer.Special == SpecialEffect.LinkingHammer)
                 {
-                    rate = rate * (hammer.ReqVg / 100);
+                    rate = rate * (hammer.LinkingRate / 100);
                     if (rate > 50)
                         rate = 50;
                 }
@@ -492,10 +492,10 @@ namespace Imgeneus.World.Game.Linking
             {
                 if (hammer.Special == SpecialEffect.ExtractionHammer)
                 {
-                    if (hammer.ReqVg == 40) // Small extracting hammer.
+                    if (hammer.LinkingRate == 40) // Small extracting hammer.
                         rate = 40;
 
-                    if (hammer.ReqVg >= 80) // Big extracting hammer.
+                    if (hammer.LinkingRate >= 80) // Big extracting hammer.
                         rate = 80;
                 }
 
@@ -870,12 +870,15 @@ namespace Imgeneus.World.Game.Linking
 
         #region Enchantment
 
-        public uint GetEnchantmentRate(Item item)
+        public int GetEnchantmentRate(Item item, Item lapisia)
         {
-            uint rate = 0;
+            int rate = 0;
 
             if (item.EnchantmentLevel == 20)
                 return rate;
+
+            if (lapisia.EnchantRate > 0)
+                return lapisia.EnchantRate * 100;
 
             var suffix = item.EnchantmentLevel > 9 ? $"{item.EnchantmentLevel}" : $"0{item.EnchantmentLevel}";
 
@@ -891,6 +894,113 @@ namespace Imgeneus.World.Game.Linking
         public uint GetEnchantmentGold(Item item)
         {
             return (uint)(item.IsArmor ? 1040000 : 2500000);
+        }
+
+        public (bool Success, Item Item, Item Lapisia) TryEnchant(byte bag, byte slot, byte lapisiaBag, byte lapisiaSlot)
+        {
+            _inventoryManager.InventoryItems.TryGetValue((lapisiaBag, lapisiaSlot), out var lapisia);
+            if (lapisia is null || lapisia.Special != SpecialEffect.Lapisia)
+                return (false, null, null);
+
+            _inventoryManager.InventoryItems.TryGetValue((bag, slot), out var item);
+            if (item is null || item.EnchantmentLevel == 20)
+                return (false, null, null);
+
+            if (item.EnchantmentLevel < lapisia.MinEnchantLevel || item.EnchantmentLevel >= lapisia.MaxEnchantLevel && lapisia.MinEnchantLevel != lapisia.MaxEnchantLevel)
+                return (false, null, null);
+
+            var neededGold = GetEnchantmentGold(item);
+            if (_inventoryManager.Gold < neededGold)
+                return (false, null, null);
+
+            _inventoryManager.Gold -= neededGold;
+
+            var ok = Enchant(item, lapisia);
+            var oldLevel = item.EnchantmentLevel;
+
+            var itemDestroyed = false;
+            if (ok)
+                item.EnchantmentLevel++;
+            else
+                if (lapisia.CanBreakItem)
+                itemDestroyed = true;
+            else
+                if (item.EnchantmentLevel != 0)
+                item.EnchantmentLevel--;
+
+            if (item.Bag == 0)
+            {
+                if (itemDestroyed)
+                {
+                    if (item == _inventoryManager.Helmet)
+                        _inventoryManager.Helmet = null;
+                    else if (item == _inventoryManager.Armor)
+                        _inventoryManager.Armor = null;
+                    else if (item == _inventoryManager.Pants)
+                        _inventoryManager.Pants = null;
+                    else if (item == _inventoryManager.Gauntlet)
+                        _inventoryManager.Gauntlet = null;
+                    else if (item == _inventoryManager.Boots)
+                        _inventoryManager.Boots = null;
+                    else if (item == _inventoryManager.Weapon)
+                        _inventoryManager.Weapon = null;
+                    else if (item == _inventoryManager.Shield)
+                        _inventoryManager.Shield = null;
+                    else if (item == _inventoryManager.Cape)
+                        _inventoryManager.Cape = null;
+                    else if (item == _inventoryManager.Amulet)
+                        _inventoryManager.Amulet = null;
+                    else if (item == _inventoryManager.Ring1)
+                        _inventoryManager.Ring1 = null;
+                    else if (item == _inventoryManager.Ring2)
+                        _inventoryManager.Ring2 = null;
+                    else if (item == _inventoryManager.Bracelet1)
+                        _inventoryManager.Bracelet1 = null;
+                    else if (item == _inventoryManager.Bracelet2)
+                        _inventoryManager.Bracelet2 = null;
+                    else if (item == _inventoryManager.Mount)
+                        _inventoryManager.Mount = null;
+                    else if (item == _inventoryManager.Pet)
+                        _inventoryManager.Pet = null;
+                    else if (item == _inventoryManager.Costume)
+                        _inventoryManager.Costume = null;
+
+                    _inventoryManager.RemoveItem(item);
+                }
+                else
+                {
+                    var oldSuffix = oldLevel > 9 ? $"{oldLevel}" : $"0{oldLevel}";
+                    var suffix = item.EnchantmentLevel > 9 ? $"{item.EnchantmentLevel}" : $"0{item.EnchantmentLevel}";
+                    if (item.IsWeapon)
+                    {
+                        _statsManager.WeaponMinAttack -= _itemEnchantConfig.LapisianEnchantAddValue[$"WeaponStep{oldSuffix}"];
+                        _statsManager.WeaponMaxAttack -= _itemEnchantConfig.LapisianEnchantAddValue[$"WeaponStep{oldSuffix}"];
+                        _statsManager.WeaponMinAttack += _itemEnchantConfig.LapisianEnchantAddValue[$"WeaponStep{suffix}"];
+                        _statsManager.WeaponMaxAttack += _itemEnchantConfig.LapisianEnchantAddValue[$"WeaponStep{suffix}"];
+                        _statsManager.RaiseAdditionalStatsUpdate();
+                    }
+                    else
+                    {
+                        _statsManager.Absorption -= (ushort)_itemEnchantConfig.LapisianEnchantAddValue[$"DefenseStep{oldSuffix}"];
+                        _statsManager.Absorption += (ushort)_itemEnchantConfig.LapisianEnchantAddValue[$"DefenseStep{suffix}"];
+                    }
+                }
+            }
+
+            return (ok, item, lapisia);
+        }
+
+        private bool Enchant(Item item, Item lapisia)
+        {
+            double rate = GetEnchantmentRate(item, lapisia) / 10000;
+            var rand = _random.Next(1, 101);
+            var success = rate >= rand;
+
+            lapisia.Count--;
+            if (lapisia.Count == 0)
+                _inventoryManager.RemoveItem(lapisia);
+
+            return success;
         }
 
         #endregion

@@ -7,6 +7,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
@@ -21,6 +22,7 @@ namespace Imgeneus.World.Game.Monster
     public partial class Mob : BaseKillable, IKiller, IMapMember, IDisposable
     {
         private readonly ILogger<Mob> _logger;
+        private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly DbMob _dbMob;
 
         public ISpeedManager SpeedManager { get; private set; }
@@ -33,6 +35,7 @@ namespace Imgeneus.World.Game.Monster
                    Map map,
                    ILogger<Mob> logger,
                    IDatabasePreloader databasePreloader,
+                   IItemEnchantConfiguration enchantConfig,
                    ICountryProvider countryProvider,
                    IStatsManager statsManager,
                    IHealthManager healthManager,
@@ -47,6 +50,7 @@ namespace Imgeneus.World.Game.Monster
                    IMapProvider mapProvider) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
             _logger = logger;
+            _enchantConfig = enchantConfig;
             _dbMob = databasePreloader.Mobs[mobId];
 
             Id = map.GenerateId();
@@ -124,7 +128,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, _enchantConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
         }
 
         public void Dispose()

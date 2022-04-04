@@ -14,6 +14,7 @@ namespace Imgeneus.World.Game.Inventory
     public class Item : IDisposable
     {
         private readonly IDatabasePreloader _databasePreloader;
+        private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly DbItem _dbItem;
 
         /// <summary>
@@ -43,7 +44,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public byte EnchantmentLevel;
 
-        public Item(IDatabasePreloader databasePreloader, DbCharacterItems dbCharacterItem) : this(databasePreloader, dbCharacterItem.Type, dbCharacterItem.TypeId, dbCharacterItem.Count)
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, DbCharacterItems dbCharacterItem) : this(databasePreloader, enchantConfig, dbCharacterItem.Type, dbCharacterItem.TypeId, dbCharacterItem.Count)
         {
             Bag = dbCharacterItem.Bag;
             Slot = dbCharacterItem.Slot;
@@ -72,13 +73,14 @@ namespace Imgeneus.World.Game.Inventory
                 Gem6 = new Gem(databasePreloader, dbCharacterItem.GemTypeId6, 5);
         }
 
-        public Item(IDatabasePreloader databasePreloader, BankItem bankItem) : this(databasePreloader, bankItem.Type, bankItem.TypeId, bankItem.Count)
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, BankItem bankItem) : this(databasePreloader, enchantConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
         {
         }
 
-        public Item(IDatabasePreloader databasePreloader, byte type, byte typeId, byte count = 1)
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, byte type, byte typeId, byte count = 1)
         {
             _databasePreloader = databasePreloader;
+            _enchantConfig = enchantConfig;
             Type = type;
             TypeId = typeId;
             Count = count;
@@ -147,6 +149,9 @@ namespace Imgeneus.World.Game.Inventory
         public byte ReqIg => _dbItem.ReqIg;
         public ushort SkillId => _dbItem.Range;
         public byte SkillLevel => _dbItem.AttackTime;
+        public byte MinEnchantLevel => (byte)_dbItem.Range;
+        public byte MaxEnchantLevel => _dbItem.AttackTime;
+        public ushort EnchantRate => _dbItem.ReqRec;
 
         public ushort Reqlevel { get => _dbItem.Reqlevel; }
 
@@ -501,7 +506,10 @@ namespace Imgeneus.World.Game.Inventory
                 if (Gem6 != null)
                     gemMinAttack += Gem6.MinAttack;
 
-                return ConstMinAttack + gemMinAttack;
+                var suffix = EnchantmentLevel > 9 ? $"{EnchantmentLevel}" : $"0{EnchantmentLevel}";
+                var enchant = _enchantConfig.LapisianEnchantAddValue[$"WeaponStep{suffix}"];
+
+                return ConstMinAttack + gemMinAttack + enchant;
             }
         }
 
@@ -523,7 +531,10 @@ namespace Imgeneus.World.Game.Inventory
                 if (Gem6 != null)
                     gemPlusAttack += Gem6.PlusAttack;
 
-                return ConstMinAttack + gemPlusAttack + ConstPlusAttack;
+                var suffix = EnchantmentLevel > 9 ? $"{EnchantmentLevel}" : $"0{EnchantmentLevel}";
+                var enchant = _enchantConfig.LapisianEnchantAddValue[$"WeaponStep{suffix}"];
+
+                return ConstMinAttack + gemPlusAttack + ConstPlusAttack + enchant;
             }
         }
 
@@ -578,7 +589,10 @@ namespace Imgeneus.World.Game.Inventory
                 if (Gem6 != null)
                     absorb += Gem6.Absorb;
 
-                return (ushort)(_dbItem.Exp + absorb);
+                var suffix = EnchantmentLevel > 9 ? $"{EnchantmentLevel}" : $"0{EnchantmentLevel}";
+                var enchant = _enchantConfig.LapisianEnchantAddValue[$"DefenseStep{suffix}"];
+
+                return (ushort)(_dbItem.Exp + absorb + enchant);
             }
         }
 
@@ -609,9 +623,13 @@ namespace Imgeneus.World.Game.Inventory
 
         /// <summary>
         /// For linking hammer, it's how many times it increases the success linking rate.
-        /// For lapis, if it's set to 1, lapis can break equipment while unsuccessful linking.
         /// </summary>
-        public ushort ReqVg => _dbItem.ReqVg;
+        public ushort LinkingRate => _dbItem.ReqVg;
+
+        /// <summary>
+        /// Lapis or lapisia can break item while unsuccessful linking or enchantment.
+        /// </summary>
+        public bool CanBreakItem => _dbItem.ReqVg > 0;
 
         #endregion
 
@@ -1107,7 +1125,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public Item Clone()
         {
-            return new Item(_databasePreloader, Type, TypeId)
+            return new Item(_databasePreloader, _enchantConfig, Type, TypeId)
             {
                 Bag = Bag,
                 Slot = Slot,

@@ -7,11 +7,11 @@ namespace Imgeneus.World.Game.Linking
         /// <summary>
         /// Success % rate.
         /// </summary>
-        Dictionary<string, uint> LapisianEnchantPercentRate { get; set; }
+        Dictionary<string, int> LapisianEnchantPercentRate { get; set; }
 
         /// <summary>
         /// Extra value added to item.
         /// </summary>
-        Dictionary<string, uint> LapisianEnchantAddValue { get; set; }
+        Dictionary<string, int> LapisianEnchantAddValue { get; set; }
     }
 }

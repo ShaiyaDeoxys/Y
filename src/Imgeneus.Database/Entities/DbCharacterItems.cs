@@ -85,9 +85,6 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public DbCharacter Character { get; set; }
 
-        [ForeignKey(nameof(Type) + "," + nameof(TypeId))]
-        public DbItem Item { get; set; }
-
         public DbCharacterItems()
         {
             Craftname = string.Empty;

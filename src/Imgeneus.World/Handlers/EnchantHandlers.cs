@@ -27,10 +27,26 @@ namespace Imgeneus.World.Handlers
             if (item is null)
                 return;
 
-            var rate = _linkingManager.GetEnchantmentRate(item);
+            var rates = new int[10];
+            for (var i = 0; i < 10; i++)
+            {
+                _inventoryManager.InventoryItems.TryGetValue((packet.LapisiaBag[i], packet.LapisiaSlot[i]), out var lapisia);
+                if (lapisia is null)
+                    continue;
+
+                rates[i] = _linkingManager.GetEnchantmentRate(item, lapisia);
+            }
+
             var gold = _linkingManager.GetEnchantmentGold(item);
 
-            _packetFactory.SendEnchantRate(client, packet.LapisiaBag, packet.LapisiaSlot, rate, gold);
+            _packetFactory.SendEnchantRate(client, packet.LapisiaBag, packet.LapisiaSlot, rates, gold);
+        }
+
+        [HandlerAction(PacketType.ENCHANT_ADD)]
+        public void HandleEnchantAdd(WorldClient client, EnchantAddPacket packet)
+        {
+            var result = _linkingManager.TryEnchant(packet.ItemBag, packet.ItemSlot, packet.LapisiaBag, packet.LapisiaSlot);
+            _packetFactory.SendEnchantAdd(client, result.Success, result.Lapisia, result.Item, _inventoryManager.Gold);
         }
     }
 }

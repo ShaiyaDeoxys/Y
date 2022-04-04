@@ -11,7 +11,7 @@ namespace Imgeneus.World.Tests.ItemTests
         [Description("If item has composed stats, they are added to total stats calculation.")]
         public void ComposedStatsAreAdded()
         {
-            var item = new Item(databasePreloader.Object, JustiaArmor.Type, JustiaArmor.TypeId);
+            var item = new Item(databasePreloader.Object, enchantConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId);
             Assert.Equal(30, item.Str);
             Assert.Equal(30, item.Dex);
             Assert.Equal(30, item.Rec);
@@ -50,7 +50,7 @@ namespace Imgeneus.World.Tests.ItemTests
         [InlineData(10, 22, 33, 44, 55, 66, 1000, 2000, 3000, 20, "10223344556610203020")]
         public void ComposedStatsCanBeTranslatedToCraftName(int str, int dex, int rec, int intl, int wis, int luc, int hp, int mp, int sp, byte enchantmentLevel, string expected)
         {
-            var item = new Item(databasePreloader.Object, JustiaArmor.Type, JustiaArmor.TypeId);
+            var item = new Item(databasePreloader.Object, enchantConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId);
             item.ComposedStr = str;
             item.ComposedDex = dex;
             item.ComposedRec = rec;
@@ -76,7 +76,7 @@ namespace Imgeneus.World.Tests.ItemTests
         [InlineData("10223344556610203000", 10, 22, 33, 44, 55, 66, 1000, 2000, 3000)]
         public void ComposedStatsCanBeReadFromCraftName(string craftName, int str, int dex, int rec, int intl, int wis, int luc, int hp, int mp, int sp)
         {
-            var item = new Item(databasePreloader.Object, new DbCharacterItems()
+            var item = new Item(databasePreloader.Object, enchantConfig.Object, new DbCharacterItems()
             {
                 Craftname = craftName
             });

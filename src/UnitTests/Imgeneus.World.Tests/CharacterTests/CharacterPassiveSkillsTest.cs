@@ -46,10 +46,10 @@ namespace Imgeneus.World.Tests
         }
 
         [Fact]
-        public async Task WeaponMasteryTest()
+        public void WeaponMasteryTest()
         {
             var character = CreateCharacter();
-            var sword = new Item(databasePreloader.Object, 1, 1);
+            var sword = new Item(databasePreloader.Object, enchantConfig.Object, 1, 1);
             Assert.Equal(AttackSpeed.None, character.SpeedManager.TotalAttackSpeed);
 
             character.InventoryManager.Weapon = sword;

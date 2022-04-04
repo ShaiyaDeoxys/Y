@@ -57,7 +57,7 @@ namespace Imgeneus.World.Game.Linking
 
         public byte ReqIg => _item.ReqIg;
 
-        public ushort ReqVg => _item.ReqVg;
+        public ushort LinkingRate => _item.ReqVg;
 
         public byte Absorb => _item.Exp;
     }

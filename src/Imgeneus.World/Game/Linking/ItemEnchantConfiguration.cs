@@ -12,8 +12,8 @@ namespace Imgeneus.World.Game.Linking
             return ConfigurationHelper.Load<ItemEnchantConfiguration>(ConfigFile);
         }
 
-        public Dictionary<string, uint> LapisianEnchantPercentRate { get; set; }
+        public Dictionary<string, int> LapisianEnchantPercentRate { get; set; }
 
-        public Dictionary<string, uint> LapisianEnchantAddValue { get; set; }
+        public Dictionary<string, int> LapisianEnchantAddValue { get; set; }
     }
 }

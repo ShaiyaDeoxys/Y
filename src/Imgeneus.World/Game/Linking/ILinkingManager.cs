@@ -53,11 +53,16 @@ namespace Imgeneus.World.Game.Linking
         /// <summary>
         /// Calculates enchantment rate of specified item.
         /// </summary>
-        uint GetEnchantmentRate(Item item);
+        int GetEnchantmentRate(Item item, Item lapisia);
 
         /// <summary>
         /// Calculates enchantment cost for specified item.
         /// </summary>
         uint GetEnchantmentGold(Item item);
+
+        /// <summary>
+        /// Tries to enchant item.
+        /// </summary>
+        (bool Success, Item Item, Item Lapisia) TryEnchant(byte bag, byte slot, byte lapisiaBag, byte lapisiaSlot);
     }
 }

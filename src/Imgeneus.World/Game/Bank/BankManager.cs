@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Linking;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -16,15 +17,17 @@ namespace Imgeneus.World.Game.Bank
         private readonly ILogger<BankManager> _logger;
         private readonly IDatabase _database;
         private readonly IDatabasePreloader _databasePreloader;
+        private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IInventoryManager _inventoryManager;
 
         private int _ownerId;
 
-        public BankManager(ILogger<BankManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager)
+        public BankManager(ILogger<BankManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IInventoryManager inventoryManager)
         {
             _logger = logger;
             _database = database;
             _databasePreloader = databasePreloader;
+            _enchantConfig = enchantConfig;
             _inventoryManager = inventoryManager;
 #if DEBUG
             _logger.LogDebug("BankManager {hashcode} created", GetHashCode());
@@ -102,7 +105,7 @@ namespace Imgeneus.World.Game.Bank
 
             bankItem.ClaimTime = DateTime.UtcNow;
 
-            var item = _inventoryManager.AddItem(new Item(_databasePreloader, bankItem));
+            var item = _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, bankItem));
             if (item == null)
             {
                 BankItems.TryAdd(bankItem.Slot, bankItem);

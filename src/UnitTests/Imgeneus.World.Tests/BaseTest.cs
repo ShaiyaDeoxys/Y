@@ -74,6 +74,7 @@ namespace Imgeneus.World.Tests
         protected Mock<INoticeManager> noticeManagerMock = new Mock<INoticeManager>();
         protected Mock<IGameSession> gameSessionMock = new Mock<IGameSession>();
         protected Mock<IEtinManager> etinMock = new Mock<IEtinManager>();
+        protected Mock<IItemEnchantConfiguration> enchantConfig = new Mock<IItemEnchantConfiguration>();
 
         protected Map testMap => new Map(
                     Map.TEST_MAP_ID,
@@ -119,14 +120,14 @@ namespace Imgeneus.World.Tests
 
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager);
-            
+
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
 
             var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object);
             teleportManager.Init(_characterId);
 
-            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, enchantConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
             var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object);
@@ -134,11 +135,11 @@ namespace Imgeneus.World.Tests
             var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, databaseMock.Object, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object);
             guildManager.Init(_characterId);
 
-            var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, databasePreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider, new Mock<IItemEnchantConfiguration>().Object);
+            var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, databasePreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider, enchantConfig.Object);
             var tradeManager = new TradeManager(new Mock<ILogger<TradeManager>>().Object, gameWorldMock.Object, inventoryManager);
             var friendsManager = new FriendsManager(new Mock<ILogger<FriendsManager>>().Object, databaseMock.Object, gameWorldMock.Object);
             var duelManager = new DuelManager(new Mock<ILogger<DuelManager>>().Object, gameWorldMock.Object, tradeManager, movementManager, healthManager, killsManager, mapProvider, inventoryManager, teleportManager);
-            var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, inventoryManager);
+            var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, inventoryManager);
             var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, databasePreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager);
 
             var character = new Character(
@@ -213,6 +214,7 @@ namespace Imgeneus.World.Tests
                 map,
                 mobLoggerMock.Object,
                 databasePreloader.Object,
+                enchantConfig.Object,
                 countryProvider,
                 statsManager,
                 healthManager,
@@ -269,6 +271,35 @@ namespace Imgeneus.World.Tests
                         SkillPoint = 7
                     }
                 );
+
+            enchantConfig.Setup((conf) => conf.LapisianEnchantAddValue)
+                .Returns(
+                new Dictionary<string, int>()
+                {
+                    { "WeaponStep00", 0 },
+                    { "WeaponStep01", 7 },
+                    { "WeaponStep19", 286 },
+                    { "WeaponStep20", 311 },
+                    { "DefenseStep00", 0 },
+                    { "DefenseStep01", 5 },
+                    { "DefenseStep18", 90 },
+                    { "DefenseStep19", 95 },
+                    { "DefenseStep20", 100 }
+                });
+
+            enchantConfig.Setup((conf) => conf.LapisianEnchantPercentRate)
+                .Returns(
+                new Dictionary<string, int>()
+                {
+                    { "WeaponStep00", 900000 },
+                    { "WeaponStep01", 800000 },
+                    { "WeaponStep19", 200 },
+                    { "WeaponStep20", 0 },
+                    { "DefenseStep00", 990000 },
+                    { "DefenseStep01", 980000 },
+                    { "DefenseStep19", 200 },
+                    { "DefenseStep20", 0 }
+                });
 
             databasePreloader
                 .SetupGet((preloader) => preloader.Mobs)
@@ -332,7 +363,13 @@ namespace Imgeneus.World.Tests
                     { (43, 3), Etin_100 },
                     { (100, 107), SpeedyRemedy },
                     { (100, 45), PartySummonRune },
-                    { (100, 108), MinSunExpStone }
+                    { (100, 108), MinSunExpStone },
+                    { (95, 1), AssaultLapisia },
+                    { (95, 6), ProtectorsLapisia },
+                    { (95, 22), PerfectWeaponLapisia_Lvl1 },
+                    { (95, 23), PerfectWeaponLapisia_Lvl2 },
+                    { (95, 42), PerfectArmorLapisia_Lvl1 },
+                    { (95, 8), LapisiaBreakItem }
                 });
 
             databasePreloader
@@ -902,6 +939,58 @@ namespace Imgeneus.World.Tests
             Country = ItemClassType.AllFactions,
             Range = 250,
             AttackTime = 1
+        };
+
+        protected DbItem AssaultLapisia = new DbItem()
+        {
+            Type = 95,
+            TypeId = 1,
+            Special = SpecialEffect.Lapisia
+        };
+
+        protected DbItem ProtectorsLapisia = new DbItem()
+        {
+            Type = 95,
+            TypeId = 6,
+            Special = SpecialEffect.Lapisia
+        };
+
+        protected DbItem PerfectWeaponLapisia_Lvl1 = new DbItem()
+        {
+            Type = 95,
+            TypeId = 22,
+            Special = SpecialEffect.Lapisia,
+            ReqRec = 10000,
+            Range = 0,
+            AttackTime = 1
+        };
+
+        protected DbItem PerfectWeaponLapisia_Lvl2 = new DbItem()
+        {
+            Type = 95,
+            TypeId = 23,
+            Special = SpecialEffect.Lapisia,
+            ReqRec = 10000,
+            Range = 1,
+            AttackTime = 2
+        };
+
+        protected DbItem PerfectArmorLapisia_Lvl1 = new DbItem()
+        {
+            Type = 95,
+            TypeId = 42,
+            Special = SpecialEffect.Lapisia,
+            ReqRec = 10000,
+            Range = 0,
+            AttackTime = 1
+        };
+
+        protected DbItem LapisiaBreakItem = new DbItem()
+        {
+            Type = 95,
+            TypeId = 8,
+            Special = SpecialEffect.Lapisia,
+            ReqVg = 1
         };
 
         #endregion

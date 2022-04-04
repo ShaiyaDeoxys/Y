@@ -946,22 +946,40 @@ namespace Imgeneus.World.Packets
 
         #region Enchantment
 
-        public void SendEnchantRate(IWorldClient client, IEnumerable<byte> lapisiaBag, IEnumerable<byte> lapisiaSlot, uint rate, uint gold)
+        public void SendEnchantRate(IWorldClient client, IEnumerable<byte> lapisiaBag, IEnumerable<byte> lapisiaSlot, IEnumerable<int> rates, uint gold)
         {
             using var packet = new ImgeneusPacket(PacketType.ENCHANT_RATE);
-            
-            foreach(var bag in lapisiaBag)
+
+            foreach (var bag in lapisiaBag)
                 packet.WriteByte(bag);
 
             foreach (var slot in lapisiaSlot)
                 packet.WriteByte(slot);
 
-            // NB! In 8 ep each lapisia has its' own rate, but I'm implementing as in ep 4, when rate is the same for all lapisias.
-            for (var i = 0; i < 10; i++)
+            foreach (var rate in rates)
                 packet.Write(rate);
 
             for (var i = 0; i < 10; i++)
                 packet.Write(gold);
+
+            client.Send(packet);
+        }
+
+        public void SendEnchantAdd(IWorldClient client, bool success, Item lapisia, Item item, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.ENCHANT_ADD);
+
+            packet.Write(success);
+            packet.WriteByte(lapisia is null ? (byte)0 : lapisia.Bag);
+            packet.WriteByte(lapisia is null ? (byte)0 : lapisia.Slot);
+            packet.WriteByte(lapisia is null ? (byte)0 : (byte)lapisia.Count);
+            packet.WriteByte(lapisia is null ? (byte)0 : item.Bag);
+            packet.WriteByte(lapisia is null ? (byte)0 : item.Slot);
+            packet.Write(gold);
+            packet.Write((ushort)0);
+
+            var craftName = new CraftName(item is null ? Item.DEFAULT_CRAFT_NAME : item.GetCraftName()).Serialize();
+            packet.Write(craftName);
 
             client.Send(packet);
         }
@@ -1638,7 +1656,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE_OK);
             packet.Write(senderType);
-            packet.Write(isApproved ? (byte)0: (byte)1);
+            packet.Write(isApproved ? (byte)0 : (byte)1);
             client.Send(packet);
         }
 

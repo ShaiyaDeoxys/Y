@@ -12,7 +12,7 @@ namespace Imgeneus.World.Tests.ItemTests
         [InlineData(2, 92, 1200)]
         public void Item_NonStackableQuality(byte type, byte typeId, ushort expected)
         {
-            var item = new Item(databasePreloader.Object, type, typeId);
+            var item = new Item(databasePreloader.Object, enchantConfig.Object, type, typeId);
 
             Assert.True(item.Count == 1 && item.Quality > 0);
             Assert.Equal(expected, item.Quality);
@@ -24,7 +24,7 @@ namespace Imgeneus.World.Tests.ItemTests
         [InlineData(44, 237, 20, 0)]
         public void Item_StackableQuality(byte type, byte typeId, byte count, ushort expected)
         {
-            var item = new Item(databasePreloader.Object, type, typeId, count);
+            var item = new Item(databasePreloader.Object, enchantConfig.Object, type, typeId, count);
 
             Assert.True(item.Count > 1 && item.Quality == 0);
             Assert.Equal(expected, item.Quality);

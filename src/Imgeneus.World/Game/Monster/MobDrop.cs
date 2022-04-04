@@ -60,7 +60,7 @@ namespace Imgeneus.World.Game.Monster
                 }
                 var availableItems = _databasePreloader.ItemsByGrade[dropItem.Grade];
                 var randomItem = availableItems[_dropRandom.Next(0, availableItems.Count - 1)];
-                return new Item(_databasePreloader, randomItem.Type, randomItem.TypeId);
+                return new Item(_databasePreloader, _enchantConfig, randomItem.Type, randomItem.TypeId);
             }
             else
             {

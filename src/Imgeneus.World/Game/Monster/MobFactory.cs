@@ -5,6 +5,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
@@ -42,6 +43,7 @@ namespace Imgeneus.World.Game.Monster
                               map,
                               scope.ServiceProvider.GetRequiredService<ILogger<Mob>>(),
                               scope.ServiceProvider.GetRequiredService<IDatabasePreloader>(),
+                              scope.ServiceProvider.GetRequiredService<IItemEnchantConfiguration>(),
                               scope.ServiceProvider.GetRequiredService<ICountryProvider>(),
                               scope.ServiceProvider.GetRequiredService<IStatsManager>(),
                               scope.ServiceProvider.GetRequiredService<IHealthManager>(),

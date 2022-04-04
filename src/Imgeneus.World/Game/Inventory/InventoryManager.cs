@@ -10,6 +10,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player.Config;
@@ -32,6 +33,7 @@ namespace Imgeneus.World.Game.Inventory
     {
         private readonly ILogger _logger;
         private readonly IDatabasePreloader _databasePreloader;
+        private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IDatabase _database;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
@@ -51,10 +53,11 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ITeleportationManager _teleportationManager;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
+            _enchantConfig = enchantConfig;
             _database = database;
             _statsManager = statsManager;
             _healthManager = healthManager;
@@ -93,7 +96,7 @@ namespace Imgeneus.World.Game.Inventory
         {
             _ownerId = ownerId;
 
-            foreach (var item in items.Select(x => new Item(_databasePreloader, x)))
+            foreach (var item in items.Select(x => new Item(_databasePreloader, _enchantConfig, x)))
             {
                 InventoryItems.TryAdd((item.Bag, item.Slot), item);
 
@@ -787,7 +790,7 @@ namespace Imgeneus.World.Game.Inventory
                 destinationItem.Bag = destinationBag;
                 destinationItem.Slot = destinationSlot;
 
-                sourceItem = new Item(_databasePreloader, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
+                sourceItem = new Item(_databasePreloader, _enchantConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
             }
             else
             {
@@ -800,7 +803,7 @@ namespace Imgeneus.World.Game.Inventory
                     // Increase destination item count, if they are joinable.
                     destinationItem.Count += sourceItem.Count;
 
-                    sourceItem = new Item(_databasePreloader, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
+                    sourceItem = new Item(_databasePreloader, _enchantConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
                 }
                 else
                 {
@@ -1396,7 +1399,7 @@ namespace Imgeneus.World.Game.Inventory
 
             Gold = (uint)(Gold - dbItem.Buy * count);
 
-            var item = new Item(_databasePreloader, dbItem.Type, dbItem.TypeId);
+            var item = new Item(_databasePreloader, _enchantConfig, dbItem.Type, dbItem.TypeId);
             item.Count = count;
 
             result = BuyResult.Success;
