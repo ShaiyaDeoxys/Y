@@ -85,6 +85,7 @@ Our main goal is learning, clients are used only for testing. We are not trying 
 * __Eastrall__ - helped with project structure and provider awesome libraries [LiteNetwork](https://github.com/aosyatnik/LiteNetwork) and [Sylver.HandlerInvoker](https://github.com/aosyatnik/Sylver.HandlerInvoker).
 * __Kreon__ - helped with enchant packet structure.
 * __Razor__ & __Kegi__ - created guides for beginners.
+* __UZC__ - answered a lot of ep 8 questions.
 * maybe __YOU__?
 
 ## Known issues
