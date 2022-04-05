@@ -906,6 +906,9 @@ namespace Imgeneus.World.Game.Linking
             if (item is null || item.EnchantmentLevel == 20)
                 return (false, null, null);
 
+            if ((item.IsWeapon && !lapisia.IsWeaponLapisia) || (item.IsArmor && !lapisia.IsArmorLapisia) || (item.IsShield && !lapisia.IsWeaponLapisia))
+                return (false, null, null);
+
             if (item.EnchantmentLevel < lapisia.MinEnchantLevel || item.EnchantmentLevel >= lapisia.MaxEnchantLevel && lapisia.MinEnchantLevel != lapisia.MaxEnchantLevel)
                 return (false, null, null);
 

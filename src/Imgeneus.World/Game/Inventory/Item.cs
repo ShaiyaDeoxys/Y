@@ -152,6 +152,8 @@ namespace Imgeneus.World.Game.Inventory
         public byte MinEnchantLevel => (byte)_dbItem.Range;
         public byte MaxEnchantLevel => _dbItem.AttackTime;
         public ushort EnchantRate => _dbItem.ReqRec;
+        public bool IsWeaponLapisia => _dbItem.Reqlevel > 0;
+        public bool IsArmorLapisia => _dbItem.Country > 0;
 
         public ushort Reqlevel { get => _dbItem.Reqlevel; }
 
@@ -1010,11 +1012,18 @@ namespace Imgeneus.World.Game.Inventory
             get => AllWeaponIds.Contains(Type);
         }
 
-        private static readonly List<byte> AddArmorIds = new List<byte>() { 16, 17, 18, 20, 21, 31, 32, 33, 35, 36, 67, 68, 70, 71, 72, 73, 74, 76, 77, 82, 83, 85, 86, 87, 88, 89, 91, 92 };
+        private static readonly List<byte> AllArmorIds = new List<byte>() { 16, 17, 18, 20, 21, 31, 32, 33, 35, 36, 67, 68, 70, 71, 72, 73, 74, 76, 77, 82, 83, 85, 86, 87, 88, 89, 91, 92 };
 
         public bool IsArmor
         {
-            get => AddArmorIds.Contains(Type);
+            get => AllArmorIds.Contains(Type);
+        }
+
+        private static readonly List<byte> AllShields = new List<byte>() { 69, 84 };
+
+        public bool IsShield
+        {
+            get => AllShields.Contains(Type);
         }
 
         public bool IsMount

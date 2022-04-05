@@ -945,14 +945,17 @@ namespace Imgeneus.World.Tests
         {
             Type = 95,
             TypeId = 1,
-            Special = SpecialEffect.Lapisia
+            Special = SpecialEffect.Lapisia,
+            Reqlevel = 1
+
         };
 
         protected DbItem ProtectorsLapisia = new DbItem()
         {
             Type = 95,
             TypeId = 6,
-            Special = SpecialEffect.Lapisia
+            Special = SpecialEffect.Lapisia,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem PerfectWeaponLapisia_Lvl1 = new DbItem()
@@ -962,7 +965,8 @@ namespace Imgeneus.World.Tests
             Special = SpecialEffect.Lapisia,
             ReqRec = 10000,
             Range = 0,
-            AttackTime = 1
+            AttackTime = 1,
+            Reqlevel = 1
         };
 
         protected DbItem PerfectWeaponLapisia_Lvl2 = new DbItem()
@@ -972,7 +976,8 @@ namespace Imgeneus.World.Tests
             Special = SpecialEffect.Lapisia,
             ReqRec = 10000,
             Range = 1,
-            AttackTime = 2
+            AttackTime = 2,
+            Reqlevel = 1
         };
 
         protected DbItem PerfectArmorLapisia_Lvl1 = new DbItem()
@@ -982,7 +987,8 @@ namespace Imgeneus.World.Tests
             Special = SpecialEffect.Lapisia,
             ReqRec = 10000,
             Range = 0,
-            AttackTime = 1
+            AttackTime = 1,
+            Country = ItemClassType.AllFactions
         };
 
         protected DbItem LapisiaBreakItem = new DbItem()
@@ -990,7 +996,8 @@ namespace Imgeneus.World.Tests
             Type = 95,
             TypeId = 8,
             Special = SpecialEffect.Lapisia,
-            ReqVg = 1
+            ReqVg = 1,
+            Country = ItemClassType.AllFactions
         };
 
         #endregion

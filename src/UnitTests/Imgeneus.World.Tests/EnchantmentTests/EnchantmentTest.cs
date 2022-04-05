@@ -262,5 +262,37 @@ namespace Imgeneus.World.Tests.EnchantmentTests
             character.LinkingManager.TryEnchant(armor.Bag, armor.Slot, lapisia.Bag, lapisia.Slot);
             Assert.Null(character.InventoryManager.Armor);
         }
+
+        [Fact]
+        [Description("Enchantment fails if item is weapon and lapisia is for armor.")]
+        public void EnchantmentCheckItemAndLapisiaType()
+        {
+            var character = CreateCharacter();
+
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectArmorLapisia_Lvl1.Type, PerfectArmorLapisia_Lvl1.TypeId);
+            character.InventoryManager.AddItem(lapisia);
+
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            character.InventoryManager.AddItem(weapon);
+
+            var result = character.LinkingManager.TryEnchant(weapon.Bag, weapon.Slot, lapisia.Bag, lapisia.Slot);
+            Assert.False(result.Success);
+        }
+
+        [Fact]
+        [Description("Enchantment fails if item is armor and lapisia is for weapon.")]
+        public void EnchantmentCheckItemAndLapisiaType2()
+        {
+            var character = CreateCharacter();
+
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
+            character.InventoryManager.AddItem(lapisia);
+
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            character.InventoryManager.AddItem(armor);
+
+            var result = character.LinkingManager.TryEnchant(armor.Bag, armor.Slot, lapisia.Bag, lapisia.Slot);
+            Assert.False(result.Success);
+        }
     }
 }
