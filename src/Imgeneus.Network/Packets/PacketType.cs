@@ -217,7 +217,8 @@
         RAID_MEMBER_GET_ITEM = 0x0C14, // 3092
 
         // Summon
-        PARTY_CALL_CASTING = 0x0221, // 545
+        ITEM_CASTING = 0x0221, // 545
+        ITEM_CASTING_FINISHED = 0x0222, // 546
         PARTY_CALL_REQUEST = 0x0223, // 547
         PARTY_CALL_ANSWER = 0x0224, // 548
 
@@ -335,6 +336,9 @@
         GUILD_ETIN_RETURN = 0x0D35, // 3381
         GUILD_PVP_WIN = 0x0D36, // 3382
         GUILD_RANK_UPDATE = 0x0D37, // 3383
+
+        // Teleport
+        TELEPORT_PRELOADED_TOWN = 0x055A, // 1370
 
         // Dyeing
         DYE_CONFIRM = 0x055B, // 1371

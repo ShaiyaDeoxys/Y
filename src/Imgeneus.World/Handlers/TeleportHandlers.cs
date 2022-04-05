@@ -1,8 +1,11 @@
-﻿using Imgeneus.Network.Packets;
+﻿using Imgeneus.Database.Constants;
+using Imgeneus.Database.Preload;
+using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
@@ -18,22 +21,26 @@ namespace Imgeneus.World.Handlers
     public class TeleportHandlers : BaseHandler
     {
         private readonly ILogger<TeleportHandlers> _logger;
+        private readonly ILogger<Npc> _npcLogger;
         private readonly ITeleportationManager _teleportationManager;
         private readonly IMapProvider _mapProvider;
         private readonly IGameWorld _gameWorld;
         private readonly IGuildManager _guildManager;
         private readonly IInventoryManager _inventoryManager;
         private readonly IMapsLoader _mapLoader;
+        private readonly IDatabasePreloader _databasePreloader;
 
-        public TeleportHandlers(ILogger<TeleportHandlers> logger, IGamePacketFactory packetFactory, IGameSession gameSession, ITeleportationManager teleportationManager, IMapProvider mapProvider, IGameWorld gameWorld, IGuildManager guildManager, IInventoryManager inventoryManager, IMapsLoader mapLoader) : base(packetFactory, gameSession)
+        public TeleportHandlers(ILogger<TeleportHandlers> logger, ILogger<Npc> npcLogger, IGamePacketFactory packetFactory, IGameSession gameSession, ITeleportationManager teleportationManager, IMapProvider mapProvider, IGameWorld gameWorld, IGuildManager guildManager, IInventoryManager inventoryManager, IMapsLoader mapLoader, IDatabasePreloader databasePreloader) : base(packetFactory, gameSession)
         {
             _logger = logger;
+            _npcLogger = npcLogger;
             _teleportationManager = teleportationManager;
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
             _guildManager = guildManager;
             _inventoryManager = inventoryManager;
             _mapLoader = mapLoader;
+            _databasePreloader = databasePreloader;
         }
 
         [HandlerAction(PacketType.CHARACTER_ENTERED_PORTAL)]
@@ -48,7 +55,6 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_TELEPORT_VIA_NPC)]
         public void HandleNpcTeleport(WorldClient client, CharacterTeleportViaNpcPacket packet)
         {
-
             var npc = _mapProvider.Map.GetNPC(_gameWorld.Players[_gameSession.CharId].CellId, packet.NpcId);
             if (npc is null)
             {
@@ -104,6 +110,29 @@ namespace Imgeneus.World.Handlers
 
             _inventoryManager.Gold = (uint)(_inventoryManager.Gold - gate.Cost);
             _packetFactory.SendTeleportViaNpc(client, NpcTeleportNotAllowedReason.Success, _inventoryManager.Gold);
+            _teleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
+        }
+
+        [HandlerAction(PacketType.TELEPORT_PRELOADED_TOWN)]
+        public void HandleTeleportPreloadedTown(WorldClient client, TeleportPreloadedTownPacket packet)
+        {
+            _inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var item);
+            if (item is null || item.Special != SpecialEffect.TownTeleport || item.NpcId == 0)
+                return;
+
+            if (!_databasePreloader.NPCs.TryGetValue((2, item.NpcId), out var dbNpc))
+                return;
+
+            var npc = new Npc(_npcLogger, dbNpc);
+            if (!npc.ContainsGate(packet.GateId))
+                return;
+
+            var gate = npc.Gates[packet.GateId];
+
+            var mapConfig = _mapLoader.LoadMapConfiguration(gate.MapId);
+            if (mapConfig is null)
+                return;
+
             _teleportationManager.Teleport(gate.MapId, gate.X, gate.Y, gate.Z);
         }
     }

@@ -472,7 +472,7 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnSummon(int senderId)
         {
             foreach (var p in GetAllPlayers(true))
-                Map.PacketFactory.SendPartycallCasting(p.GameSession.Client, senderId);
+                Map.PacketFactory.SendItemCasting(p.GameSession.Client, senderId);
         }
 
         #endregion

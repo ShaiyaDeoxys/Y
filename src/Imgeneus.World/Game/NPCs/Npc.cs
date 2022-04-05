@@ -12,7 +12,7 @@ namespace Imgeneus.World.Game.NPCs
         private readonly ILogger _logger;
         private readonly DbNpc _dbNpc;
 
-        public Npc(List<(float X, float Y, float Z, ushort Angle)> moveCoordinates, Map map, ILogger<Npc> logger, DbNpc dbNpc)
+        public Npc(List<(float X, float Y, float Z, ushort Angle)> moveCoordinates, Map map, ILogger<Npc> logger, DbNpc dbNpc): this(logger, dbNpc)
         {
             _logger = logger;
             _dbNpc = dbNpc;
@@ -21,7 +21,10 @@ namespace Imgeneus.World.Game.NPCs
             PosZ = moveCoordinates[0].Z;
             Angle = moveCoordinates[0].Angle;
             Map = map;
+        }
 
+        public Npc(ILogger<Npc> logger, DbNpc dbNpc)
+        {
             // Set products.
             var dbProductsString = dbNpc.Products;
             if (!string.IsNullOrWhiteSpace(dbProductsString))
@@ -247,7 +250,7 @@ namespace Imgeneus.World.Game.NPCs
         {
             if (Gates.Count <= index)
             {
-                _logger.LogWarning($"NPC {_dbNpc.Id} doesn't contain gate at index {index}. Check it out.");
+                _logger.LogWarning("NPC {id} doesn't contain gate at index {index}. Check it out.", _dbNpc.Id, index);
                 return false;
             }
 

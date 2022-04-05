@@ -334,7 +334,7 @@ namespace Imgeneus.World.Packets
 
         #region Summon
 
-        void SendPartycallCasting(IWorldClient client, int senderId);
+        void SendItemCasting(IWorldClient client, int senderId);
         void SendPartycallRequest(IWorldClient client, int senderId);
         void SendSummonAnswer(IWorldClient client, int senderId, bool ok);
 

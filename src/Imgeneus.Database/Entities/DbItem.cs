@@ -126,6 +126,7 @@ namespace Imgeneus.Database.Entities
         /// For lapis, if it's set to 1, lapis can break equipment while unsuccessful linking.
         /// For items, that generate other items (e.g. "Mystra's Box") it's index in file PSM_Client\Bin\Data\ItemCreate.ini
         /// For lapisia, if it's to 1, lapisia can break equipment while unsuccessful enchantment.
+        /// For ep 8 teleport items, it's type id of npc.
         /// </summary>
         [Required]
         public ushort ReqVg { get; set; }

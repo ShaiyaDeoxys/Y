@@ -149,16 +149,8 @@ namespace Imgeneus.World.Game.Inventory
         public byte ReqIg => _dbItem.ReqIg;
         public ushort SkillId => _dbItem.Range;
         public byte SkillLevel => _dbItem.AttackTime;
-        public byte MinEnchantLevel => (byte)_dbItem.Range;
-        public byte MaxEnchantLevel => _dbItem.AttackTime;
-        public ushort EnchantRate => _dbItem.ReqRec;
-        public bool IsWeaponLapisia => _dbItem.Reqlevel > 0;
-        public bool IsArmorLapisia => _dbItem.Country > 0;
-
         public ushort Reqlevel { get => _dbItem.Reqlevel; }
-
         public ItemClassType ItemClassType { get => _dbItem.Country; }
-
         public bool IsForFighter { get => _dbItem.Attackfighter == 1; }
         public bool IsForDefender { get => _dbItem.Defensefighter == 1; }
         public bool IsForRanger { get => _dbItem.Patrolrogue == 1; }
@@ -1129,6 +1121,22 @@ namespace Imgeneus.World.Game.Inventory
             { 10, 600000 },
             { 11, 2000 }
         };
+
+        #endregion
+
+        #region Enchantment
+
+        public byte MinEnchantLevel => (byte)_dbItem.Range;
+        public byte MaxEnchantLevel => _dbItem.AttackTime;
+        public ushort EnchantRate => _dbItem.ReqRec;
+        public bool IsWeaponLapisia => _dbItem.Reqlevel > 0;
+        public bool IsArmorLapisia => _dbItem.Country > 0;
+
+        #endregion
+
+        #region Teleport
+
+        public ushort NpcId => _dbItem.ReqVg;
 
         #endregion
 

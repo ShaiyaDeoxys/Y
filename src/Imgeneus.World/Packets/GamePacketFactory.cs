@@ -2214,9 +2214,9 @@ namespace Imgeneus.World.Packets
 
         #region Summon
 
-        public void SendPartycallCasting(IWorldClient client, int senderId)
+        public void SendItemCasting(IWorldClient client, int senderId)
         {
-            using var packet = new ImgeneusPacket(PacketType.PARTY_CALL_CASTING);
+            using var packet = new ImgeneusPacket(PacketType.ITEM_CASTING);
             packet.Write(senderId);
             client.Send(packet);
         }
