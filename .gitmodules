@@ -4,3 +4,6 @@
 [submodule "submodules/Sylver.HandlerInvoker"]
 	path = submodules/Sylver.HandlerInvoker
 	url = https://github.com/aosyatnik/Sylver.HandlerInvoker.git
+[submodule "submodules/Parsec"]
+	path = submodules/Parsec
+	url = git@github.com:aosyatnik/Parsec.git
