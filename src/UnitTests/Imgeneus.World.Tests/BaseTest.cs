@@ -51,6 +51,7 @@ using System.Threading.Tasks;
 using Imgeneus.World.Game.Etin;
 using Imgeneus.GameDefinitions;
 using Parsec.Shaiya.NpcQuest;
+using Imgeneus.World.Tests.NpcTests;
 
 namespace Imgeneus.World.Tests
 {
@@ -413,7 +414,7 @@ namespace Imgeneus.World.Tests
                 .SetupGet((preloader) => preloader.NPCs)
                 .Returns(new Dictionary<(byte Type, short TypeId), BaseNpc>()
                 {
-                    { (1, 1), WeaponMerchant.Object }
+                    { (1, 1), WeaponMerchant }
                 });
 
             databaseMock
@@ -1178,7 +1179,12 @@ namespace Imgeneus.World.Tests
 
         #region NPC
 
-        protected Mock<Merchant> WeaponMerchant = new Mock<Merchant>();
+        protected TestNpc WeaponMerchant = new TestNpc() {
+            Type = NpcType.Merchant,
+            TypeId = 1,
+            Name = "Erina Probicio",
+            MerchantType = MerchantType.WeaponMerchant
+        };
 
         #endregion
     }

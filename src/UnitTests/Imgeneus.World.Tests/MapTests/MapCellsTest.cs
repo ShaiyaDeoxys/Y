@@ -137,7 +137,7 @@ namespace Imgeneus.World.Tests.MapTests
         {
             var map = testMap;
             var cell = new MapCell(0, new List<int>(), map);
-            cell.AddNPC(new Npc(new List<(float X, float Y, float Z, ushort Angle)>() { (0, 0, 0, 0) }, map, npcLoggerMock.Object, WeaponMerchant.Object));
+            cell.AddNPC(new Npc(new List<(float X, float Y, float Z, ushort Angle)>() { (0, 0, 0, 0) }, map, npcLoggerMock.Object, WeaponMerchant));
 
             Assert.NotEmpty(cell.GetAllNPCs(false));
 
