@@ -6,4 +6,4 @@
 	url = https://github.com/aosyatnik/Sylver.HandlerInvoker.git
 [submodule "submodules/Parsec"]
 	path = submodules/Parsec
-	url = git@github.com:aosyatnik/Parsec.git
+	url = https://github.com/aosyatnik/Parsec
