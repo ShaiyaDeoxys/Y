@@ -18,7 +18,7 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Event, that is fired, when number of killed mobs for quest changes.
         /// </summary>
-        event Action<ushort, byte, byte> OnQuestMobCountChanged;
+        event Action<short, byte, byte> OnQuestMobCountChanged;
 
         /// <summary>
         /// Event, that is fired, when quest is finished.
@@ -29,7 +29,7 @@ namespace Imgeneus.World.Game.Quests
         /// Tries to start new quest.
         /// </summary>
         /// <returns>true if quest is started</returns>
-        Task<bool> TryStartQuest(int npcId, ushort questId);
+        Task<bool> TryStartQuest(int npcId, short questId);
 
         /// <summary>
         /// Changes number of killed mobs in quest.
@@ -45,11 +45,11 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Finished quest without success.
         /// </summary>
-        void QuitQuest(ushort questId);
+        void QuitQuest(short questId);
 
         /// <summary>
         /// Tries successfully finish quest.
         /// </summary>
-        void TryFinishQuest(int npcId, ushort questId);
+        void TryFinishQuest(int npcId, short questId);
     }
 }

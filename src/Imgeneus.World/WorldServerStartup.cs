@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.Logs;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
@@ -83,6 +84,7 @@ namespace Imgeneus.World
             services.AddSingleton<IWorldServer, WorldServer>();
             services.AddSingleton<IGamePacketFactory, GamePacketFactory>();
             services.AddSingleton<IGameWorld, GameWorld>();
+            services.AddSingleton<IGameDefinitionsPreloder, GameDefinitionsPreloder>();
             services.AddSingleton<IMapsLoader, MapsLoader>();
             services.AddSingleton<IMapFactory, MapFactory>();
             services.AddSingleton<IMobFactory, MobFactory>();
@@ -144,7 +146,7 @@ namespace Imgeneus.World
             services.AddTransient<ITimeService, TimeService>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder)
         {
             if (env.IsDevelopment())
             {
@@ -155,6 +157,7 @@ namespace Imgeneus.World
 
             mainDb.Migrate();
             logsDb.Migrate();
+            definitionsPreloder.Preload();
             worldServer.Start();
         }
     }

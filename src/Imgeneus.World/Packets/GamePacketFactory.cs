@@ -2076,7 +2076,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendQuestStarted(IWorldClient client, ushort questId, int npcId)
+        public void SendQuestStarted(IWorldClient client, short questId, int npcId)
         {
             using var packet = new ImgeneusPacket(PacketType.QUEST_START);
             packet.Write(npcId);
@@ -2100,7 +2100,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendQuestCountUpdate(IWorldClient client, ushort questId, byte index, byte count)
+        public void SendQuestCountUpdate(IWorldClient client, short questId, byte index, byte count)
         {
             using var packet = new ImgeneusPacket(PacketType.QUEST_UPDATE_COUNT);
             packet.Write(questId);

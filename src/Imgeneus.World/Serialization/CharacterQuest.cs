@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class CharacterQuest : BaseSerializable
     {
         [FieldOrder(0)]
-        public ushort QuestId;
+        public short QuestId;
 
         [FieldOrder(1)]
         public ushort RemainingTime;

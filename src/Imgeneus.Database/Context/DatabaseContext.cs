@@ -73,11 +73,6 @@ namespace Imgeneus.Database.Context
         public DbSet<DbNpc> Npcs { get; set; }
 
         /// <summary>
-        /// Available quests. Taken from NPCQuest.SData.
-        /// </summary>
-        public DbSet<DbQuest> Quests { get; set; }
-
-        /// <summary>
         /// Collection of levels and required experience for them. Taken from original db.
         /// </summary>
         public DbSet<DbLevel> Levels { get; set; }

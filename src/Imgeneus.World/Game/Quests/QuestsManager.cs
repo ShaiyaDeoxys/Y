@@ -1,6 +1,6 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
-using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Zone;
@@ -15,7 +15,7 @@ namespace Imgeneus.World.Game.Quests
     public class QuestsManager : IQuestsManager
     {
         private readonly ILogger<QuestsManager> _logger;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IMapProvider _mapProvider;
         private readonly IGameWorld _gameWorld;
         private readonly IDatabase _database;
@@ -23,10 +23,10 @@ namespace Imgeneus.World.Game.Quests
         private readonly IInventoryManager _inventoryManager;
         private int _ownerId;
 
-        public QuestsManager(ILogger<QuestsManager> logger, IDatabasePreloader databasePreloader, IMapProvider mapProvider, IGameWorld gameWorld, IDatabase database, IPartyManager partyManager, IInventoryManager inventoryManager)
+        public QuestsManager(ILogger<QuestsManager> logger, IGameDefinitionsPreloder definitionsPreloader, IMapProvider mapProvider, IGameWorld gameWorld, IDatabase database, IPartyManager partyManager, IInventoryManager inventoryManager)
         {
             _logger = logger;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
             _database = database;
@@ -50,7 +50,14 @@ namespace Imgeneus.World.Game.Quests
         {
             _ownerId = ownerId;
 
-            Quests.AddRange(quests.Select(x => new Quest(_databasePreloader, x)));
+            foreach (var x in quests)
+            {
+                if (!_definitionsPreloader.Quests.ContainsKey(x.QuestId))
+                    continue;
+
+                var q = new Quest(_definitionsPreloader.Quests[x.QuestId], x);
+                Quests.Add(q);
+            }
 
             foreach (var quest in Quests)
                 quest.QuestTimeElapsed += Quest_QuestTimeElapsed;
@@ -83,7 +90,7 @@ namespace Imgeneus.World.Game.Quests
 
         public List<Quest> Quests { get; init; } = new List<Quest>();
 
-        public event Action<ushort, byte, byte> OnQuestMobCountChanged;
+        public event Action<short, byte, byte> OnQuestMobCountChanged;
 
         public event Action<Quest, int> OnQuestFinished;
 
@@ -92,7 +99,7 @@ namespace Imgeneus.World.Game.Quests
             //SendQuestFinished(quest);
         }
 
-        public async Task<bool> TryStartQuest(int npcId, ushort questId)
+        public async Task<bool> TryStartQuest(int npcId, short questId)
         {
             var npcQuestGiver = _mapProvider.Map.GetNPC(_gameWorld.Players[_ownerId].CellId, npcId);
             if (npcQuestGiver is null || !npcQuestGiver.StartQuestIds.Contains(questId))
@@ -101,7 +108,7 @@ namespace Imgeneus.World.Game.Quests
                 return false;
             }
 
-            var quest = new Quest(_databasePreloader, questId);
+            var quest = new Quest(_definitionsPreloader.Quests[questId]);
             quest.QuestTimeElapsed += Quest_QuestTimeElapsed;
             quest.StartQuestTimer();
             Quests.Add(quest);
@@ -116,7 +123,7 @@ namespace Imgeneus.World.Game.Quests
             return count > 0;
         }
 
-        public void QuitQuest(ushort questId)
+        public void QuitQuest(short questId)
         {
             var quest = Quests.FirstOrDefault(q => q.Id == questId && !q.IsFinished);
             if (quest is null)
@@ -126,7 +133,7 @@ namespace Imgeneus.World.Game.Quests
             OnQuestFinished?.Invoke(quest, 0);
         }
 
-        public void TryFinishQuest(int npcId, ushort questId)
+        public void TryFinishQuest(int npcId, short questId)
         {
             var npcQuestReceiver = _mapProvider.Map.GetNPC(_gameWorld.Players[_ownerId].CellId, npcId);
             if (npcQuestReceiver is null || !npcQuestReceiver.EndQuestIds.Contains(questId))

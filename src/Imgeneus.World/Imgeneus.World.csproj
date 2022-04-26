@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\LiteNetwork\src\LiteNetwork\LiteNetwork.csproj" />
     <ProjectReference Include="..\..\submodules\Sylver.HandlerInvoker\src\Sylver.HandlerInvoker\Sylver.HandlerInvoker.csproj" />
+    <ProjectReference Include="..\Imgeneus.GameDefinitions\Imgeneus.GameDefinitions.csproj" />
     <ProjectReference Include="..\Imgeneus.InterServer\Imgeneus.InterServer.csproj" />
     <ProjectReference Include="..\Imgeneus.Logs\Imgeneus.Logs.csproj" />
     <ProjectReference Include="..\Imgeneus.Core\Imgeneus.Core.csproj" />
@@ -58,9 +59,16 @@
     <None Update="config\maps\obelisk_init.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="config\SData\NpcQuest.SData">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="NLog.Config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="config\SData\" />
   </ItemGroup>
 
 </Project>

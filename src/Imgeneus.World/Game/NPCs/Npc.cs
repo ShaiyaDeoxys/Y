@@ -55,7 +55,7 @@ namespace Imgeneus.World.Game.NPCs
                 {
                     try
                     {
-                        _startQuestIds.Add(ushort.Parse(quest));
+                        _startQuestIds.Add(short.Parse(quest));
                     }
                     catch
                     {
@@ -72,7 +72,7 @@ namespace Imgeneus.World.Game.NPCs
                 {
                     try
                     {
-                        _endQuestIds.Add(ushort.Parse(quest));
+                        _endQuestIds.Add(short.Parse(quest));
                     }
                     catch
                     {
@@ -183,18 +183,18 @@ namespace Imgeneus.World.Game.NPCs
 
         #region Start quests
 
-        private readonly IList<ushort> _startQuestIds = new List<ushort>();
-        private IList<ushort> _readonlyStartQuestIds;
+        private readonly IList<short> _startQuestIds = new List<short>();
+        private IList<short> _readonlyStartQuestIds;
 
         /// <summary>
         /// Collection of quests, that player can start at this npc.
         /// </summary>
-        public IList<ushort> StartQuestIds
+        public IList<short> StartQuestIds
         {
             get
             {
                 if (_readonlyStartQuestIds is null)
-                    _readonlyStartQuestIds = new ReadOnlyCollection<ushort>(_startQuestIds);
+                    _readonlyStartQuestIds = new ReadOnlyCollection<short>(_startQuestIds);
 
                 return _readonlyStartQuestIds;
             }
@@ -204,18 +204,18 @@ namespace Imgeneus.World.Game.NPCs
 
         #region End quests
 
-        private readonly IList<ushort> _endQuestIds = new List<ushort>();
-        private IList<ushort> _readonlyEndQuestIds;
+        private readonly IList<short> _endQuestIds = new List<short>();
+        private IList<short> _readonlyEndQuestIds;
 
         /// <summary>
         /// Collection of quests, that player can start at this npc.
         /// </summary>
-        public IList<ushort> EndQuestIds
+        public IList<short> EndQuestIds
         {
             get
             {
                 if (_readonlyEndQuestIds is null)
-                    _readonlyEndQuestIds = new ReadOnlyCollection<ushort>(_endQuestIds);
+                    _readonlyEndQuestIds = new ReadOnlyCollection<short>(_endQuestIds);
 
                 return _readonlyEndQuestIds;
             }

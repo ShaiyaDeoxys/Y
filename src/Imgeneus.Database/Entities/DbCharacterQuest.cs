@@ -6,7 +6,7 @@ namespace Imgeneus.Database.Entities
     public class DbCharacterQuest : DbEntity
     {
         public int CharacterId { get; set; }
-        public ushort QuestId { get; set; }
+        public short QuestId { get; set; }
 
         /// <summary>
         /// Only available for time-limited quests.
@@ -45,8 +45,5 @@ namespace Imgeneus.Database.Entities
 
         [ForeignKey(nameof(CharacterId))]
         public DbCharacter Character { get; set; }
-
-        [ForeignKey(nameof(QuestId))]
-        public DbQuest Quest { get; set; }
     }
 }

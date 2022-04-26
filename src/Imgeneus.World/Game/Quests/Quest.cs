@@ -1,19 +1,18 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using SQuest = Parsec.Shaiya.NpcQuest.Quest;
 
 namespace Imgeneus.World.Game.Quests
 {
     public class Quest
     {
-        private readonly IDatabasePreloader _databasePreloader;
-        private readonly DbQuest _dbQuest;
+        private readonly SQuest _quest;
 
-        public Quest(IDatabasePreloader databasePreloader, DbCharacterQuest dbCharacterQuest) : this(databasePreloader, dbCharacterQuest.QuestId)
+        public Quest(SQuest quest, DbCharacterQuest dbCharacterQuest) : this(quest)
         {
             if (dbCharacterQuest.Delay > 0)
             {
@@ -27,10 +26,9 @@ namespace Imgeneus.World.Game.Quests
             IsSuccessful = dbCharacterQuest.Success;
         }
 
-        public Quest(IDatabasePreloader databasePreloader, ushort questId)
+        public Quest(SQuest quest)
         {
-            _databasePreloader = databasePreloader;
-            _dbQuest = _databasePreloader.Quests[questId];
+            _quest = quest;
 
             _endTimer.AutoReset = false;
             _endTimer.Elapsed += EndTimer_Elapsed;
@@ -39,7 +37,7 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Quest id.
         /// </summary>
-        public ushort Id { get => _dbQuest.Id; }
+        public short Id { get => _quest.Id; }
 
         private bool _saveToDb;
         /// <summary>
@@ -108,7 +106,7 @@ namespace Imgeneus.World.Game.Quests
         /// </summary>
         public bool RequirementsFulfilled(IEnumerable<Item> inventoryItems)
         {
-            return CountMob1 >= _dbQuest.MobCount_1 && CountMob2 >= _dbQuest.MobCount_2
+            return CountMob1 >= _quest.RequiredMobCount1 && CountMob2 >= _quest.RequiredMobCount2
                   && inventoryItems.Count(itm => itm.Type == FarmItemType_1 && itm.TypeId == FarmItemTypeId_1) >= FarmItemCount_1
                   && inventoryItems.Count(itm => itm.Type == FarmItemType_2 && itm.TypeId == FarmItemTypeId_2) >= FarmItemCount_2
                   && inventoryItems.Count(itm => itm.Type == FarmItemType_3 && itm.TypeId == FarmItemTypeId_3) >= FarmItemCount_3;
@@ -130,67 +128,67 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_1 { get => _dbQuest.FarmItemType_1; }
+        public byte FarmItemType_1 { get => _quest.RequiredItems[0].Type; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_1 { get => _dbQuest.FarmItemTypeId_1; }
+        public byte FarmItemTypeId_1 { get => _quest.RequiredItems[0].TypeId; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_1 { get => _dbQuest.FarmItemCount_1; }
+        public byte FarmItemCount_1 { get => _quest.RequiredItems[0].Count; }
 
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_2 { get => _dbQuest.FarmItemType_2; }
+        public byte FarmItemType_2 { get => _quest.RequiredItems[1].Type; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_2 { get => _dbQuest.FarmItemTypeId_2; }
+        public byte FarmItemTypeId_2 { get => _quest.RequiredItems[1].TypeId; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_2 { get => _dbQuest.FarmItemCount_2; }
+        public byte FarmItemCount_2 { get => _quest.RequiredItems[1].Count; }
 
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_3 { get => _dbQuest.FarmItemType_3; }
+        public byte FarmItemType_3 { get => _quest.RequiredItems[2].Type; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_3 { get => _dbQuest.FarmItemTypeId_3; }
+        public byte FarmItemTypeId_3 { get => _quest.RequiredItems[2].TypeId; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_3 { get => _dbQuest.FarmItemCount_3; }
+        public byte FarmItemCount_3 { get => _quest.RequiredItems[2].Count; }
 
         /// <summary>
         /// Mob 1, that should be killed.
         /// </summary>
-        public ushort RequiredMobId_1 { get => _dbQuest.MobId_1; }
+        public ushort RequiredMobId_1 { get => _quest.RequiredMobId1; }
 
         /// <summary>
         /// Number of mobs 1, that should be killed.
         /// </summary>
-        public byte RequiredMobCount_1 { get => _dbQuest.MobCount_1; }
+        public byte RequiredMobCount_1 { get => _quest.RequiredMobCount1; }
 
         /// <summary>
         /// Mob 2, that should be killed.
         /// </summary>
-        public ushort RequiredMobId_2 { get => _dbQuest.MobId_2; }
+        public ushort RequiredMobId_2 { get => _quest.RequiredMobId2; }
 
         /// <summary>
         /// Number of mobs 2, that should be killed.
         /// </summary>
-        public byte RequiredMobCount_2 { get => _dbQuest.MobCount_2; }
+        public byte RequiredMobCount_2 { get => _quest.RequiredMobCount2; }
 
         #endregion
 
@@ -199,12 +197,12 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// How much experience player gets from this quest.
         /// </summary>
-        public uint XP { get => _dbQuest.XP; }
+        public uint XP { get => _quest.Results[0].Exp; }
 
         /// <summary>
         /// How much money player gets from this quest.
         /// </summary>
-        public uint Gold { get => _dbQuest.Gold; }
+        public uint Gold { get => _quest.Results[0].Money; }
 
         #endregion
 
@@ -222,7 +220,7 @@ namespace Imgeneus.World.Game.Quests
         {
             get
             {
-                if (_dbQuest.QuestTimer == 0)
+                if (_quest.Time == 0)
                     return 0;
                 return (ushort)_endTime.Subtract(DateTime.UtcNow).TotalMinutes;
             }
@@ -238,10 +236,10 @@ namespace Imgeneus.World.Game.Quests
         /// </summary>
         public void StartQuestTimer()
         {
-            if (_dbQuest.QuestTimer > 0)
+            if (_quest.Time > 0)
             {
-                _endTime = DateTime.UtcNow.AddMinutes(_dbQuest.QuestTimer);
-                _endTimer.Interval = _dbQuest.QuestTimer * 60 * 1000;
+                _endTime = DateTime.UtcNow.AddMinutes(_quest.Time);
+                _endTimer.Interval = _quest.Time * 60 * 1000;
                 _endTimer.Start();
             }
         }

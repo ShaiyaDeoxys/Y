@@ -32,8 +32,6 @@ namespace Imgeneus.Database.Preload
         /// <inheritdoc />
         public Dictionary<(byte Type, ushort TypeId), DbNpc> NPCs { get; private set; } = new Dictionary<(byte Type, ushort TypeId), DbNpc>();
 
-        /// <inheritdoc />
-        public Dictionary<ushort, DbQuest> Quests { get; private set; } = new Dictionary<ushort, DbQuest>();
 
         /// <inheritdoc />
         public Dictionary<(Mode Mode, ushort Level), DbLevel> Levels { get; private set; } = new Dictionary<(Mode Mode, ushort Level), DbLevel>();
@@ -58,7 +56,6 @@ namespace Imgeneus.Database.Preload
                 PreloadMobs(_database);
                 PreloadMobItems(_database);
                 PrealodNpcs(_database);
-                PreloadQuests(_database);
                 PreloadLevels(_database);
 
                 _logger.LogInformation("Database was successfully preloaded.");
@@ -136,18 +133,6 @@ namespace Imgeneus.Database.Preload
             foreach (var npc in npcs)
             {
                 NPCs.Add((npc.Type, npc.TypeId), npc);
-            }
-        }
-
-        /// <summary>
-        /// Preloads all available quests from database.
-        /// </summary>
-        private void PreloadQuests(IDatabase database)
-        {
-            var quests = database.Quests;
-            foreach (var quest in quests)
-            {
-                Quests.Add(quest.Id, quest);
             }
         }
 

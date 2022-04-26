@@ -20,7 +20,7 @@ namespace Imgeneus.World.Game.Player
 
         public void SendFriendOnline(int friendId, bool isOnline) => _packetFactory.SendFriendOnline(GameSession.Client, friendId, isOnline);
 
-        private void SendQuestCountUpdate(ushort questId, byte index, byte count) => _packetFactory.SendQuestCountUpdate(GameSession.Client, questId, index, count);
+        private void SendQuestCountUpdate(short questId, byte index, byte count) => _packetFactory.SendQuestCountUpdate(GameSession.Client, questId, index, count);
 
         private void SendAddBuff(int senderId, Buff buff) => _packetFactory.SendAddBuff(GameSession.Client, buff);
 
