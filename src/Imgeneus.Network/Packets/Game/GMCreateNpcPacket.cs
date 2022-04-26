@@ -6,14 +6,14 @@ namespace Imgeneus.Network.Packets.Game
     {
         public byte Type { get; private set; }
 
-        public ushort TypeId { get; private set; }
+        public short TypeId { get; private set; }
 
         public byte Count { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
             Type = packetStream.Read<byte>();
-            TypeId = packetStream.Read<ushort>();
+            TypeId = packetStream.Read<short>();
             Count = packetStream.Read<byte>();
         }
     }

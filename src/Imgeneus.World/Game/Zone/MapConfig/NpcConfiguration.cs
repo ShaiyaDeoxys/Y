@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Zone.MapConfig
         public byte Type { get; set; }
 
         [JsonPropertyName("typeId")]
-        public ushort TypeId { get; set; }
+        public short TypeId { get; set; }
 
         [JsonPropertyName("coordinates")]
         public List<NpcCoordinate> Coordinates { get; set; }

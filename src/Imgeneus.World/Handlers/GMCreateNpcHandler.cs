@@ -1,4 +1,4 @@
-﻿using Imgeneus.Database.Preload;
+﻿using Imgeneus.GameDefinitions;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
@@ -15,15 +15,15 @@ namespace Imgeneus.World.Handlers
     [Handler]
     public class GMCreateNpcHandler : BaseHandler
     {
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloder;
         private readonly IMovementManager _movementManager;
         private readonly IMapProvider _mapProvider;
         private readonly IGameWorld _gameWorld;
         private readonly INpcFactory _npcFactory;
 
-        public GMCreateNpcHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IMovementManager movementManager, IMapProvider mapProvider, IGameWorld gameWorld, INpcFactory npcFactory) : base(packetFactory, gameSession)
+        public GMCreateNpcHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameDefinitionsPreloder definitionsPreloder, IMovementManager movementManager, IMapProvider mapProvider, IGameWorld gameWorld, INpcFactory npcFactory) : base(packetFactory, gameSession)
         {
-            _databasePreloader = databasePreloader;
+            _definitionsPreloder = definitionsPreloder;
             _movementManager = movementManager;
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
@@ -36,7 +36,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            if (!_databasePreloader.NPCs.ContainsKey((packet.Type, packet.TypeId)))
+            if (!_definitionsPreloder.NPCs.ContainsKey((packet.Type, packet.TypeId)))
             {
                 _packetFactory.SendGmCommandError(client, PacketType.GM_CREATE_NPC);
                 return;
@@ -51,7 +51,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            if (!_databasePreloader.NPCs.ContainsKey((packet.Type, packet.TypeId)))
+            if (!_definitionsPreloder.NPCs.ContainsKey((packet.Type, packet.TypeId)))
             {
                 _packetFactory.SendGmCommandError(client, PacketType.GM_SHAIYA_US_CREATE_NPC);
                 return;

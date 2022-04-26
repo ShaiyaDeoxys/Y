@@ -10,6 +10,11 @@ namespace Imgeneus.GameDefinitions
         void Preload();
 
         /// <summary>
+        /// Preloaded NPCs.
+        /// </summary>
+        Dictionary<(byte Type, short TypeId), BaseNpc> NPCs { get; }
+
+        /// <summary>
         /// Preloaded quests.
         /// </summary>
         Dictionary<short, Quest> Quests { get; }

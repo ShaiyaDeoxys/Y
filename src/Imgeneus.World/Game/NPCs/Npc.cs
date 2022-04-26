@@ -1,6 +1,6 @@
-﻿using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Zone;
+﻿using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.NpcQuest;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,12 +10,12 @@ namespace Imgeneus.World.Game.NPCs
     public class Npc : IMapMember, IDisposable
     {
         private readonly ILogger _logger;
-        private readonly DbNpc _dbNpc;
+        private readonly BaseNpc _npc;
 
-        public Npc(List<(float X, float Y, float Z, ushort Angle)> moveCoordinates, Map map, ILogger<Npc> logger, DbNpc dbNpc): this(logger, dbNpc)
+        public Npc(List<(float X, float Y, float Z, ushort Angle)> moveCoordinates, Map map, ILogger<Npc> logger, BaseNpc npc) : this(logger, npc)
         {
             _logger = logger;
-            _dbNpc = dbNpc;
+            _npc = npc;
             PosX = moveCoordinates[0].X;
             PosY = moveCoordinates[0].Y;
             PosZ = moveCoordinates[0].Z;
@@ -23,95 +23,36 @@ namespace Imgeneus.World.Game.NPCs
             Map = map;
         }
 
-        public Npc(ILogger<Npc> logger, DbNpc dbNpc)
+        public Npc(ILogger<Npc> logger, BaseNpc npc)
         {
             // Set products.
-            var dbProductsString = dbNpc.Products;
-            if (!string.IsNullOrWhiteSpace(dbProductsString))
+            if (npc is Merchant merchant)
             {
-                var items = dbProductsString.Split(" | ");
-                foreach (var item in items)
+                foreach (var item in merchant.SaleItems)
                 {
                     try
                     {
-                        var itemTypeAndId = item.Split(".");
-                        byte itemType = byte.Parse(itemTypeAndId[0]);
-                        byte itemTypeId = byte.Parse(itemTypeAndId[1]);
-                        _products.Add(new NpcProduct(itemType, itemTypeId));
+                        _products.Add(new NpcProduct(item.Type, item.TypeId));
                     }
                     catch
                     {
-                        _logger.LogError($"Couldn't parse npc item definition, plase check this npc: {_dbNpc.Id}.");
+                        _logger.LogError("Couldn't parse npc item definition, plase check this npc: ({type}, {typeId}).", npc.Type, npc.TypeId);
                     }
                 }
             }
 
             // Set quests.
-            var dbStartQuestsString = dbNpc.QuestStart;
-            if (!string.IsNullOrWhiteSpace(dbStartQuestsString))
-            {
-                var startQuests = dbStartQuestsString.Split(" | ");
-                foreach (var quest in startQuests)
-                {
-                    try
-                    {
-                        _startQuestIds.Add(short.Parse(quest));
-                    }
-                    catch
-                    {
-                        _logger.LogError($"Couldn't parse npc start quest {quest}, plase check this npc: {_dbNpc.Id}.");
-                    }
-                }
-            }
+            foreach (var quest in npc.InQuestIds)
+                _startQuestIds.Add(quest);
 
-            var dbEndQuestsString = dbNpc.QuestEnd;
-            if (!string.IsNullOrWhiteSpace(dbEndQuestsString))
-            {
-                var endQuests = dbNpc.QuestEnd.Split(" | ");
-                foreach (var quest in endQuests)
-                {
-                    try
-                    {
-                        _endQuestIds.Add(short.Parse(quest));
-                    }
-                    catch
-                    {
-                        _logger.LogError($"Couldn't parse npc end quest {quest}, plase check this npc: {_dbNpc.Id}.");
-                    }
-                }
-            }
+            foreach (var quest in npc.OutQuestIds)
+                _endQuestIds.Add(quest);
 
             // Set teleport gates.
-            var dbMapsString = dbNpc.Maps;
-            if (!string.IsNullOrWhiteSpace(dbMapsString))
+            if (npc is GateKeeper gatekeeper)
             {
-                var gates = dbMapsString.Split(" | ");
-                foreach (var gateStr in gates)
-                {
-                    try
-                    {
-                        var gateDefs = gateStr.Split(",");
-                        if (string.IsNullOrEmpty(gateDefs[4])) // Empty gate with 0-values.
-                        {
-                            continue;
-                        }
-
-                        var gate = new NpcGate()
-                        {
-                            MapId = ushort.Parse(gateDefs[0]),
-                            X = float.Parse(gateDefs[1]),
-                            Y = float.Parse(gateDefs[2]),
-                            Z = float.Parse(gateDefs[3]),
-                            Name = gateDefs[4],
-                            Cost = int.Parse(gateDefs[5])
-                        };
-                        _gates.Add(gate);
-                    }
-                    catch
-                    {
-                        _logger.LogError($"Couldn't parse npc gate definition, plase check this npc: {_dbNpc.Id}.");
-                    }
-                }
+                foreach(var gate in gatekeeper.GateTargets)
+                    _gates.Add(gate);
             }
         }
 
@@ -138,12 +79,12 @@ namespace Imgeneus.World.Game.NPCs
         /// <summary>
         /// Type of NPC.
         /// </summary>
-        public byte Type { get => _dbNpc.Type; }
+        public byte Type { get => (byte)_npc.Type; }
 
         /// <summary>
         /// Type id of NPC.
         /// </summary>
-        public ushort TypeId { get => _dbNpc.TypeId; }
+        public short TypeId { get => _npc.TypeId; }
 
         #region Products
 
@@ -172,7 +113,7 @@ namespace Imgeneus.World.Game.NPCs
         {
             if (Products.Count <= index)
             {
-                _logger.LogWarning($"NPC {_dbNpc.Id} doesn't contain product at index {index}. Check it out.");
+                _logger.LogWarning("NPC ({type}, {typeId}) doesn't contain product at index {index}. Check it out.", _npc.Type, _npc.TypeId, index);
                 return false;
             }
 
@@ -225,18 +166,18 @@ namespace Imgeneus.World.Game.NPCs
 
         #region Gates
 
-        private readonly IList<NpcGate> _gates = new List<NpcGate>();
-        private IList<NpcGate> _readonlyGates;
+        private readonly IList<GateTarget> _gates = new List<GateTarget>();
+        private IList<GateTarget> _readonlyGates;
 
         /// <summary>
         /// Gates, where npc can teleport.
         /// </summary>
-        public IList<NpcGate> Gates
+        public IList<GateTarget> Gates
         {
             get
             {
                 if (_readonlyGates is null)
-                    _readonlyGates = new ReadOnlyCollection<NpcGate>(_gates);
+                    _readonlyGates = new ReadOnlyCollection<GateTarget>(_gates);
                 return _readonlyGates;
             }
         }
@@ -250,7 +191,7 @@ namespace Imgeneus.World.Game.NPCs
         {
             if (Gates.Count <= index)
             {
-                _logger.LogWarning("NPC {id} doesn't contain gate at index {index}. Check it out.", _dbNpc.Id, index);
+                _logger.LogWarning("NPC {type}, {typeId} doesn't contain gate at index {index}. Check it out.", _npc.Type, _npc.TypeId, index);
                 return false;
             }
 

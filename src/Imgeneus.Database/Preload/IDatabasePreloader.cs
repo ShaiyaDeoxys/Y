@@ -40,11 +40,6 @@ namespace Imgeneus.Database.Preload
         Dictionary<(ushort MobId, byte ItemOrder), DbMobItems> MobItems { get; }
 
         /// <summary>
-        /// Preloaded NPCs.
-        /// </summary>
-        Dictionary<(byte Type, ushort TypeId), DbNpc> NPCs { get; }
-
-        /// <summary>
         /// Preloaded levels.
         /// </summary>
         Dictionary<(Mode Mode, ushort Level), DbLevel> Levels { get; }

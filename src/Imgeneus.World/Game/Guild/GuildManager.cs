@@ -517,7 +517,7 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public bool CanUseNpc(byte type, ushort typeId, out byte requiredRank)
+        public bool CanUseNpc(byte type, short typeId, out byte requiredRank)
         {
             if (GuildId == 0)
                 throw new Exception("NPC can not be checked, if guild manager is not initialized.");
@@ -537,7 +537,7 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public bool HasNpcLevel(byte type, ushort typeId)
+        public bool HasNpcLevel(byte type, short typeId)
         {
             if (GuildId == 0)
                 throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
@@ -614,7 +614,7 @@ namespace Imgeneus.World.Game.Guild
             return count > 0 ? GuildNpcUpgradeReason.Ok : GuildNpcUpgradeReason.Failed;
         }
 
-        private GuildHouseNpcInfo FindNpcInfo(CountryType country, byte npcType, ushort npcTypeId)
+        private GuildHouseNpcInfo FindNpcInfo(CountryType country, byte npcType, short npcTypeId)
         {
             GuildHouseNpcInfo npcInfo;
             if (country == CountryType.Light)
