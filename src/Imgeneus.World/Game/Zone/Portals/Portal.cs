@@ -1,11 +1,11 @@
-﻿using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Country;
+﻿using Imgeneus.World.Game.Country;
+using SPortal = Parsec.Shaiya.Svmap.Portal;
 
 namespace Imgeneus.World.Game.Zone.Portals
 {
     public class Portal
     {
-        private readonly PortalConfiguration _config;
+        private readonly SPortal _config;
         private readonly float X1;
         private readonly float X2;
         private readonly float Y1;
@@ -13,15 +13,15 @@ namespace Imgeneus.World.Game.Zone.Portals
         private readonly float Z1;
         private readonly float Z2;
 
-        public Portal(PortalConfiguration config)
+        public Portal(SPortal config)
         {
             _config = config;
-            X1 = _config.X - 5;
-            X2 = _config.X + 5;
-            Y1 = _config.Y - 5;
-            Y2 = _config.Y + 5;
-            Z1 = _config.Z - 5;
-            Z2 = _config.Z + 5;
+            X1 = _config.Position.X - 5;
+            X2 = _config.Position.X + 5;
+            Y1 = _config.Position.Y - 5;
+            Y2 = _config.Position.Y + 5;
+            Z1 = _config.Position.Z - 5;
+            Z2 = _config.Position.Z + 5;
         }
 
         /// <summary>
@@ -32,13 +32,13 @@ namespace Imgeneus.World.Game.Zone.Portals
             if (_config.Faction == 0)
                 return true;
 
-            if (faction == CountryType.Light && _config.Faction == 1)
+            if (faction == CountryType.Light && (int)_config.Faction == 1)
                 return true;
 
-            if (faction == CountryType.Dark && _config.Faction == 2)
+            if (faction == CountryType.Dark && (int)_config.Faction == 2)
                 return true;
 
-            if (_config.Faction > 2) // TODO: portal activated with boss death.
+            if ((int)_config.Faction > 2) // TODO: portal activated with boss death.
                 return true;
 
             return false;
@@ -49,7 +49,7 @@ namespace Imgeneus.World.Game.Zone.Portals
         /// </summary>
         public bool IsRightLevel(ushort level)
         {
-            return level >= _config.MinLvl && level <= _config.MaxLvl;
+            return level >= _config.MinLevel && level <= _config.MaxLevel;
         }
 
         /// <summary>
@@ -65,13 +65,13 @@ namespace Imgeneus.World.Game.Zone.Portals
                    z >= Z1 && z <= Z2;
         }
 
-        public ushort MapId => _config.Destination.MapId;
+        public ushort MapId => (ushort)_config.DestinationMapId;
 
-        public float Destination_X => _config.Destination.X;
+        public float Destination_X => _config.DestinationPosition.X;
 
-        public float Destination_Y => _config.Destination.Y;
+        public float Destination_Y => _config.DestinationPosition.Y;
 
-        public float Destination_Z => _config.Destination.Z;
+        public float Destination_Z => _config.DestinationPosition.Z;
     }
 
 }

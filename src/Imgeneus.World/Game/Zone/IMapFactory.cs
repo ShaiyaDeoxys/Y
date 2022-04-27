@@ -1,5 +1,8 @@
 ﻿using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Zone.MapConfig;
+using Imgeneus.World.Game.Zone.Obelisks;
+using Parsec.Shaiya.Svmap;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -12,7 +15,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="definition">some map settings</param>
         /// <param name="config">size, mobs, npcs etc.</param>
         /// <returns>map instance</returns>
-        public IMap CreateMap(ushort id, MapDefinition definition, MapConfiguration config);
+        public IMap CreateMap(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks = null);
 
         /// <summary>
         /// Creates map instance only for party.
@@ -22,7 +25,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="config">size, mobs, npcs etc.</param>
         /// <param name="party">party instance</param>
         /// <returns>map instance</returns>
-        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, MapConfiguration config, IParty party);
+        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, Svmap config, IParty party);
 
         /// <summary>
         /// Creates map instance only for guild.
@@ -32,6 +35,6 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="config">size, mobs, npcs etc.</param>
         /// <param name="guildId">guild id</param>
         /// <returns>map instance</returns>
-        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, MapConfiguration config, int guildId);
+        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, int guildId);
     }
 }

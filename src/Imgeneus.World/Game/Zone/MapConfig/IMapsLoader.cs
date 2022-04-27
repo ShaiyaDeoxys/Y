@@ -1,4 +1,5 @@
 ﻿using Imgeneus.World.Game.Zone.Obelisks;
+using Parsec.Shaiya.Svmap;
 using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Zone.MapConfig
@@ -16,7 +17,7 @@ namespace Imgeneus.World.Game.Zone.MapConfig
         /// <summary>
         /// Loads map configuration.
         /// </summary>
-        MapConfiguration LoadMapConfiguration(ushort mapId);
+        Svmap LoadMapConfiguration(ushort mapId);
 
         /// <summary>
         /// Loads obelisks configuration, based on map id.

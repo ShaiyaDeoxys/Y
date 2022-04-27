@@ -49,12 +49,12 @@ namespace Imgeneus.World.Handlers
             float x = 100;
             float y = 100;
             float z = 100;
-            var spawn = _mapLoader.LoadMapConfiguration(packet.MapId).Spawns.FirstOrDefault(s => (s.Faction == 1 && _countryProvider.Country == CountryType.Light) || (s.Faction == 2 && _countryProvider.Country == CountryType.Dark));
+            var spawn = _mapLoader.LoadMapConfiguration(packet.MapId).Spawns.FirstOrDefault(s => ((int)s.Faction == 1 && _countryProvider.Country == CountryType.Light) || ((int)s.Faction == 2 && _countryProvider.Country == CountryType.Dark));
             if (spawn != null)
             {
-                x = spawn.X1;
-                y = spawn.Y1;
-                z = spawn.Z1;
+                x = spawn.Area.LowerLimit.X;
+                y = spawn.Area.LowerLimit.Y;
+                z = spawn.Area.LowerLimit.Z;
             }
 
             _packetFactory.SendGmCommandSuccess(client);

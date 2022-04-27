@@ -7,6 +7,8 @@ using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Svmap;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -23,8 +25,8 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        public GuildMap(int guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
-            : base(id, definition, config, logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
+        public GuildMap(int guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, Svmap config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+            : base(id, definition, config, new List<ObeliskConfiguration>(), logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
         {
             _guildId = guildId;
             _guildRankingManager = guildRankingManager;

@@ -1,5 +1,8 @@
 ﻿using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
+using Imgeneus.World.Game.Zone.Obelisks;
+using Parsec.Shaiya.Svmap;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Xunit;
 
@@ -31,7 +34,8 @@ namespace Imgeneus.World.Tests.CharacterTests
             var map1 = new Map(
                     1,
                     new MapDefinition(),
-                    new MapConfiguration() { Size = 100, CellSize = 100 },
+                    new Svmap() { MapSize = 100, CellSize = 100 },
+                    new List<ObeliskConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
                     databasePreloader.Object,
@@ -42,7 +46,8 @@ namespace Imgeneus.World.Tests.CharacterTests
             var map2 = new Map(
                     2,
                     new MapDefinition(),
-                    new MapConfiguration() { Size = 100, CellSize = 100 },
+                    new Svmap() { MapSize = 100, CellSize = 100 },
+                    new List<ObeliskConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
                     databasePreloader.Object,

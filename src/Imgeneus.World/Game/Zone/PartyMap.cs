@@ -8,7 +8,9 @@ using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Svmap;
 using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -28,8 +30,8 @@ namespace Imgeneus.World.Game.Zone
         /// <inheritdoc/>
         public event Action<IPartyMap> OnAllMembersLeft;
 
-        public PartyMap(IParty party, ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
-            : base(id, definition, config, logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
+        public PartyMap(IParty party, ushort id, MapDefinition definition, Svmap config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+            : base(id, definition, config, new List<ObeliskConfiguration>(), logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
         {
             _party = party;
 

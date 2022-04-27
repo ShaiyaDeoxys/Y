@@ -1,12 +1,9 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Country;
-using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Guild;
-using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Time;
-using Imgeneus.World.Game.Trade;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Portals;
@@ -71,9 +68,7 @@ namespace Imgeneus.World.Game
 
                 if (mapDefinition.CreateType == CreateType.Default)
                 {
-                    config.Obelisks = _mapsLoader.GetObelisks(mapDefinition.Id);
-
-                    var map = _mapFactory.CreateMap(mapDefinition.Id, mapDefinition, config);
+                    var map = _mapFactory.CreateMap(mapDefinition.Id, mapDefinition, config, _mapsLoader.GetObelisks(mapDefinition.Id));
                     if (Maps.TryAdd(mapDefinition.Id, map))
                         _logger.LogInformation("Map {id} was successfully loaded.", map.Id);
                 }

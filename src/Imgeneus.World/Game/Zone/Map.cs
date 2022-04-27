@@ -12,11 +12,13 @@ using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Svmap;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using Npc = Imgeneus.World.Game.NPCs.Npc;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -28,7 +30,8 @@ namespace Imgeneus.World.Game.Zone
         #region Constructor
 
         private readonly MapDefinition _definition;
-        private readonly MapConfiguration _config;
+        private readonly Svmap _config;
+        private readonly IEnumerable<ObeliskConfiguration> _obelisksConfig;
         private readonly ILogger<Map> _logger;
         private readonly IGamePacketFactory _packetFactory;
         private readonly IDatabasePreloader _databasePreloader;
@@ -61,11 +64,12 @@ namespace Imgeneus.World.Game.Zone
 
         public static readonly ushort TEST_MAP_ID = 9999;
 
-        public Map(ushort id, MapDefinition definition, MapConfiguration config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+        public Map(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
         {
             Id = id;
             _definition = definition;
             _config = config;
+            _obelisksConfig = obelisks;
             _logger = logger;
             _packetFactory = packetFactory;
             _databasePreloader = databasePreloader;
@@ -82,13 +86,13 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         private void Init()
         {
-            CalculateCells(_config.Size, _config.CellSize);
+            CalculateCells(_config.MapSize, _config.CellSize);
 
             InitWeather();
             InitPortals();
 
 #if !DEBUG
-            
+
             InitNPCs();
             InitMobs();
             InitObelisks();
@@ -134,6 +138,8 @@ namespace Imgeneus.World.Game.Zone
         {
             Size = size;
             MinCellSize = cellSize;
+            if (MinCellSize == 0)
+                MinCellSize = 128;
 
             var mod = Size / MinCellSize;
             var div = Size % MinCellSize;
@@ -215,9 +221,9 @@ namespace Imgeneus.World.Game.Zone
             return neighbors.OrderBy(i => i);
         }
 
-#endregion
+        #endregion
 
-#region Players
+        #region Players
 
         /// <summary>
         /// Thread-safe dictionary of connected players. Key is character id, value is character.
@@ -316,10 +322,10 @@ namespace Imgeneus.World.Game.Zone
         /// <inheritdoc/>
         public (float X, float Y, float Z) GetNearestSpawn(float currentX, float currentY, float currentZ, CountryType country)
         {
-            SpawnConfiguration nearestSpawn = null;
+            Spawn nearestSpawn = null;
             foreach (var spawn in _config.Spawns)
             {
-                if (spawn.Faction == 1 && country == CountryType.Light || spawn.Faction == 2 && country == CountryType.Dark)
+                if ((int)spawn.Faction == 1 && country == CountryType.Light || (int)spawn.Faction == 2 && country == CountryType.Dark)
                 {
                     if (nearestSpawn is null)
                     {
@@ -327,21 +333,21 @@ namespace Imgeneus.World.Game.Zone
                         continue;
                     }
 
-                    if (MathExtensions.Distance(currentX, spawn.X1, currentZ, spawn.Z1) < MathExtensions.Distance(currentX, nearestSpawn.X1, currentZ, nearestSpawn.Z1))
+                    if (MathExtensions.Distance(currentX, spawn.Area.LowerLimit.X, currentZ, spawn.Area.LowerLimit.Z) < MathExtensions.Distance(currentX, nearestSpawn.Area.LowerLimit.X, currentZ, nearestSpawn.Area.LowerLimit.Z))
                         nearestSpawn = spawn;
                 }
             }
 
             if (nearestSpawn is null)
             {
-                _logger.LogError($"Spawn for map {Id} is not found. Rebirth at the same coordinate.");
+                _logger.LogError("Spawn for map {id} is not found. Rebirth at the same coordinate.", Id);
                 return (currentX, currentY, currentZ);
             }
 
             var random = new Random();
-            var x = random.NextFloat(nearestSpawn.X1, nearestSpawn.X2);
-            var y = random.NextFloat(nearestSpawn.Y1, nearestSpawn.Y2);
-            var z = random.NextFloat(nearestSpawn.Z1, nearestSpawn.Z2);
+            var x = random.NextFloat(nearestSpawn.Area.LowerLimit.X, nearestSpawn.Area.UpperLimit.X);
+            var y = random.NextFloat(nearestSpawn.Area.LowerLimit.Y, nearestSpawn.Area.UpperLimit.Y);
+            var z = random.NextFloat(nearestSpawn.Area.LowerLimit.Z, nearestSpawn.Area.UpperLimit.Z);
             return (x, y, z);
         }
 
@@ -362,7 +368,7 @@ namespace Imgeneus.World.Game.Zone
             return (Id, spawn.X, spawn.Y, spawn.Z);
         }
 
-#region Party search
+        #region Party search
 
         /// <summary>
         /// Collection of players, that are looking for party.
@@ -394,11 +400,11 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Mobs
+        #region Mobs
 
         private static int _currentGlobalMobId;
         private readonly object _currentGlobalMobIdMutex = new object();
@@ -457,17 +463,17 @@ namespace Imgeneus.World.Game.Zone
         private void InitMobs()
         {
             int finalMobsCount = 0;
-            foreach (var mobArea in _config.MobAreas)
+            foreach (var mobArea in _config.MonsterAreas)
             {
-                foreach (var mobConf in mobArea.Mobs)
+                foreach (var mobConf in mobArea.Monsters)
                 {
-                    if (_databasePreloader.Mobs.ContainsKey(mobConf.MobId))
+                    if (_databasePreloader.Mobs.ContainsKey((ushort)mobConf.MobId))
                     {
-                        for (var i = 0; i < mobConf.MobCount; i++)
+                        for (var i = 0; i < mobConf.Count; i++)
                         {
-                            var mob = _mobFactory.CreateMob(mobConf.MobId,
+                            var mob = _mobFactory.CreateMob((ushort)mobConf.MobId,
                                                             true,
-                                                            new MoveArea(mobArea.X1, mobArea.X2, mobArea.Y1, mobArea.Y2, mobArea.Z1, mobArea.Z2),
+                                                            new MoveArea(mobArea.Area.LowerLimit.X, mobArea.Area.UpperLimit.X, mobArea.Area.LowerLimit.Y, mobArea.Area.UpperLimit.Y, mobArea.Area.LowerLimit.Z, mobArea.Area.UpperLimit.Z),
                                                             this);
                             AddMob(mob);
                             finalMobsCount++;
@@ -476,13 +482,13 @@ namespace Imgeneus.World.Game.Zone
                 }
             }
 
-            _logger.LogInformation($"Map {Id} created {_config.MobAreas.Count} mob areas.");
-            _logger.LogInformation($"Map {Id} created {finalMobsCount} mobs.");
+            _logger.LogInformation("Map {id} created {count} mob areas.", Id, _config.MonsterAreas.Count);
+            _logger.LogInformation("Map {id} created {finalMobsCount} mobs.", Id, finalMobsCount);
         }
 
-#endregion
+        #endregion
 
-#region Items
+        #region Items
 
         /// <summary>
         /// Adds item on map.
@@ -525,9 +531,9 @@ namespace Imgeneus.World.Game.Zone
             RemoveItem(item.CellId, item.Id);
         }
 
-#endregion
+        #endregion
 
-#region NPC
+        #region NPC
 
         /// <summary>
         /// Adds npc to the map.
@@ -554,7 +560,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Gets npc by its' id.
         /// </summary>
-        public Npc GetNPC(int cellIndex, int id)
+        public NPCs.Npc GetNPC(int cellIndex, int id)
         {
             return Cells[cellIndex].GetNPC(id, true);
         }
@@ -562,10 +568,10 @@ namespace Imgeneus.World.Game.Zone
         private void InitNPCs()
         {
             int finalNPCsCount = 0;
-            foreach (var conf in _config.NPCs)
+            foreach (var conf in _config.Npcs)
             {
-                var moveCoordinates = conf.Coordinates.Select(c => (c.X, c.Y, c.Z, Convert.ToUInt16(c.Angle))).ToList();
-                var npc = _npcFactory.CreateNpc((conf.Type, conf.TypeId), moveCoordinates, this);
+                var moveCoordinates = conf.Locations.Select(c => (c.Position.X, c.Position.Y, c.Position.Z, Convert.ToUInt16(c.Orientation))).ToList();
+                var npc = _npcFactory.CreateNpc(((byte)conf.Type, (short)conf.NpcId), moveCoordinates, this);
                 if (npc is null)
                     continue;
 
@@ -577,9 +583,9 @@ namespace Imgeneus.World.Game.Zone
             _logger.LogInformation($"Map {Id} created {finalNPCsCount} NPCs.");
         }
 
-#endregion
+        #endregion
 
-#region Weather
+        #region Weather
 
         private readonly System.Timers.Timer _weatherTimer = new System.Timers.Timer();
 
@@ -652,9 +658,9 @@ namespace Imgeneus.World.Game.Zone
             _weatherTimer.Start();
         }
 
-#endregion
+        #endregion
 
-#region Obelisks
+        #region Obelisks
 
         /// <summary>
         /// Obelisks on this map.
@@ -666,14 +672,14 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         private void InitObelisks()
         {
-            foreach (var obeliskConfig in _config.Obelisks)
+            foreach (var obeliskConfig in _obelisksConfig)
             {
                 var obelisk = _obeliskfactory.CreateObelisk(obeliskConfig, this);
                 Obelisks.TryAdd(obelisk.Id, obelisk);
                 obelisk.OnObeliskBroken += Obelisk_OnObeliskBroken;
             }
 
-            _logger.LogInformation($"Map {Id} created {Obelisks.Count} obelisks.");
+            _logger.LogInformation("Map {id} created {count} obelisks.", Id, Obelisks.Count);
         }
 
         private void Obelisk_OnObeliskBroken(Obelisk obelisk)
@@ -682,11 +688,11 @@ namespace Imgeneus.World.Game.Zone
                 character.SendObeliskBroken(obelisk);
         }
 
-#endregion
+        #endregion
 
-#region Portals
+        #region Portals
 
-        public IList<Portal> Portals { get; private set; } = new List<Portal>();
+        public IList<Portals.Portal> Portals { get; private set; } = new List<Portals.Portal>();
 
         /// <summary>
         /// Creates portals to another maps.
@@ -695,15 +701,15 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var portalConfig in _config.Portals)
             {
-                Portals.Add(new Portal(portalConfig));
+                Portals.Add(new Portals.Portal(portalConfig));
             }
 
             _logger.LogInformation($"Map {Id} created {Portals.Count} portals.");
         }
 
-#endregion
+        #endregion
 
-#region Open/Closed
+        #region Open/Closed
 
         private Timer _openTimer = new Timer();
 
@@ -750,9 +756,9 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-#endregion
+        #endregion
 
-#region Dispose
+        #region Dispose
 
         private bool _isDisposed = false;
 
@@ -801,6 +807,6 @@ namespace Imgeneus.World.Game.Zone
             _closeTimer.Elapsed -= CloseTimer_Elapsed;
         }
 
-#endregion
+        #endregion
     }
 }

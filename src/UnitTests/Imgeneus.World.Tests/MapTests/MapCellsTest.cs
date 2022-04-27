@@ -1,13 +1,14 @@
 ﻿using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
-using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
+using Imgeneus.World.Game.Zone.Obelisks;
+using Parsec.Shaiya.Svmap;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Xunit;
+using Npc = Imgeneus.World.Game.NPCs.Npc;
 
 namespace Imgeneus.World.Tests.MapTests
 {
@@ -17,13 +18,13 @@ namespace Imgeneus.World.Tests.MapTests
         [Description("Map should calculate number of its' cells. I.e. number of rows and columns.")]
         public void MapCells_RowColumnNumber_1()
         {
-            var mapConfig = new MapConfiguration()
+            var mapConfig = new Svmap()
             {
-                Size = 2000,
+                MapSize = 2000,
                 CellSize = 100
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(20, map.Rows);
             Assert.Equal(20, map.Columns);
         }
@@ -32,13 +33,13 @@ namespace Imgeneus.World.Tests.MapTests
         [Description("Map should calculate number of its' cells. I.e. number of rows and columns.")]
         public void MapCells_RowColumnNumber_2()
         {
-            var mapConfig = new MapConfiguration()
+            var mapConfig = new Svmap()
             {
-                Size = 2048,
+                MapSize = 2048,
                 CellSize = 100
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(21, map.Rows);
             Assert.Equal(21, map.Columns);
         }
@@ -47,12 +48,12 @@ namespace Imgeneus.World.Tests.MapTests
         [Description("There can be only 1 cell for the whole map")]
         public void MapCells_OneCell()
         {
-            var mapConfig = new MapConfiguration()
+            var mapConfig = new Svmap()
             {
-                Size = 100,
+                MapSize = 100,
                 CellSize = 100
             };
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Single(map.Cells);
         }
 
@@ -74,12 +75,12 @@ namespace Imgeneus.World.Tests.MapTests
         [InlineData(1002, 1002, 120)]
         public void MapCells_GetIndex(float x, float z, int expectedCellIndex)
         {
-            var mapConfig = new MapConfiguration()
+            var mapConfig = new Svmap()
             {
-                Size = 1002,
+                MapSize = 1002,
                 CellSize = 100
             };
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             var character = CreateCharacter();
             character.MovementManager.PosX = x;
             character.MovementManager.PosZ = z;
@@ -107,13 +108,13 @@ namespace Imgeneus.World.Tests.MapTests
         [InlineData(15, new int[] { 14, 10, 11 })]
         public void MapCells_GetNeighborCellIndexes(int cellId, int[] expectedNeigbors)
         {
-            var mapConfig = new MapConfiguration()
+            var mapConfig = new Svmap()
             {
-                Size = 4,
+                MapSize = 4,
                 CellSize = 1
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(expectedNeigbors.OrderBy(i => i), map.GetNeighborCellIndexes(cellId).ToArray());
         }
 

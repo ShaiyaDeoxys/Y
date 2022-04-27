@@ -8,6 +8,8 @@ using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Svmap;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -35,19 +37,22 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <inheritdoc/>
-        public IMap CreateMap(ushort id, MapDefinition definition, MapConfiguration config)
+        public IMap CreateMap(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks = null)
         {
-            return new Map(id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            if (obelisks is null)
+                obelisks = new List<ObeliskConfiguration>();
+
+            return new Map(id, definition, config, obelisks, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
 
         /// <inheritdoc/>
-        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, MapConfiguration config, IParty party)
+        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, Svmap config, IParty party)
         {
             return new PartyMap(party, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
 
         /// <inheritdoc/>
-        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, MapConfiguration config, int guildId)
+        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, int guildId)
         {
             if (definition.CreateType == CreateType.GRB)
                 return new GRBMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);

@@ -1,6 +1,9 @@
 ﻿using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
+using Imgeneus.World.Game.Zone.Obelisks;
+using Parsec.Shaiya.Svmap;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Xunit;
 
@@ -23,7 +26,7 @@ namespace Imgeneus.World.Tests.MapTests
             var partyMap = new PartyMap(party,
                                         Map.TEST_MAP_ID,
                                         new MapDefinition() { CreateType = CreateType.Party },
-                                        new MapConfiguration() { Size = 100, CellSize = 100 },
+                                        new Svmap() { MapSize = 100, CellSize = 100 },
                                         mapLoggerMock.Object,
                                         packetFactoryMock.Object,
                                         databasePreloader.Object,
@@ -65,7 +68,7 @@ namespace Imgeneus.World.Tests.MapTests
             var partyMap = new PartyMap(party,
                                         Map.TEST_MAP_ID,
                                         new MapDefinition() { CreateType = CreateType.Party },
-                                        new MapConfiguration() { Size = 100, CellSize = 100 },
+                                        new Svmap() { MapSize = 100, CellSize = 100 },
                                         mapLoggerMock.Object,
                                         packetFactoryMock.Object,
                                         databasePreloader.Object,

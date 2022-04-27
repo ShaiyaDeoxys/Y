@@ -52,6 +52,8 @@ using Imgeneus.World.Game.Etin;
 using Imgeneus.GameDefinitions;
 using Parsec.Shaiya.NpcQuest;
 using Imgeneus.World.Tests.NpcTests;
+using Parsec.Shaiya.Svmap;
+using Npc = Imgeneus.World.Game.NPCs.Npc;
 
 namespace Imgeneus.World.Tests
 {
@@ -83,7 +85,8 @@ namespace Imgeneus.World.Tests
         protected Map testMap => new Map(
                     Map.TEST_MAP_ID,
                     new MapDefinition(),
-                    new MapConfiguration() { Size = 100, CellSize = 100 },
+                    new Svmap() { MapSize = 100, CellSize = 100 },
+                    new List<ObeliskConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
                     databasePreloader.Object,

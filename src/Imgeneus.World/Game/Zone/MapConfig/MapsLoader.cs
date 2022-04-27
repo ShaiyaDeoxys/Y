@@ -1,6 +1,8 @@
 ﻿using Imgeneus.Core.Helpers;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Microsoft.Extensions.Logging;
+using Parsec.Readers;
+using Parsec.Shaiya.Svmap;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,9 +47,9 @@ namespace Imgeneus.World.Game.Zone.MapConfig
 
         #region Map configs
 
-        private readonly Dictionary<ushort, MapConfiguration> _loadedConfigs = new Dictionary<ushort, MapConfiguration>();
+        private readonly Dictionary<ushort, Svmap> _loadedConfigs = new Dictionary<ushort, Svmap>();
 
-        public MapConfiguration LoadMapConfiguration(ushort mapId)
+        public Svmap LoadMapConfiguration(ushort mapId)
         {
             if (_loadedConfigs.ContainsKey(mapId))
             {
@@ -55,14 +57,14 @@ namespace Imgeneus.World.Game.Zone.MapConfig
             }
             else
             {
-                var mapFile = Path.Combine(ConfigsFolder, $"{mapId}.json");
+                var mapFile = Path.Combine(ConfigsFolder, $"{mapId}.svmap");
                 if (!File.Exists(mapFile))
                 {
                     _logger.LogError($"Configuration for map {mapId} is not found.");
-                    return new MapConfiguration();
+                    return new Svmap();
                 }
 
-                var config = ConfigurationHelper.Load<MapConfiguration>(mapFile);
+                var config = Reader.ReadFromFile<Svmap>(mapFile); ;
                 _loadedConfigs.Add(mapId, config);
                 return config;
             }
