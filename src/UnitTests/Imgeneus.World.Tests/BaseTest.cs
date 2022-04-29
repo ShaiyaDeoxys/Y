@@ -147,7 +147,7 @@ namespace Imgeneus.World.Tests
             var friendsManager = new FriendsManager(new Mock<ILogger<FriendsManager>>().Object, databaseMock.Object, gameWorldMock.Object);
             var duelManager = new DuelManager(new Mock<ILogger<DuelManager>>().Object, gameWorldMock.Object, tradeManager, movementManager, healthManager, killsManager, mapProvider, inventoryManager, teleportManager);
             var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, inventoryManager);
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, databasePreloader.Object, enchantConfig.Object, levelingManager);
 
             var character = new Character(
                 new Mock<ILogger<Character>>().Object,

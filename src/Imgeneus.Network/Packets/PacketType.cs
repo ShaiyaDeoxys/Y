@@ -150,6 +150,7 @@
         CHARACTER_TELEPORT_VIA_NPC = 0x20C, // 524
         MAP_NPC_ENTER = 0x0E01, // 3585
         MAP_NPC_LEAVE = 0x0E02, // 3586
+        MAP_NPC_MOVE = 0x0E03, // 3587
 
         // Obelisk
         OBELISK_LIST = 0x2101, // 8449
@@ -268,6 +269,7 @@
         QUEST_END = 0x0903, // 2307
         QUEST_UPDATE_COUNT = 0x0905, // 2309
         QUEST_FINISHED_LIST = 0x0906, // 2310
+        QUEST_END_SELECT = 0x0907, // 2311
         QUEST_QUIT = 0x0908, // 2312
 
         // Bless
@@ -276,6 +278,9 @@
 
         // Reset stones
         RESET_SKILLS = 0x0215, // 533
+
+        // ?
+        CHARACTER_HONOR = 0230, // 560
 
         // Friends
         FRIEND_LIST = 0x2201, // 8705

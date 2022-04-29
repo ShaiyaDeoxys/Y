@@ -16,7 +16,7 @@ namespace Imgeneus.World.Game.Player
 
         private void SendResetStats() => _packetFactory.SendResetStats(GameSession.Client, this);
 
-        private void SendQuestFinished(Quest quest, int npcId = 0) => _packetFactory.SendQuestFinished(GameSession.Client, quest, npcId);
+        private void SendQuestFinished(int npcId, Quest quest, bool success) => _packetFactory.SendQuestFinished(GameSession.Client, npcId, quest.Id, quest, success);
 
         public void SendFriendOnline(int friendId, bool isOnline) => _packetFactory.SendFriendOnline(GameSession.Client, friendId, isOnline);
 

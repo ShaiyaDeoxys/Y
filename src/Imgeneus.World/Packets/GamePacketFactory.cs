@@ -2076,7 +2076,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendQuestStarted(IWorldClient client, short questId, int npcId)
+        public void SendQuestStarted(IWorldClient client, int npcId, short questId)
         {
             using var packet = new ImgeneusPacket(PacketType.QUEST_START);
             packet.Write(npcId);
@@ -2084,19 +2084,27 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendQuestFinished(IWorldClient client, Quest quest, int npcId)
+        public void SendQuestFinished(IWorldClient client, int npcId, short questId, Quest quest, bool success)
         {
             using var packet = new ImgeneusPacket(PacketType.QUEST_END);
             packet.Write(npcId);
-            packet.Write(quest.Id);
-            packet.Write(quest.IsSuccessful);
-            packet.WriteByte(0); // ResultType
-            packet.Write(quest.IsSuccessful ? quest.XP : 0);
-            packet.Write(quest.IsSuccessful ? quest.Gold : 0);
+            packet.Write(questId);
+            packet.Write(success);
+            packet.Write(quest.Config.ResultType);
+            packet.Write(success ? quest.XP : 0);
+            packet.Write(success ? quest.Gold : 0);
             packet.WriteByte(0); // bag
             packet.WriteByte(0); // slot
             packet.WriteByte(0); // item type
             packet.WriteByte(0); // item id
+            client.Send(packet);
+        }
+
+        public void SendQuestChooseRevard(IWorldClient client, short questId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.QUEST_END_SELECT);
+            packet.Write(questId);
+            packet.Write(0); // probably npc id?
             client.Send(packet);
         }
 

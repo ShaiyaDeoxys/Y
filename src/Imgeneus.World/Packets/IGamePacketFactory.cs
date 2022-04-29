@@ -305,8 +305,9 @@ namespace Imgeneus.World.Packets
 
         #region Quests
         void SendOpenQuests(IWorldClient client, IEnumerable<Quest> quests);
-        void SendQuestStarted(IWorldClient client, short questId, int npcId);
-        void SendQuestFinished(IWorldClient client, Quest quest, int npcId);
+        void SendQuestStarted(IWorldClient client, int npcId, short questId);
+        void SendQuestFinished(IWorldClient client, int npcId, short questId, Quest quest, bool success);
+        void SendQuestChooseRevard(IWorldClient client, short questId);
         void SendQuestCountUpdate(IWorldClient client, short questId, byte index, byte count);
         void SendFinishedQuests(IWorldClient client, IEnumerable<Quest> quests);
         #endregion

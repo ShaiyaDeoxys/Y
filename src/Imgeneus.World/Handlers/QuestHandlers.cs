@@ -24,13 +24,25 @@ namespace Imgeneus.World.Handlers
         {
             var ok = await _questsManager.TryStartQuest(packet.NpcId, packet.QuestId);
             if (ok)
-                _packetFactory.SendQuestStarted(client, packet.QuestId, packet.NpcId);
+                _packetFactory.SendQuestStarted(client, packet.NpcId, packet.QuestId);
         }
 
         [HandlerAction(PacketType.QUEST_END)]
-        public void HandleQuitEnd(WorldClient client, QuestEndPacket packet)
+        public void HandleQuestEnd(WorldClient client, QuestEndPacket packet)
         {
-            _questsManager.TryFinishQuest(packet.NpcId, packet.QuestId);
+            var ok = _questsManager.TryFinishQuest(packet.NpcId, packet.QuestId, out var quest);
+            if (!ok)
+                _packetFactory.SendQuestFinished(client, packet.NpcId, packet.QuestId, quest, ok);
+            else
+                if (quest.CanChooseRevard)
+                _packetFactory.SendQuestChooseRevard(client, packet.QuestId);
+
+        }
+
+        [HandlerAction(PacketType.QUEST_END_SELECT)]
+        public void HandleQuestEndSelect(WorldClient client, QuestEndSelectPacket packet)
+        {
+            _questsManager.TryFinishQuestSelect(packet.NpcId, packet.QuestId, packet.Index);
         }
 
         [HandlerAction(PacketType.QUEST_QUIT)]

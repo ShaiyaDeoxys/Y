@@ -23,7 +23,7 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Event, that is fired, when quest is finished.
         /// </summary>
-        event Action<Quest, int> OnQuestFinished;
+        event Action<int, Quest, bool> OnQuestFinished;
 
         /// <summary>
         /// Tries to start new quest.
@@ -50,6 +50,11 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Tries successfully finish quest.
         /// </summary>
-        void TryFinishQuest(int npcId, short questId);
+        bool TryFinishQuest(int npcId, short questId, out Quest quest);
+
+        /// <summary>
+        /// After quest is finished, it's possible to select revard item.
+        /// </summary>
+        bool TryFinishQuestSelect(int npcId, short questId, byte index);
     }
 }

@@ -8,9 +8,9 @@ using SQuest = Parsec.Shaiya.NpcQuest.Quest;
 
 namespace Imgeneus.World.Game.Quests
 {
-    public class Quest
+    public class Quest : IDisposable
     {
-        private readonly SQuest _quest;
+        public readonly SQuest Config;
 
         public Quest(SQuest quest, DbCharacterQuest dbCharacterQuest) : this(quest)
         {
@@ -28,29 +28,21 @@ namespace Imgeneus.World.Game.Quests
 
         public Quest(SQuest quest)
         {
-            _quest = quest;
+            Config = quest;
 
             _endTimer.AutoReset = false;
             _endTimer.Elapsed += EndTimer_Elapsed;
         }
 
+        public void Dispose()
+        {
+            _endTimer.Elapsed -= EndTimer_Elapsed;
+        }
+
         /// <summary>
         /// Quest id.
         /// </summary>
-        public short Id { get => _quest.Id; }
-
-        private bool _saveToDb;
-        /// <summary>
-        /// If quest didn't change, it shouldn't be save to database.
-        /// </summary>
-        public bool SaveUpdateToDatabase
-        {
-            get => _saveToDb || RemainingTime > 0;
-            private set
-            {
-                _saveToDb = value;
-            }
-        }
+        public short Id { get => Config.Id; }
 
         /// <summary>
         /// Number of killed mobs of first type.
@@ -65,7 +57,6 @@ namespace Imgeneus.World.Game.Quests
             if (CountMob1 != byte.MaxValue)
             {
                 CountMob1++;
-                _saveToDb = true;
             }
         }
 
@@ -82,7 +73,6 @@ namespace Imgeneus.World.Game.Quests
             if (CountMob2 != byte.MaxValue)
             {
                 CountMob2++;
-                _saveToDb = true;
             }
         }
 
@@ -106,10 +96,10 @@ namespace Imgeneus.World.Game.Quests
         /// </summary>
         public bool RequirementsFulfilled(IEnumerable<Item> inventoryItems)
         {
-            return CountMob1 >= _quest.RequiredMobCount1 && CountMob2 >= _quest.RequiredMobCount2
-                  && inventoryItems.Count(itm => itm.Type == FarmItemType_1 && itm.TypeId == FarmItemTypeId_1) >= FarmItemCount_1
-                  && inventoryItems.Count(itm => itm.Type == FarmItemType_2 && itm.TypeId == FarmItemTypeId_2) >= FarmItemCount_2
-                  && inventoryItems.Count(itm => itm.Type == FarmItemType_3 && itm.TypeId == FarmItemTypeId_3) >= FarmItemCount_3;
+            return CountMob1 >= Config.RequiredMobCount1 && CountMob2 >= Config.RequiredMobCount2
+                  && inventoryItems.Where(itm => itm.Type == FarmItemType_1 && itm.TypeId == FarmItemTypeId_1).Sum(x => x.Count) >= FarmItemCount_1
+                  && inventoryItems.Where(itm => itm.Type == FarmItemType_2 && itm.TypeId == FarmItemTypeId_2).Sum(x => x.Count) >= FarmItemCount_2
+                  && inventoryItems.Where(itm => itm.Type == FarmItemType_3 && itm.TypeId == FarmItemTypeId_3).Sum(x => x.Count) >= FarmItemCount_3;
         }
 
         /// <summary>
@@ -118,7 +108,6 @@ namespace Imgeneus.World.Game.Quests
         public void Finish(bool successful)
         {
             _endTimer.Stop();
-            _saveToDb = true;
             IsFinished = true;
             IsSuccessful = successful;
         }
@@ -128,67 +117,67 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_1 { get => _quest.RequiredItems[0].Type; }
+        public byte FarmItemType_1 { get => Config.RewardItems[0].Type; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_1 { get => _quest.RequiredItems[0].TypeId; }
+        public byte FarmItemTypeId_1 { get => Config.RewardItems[0].TypeId; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_1 { get => _quest.RequiredItems[0].Count; }
+        public byte FarmItemCount_1 { get => Config.RewardItems[0].Count; }
 
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_2 { get => _quest.RequiredItems[1].Type; }
+        public byte FarmItemType_2 { get => Config.RewardItems[1].Type; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_2 { get => _quest.RequiredItems[1].TypeId; }
+        public byte FarmItemTypeId_2 { get => Config.RewardItems[1].TypeId; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_2 { get => _quest.RequiredItems[1].Count; }
+        public byte FarmItemCount_2 { get => Config.RewardItems[1].Count; }
 
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_3 { get => _quest.RequiredItems[2].Type; }
+        public byte FarmItemType_3 { get => Config.RewardItems[2].Type; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_3 { get => _quest.RequiredItems[2].TypeId; }
+        public byte FarmItemTypeId_3 { get => Config.RewardItems[2].TypeId; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_3 { get => _quest.RequiredItems[2].Count; }
+        public byte FarmItemCount_3 { get => Config.RewardItems[2].Count; }
 
         /// <summary>
         /// Mob 1, that should be killed.
         /// </summary>
-        public ushort RequiredMobId_1 { get => _quest.RequiredMobId1; }
+        public ushort RequiredMobId_1 { get => Config.RequiredMobId1; }
 
         /// <summary>
         /// Number of mobs 1, that should be killed.
         /// </summary>
-        public byte RequiredMobCount_1 { get => _quest.RequiredMobCount1; }
+        public byte RequiredMobCount_1 { get => Config.RequiredMobCount1; }
 
         /// <summary>
         /// Mob 2, that should be killed.
         /// </summary>
-        public ushort RequiredMobId_2 { get => _quest.RequiredMobId2; }
+        public ushort RequiredMobId_2 { get => Config.RequiredMobId2; }
 
         /// <summary>
         /// Number of mobs 2, that should be killed.
         /// </summary>
-        public byte RequiredMobCount_2 { get => _quest.RequiredMobCount2; }
+        public byte RequiredMobCount_2 { get => Config.RequiredMobCount2; }
 
         #endregion
 
@@ -197,12 +186,41 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// How much experience player gets from this quest.
         /// </summary>
-        public uint XP { get => _quest.Results[0].Exp; }
+        public uint XP { get => (uint)Config.Results.Sum(x => x.Exp); }
 
         /// <summary>
         /// How much money player gets from this quest.
         /// </summary>
-        public uint Gold { get => _quest.Results[0].Money; }
+        public uint Gold { get => (uint)Config.Results.Sum(x => x.Money); }
+
+        /// <summary>
+        /// Items, that player gets from quest.
+        /// </summary>
+        public IList<(byte Type, byte TypeId, byte Count)> RevardItems
+        {
+            get
+            {
+                var items = new List<(byte Type, byte TypeId, byte Count)>();
+                foreach (var result in Config.Results)
+                {
+                    if (result.ItemType1 != 0 && result.ItemTypeId1 != 0)
+                        items.Add((result.ItemType1, result.ItemTypeId1, result.ItemCount1));
+
+                    if (result.ItemType2 != 0 && result.ItemTypeId2 != 0)
+                        items.Add((result.ItemType2, result.ItemTypeId2, result.ItemCount2));
+
+                    if (result.ItemType3 != 0 && result.ItemTypeId3 != 0)
+                        items.Add((result.ItemType3, result.ItemTypeId3, result.ItemCount3));
+                }
+
+                return items;
+            }
+        }
+
+        /// <summary>
+        /// After quest is finished, is it possible to choose revard?
+        /// </summary>
+        public bool CanChooseRevard { get => Config.ResultUserSelect > 0; }
 
         #endregion
 
@@ -220,7 +238,7 @@ namespace Imgeneus.World.Game.Quests
         {
             get
             {
-                if (_quest.Time == 0)
+                if (Config.Time == 0)
                     return 0;
                 return (ushort)_endTime.Subtract(DateTime.UtcNow).TotalMinutes;
             }
@@ -236,10 +254,10 @@ namespace Imgeneus.World.Game.Quests
         /// </summary>
         public void StartQuestTimer()
         {
-            if (_quest.Time > 0)
+            if (Config.Time > 0)
             {
-                _endTime = DateTime.UtcNow.AddMinutes(_quest.Time);
-                _endTimer.Interval = _quest.Time * 60 * 1000;
+                _endTime = DateTime.UtcNow.AddMinutes(Config.Time);
+                _endTimer.Interval = Config.Time * 60 * 1000;
                 _endTimer.Start();
             }
         }
@@ -251,7 +269,6 @@ namespace Imgeneus.World.Game.Quests
 
         private void EndTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            _saveToDb = true;
             IsFinished = true;
             IsSuccessful = false;
             QuestTimeElapsed?.Invoke(this);
