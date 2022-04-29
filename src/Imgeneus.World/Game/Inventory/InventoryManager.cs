@@ -1055,7 +1055,7 @@ namespace Imgeneus.World.Game.Inventory
                     break;
             }
 
-            if (item.ItemClassType != ItemClassType.AllFactions)
+            if (item.ItemClassType != ItemClassType.AllFactions && item.ItemClassType != ItemClassType.AllLights && item.ItemClassType != ItemClassType.AllFury)
             {
                 switch (_additionalInfoManager.Class)
                 {
@@ -1262,8 +1262,17 @@ namespace Imgeneus.World.Game.Inventory
                     _partyManager.SummonMembers(summonItem: item);
                     break;
 
+                case SpecialEffect.TownTeleport:
+                    if (item.NpcId == 0)
+                    {
+                        _logger.LogWarning("Town portal item ({type}, {typeId}) does not have npc id", item.Type, item.TypeId);
+                        return false;
+                    }
+
+                    return true;
+
                 default:
-                    _logger.LogError($"Uninplemented item effect {item.Special}.");
+                    _logger.LogError("Uninplemented item effect {special}.", item.Special);
                     break;
             }
 

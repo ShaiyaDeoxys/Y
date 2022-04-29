@@ -14,7 +14,9 @@ using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.NpcQuest;
 using Sylver.HandlerInvoker.Attributes;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Handlers
 {
@@ -115,20 +117,23 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.TELEPORT_PRELOADED_TOWN)]
-        public void HandleTeleportPreloadedTown(WorldClient client, TeleportPreloadedTownPacket packet)
+        public async Task HandleTeleportPreloadedTown(WorldClient client, TeleportPreloadedTownPacket packet)
         {
-            _inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var item);
-            if (item is null || item.Special != SpecialEffect.TownTeleport || item.NpcId == 0)
+            if (!_inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var item))
                 return;
 
-            if (!_gameDefinitions.NPCs.TryGetValue((2, (short)item.NpcId), out var dbNpc))
+            var ok = await _inventoryManager.TryUseItem(packet.Bag, packet.Slot);
+            if (!ok)
                 return;
 
-            var npc = new Npc(_npcLogger, dbNpc);
-            if (!npc.ContainsGate(packet.GateId))
+            if (!_gameDefinitions.NPCs.TryGetValue((2, (short)item.NpcId), out var npc))
                 return;
 
-            var gate = npc.Gates[packet.GateId];
+            var gatekeeper = (GateKeeper)npc;
+            if (gatekeeper.GateTargets.Count < packet.GateId)
+                return;
+
+            var gate = gatekeeper.GateTargets[packet.GateId];
 
             var mapConfig = _mapLoader.LoadMapConfiguration((ushort)gate.MapId);
             if (mapConfig is null)
