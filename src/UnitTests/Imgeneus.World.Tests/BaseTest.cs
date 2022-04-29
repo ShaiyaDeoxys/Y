@@ -54,6 +54,7 @@ using Parsec.Shaiya.NpcQuest;
 using Imgeneus.World.Tests.NpcTests;
 using Parsec.Shaiya.Svmap;
 using Npc = Imgeneus.World.Game.NPCs.Npc;
+using SQuest = Parsec.Shaiya.NpcQuest.Quest;
 
 namespace Imgeneus.World.Tests
 {
@@ -418,6 +419,23 @@ namespace Imgeneus.World.Tests
                 .Returns(new Dictionary<(byte Type, short TypeId), BaseNpc>()
                 {
                     { (1, 1), WeaponMerchant }
+                });
+
+            NewBeginnings.Results.Add(new QuestResult() { Exp = 5, Money = 3000 });
+
+            Bartering.RewardItems.Add(new QuestItem() { Type = RedApple.Type, TypeId = RedApple.TypeId, Count = 10 });
+            Bartering.Results.Add(new QuestResult() { Exp = 3, Money = 3000, ItemType1 = RedApple.Type, ItemTypeId1 = RedApple.TypeId, ItemCount1 = 20 });
+
+            SkillsAndStats.Results.Add(new QuestResult() { ItemType1 = WaterArmor.Type, ItemTypeId1 = WaterArmor.TypeId, ItemCount1 = 1 });
+            SkillsAndStats.Results.Add(new QuestResult() { ItemType1 = FireSword.Type, ItemTypeId1 = FireSword.TypeId, ItemCount1 = 1 });
+
+            definitionsPreloader
+                .SetupGet((preloader) => preloader.Quests)
+                .Returns(new Dictionary<short, SQuest>() 
+                {
+                    { NewBeginnings.Id, NewBeginnings },
+                    { Bartering.Id, Bartering },
+                    { SkillsAndStats.Id, SkillsAndStats }
                 });
 
             databaseMock
@@ -870,7 +888,8 @@ namespace Imgeneus.World.Tests
             Special = SpecialEffect.None,
             ConstHP = 50,
             ReqIg = 1,
-            Country = ItemClassType.AllFactions
+            Country = ItemClassType.AllFactions,
+            Count = 255
         };
 
         protected DbItem GreenApple = new DbItem()
@@ -1187,6 +1206,30 @@ namespace Imgeneus.World.Tests
             TypeId = 1,
             Name = "Erina Probicio",
             MerchantType = MerchantType.WeaponMerchant
+        };
+
+        #endregion
+
+        #region Quest
+
+        protected SQuest NewBeginnings = new SQuest()
+        {
+            Id = 3400,
+            Name = "New Beginnings",
+            RequiredMobId1 = 2011,
+            RequiredMobCount1 = 5
+        };
+
+        protected SQuest Bartering = new SQuest()
+        {
+            Id = 3401,
+            Name = "Bartering"
+        };
+
+        protected SQuest SkillsAndStats = new SQuest()
+        {
+            Id = 3782,
+            Name = "Skills and Stats"
         };
 
         #endregion

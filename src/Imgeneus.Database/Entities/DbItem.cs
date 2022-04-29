@@ -309,7 +309,7 @@ namespace Imgeneus.Database.Entities
         public byte Server { get; set; }
 
         /// <summary>
-        /// ?
+        /// Max count.
         /// </summary>
         [Required]
         public byte Count { get; set; }
