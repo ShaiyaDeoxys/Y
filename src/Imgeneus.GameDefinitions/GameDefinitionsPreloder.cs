@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Parsec.Common;
 using Parsec.Readers;
+using Parsec.Shaiya.Item;
 using Parsec.Shaiya.NpcQuest;
 
 namespace Imgeneus.GameDefinitions
@@ -9,8 +10,10 @@ namespace Imgeneus.GameDefinitions
     {
         private readonly ILogger<GameDefinitionsPreloder> _logger;
 
-        public Dictionary<(byte Type, short TypeId), BaseNpc> NPCs { get; private set; } = new Dictionary<(byte Type, short TypeId), BaseNpc>();
-        public Dictionary<short, Quest> Quests { get; private set; } = new Dictionary<short, Quest>();
+        public Dictionary<(long Type, long TypeId), DBItemDataRecord> Items { get; init; } = new();
+        public Dictionary<long, List<DBItemDataRecord>> ItemsByGrade { get; init; } = new();
+        public Dictionary<(byte Type, short TypeId), BaseNpc> NPCs { get; init; } = new();
+        public Dictionary<short, Quest> Quests { get; init; } = new();
 
         public GameDefinitionsPreloder(ILogger<GameDefinitionsPreloder> logger)
         {
@@ -21,7 +24,7 @@ namespace Imgeneus.GameDefinitions
         {
             try
             {
-                //PreloadItems(_database);
+                PreloadItems();
                 //PreloadSkills(_database);
                 //PreloadMobs(_database);
                 //PreloadMobItems(_database);
@@ -33,6 +36,27 @@ namespace Imgeneus.GameDefinitions
             catch (Exception ex)
             {
                 _logger.LogError($"Error during preloading game definitions: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Preloads all available items from DBItemData.SData.
+        /// </summary>
+        private void PreloadItems()
+        {
+            var items = Reader.ReadFromFile<DBItemData>("config/SData/DBItemData.SData");
+
+            foreach (var item in items.Records)
+            {
+                Items.Add((item.ItemType, item.ItemTypeId), item);
+                if (ItemsByGrade.ContainsKey(item.Grade))
+                {
+                    ItemsByGrade[item.Grade].Add(item);
+                }
+                else
+                {
+                    ItemsByGrade.Add(item.Grade, new List<DBItemDataRecord>() { item });
+                }
             }
         }
 

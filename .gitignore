@@ -342,4 +342,4 @@ healthchecksdb
 /src/Imgeneus.World/appsettings.Development.json
 /src/Imgeneus.Database/appsettings.Development.json
 /src/Imgeneus.World/imgeneus.logs.db
-/src/Imgeneus.World/config/SDATA/NpcQuest.SData
+/src/Imgeneus.World/config/SData/*.SData
