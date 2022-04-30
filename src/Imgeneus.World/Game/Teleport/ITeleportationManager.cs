@@ -4,7 +4,7 @@ using System;
 
 namespace Imgeneus.World.Game.Teleport
 {
-    public interface ITeleportationManager : ISessionedService
+    public interface ITeleportationManager : ISessionedService, IDisposable
     {
         void Init(int ownerId);
 
@@ -32,5 +32,15 @@ namespace Imgeneus.World.Game.Teleport
         /// Teleports character with the help of the portal, if it's possible.
         /// </summary>
         bool TryTeleport(byte portalIndex, out PortalTeleportNotAllowedReason reason);
+
+        /// <summary>
+        /// Fires event, when player starts casting teleport.
+        /// </summary>
+        event Action<int> OnCastingTeleport;
+
+        /// <summary>
+        /// When used teleport item, like teleport to capital, arena etc. there is casting timer.
+        /// </summary>
+        void StartCastingTeleport(ushort mapId, float x, float y, float z, bool skeepTimer = false);
     }
 }

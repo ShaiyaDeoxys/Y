@@ -172,6 +172,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             {
                 Party.SummonRequest = null;
                 IsSummoning = false;
+                _summonTimer.Stop();
             }
         }
 

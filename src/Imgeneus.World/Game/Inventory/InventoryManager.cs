@@ -19,6 +19,7 @@ using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Zone;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -1269,6 +1270,18 @@ namespace Imgeneus.World.Game.Inventory
                         return false;
                     }
 
+                    return true;
+
+                case SpecialEffect.CapitalTeleport:
+                    IMap capital;
+                    if (_countryProvider.Country == CountryType.Light)
+                        capital = _gameWorld.Maps[35];
+                    else
+                        capital = _gameWorld.Maps[36];
+
+                    var spawn = capital.GetNearestSpawn(0, 0, 0, _countryProvider.Country);
+
+                    _teleportationManager.StartCastingTeleport(capital.Id, spawn.X, spawn.Y, spawn.Z);
                     return true;
 
                 default:

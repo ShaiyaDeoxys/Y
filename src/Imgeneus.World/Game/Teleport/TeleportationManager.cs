@@ -1,6 +1,6 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.World.Game.Country;
-using Imgeneus.World.Game.Duel;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Zone;
@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Zone.Portals;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Imgeneus.World.Game.Teleport
 {
@@ -20,9 +21,10 @@ namespace Imgeneus.World.Game.Teleport
         private readonly ICountryProvider _countryProvider;
         private readonly ILevelProvider _levelProvider;
         private readonly IGameWorld _gameWorld;
+        private readonly IHealthManager _healthManager;
         private int _ownerId;
 
-        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IGameWorld gameWorld)
+        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IGameWorld gameWorld, IHealthManager healthManager)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -31,6 +33,9 @@ namespace Imgeneus.World.Game.Teleport
             _countryProvider = countryProvider;
             _levelProvider = levelProvider;
             _gameWorld = gameWorld;
+            _healthManager = healthManager;
+            _castingTimer.Elapsed += OnCastingTimer_Elapsed;
+            _healthManager.OnGotDamage += CancelCasting;
 #if DEBUG
             _logger.LogDebug("TeleportationManager {hashcode} created", GetHashCode());
 #endif
@@ -66,6 +71,12 @@ namespace Imgeneus.World.Game.Teleport
 
             await _database.SaveChangesAsync();
 
+        }
+
+        public void Dispose()
+        {
+            _castingTimer.Elapsed -= OnCastingTimer_Elapsed;
+            _healthManager.OnGotDamage -= CancelCasting;
         }
 
         #endregion
@@ -135,6 +146,35 @@ namespace Imgeneus.World.Game.Teleport
             {
                 return false;
             }
+        }
+
+        public event Action<int> OnCastingTeleport;
+
+        private (ushort MapId, float X, float Y, float Z) CastingPosition;
+
+        private Timer _castingTimer = new Timer() { AutoReset = false, Interval = 5000 };
+
+        public void StartCastingTeleport(ushort mapId, float x, float y, float z, bool skeepTimer = false)
+        {
+            OnCastingTeleport?.Invoke(_ownerId);
+
+            CastingPosition = (mapId, x, y, z);
+            _castingTimer.Start();
+        }
+
+        private void OnCastingTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (CastingPosition == (0, 0, 0, 0))
+                return;
+
+            Teleport(CastingPosition.MapId, CastingPosition.X, CastingPosition.Y, CastingPosition.Z);
+            CastingPosition = (0, 0, 0, 0);
+        }
+
+        private void CancelCasting(int sender, IKiller damageMaker)
+        {
+            CastingPosition = (0, 0, 0, 0);
+            _castingTimer.Stop();
         }
     }
 }

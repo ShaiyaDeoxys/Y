@@ -214,7 +214,8 @@ namespace Imgeneus.World.Game.Zone
             character.LevelProvider.OnLevelUp += Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged += Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting += Character_OnTeleport;
-            character.PartyManager.OnSummonning += Character_OnSummon;
+            character.PartyManager.OnSummonning += Character_OnItemCasting;
+            character.TeleportationManager.OnCastingTeleport += Character_OnItemCasting;
         }
 
         /// <summary>
@@ -245,7 +246,8 @@ namespace Imgeneus.World.Game.Zone
             character.LevelProvider.OnLevelUp -= Character_OnLevelUp;
             character.VehicleManager.OnVehiclePassengerChanged -= Character_OnVehiclePassengerChanged;
             character.TeleportationManager.OnTeleporting -= Character_OnTeleport;
-            character.PartyManager.OnSummonning -= Character_OnSummon;
+            character.PartyManager.OnSummonning -= Character_OnItemCasting;
+            character.TeleportationManager.OnCastingTeleport -= Character_OnItemCasting;
         }
 
         #region Character listeners
@@ -469,7 +471,10 @@ namespace Imgeneus.World.Game.Zone
                 Map.PacketFactory.SendCharacterTeleport(p.GameSession.Client, senderId, mapId, x, y, z, teleportedByAdmin);
         }
 
-        private void Character_OnSummon(int senderId)
+        /// <summary>
+        /// Notifies other players that character started casting some item.
+        /// </summary>
+        private void Character_OnItemCasting(int senderId)
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendItemCasting(p.GameSession.Client, senderId);
