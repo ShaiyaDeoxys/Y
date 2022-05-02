@@ -1294,6 +1294,16 @@ namespace Imgeneus.World.Game.Inventory
                     _teleportationManager.StartCastingTeleport(bootleggery.MapId, bootleggery.X, bootleggery.Y, bootleggery.Z);
                     return true;
 
+                case SpecialEffect.ArenaTeleport:
+                    (ushort MapId, float X, float Y, float Z) arena;
+                    if (_countryProvider.Country == CountryType.Light)
+                        arena = (40, 128, 3, 82);
+                    else
+                        arena = (40, 58, 3, 82);
+
+                    _teleportationManager.StartCastingTeleport(arena.MapId, arena.X, arena.Y, arena.Z);
+                    return true;
+
                 default:
                     _logger.LogError("Uninplemented item effect {special}.", item.Special);
                     break;

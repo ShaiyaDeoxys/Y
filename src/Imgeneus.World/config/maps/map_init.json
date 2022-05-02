@@ -52,6 +52,22 @@
       "MapType": "Field"
     },
     {
+      "MapId": 40,
+      "MapType": "Dungeon",
+      "LightRebirthMap": {
+        "MapId": 40,
+        "PosX": 128,
+        "PosY": 3,
+        "PosZ": 82
+      },
+      "DarkRebirthMap": {
+        "MapId": 40,
+        "PosX": 58,
+        "PosY": 3,
+        "PosZ": 82
+      }
+    },
+    {
       "MapId": 42,
       "MapType": "Dungeon"
     },

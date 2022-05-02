@@ -36,6 +36,7 @@ namespace Imgeneus.World.Game.Teleport
             _healthManager = healthManager;
             _castingTimer.Elapsed += OnCastingTimer_Elapsed;
             _healthManager.OnGotDamage += CancelCasting;
+            _movementManager.OnMove += MovementManager_OnMove;
 #if DEBUG
             _logger.LogDebug("TeleportationManager {hashcode} created", GetHashCode());
 #endif
@@ -77,6 +78,7 @@ namespace Imgeneus.World.Game.Teleport
         {
             _castingTimer.Elapsed -= OnCastingTimer_Elapsed;
             _healthManager.OnGotDamage -= CancelCasting;
+            _movementManager.OnMove -= MovementManager_OnMove;
         }
 
         #endregion
@@ -172,6 +174,12 @@ namespace Imgeneus.World.Game.Teleport
         }
 
         private void CancelCasting(int sender, IKiller damageMaker)
+        {
+            CastingPosition = (0, 0, 0, 0);
+            _castingTimer.Stop();
+        }
+
+        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
             CastingPosition = (0, 0, 0, 0);
             _castingTimer.Stop();

@@ -38,9 +38,21 @@ namespace Imgeneus.World.Handlers
 
             (ushort MapId, float X, float Y, float Z) rebirthCoordinate = (0, 0, 0, 0);
 
+            // Usual rebirth.
             if (rebirthType == RebirthType.KillSoul)
             {
                 rebirthCoordinate = _mapProvider.Map.GetRebirthMap(_gameWorld.Players[_gameSession.CharId]);
+            }
+
+            // Rebirth with rune. Will rebirth at the same place.
+            if (rebirthType == RebirthType.KillSoulByItem) 
+            {
+                rebirthCoordinate.MapId = _mapProvider.Map.Id;
+                rebirthCoordinate.X = _movementManager.PosX;
+                rebirthCoordinate.Y = _movementManager.PosY;
+                rebirthCoordinate.Z = _movementManager.PosZ;
+
+                // TODO: use rune item.
             }
 
             if (_mapProvider.Map.Id != rebirthCoordinate.MapId)
