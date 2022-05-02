@@ -132,7 +132,7 @@ namespace Imgeneus.World.Tests
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
 
-            var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object);
+            var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager);
             teleportManager.Init(_characterId);
 
             var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, enchantConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
