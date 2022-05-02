@@ -1092,6 +1092,16 @@ namespace Imgeneus.World.Game.Inventory
                 }
             }
 
+            if (item.Special == SpecialEffect.GuildHouseTeleport)
+            {
+                var character = _database.Characters
+                                         .Include(x => x.Guild)
+                                         .AsNoTracking()
+                                         .FirstOrDefault(x => x.Id == _ownerId);
+                if (character is null || character.Guild is null || !character.Guild.HasHouse)
+                    return false;
+            }
+
             return true;
         }
 
@@ -1302,6 +1312,16 @@ namespace Imgeneus.World.Game.Inventory
                         arena = (40, 58, 3, 82);
 
                     _teleportationManager.StartCastingTeleport(arena.MapId, arena.X, arena.Y, arena.Z);
+                    return true;
+
+                case SpecialEffect.GuildHouseTeleport:
+                    (ushort MapId, float X, float Y, float Z) guildHouse;
+                    if (_countryProvider.Country == CountryType.Light)
+                        guildHouse = (51, 491.6f, 42.7f, 324.9f);
+                    else
+                        guildHouse = (52, 482.3f, 42.7f, 327.2f);
+
+                    _teleportationManager.StartCastingTeleport(guildHouse.MapId, guildHouse.X, guildHouse.Y, guildHouse.Z);
                     return true;
 
                 default:

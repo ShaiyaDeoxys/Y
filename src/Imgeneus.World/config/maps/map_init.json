@@ -102,6 +102,17 @@
       }
     },
     {
+      "MapId": 52,
+      "MapType": "Field",
+      "CreateType": "GuildHouse",
+      "RebirthMap": {
+        "MapId": 54,
+        "PosX": 97.33,
+        "PosY": 5.89,
+        "PosZ": 42.03
+      }
+    },
+    {
       "MapId": 53,
       "MapType": "Dungeon",
       "RebirthMap": {
@@ -109,6 +120,16 @@
         "PosX": 50.43,
         "PosY": 7.09,
         "PosZ": 86.57
+      }
+    },
+    {
+      "MapId": 54,
+      "MapType": "Dungeon",
+      "RebirthMap": {
+        "MapId": 54,
+        "PosX": 97.33,
+        "PosY": 5.89,
+        "PosZ": 42.03
       }
     }
   ]
