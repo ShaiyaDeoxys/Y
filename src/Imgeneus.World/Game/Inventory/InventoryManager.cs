@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Blessing;
@@ -22,6 +23,7 @@ using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.NpcQuest;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -34,6 +36,7 @@ namespace Imgeneus.World.Game.Inventory
     {
         private readonly ILogger _logger;
         private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _gameDefinitions;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IDatabase _database;
         private readonly IStatsManager _statsManager;
@@ -54,10 +57,11 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ITeleportationManager _teleportationManager;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
+            _gameDefinitions = gameDefinitions;
             _enchantConfig = enchantConfig;
             _database = database;
             _statsManager = statsManager;
@@ -78,6 +82,7 @@ namespace Imgeneus.World.Game.Inventory
             _teleportationManager = teleportationManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
             _partyManager.OnSummoned += PartyManager_OnSummoned;
+            _teleportationManager.OnCastingTeleportFinished += TeleportationManager_OnCastingTeleportFinished;
 
 #if DEBUG
             _logger.LogDebug("InventoryManager {hashcode} created", GetHashCode());
@@ -232,12 +237,15 @@ namespace Imgeneus.World.Game.Inventory
             Pet = null;
             Costume = null;
             Wings = null;
+
+            _itemCooldowns.Clear();
         }
 
         public void Dispose()
         {
             _speedManager.OnPassiveModificatorChanged -= SpeedManager_OnPassiveModificatorChanged;
             _partyManager.OnSummoned -= PartyManager_OnSummoned;
+            _teleportationManager.OnCastingTeleportFinished -= TeleportationManager_OnCastingTeleportFinished;
         }
 
         #endregion
@@ -1280,7 +1288,17 @@ namespace Imgeneus.World.Game.Inventory
                         return false;
                     }
 
-                    return true;
+                    if (!_gameDefinitions.NPCs.TryGetValue((2, (short)item.NpcId), out var npc))
+                        return false;
+
+
+                    var gatekeeper = (GateKeeper)npc;
+                    if (gatekeeper.GateTargets.Count < item.TradeQuantity)
+                        return false;
+
+                    var gate = gatekeeper.GateTargets[item.TradeQuantity];
+                    _teleportationManager.StartCastingTeleport((ushort)gate.MapId, gate.Position.X, gate.Position.Y, gate.Position.Z, item);
+                    break;
 
                 case SpecialEffect.CapitalTeleport:
                     IMap capital;
@@ -1291,8 +1309,8 @@ namespace Imgeneus.World.Game.Inventory
 
                     var spawn = capital.GetNearestSpawn(0, 0, 0, _countryProvider.Country);
 
-                    _teleportationManager.StartCastingTeleport(capital.Id, spawn.X, spawn.Y, spawn.Z);
-                    return true;
+                    _teleportationManager.StartCastingTeleport(capital.Id, spawn.X, spawn.Y, spawn.Z, item);
+                    break;
 
                 case SpecialEffect.BootleggeryTeleport:
                     (ushort MapId, float X, float Y, float Z) bootleggery;
@@ -1301,8 +1319,9 @@ namespace Imgeneus.World.Game.Inventory
                     else
                         bootleggery = (42, 23.4f, 12.4f, 106.4f);
 
-                    _teleportationManager.StartCastingTeleport(bootleggery.MapId, bootleggery.X, bootleggery.Y, bootleggery.Z);
-                    return true;
+                    _teleportationManager.StartCastingTeleport(bootleggery.MapId, bootleggery.X, bootleggery.Y, bootleggery.Z, item);
+                    break;
+
 
                 case SpecialEffect.ArenaTeleport:
                     (ushort MapId, float X, float Y, float Z) arena;
@@ -1311,8 +1330,8 @@ namespace Imgeneus.World.Game.Inventory
                     else
                         arena = (40, 58, 3, 82);
 
-                    _teleportationManager.StartCastingTeleport(arena.MapId, arena.X, arena.Y, arena.Z);
-                    return true;
+                    _teleportationManager.StartCastingTeleport(arena.MapId, arena.X, arena.Y, arena.Z, item);
+                    break;
 
                 case SpecialEffect.GuildHouseTeleport:
                     (ushort MapId, float X, float Y, float Z) guildHouse;
@@ -1321,8 +1340,8 @@ namespace Imgeneus.World.Game.Inventory
                     else
                         guildHouse = (52, 482.3f, 42.7f, 327.2f);
 
-                    _teleportationManager.StartCastingTeleport(guildHouse.MapId, guildHouse.X, guildHouse.Y, guildHouse.Z);
-                    return true;
+                    _teleportationManager.StartCastingTeleport(guildHouse.MapId, guildHouse.X, guildHouse.Y, guildHouse.Z, item);
+                    break;
 
                 default:
                     _logger.LogError("Uninplemented item effect {special}.", item.Special);
@@ -1418,10 +1437,22 @@ namespace Imgeneus.World.Game.Inventory
 
         private void PartyManager_OnSummoned(int senderId)
         {
-            if (_ownerId != senderId || _partyManager.Party.SummonRequest.SummonItem is null)
+            if (_ownerId != senderId)
                 return;
 
-            var item = _partyManager.Party.SummonRequest.SummonItem;
+            UseCastingItem(_partyManager.Party.SummonRequest.SummonItem);
+        }
+
+        private void TeleportationManager_OnCastingTeleportFinished()
+        {
+            UseCastingItem(_teleportationManager.CastingItem);
+        }
+
+        private void UseCastingItem(Item item)
+        {
+            if (item is null)
+                return;
+
             item.Count--;
             _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
 

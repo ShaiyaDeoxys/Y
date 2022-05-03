@@ -31,9 +31,8 @@ namespace Imgeneus.World.Handlers
         private readonly IGuildManager _guildManager;
         private readonly IInventoryManager _inventoryManager;
         private readonly IMapsLoader _mapLoader;
-        private readonly IGameDefinitionsPreloder _gameDefinitions;
 
-        public TeleportHandlers(ILogger<TeleportHandlers> logger, ILogger<Npc> npcLogger, IGamePacketFactory packetFactory, IGameSession gameSession, ITeleportationManager teleportationManager, IMapProvider mapProvider, IGameWorld gameWorld, IGuildManager guildManager, IInventoryManager inventoryManager, IMapsLoader mapLoader, IGameDefinitionsPreloder gameDefinitions) : base(packetFactory, gameSession)
+        public TeleportHandlers(ILogger<TeleportHandlers> logger, ILogger<Npc> npcLogger, IGamePacketFactory packetFactory, IGameSession gameSession, ITeleportationManager teleportationManager, IMapProvider mapProvider, IGameWorld gameWorld, IGuildManager guildManager, IInventoryManager inventoryManager, IMapsLoader mapLoader) : base(packetFactory, gameSession)
         {
             _logger = logger;
             _npcLogger = npcLogger;
@@ -43,7 +42,6 @@ namespace Imgeneus.World.Handlers
             _guildManager = guildManager;
             _inventoryManager = inventoryManager;
             _mapLoader = mapLoader;
-            _gameDefinitions = gameDefinitions;
         }
 
         [HandlerAction(PacketType.CHARACTER_ENTERED_PORTAL)]
@@ -122,24 +120,8 @@ namespace Imgeneus.World.Handlers
             if (!_inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var item))
                 return;
 
-            var ok = await _inventoryManager.TryUseItem(packet.Bag, packet.Slot);
-            if (!ok)
-                return;
-
-            if (!_gameDefinitions.NPCs.TryGetValue((2, (short)item.NpcId), out var npc))
-                return;
-
-            var gatekeeper = (GateKeeper)npc;
-            if (gatekeeper.GateTargets.Count < packet.GateId)
-                return;
-
-            var gate = gatekeeper.GateTargets[packet.GateId];
-
-            var mapConfig = _mapLoader.LoadMapConfiguration((ushort)gate.MapId);
-            if (mapConfig is null)
-                return;
-
-            _teleportationManager.Teleport((ushort)gate.MapId, gate.Position.X, gate.Position.Y, gate.Position.Z);
+            item.TradeQuantity = packet.GateId;
+            await _inventoryManager.TryUseItem(packet.Bag, packet.Slot);
         }
     }
 }

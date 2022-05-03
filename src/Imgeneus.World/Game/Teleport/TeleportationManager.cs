@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Zone;
@@ -35,7 +36,7 @@ namespace Imgeneus.World.Game.Teleport
             _gameWorld = gameWorld;
             _healthManager = healthManager;
             _castingTimer.Elapsed += OnCastingTimer_Elapsed;
-            _healthManager.OnGotDamage += CancelCasting;
+            _healthManager.OnGotDamage += HealthManager_OnGotDamage;
             _movementManager.OnMove += MovementManager_OnMove;
 #if DEBUG
             _logger.LogDebug("TeleportationManager {hashcode} created", GetHashCode());
@@ -77,7 +78,7 @@ namespace Imgeneus.World.Game.Teleport
         public void Dispose()
         {
             _castingTimer.Elapsed -= OnCastingTimer_Elapsed;
-            _healthManager.OnGotDamage -= CancelCasting;
+            _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
             _movementManager.OnMove -= MovementManager_OnMove;
         }
 
@@ -152,36 +153,48 @@ namespace Imgeneus.World.Game.Teleport
 
         public event Action<int> OnCastingTeleport;
 
+        public event Action OnCastingTeleportFinished;
+
         private (ushort MapId, float X, float Y, float Z) CastingPosition;
 
         private Timer _castingTimer = new Timer() { AutoReset = false, Interval = 5000 };
 
-        public void StartCastingTeleport(ushort mapId, float x, float y, float z, bool skeepTimer = false)
+        public Item CastingItem { get; private set; }
+
+        public void StartCastingTeleport(ushort mapId, float x, float y, float z, Item item, bool skeepTimer = false)
         {
             OnCastingTeleport?.Invoke(_ownerId);
 
             CastingPosition = (mapId, x, y, z);
+            CastingItem = item;
             _castingTimer.Start();
         }
 
         private void OnCastingTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (CastingPosition == (0, 0, 0, 0))
+            if (CastingPosition == (0, 0, 0, 0) || CastingItem == null)
                 return;
 
+            OnCastingTeleportFinished?.Invoke();
             Teleport(CastingPosition.MapId, CastingPosition.X, CastingPosition.Y, CastingPosition.Z);
+            CastingItem = null;
             CastingPosition = (0, 0, 0, 0);
         }
 
-        private void CancelCasting(int sender, IKiller damageMaker)
+        private void HealthManager_OnGotDamage(int sender, IKiller damageMaker)
         {
-            CastingPosition = (0, 0, 0, 0);
-            _castingTimer.Stop();
+            CancelCasting();
         }
 
         private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
+            CancelCasting();
+        }
+
+        private void CancelCasting()
+        {
             CastingPosition = (0, 0, 0, 0);
+            CastingItem = null;
             _castingTimer.Stop();
         }
     }

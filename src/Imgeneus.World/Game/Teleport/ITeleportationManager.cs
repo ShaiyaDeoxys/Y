@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Session;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Zone.Portals;
 using System;
 
@@ -39,8 +40,18 @@ namespace Imgeneus.World.Game.Teleport
         event Action<int> OnCastingTeleport;
 
         /// <summary>
+        /// Fires event, when player finished casting teleport.
+        /// </summary>
+        event Action OnCastingTeleportFinished;
+
+        /// <summary>
         /// When used teleport item, like teleport to capital, arena etc. there is casting timer.
         /// </summary>
-        void StartCastingTeleport(ushort mapId, float x, float y, float z, bool skeepTimer = false);
+        void StartCastingTeleport(ushort mapId, float x, float y, float z, Item item, bool skeepTimer = false);
+
+        /// <summary>
+        /// Item, that is currently in cast.
+        /// </summary>
+        Item CastingItem { get; }
     }
 }
