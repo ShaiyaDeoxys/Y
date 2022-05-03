@@ -1,6 +1,5 @@
 ﻿using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Zone.Portals;
-using Moq;
 using System.ComponentModel;
 using Xunit;
 using SPortal = Parsec.Shaiya.Svmap.Portal;
@@ -32,28 +31,22 @@ namespace Imgeneus.World.Tests.MapTests
         [Description("Character must have right faction to enter portal.")]
         public void Portal_RightFaction()
         {
-            //Portal portal;
+            Portal portal;
 
-            //var portalConfig = new Mock<SPortal>();
-            //portalConfig.SetupGet(x => x.Faction)
-            //            .Returns(0);
-            //portal = new Portal(portalConfig.Object);
-            //Assert.True(portal.IsSameFaction(CountryType.Light));
-            //Assert.True(portal.IsSameFaction(CountryType.Dark));
+            var portalConfig = new SPortal() { FactionOrPortalId = 0 };
+            portal = new Portal(portalConfig);
+            Assert.True(portal.IsSameFaction(CountryType.Light));
+            Assert.True(portal.IsSameFaction(CountryType.Dark));
 
-            //portalConfig = new Mock<SPortal>();
-            //portalConfig.SetupGet(x => x.Faction)
-            //            .Returns(1);
-            //portal = new Portal(portalConfig.Object);
-            //Assert.True(portal.IsSameFaction(CountryType.Light));
-            //Assert.False(portal.IsSameFaction(CountryType.Dark));
+            portalConfig = new SPortal() { FactionOrPortalId = 1 };
+            portal = new Portal(portalConfig);
+            Assert.True(portal.IsSameFaction(CountryType.Light));
+            Assert.False(portal.IsSameFaction(CountryType.Dark));
 
-            //portalConfig = new Mock<SPortal>();
-            //portalConfig.SetupGet(x => x.Faction)
-            //            .Returns(2);
-            //portal = new Portal(portalConfig.Object);
-            //Assert.False(portal.IsSameFaction(CountryType.Light));
-            //Assert.True(portal.IsSameFaction(CountryType.Dark));
+            portalConfig = new SPortal() { FactionOrPortalId = 2 };
+            portal = new Portal(portalConfig);
+            Assert.False(portal.IsSameFaction(CountryType.Light));
+            Assert.True(portal.IsSameFaction(CountryType.Dark));
         }
     }
 }

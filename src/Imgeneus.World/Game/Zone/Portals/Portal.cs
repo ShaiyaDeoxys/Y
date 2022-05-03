@@ -29,16 +29,16 @@ namespace Imgeneus.World.Game.Zone.Portals
         /// </summary>
         public bool IsSameFaction(CountryType faction)
         {
-            if (_config.Faction == 0)
+            if (_config.FactionOrPortalId == 0)
                 return true;
 
-            if (faction == CountryType.Light && (int)_config.Faction == 1)
+            if (faction == CountryType.Light && (int)_config.FactionOrPortalId == 1)
                 return true;
 
-            if (faction == CountryType.Dark && (int)_config.Faction == 2)
+            if (faction == CountryType.Dark && (int)_config.FactionOrPortalId == 2)
                 return true;
 
-            if ((int)_config.Faction > 2) // TODO: portal activated with boss death.
+            if ((int)_config.FactionOrPortalId > 2) // TODO: portal activated with boss death.
                 return true;
 
             return false;

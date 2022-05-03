@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Parsec;
 using Parsec.Common;
-using Parsec.Readers;
 using Parsec.Shaiya.Item;
 using Parsec.Shaiya.NpcQuest;
 
