@@ -95,7 +95,11 @@ namespace Imgeneus.World.Game.Teleport
         {
             IsTeleporting = true;
 
-            _mapProvider.NextMapId = mapId;
+            if (_gameWorld.CanTeleport(_gameWorld.Players[_ownerId], mapId, out var reason))
+                _mapProvider.NextMapId = mapId;
+            else
+                if (reason == PortalTeleportNotAllowedReason.Unknown)
+                _mapProvider.NextMapId = 0;
 
             _movementManager.PosX = x;
             _movementManager.PosY = y;

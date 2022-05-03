@@ -344,6 +344,7 @@
 
         // Teleport
         TELEPORT_PRELOADED_TOWN = 0x055A, // 1370
+        TELEPORT_PRELOADED_AREA = 0x0250, // 592
 
         // Dyeing
         DYE_CONFIRM = 0x055B, // 1371

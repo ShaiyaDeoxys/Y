@@ -123,5 +123,11 @@ namespace Imgeneus.World.Handlers
             item.TradeQuantity = packet.GateId;
             await _inventoryManager.TryUseItem(packet.Bag, packet.Slot);
         }
+
+        [HandlerAction(PacketType.TELEPORT_PRELOADED_AREA)]
+        public void HandleTeleportPreloadedTown(WorldClient client, TeleportPreloadedAreaPacket packet)
+        {
+            // TODO: coming soon
+        }
     }
 }

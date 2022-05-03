@@ -55,6 +55,7 @@ using Imgeneus.World.Tests.NpcTests;
 using Parsec.Shaiya.Svmap;
 using Npc = Imgeneus.World.Game.NPCs.Npc;
 using SQuest = Parsec.Shaiya.NpcQuest.Quest;
+using Imgeneus.World.Game.Zone.Portals;
 
 namespace Imgeneus.World.Tests
 {
@@ -135,7 +136,7 @@ namespace Imgeneus.World.Tests
             var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager);
             teleportManager.Init(_characterId);
 
-            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, enchantConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
             var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object);
@@ -242,6 +243,10 @@ namespace Imgeneus.World.Tests
         {
             gameWorldMock.Setup(x => x.Players)
                 .Returns(new ConcurrentDictionary<int, Character>());
+
+            PortalTeleportNotAllowedReason reason;
+            gameWorldMock.Setup(x => x.CanTeleport(It.IsAny<Character>(), It.IsAny<ushort>(), out reason))
+                .Returns(true);
 
             config.Setup((conf) => conf.GetConfig(It.IsAny<int>()))
                   .Returns(new Character_HP_SP_MP() { HP = 100, MP = 200, SP = 300 });
