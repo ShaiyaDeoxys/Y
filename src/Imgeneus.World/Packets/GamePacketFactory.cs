@@ -2065,6 +2065,35 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendTeleportSavedPosition(IWorldClient client, bool success, byte index, ushort mapId, float x, float y, float z)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TELEPORT_SAVE_POSITION);
+            packet.Write(success ? (byte)0 : (byte)1);
+            packet.Write(index);
+            packet.Write(mapId);
+            packet.Write(x);
+            packet.Write(y);
+            packet.Write(z);
+            client.Send(packet);
+        }
+
+        public void SendTeleportSavedPositions(IWorldClient client, IReadOnlyDictionary<byte, (ushort MapId, float X, float Y, float Z)> positions)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TELEPORT_SAVE_POSITION_LIST);
+            packet.Write((byte)positions.Count);
+
+            foreach(var p in positions)
+            {
+                packet.Write(p.Key);
+                packet.Write(p.Value.MapId);
+                packet.Write(p.Value.X);
+                packet.Write(p.Value.Y);
+                packet.Write(p.Value.Z);
+            }
+
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Quests

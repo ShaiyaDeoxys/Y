@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database;
+using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
@@ -6,8 +7,13 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Portals;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -41,6 +47,8 @@ namespace Imgeneus.World.Game.Teleport
 #if DEBUG
             _logger.LogDebug("TeleportationManager {hashcode} created", GetHashCode());
 #endif
+
+            SavedPositions = new ReadOnlyDictionary<byte, (ushort MapId, float X, float Y, float Z)>(_savedPositions);
         }
 
 #if DEBUG
@@ -52,9 +60,12 @@ namespace Imgeneus.World.Game.Teleport
 
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(int ownerId, IEnumerable<DbCharacterSavePositions> savedPositions)
         {
             _ownerId = ownerId;
+
+            foreach (var pos in savedPositions)
+                _savedPositions.TryAdd(pos.Slot, (pos.MapId, pos.X, pos.Y, pos.Z));
 
             IsTeleporting = true;
         }
@@ -71,8 +82,24 @@ namespace Imgeneus.World.Game.Teleport
             character.Angle = _movementManager.Angle;
             character.Map = _mapProvider.NextMapId;
 
-            await _database.SaveChangesAsync();
+            var savedPositions = await _database.CharacterSavePositions.Where(x => x.CharacterId == _ownerId).ToListAsync();
+            _database.CharacterSavePositions.RemoveRange(savedPositions);
 
+            foreach (var pos in _savedPositions)
+            {
+                _database.CharacterSavePositions.Add(
+                    new DbCharacterSavePositions()
+                    {
+                        CharacterId = _ownerId,
+                        Slot = pos.Key,
+                        MapId = pos.Value.MapId,
+                        X = pos.Value.X,
+                        Y = pos.Value.Y,
+                        Z = pos.Value.Z
+                    });
+            }
+
+            await _database.SaveChangesAsync();
         }
 
         public void Dispose()
@@ -83,6 +110,8 @@ namespace Imgeneus.World.Game.Teleport
         }
 
         #endregion
+
+        #region Teleport
 
         public event Action<int, ushort, float, float, float, bool> OnTeleporting;
 
@@ -155,6 +184,10 @@ namespace Imgeneus.World.Game.Teleport
             }
         }
 
+        #endregion
+
+        #region Casting teleport
+
         public event Action<int> OnCastingTeleport;
 
         public event Action OnCastingTeleportFinished;
@@ -201,5 +234,27 @@ namespace Imgeneus.World.Game.Teleport
             CastingItem = null;
             _castingTimer.Stop();
         }
+
+        #endregion
+
+        #region Save position
+
+        public byte MaxSavedPoints { get; set; } = 1;
+
+        private ConcurrentDictionary<byte, (ushort MapId, float X, float Y, float Z)> _savedPositions { get; init; } = new();
+        public IReadOnlyDictionary<byte, (ushort MapId, float X, float Y, float Z)> SavedPositions { get; init; }
+
+        public bool TrySavePosition(byte index, ushort mapId, float x, float y, float z)
+        {
+            if (index > 4 || index > MaxSavedPoints || index < 1)
+                return false;
+
+            if (_savedPositions.ContainsKey(index))
+                _savedPositions.TryRemove(index, out var _);
+
+            return _savedPositions.TryAdd(index, (mapId, x, y, z));
+        }
+
+        #endregion
     }
 }

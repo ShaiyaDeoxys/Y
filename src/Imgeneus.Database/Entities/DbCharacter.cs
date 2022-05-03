@@ -295,6 +295,11 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public ICollection<DbCharacterFriend> Friends { get; set; }
 
+        /// <summary>
+        /// Character saved teleport positions.
+        /// </summary>
+        public ICollection<DbCharacterSavePositions> SavedPositions { get; set; }
+
         public int? GuildId { get; set; }
 
         /// <summary>

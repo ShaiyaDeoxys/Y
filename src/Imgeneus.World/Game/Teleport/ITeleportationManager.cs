@@ -1,13 +1,15 @@
-﻿using Imgeneus.World.Game.Inventory;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Zone.Portals;
 using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Teleport
 {
     public interface ITeleportationManager : ISessionedService, IDisposable
     {
-        void Init(int ownerId);
+        void Init(int ownerId, IEnumerable<DbCharacterSavePositions> savedPositions);
 
         /// <summary>
         /// Indicator if character is teleporting between maps.
@@ -53,5 +55,20 @@ namespace Imgeneus.World.Game.Teleport
         /// Item, that is currently in cast.
         /// </summary>
         Item CastingItem { get; }
+
+        /// <summary>
+        /// Maximum number of saved places. Items like "Blue Dragon Charm" can change this value.
+        /// </summary>
+        byte MaxSavedPoints { get; set; }
+
+        /// <summary>
+        /// Tries to save position.
+        /// </summary>
+        bool TrySavePosition(byte index, ushort mapId, float x, float y, float z);
+
+        /// <summary>
+        /// Character's saved positions.
+        /// </summary>
+        IReadOnlyDictionary<byte, (ushort MapId, float X, float Y, float Z)> SavedPositions { get; }
     }
 }

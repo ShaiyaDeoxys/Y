@@ -1,7 +1,4 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Preload;
-using Imgeneus.GameDefinitions;
-using Imgeneus.Network.Packets;
+﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Guild;
@@ -14,7 +11,6 @@ using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
-using Parsec.Shaiya.NpcQuest;
 using Sylver.HandlerInvoker.Attributes;
 using System.Threading.Tasks;
 
@@ -125,9 +121,16 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.TELEPORT_PRELOADED_AREA)]
-        public void HandleTeleportPreloadedTown(WorldClient client, TeleportPreloadedAreaPacket packet)
+        public void HandleTeleportPreloadedArea(WorldClient client, TeleportPreloadedAreaPacket packet)
         {
             // TODO: coming soon
+        }
+
+        [HandlerAction(PacketType.TELEPORT_SAVE_POSITION)]
+        public void HandleTeleportSavePosition(WorldClient client, TeleportSavePositionPacket packet)
+        {
+            var ok = _teleportationManager.TrySavePosition(packet.Index, packet.MapId, packet.X, packet.Y, packet.Z);
+            _packetFactory.SendTeleportSavedPosition(client, ok, packet.Index, packet.MapId, packet.X, packet.Y, packet.Z);
         }
     }
 }

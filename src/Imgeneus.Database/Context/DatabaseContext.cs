@@ -7,84 +7,38 @@ namespace Imgeneus.Database.Context
 {
     public class DatabaseContext : DbContext, IDatabase
     {
-        /// <summary>
-        /// Gets or sets users.
-        /// </summary>
         public DbSet<DbUser> Users { get; set; }
 
-        /// <summary>
-        /// Gets or sets the characters.
-        /// </summary>
         public DbSet<DbCharacter> Characters { get; set; }
 
-        /// <summary>
-        /// Gets or sets the character items.
-        /// </summary>
         public DbSet<DbCharacterItems> CharacterItems { get; set; }
 
-        /// <summary>
-        /// Gets or sets character skills.
-        /// </summary>
         public DbSet<DbCharacterSkill> CharacterSkills { get; set; }
 
-        /// <summary>
-        /// Gets or sets character quests.
-        /// </summary>
         public DbSet<DbCharacterQuest> CharacterQuests { get; set; }
 
-        /// <summary>
-        /// Collection of friend pairs.
-        /// </summary>
+        public DbSet<DbCharacterSavePositions> CharacterSavePositions { get; set; }
+
         public DbSet<DbCharacterFriend> Friends { get; set; }
 
-        /// <summary>
-        /// Collection of skills. Taken from original db.
-        /// </summary>
         public DbSet<DbSkill> Skills { get; set; }
 
-        /// <summary>
-        /// Collection of characters' active buffs.
-        /// </summary>
         public DbSet<DbCharacterActiveBuff> ActiveBuffs { get; set; }
 
-        /// <summary>
-        /// Collection of items. Taken from original db.
-        /// </summary>
         public DbSet<DbItem> Items { get; set; }
 
-        /// <summary>
-        /// Collection of mobs. Taken from original db.
-        /// </summary>
         public DbSet<DbMob> Mobs { get; set; }
 
-        /// <summary>
-        /// Available drop from a monster. Taken from original db.
-        /// </summary>
         public DbSet<DbMobItems> MobItems { get; set; }
 
-        /// <summary>
-        /// Quick items. E.g. skills on skill bar or motion on skill bar or inventory item on skill bar.
-        /// </summary>
         public DbSet<DbQuickSkillBarItem> QuickItems { get; set; }
 
-        /// <summary>
-        /// Collection of levels and required experience for them. Taken from original db.
-        /// </summary>
         public DbSet<DbLevel> Levels { get; set; }
 
-        /// <summary>
-        /// Collection of user's bank items.
-        /// </summary>
         public DbSet<DbBankItem> BankItems { get; set; }
 
-        /// <summary>
-        ///  Collection of guilds.
-        /// </summary>
         public DbSet<DbGuild> Guilds { get; set; }
 
-        /// <summary>
-        /// Connection between guild and its' npcs.
-        /// </summary>
         public DbSet<DbGuildNpcLvl> GuildNpcLvls { get; set; }
 
         public DatabaseContext(DbContextOptions options) : base(options)
@@ -114,6 +68,8 @@ namespace Imgeneus.Database.Context
                                           .OnDelete(DeleteBehavior.ClientSetNull);
 
             modelBuilder.Entity<DbGuildNpcLvl>().HasKey(x => new { x.GuildId, x.NpcType, x.Group, x.NpcLevel });
+
+            modelBuilder.Entity<DbCharacterSavePositions>().HasKey(x => new { x.CharacterId, x.Slot });
 
             #region Many to many relations
             // Skills.

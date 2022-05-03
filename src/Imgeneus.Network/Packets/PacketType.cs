@@ -345,6 +345,8 @@
         // Teleport
         TELEPORT_PRELOADED_TOWN = 0x055A, // 1370
         TELEPORT_PRELOADED_AREA = 0x0250, // 592
+        TELEPORT_SAVE_POSITION = 0x0220, // 544
+        TELEPORT_SAVE_POSITION_LIST = 0x0225, // 549
 
         // Dyeing
         DYE_CONFIRM = 0x055B, // 1371

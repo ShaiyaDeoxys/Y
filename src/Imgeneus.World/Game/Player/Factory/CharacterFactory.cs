@@ -163,6 +163,7 @@ namespace Imgeneus.World.Game.Player
                                              .Include(c => c.Guild)
                                              .Include(c => c.Quests)
                                              .Include(c => c.QuickItems)
+                                             .Include(c => c.SavedPositions)
                                              .Include(c => c.User)
                                              .ThenInclude(c => c.BankItems)
                                              .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId);
@@ -222,7 +223,7 @@ namespace Imgeneus.World.Game.Player
 
             _mapProvider.NextMapId = dbCharacter.Map;
 
-            _teleportationManager.Init(dbCharacter.Id);
+            _teleportationManager.Init(dbCharacter.Id, dbCharacter.SavedPositions);
 
             _partyManager.Init(dbCharacter.Id);
 

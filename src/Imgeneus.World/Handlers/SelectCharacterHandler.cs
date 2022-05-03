@@ -98,6 +98,8 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendBankItems(client, character.BankManager.BankItems.Values);
 
+            _packetFactory.SendTeleportSavedPositions(client, character.TeleportationManager.SavedPositions);
+
             if (character.GuildManager.HasGuild)
                 _packetFactory.SendGuildNpcs(client, await character.GuildManager.GetGuildNpcs());
 

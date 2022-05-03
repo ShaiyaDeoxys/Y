@@ -27,6 +27,7 @@ using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Imgeneus.World.Packets
 {
@@ -301,6 +302,8 @@ namespace Imgeneus.World.Packets
 
         #region Teleport
         void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money);
+        void SendTeleportSavedPosition(IWorldClient client, bool success, byte index, ushort mapId, float x, float y, float z);
+        void SendTeleportSavedPositions(IWorldClient client, IReadOnlyDictionary<byte, (ushort MapId, float X, float Y, float Z)> positions);
         #endregion
 
         #region Quests
