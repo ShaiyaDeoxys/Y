@@ -301,7 +301,7 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (!_attackManager.IsWeaponAvailable || (!skill.RequiredWeapons.Contains(_attackManager.WeaponType) && skill.RequiredWeapons.Count != 0 && skill.NeedShield && !_attackManager.IsShieldAvailable))
+            if (!skill.RequiredWeapons.Contains(_attackManager.WeaponType) && skill.RequiredWeapons.Count != 0 && skill.NeedShield && !_attackManager.IsShieldAvailable)
             {
                 success = AttackSuccess.WrongEquipment;
                 return false;

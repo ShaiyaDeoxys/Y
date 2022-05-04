@@ -1343,6 +1343,19 @@ namespace Imgeneus.World.Game.Inventory
                     _teleportationManager.StartCastingTeleport(guildHouse.MapId, guildHouse.X, guildHouse.Y, guildHouse.Z, item);
                     break;
 
+                case SpecialEffect.TeleportationStone:
+                    if (targetId is null)
+                        return false;
+
+                    if (targetId > _teleportationManager.MaxSavedPoints)
+                        return false;
+
+                    if (!_teleportationManager.SavedPositions.TryGetValue((byte)targetId, out var savedPlace))
+                        return false;
+
+                    _teleportationManager.StartCastingTeleport(savedPlace.MapId, savedPlace.X, savedPlace.Y, savedPlace.Z, item);
+                    break;
+
                 default:
                     _logger.LogError("Uninplemented item effect {special}.", item.Special);
                     break;

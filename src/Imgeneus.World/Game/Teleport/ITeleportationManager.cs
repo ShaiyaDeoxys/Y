@@ -47,6 +47,11 @@ namespace Imgeneus.World.Game.Teleport
         event Action OnCastingTeleportFinished;
 
         /// <summary>
+        /// Where player is going to teleport.
+        /// </summary>
+        (ushort MapId, float X, float Y, float Z) CastingPosition { get; }
+
+        /// <summary>
         /// When used teleport item, like teleport to capital, arena etc. there is casting timer.
         /// </summary>
         void StartCastingTeleport(ushort mapId, float x, float y, float z, Item item, bool skeepTimer = false);

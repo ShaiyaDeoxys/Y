@@ -192,7 +192,7 @@ namespace Imgeneus.World.Game.Teleport
 
         public event Action OnCastingTeleportFinished;
 
-        private (ushort MapId, float X, float Y, float Z) CastingPosition;
+        public (ushort MapId, float X, float Y, float Z) CastingPosition { get; private set; }
 
         private Timer _castingTimer = new Timer() { AutoReset = false, Interval = 5000 };
 

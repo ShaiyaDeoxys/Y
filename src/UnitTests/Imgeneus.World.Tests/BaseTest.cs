@@ -127,14 +127,14 @@ namespace Imgeneus.World.Tests
             var levelingManager = new LevelingManager(new Mock<ILogger<LevelingManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object, databasePreloader.Object, partyManager, mapProvider, movementManager);
             levelingManager.Init(_characterId, 0);
 
+            var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager);
+            teleportManager.Init(_characterId, new List<DbCharacterSavePositions>());
+
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager);
 
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
-
-            var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager);
-            teleportManager.Init(_characterId, new List<DbCharacterSavePositions>());
 
             var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
@@ -212,7 +212,7 @@ namespace Imgeneus.World.Tests
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
 
@@ -348,7 +348,8 @@ namespace Imgeneus.World.Tests
                     { (724, 1), BullsEye },
                     { (63, 1), Stealth },
                     { (249, 1), SpeedRemedy_Lvl1 },
-                    { (250, 1), MinSunStone_Lvl1 }
+                    { (250, 1), MinSunStone_Lvl1 },
+                    { (231, 1), BlueDragonCharm_Lvl1 }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -382,7 +383,9 @@ namespace Imgeneus.World.Tests
                     { (95, 22), PerfectWeaponLapisia_Lvl1 },
                     { (95, 23), PerfectWeaponLapisia_Lvl2 },
                     { (95, 42), PerfectArmorLapisia_Lvl1 },
-                    { (95, 8), LapisiaBreakItem }
+                    { (95, 8), LapisiaBreakItem },
+                    { (100, 65), TeleportationStone },
+                    { (100, 72), BlueDragonCharm }
                 });
 
             databasePreloader
@@ -745,9 +748,22 @@ namespace Imgeneus.World.Tests
             AbilityValue1 = 150
         };
 
+        protected DbSkill BlueDragonCharm_Lvl1 = new DbSkill()
+        {
+            SkillId = 231,
+            SkillLevel = 1,
+            SkillName = "Blue Dragon Charm",
+            SuccessValue = 100,
+            TypeDetail = TypeDetail.Buff,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            TargetType = TargetType.Caster,
+            AbilityType1 = AbilityType.BlueDragonCharm,
+            AbilityValue1 = 1
+        };
+
         #endregion
 
-        #region Items
+            #region Items
 
         protected DbItem WaterArmor = new DbItem()
         {
@@ -1027,6 +1043,24 @@ namespace Imgeneus.World.Tests
             TypeId = 8,
             Special = SpecialEffect.Lapisia,
             ReqVg = 1,
+            Country = ItemClassType.AllFactions
+        };
+
+        protected DbItem TeleportationStone = new DbItem() 
+        { 
+            Type = 100,
+            TypeId = 65,
+            Special = SpecialEffect.TeleportationStone,
+            Country = ItemClassType.AllFactions
+        };
+
+        protected DbItem BlueDragonCharm = new DbItem()
+        { 
+            Type = 100,
+            TypeId = 72,
+            Range = 231,
+            AttackTime = 1,
+            Special = SpecialEffect.None,
             Country = ItemClassType.AllFactions
         };
 

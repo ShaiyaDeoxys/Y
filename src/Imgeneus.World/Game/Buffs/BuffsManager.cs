@@ -10,6 +10,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Untouchable;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
@@ -34,9 +35,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IStealthManager _stealthManager;
         private readonly ILevelingManager _levelingManager;
         private readonly IAttackManager _attackManager;
+        private readonly ITeleportationManager _teleportationManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _database = database;
@@ -49,6 +51,7 @@ namespace Imgeneus.World.Game.Buffs
             _stealthManager = stealthManager;
             _levelingManager = levelingManager;
             _attackManager = attackManager;
+            _teleportationManager = teleportationManager;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
             _attackManager.OnStartAttack += CancelStealth;
@@ -661,6 +664,45 @@ namespace Imgeneus.World.Game.Buffs
                         _levelingManager.ExpGainRate += abilityValue;
                     else
                         _levelingManager.ExpGainRate -= abilityValue;
+                    return;
+
+                case AbilityType.BlueDragonCharm:
+                    if (addAbility)
+                    {
+                        _teleportationManager.MaxSavedPoints = 2;
+                        _levelingManager.ExpGainRate += 120;
+                    }
+                    else
+                    {
+                        _teleportationManager.MaxSavedPoints = 1;
+                        _levelingManager.ExpGainRate -= 120;
+                    }
+                    return;
+
+                case AbilityType.WhiteTigerCharm:
+                    if (addAbility)
+                    {
+                        _teleportationManager.MaxSavedPoints = 4;
+                        _levelingManager.ExpGainRate += 120;
+                    }
+                    else
+                    {
+                        _teleportationManager.MaxSavedPoints = 1;
+                        _levelingManager.ExpGainRate -= 120;
+                    }
+                    return;
+
+                case AbilityType.RedPheonixCharm:
+                    if (addAbility)
+                    {
+                        _teleportationManager.MaxSavedPoints = 4;
+                        _levelingManager.ExpGainRate += 120;
+                    }
+                    else
+                    {
+                        _teleportationManager.MaxSavedPoints = 1;
+                        _levelingManager.ExpGainRate -= 120;
+                    }
                     return;
 
                 default:
