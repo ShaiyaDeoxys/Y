@@ -1,6 +1,8 @@
-﻿using Imgeneus.Network.Packets;
+﻿using Imgeneus.Database.Constants;
+using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.NPCs;
@@ -27,8 +29,10 @@ namespace Imgeneus.World.Handlers
         private readonly IGuildManager _guildManager;
         private readonly IInventoryManager _inventoryManager;
         private readonly IMapsLoader _mapLoader;
+        private readonly IMoveTownsConfiguration _moveTownsConfiguration;
+        private readonly ICountryProvider _countryProvider;
 
-        public TeleportHandlers(ILogger<TeleportHandlers> logger, ILogger<Npc> npcLogger, IGamePacketFactory packetFactory, IGameSession gameSession, ITeleportationManager teleportationManager, IMapProvider mapProvider, IGameWorld gameWorld, IGuildManager guildManager, IInventoryManager inventoryManager, IMapsLoader mapLoader) : base(packetFactory, gameSession)
+        public TeleportHandlers(ILogger<TeleportHandlers> logger, ILogger<Npc> npcLogger, IGamePacketFactory packetFactory, IGameSession gameSession, ITeleportationManager teleportationManager, IMapProvider mapProvider, IGameWorld gameWorld, IGuildManager guildManager, IInventoryManager inventoryManager, IMapsLoader mapLoader, IMoveTownsConfiguration moveTownsConfiguration, ICountryProvider countryProvider) : base(packetFactory, gameSession)
         {
             _logger = logger;
             _npcLogger = npcLogger;
@@ -38,6 +42,8 @@ namespace Imgeneus.World.Handlers
             _guildManager = guildManager;
             _inventoryManager = inventoryManager;
             _mapLoader = mapLoader;
+            _moveTownsConfiguration = moveTownsConfiguration;
+            _countryProvider = countryProvider;
         }
 
         [HandlerAction(PacketType.CHARACTER_ENTERED_PORTAL)]
@@ -116,6 +122,9 @@ namespace Imgeneus.World.Handlers
             if (!_inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var item))
                 return;
 
+            if (item.Special != SpecialEffect.TownTeleport)
+                return;
+
             item.TradeQuantity = packet.GateId;
             await _inventoryManager.TryUseItem(packet.Bag, packet.Slot);
         }
@@ -123,7 +132,26 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.TELEPORT_PRELOADED_AREA)]
         public void HandleTeleportPreloadedArea(WorldClient client, TeleportPreloadedAreaPacket packet)
         {
-            // TODO: coming soon
+            if (!_inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var item))
+            {
+                _packetFactory.SendTeleportPreloadedArea(client, false);
+                return;
+            }
+
+            if (!_moveTownsConfiguration.MoveTowns.TryGetValue(packet.MoveTownInfoId, out var townConfig))
+            {
+                _packetFactory.SendTeleportPreloadedArea(client, false);
+                return;
+            }
+
+            if (_countryProvider.Country != townConfig.Country)
+            {
+                _packetFactory.SendTeleportPreloadedArea(client, false);
+                return;
+            }
+
+            _teleportationManager.StartCastingTeleport(townConfig.MapId, townConfig.X, townConfig.Y, townConfig.Z, item);
+            _packetFactory.SendTeleportPreloadedArea(client, true);
         }
 
         [HandlerAction(PacketType.TELEPORT_SAVE_POSITION)]

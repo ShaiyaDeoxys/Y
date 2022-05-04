@@ -2094,6 +2094,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendTeleportPreloadedArea(IWorldClient client, bool success)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TELEPORT_PRELOADED_AREA);
+            packet.Write(success);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Quests

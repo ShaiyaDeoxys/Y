@@ -94,6 +94,7 @@ namespace Imgeneus.World
             services.AddSingleton<IGuildConfiguration, GuildConfiguration>((x) => GuildConfiguration.LoadFromConfigFile());
             services.AddSingleton<IGuildHouseConfiguration, GuildHouseConfiguration>((x => GuildHouseConfiguration.LoadFromConfigFile()));
             services.AddSingleton<IItemEnchantConfiguration, ItemEnchantConfiguration>((x => ItemEnchantConfiguration.LoadFromConfigFile()));
+            services.AddSingleton<IMoveTownsConfiguration, MoveTownsConfiguration>((x => MoveTownsConfiguration.LoadFromConfigFile()));
             services.AddSingleton<IChatManager, ChatManager>();
             services.AddSingleton<INoticeManager, NoticeManager>();
             services.AddSingleton<IGuildRankingManager, GuildRankingManager>();

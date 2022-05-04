@@ -44,6 +44,14 @@
       "NoneWeatherDuration": 60
     },
     {
+      "MapId": 20,
+      "MapType": "Field"
+    },
+    {
+      "MapId": 29,
+      "MapType": "Field"
+    },
+    {
       "MapId": 35,
       "MapType": "Field"
     },

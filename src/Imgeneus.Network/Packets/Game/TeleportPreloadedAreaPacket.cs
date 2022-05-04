@@ -4,15 +4,16 @@ namespace Imgeneus.Network.Packets.Game
 {
     public record class TeleportPreloadedAreaPacket : IPacketDeserializer
     {
-        public byte Unknwn1 { get; private set; }
-        public byte Unknwn2 { get; private set; }
+        // Always 1. Check GeneralMoveTowns_Client.xml
+        public byte MoveTownId { get; private set; }
+        public byte MoveTownInfoId { get; private set; }
         public byte Bag { get; private set; }
         public byte Slot { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            Unknwn1 = packetStream.ReadByte();
-            Unknwn2 = packetStream.ReadByte();
+            MoveTownId = packetStream.ReadByte();
+            MoveTownInfoId = packetStream.ReadByte();
             Bag = packetStream.ReadByte();
             Slot = packetStream.ReadByte();
         }

@@ -304,6 +304,7 @@ namespace Imgeneus.World.Packets
         void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money);
         void SendTeleportSavedPosition(IWorldClient client, bool success, byte index, ushort mapId, float x, float y, float z);
         void SendTeleportSavedPositions(IWorldClient client, IReadOnlyDictionary<byte, (ushort MapId, float X, float Y, float Z)> positions);
+        void SendTeleportPreloadedArea(IWorldClient client, bool success);
         #endregion
 
         #region Quests
