@@ -133,7 +133,11 @@ namespace Imgeneus.World.Game
                         return false;
                     }
 
-                    // TODO: check weekly payment FeeNotPaid.
+                    if (!player.GuildManager.HasPaidGuildHouse)
+                    {
+                        reason = PortalTeleportNotAllowedReason.FeeNotPaid;
+                        return false;
+                    }
 
                     return true;
                 }
@@ -312,7 +316,7 @@ namespace Imgeneus.World.Game
         {
             var result = Players.TryAdd(newPlayer.Id, newPlayer);
 
-            if(result)
+            if (result)
                 _logger.LogDebug("Player {id} connected to game world", newPlayer.Id);
             else
                 _logger.LogError("Could not load player {id} to game world", newPlayer.Id);

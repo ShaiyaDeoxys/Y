@@ -37,6 +37,11 @@ namespace Imgeneus.World.Game.Guild
         bool HasGuildHouse { get; }
 
         /// <summary>
+        /// Guild house was paid after GRB?
+        /// </summary>
+        bool HasPaidGuildHouse { get; }
+
+        /// <summary>
         /// Guild has top 30 rank?
         /// </summary>
         bool HasTopRank { get; }

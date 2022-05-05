@@ -59,6 +59,11 @@ namespace Imgeneus.World.Game.Guild
         public Task CalculateRanks();
 
         /// <summary>
+        /// Calculates etins needed for guild house to function.
+        /// </summary>
+        public Task CalculateEtins();
+
+        /// <summary>
         /// Player ids, that took part in GRB.
         /// </summary>
         public HashSet<int> ParticipatedPlayers { get; }

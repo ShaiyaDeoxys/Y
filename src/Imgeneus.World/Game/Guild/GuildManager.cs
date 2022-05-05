@@ -474,6 +474,21 @@ namespace Imgeneus.World.Game.Guild
             }
         }
 
+        public bool HasPaidGuildHouse
+        {
+            get
+            {
+                if (!HasGuild)
+                    return false;
+
+                var guild = _database.Guilds.AsNoTracking().FirstOrDefault(x => x.Id == GuildId);
+                if (guild is null)
+                    return false;
+
+                return guild.Etin >= guild.KeepEtin;
+            }
+        }
+
         /// <inheritdoc/>
         public async Task<GuildHouseBuyReason> TryBuyHouse()
         {

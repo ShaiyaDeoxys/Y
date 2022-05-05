@@ -18,16 +18,16 @@ namespace Imgeneus.World.Game.Guild
         private readonly IMapsLoader _mapsLoader;
         private readonly ITimeService _timeService;
         private readonly IDatabase _database;
-
+        private readonly IGuildHouseConfiguration _houseConfig;
         private readonly MapDefinition _grbMap;
 
-        public GuildRankingManager(ILogger<IGuildRankingManager> logger, IMapsLoader mapsLoader, ITimeService timeService, IDatabase database)
+        public GuildRankingManager(ILogger<IGuildRankingManager> logger, IMapsLoader mapsLoader, ITimeService timeService, IDatabase database, IGuildHouseConfiguration houseConfig)
         {
             _logger = logger;
             _mapsLoader = mapsLoader;
             _timeService = timeService;
             _database = database;
-
+            _houseConfig = houseConfig;
             var defitions = _mapsLoader.LoadMapDefinitions();
             var grbMap = defitions.Maps.FirstOrDefault(x => x.CreateType == CreateType.GRB);
             _grbMap = grbMap;
@@ -210,7 +210,9 @@ namespace Imgeneus.World.Game.Guild
 
         private async void CalculateRanks_Elapsed(object sender, ElapsedEventArgs e)
         {
+            await CalculateEtins();
             await CalculateRanks();
+
             CalculateRanksTimer();
         }
 
@@ -287,7 +289,6 @@ namespace Imgeneus.World.Game.Guild
         /// <inheritdoc/>
         public event Action<IEnumerable<(int GuildId, int Points, byte Rank)>> OnRanksCalculated;
 
-        /// <inheritdoc/>
         public async Task CalculateRanks()
         {
             // Clear old ranks.
@@ -316,6 +317,46 @@ namespace Imgeneus.World.Game.Guild
             OnRanksCalculated?.Invoke(guildRanks);
             GuildPoints.Clear();
             ParticipatedPlayers.Clear();
+        }
+
+        public async Task CalculateEtins()
+        {
+            var guilds = await _database.Guilds.Include(x => x.NpcLvls).AsNoTracking().ToListAsync();
+            foreach (var guild in guilds)
+            {
+                var keepEtin = 0;
+
+                if (guild.HasHouse)
+                {
+                    keepEtin += _houseConfig.HouseKeepEtin;
+
+                    foreach (var npc in guild.NpcLvls)
+                    {
+                        var npcInfo = _houseConfig.NpcInfos.FirstOrDefault(x => x.NpcType == npc.NpcType && x.NpcLvl == npc.NpcLevel);
+                        if (npcInfo is null)
+                        {
+                            _logger.LogWarning("Couldn't find npc into ({type}, {lvl})", npc.NpcType, npc.NpcLevel);
+                            continue;
+                        }
+
+                        keepEtin += npcInfo.ServicePrice;
+                    }
+                }
+
+                if (keepEtin <= guild.Etin)
+                {
+                    guild.Etin -= keepEtin;
+                    keepEtin = 0;
+                }
+
+                guild.KeepEtin = keepEtin;
+
+                var trackedGuild = await _database.Guilds.FindAsync(guild.Id);
+                trackedGuild.Etin = guild.Etin;
+                trackedGuild.KeepEtin = guild.KeepEtin;
+
+                await _database.SaveChangesAsync();
+            }
         }
 
         #endregion

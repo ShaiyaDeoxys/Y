@@ -51,5 +51,10 @@
         /// Guild's min rank in order to upgrade/use npc.
         /// </summary>
         public byte MinRank { get; set; }
+
+        /// <summary>
+        /// How much etin costs NPC per week.
+        /// </summary>
+        public int ServicePrice { get; set; }
     }
 }

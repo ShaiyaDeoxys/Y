@@ -1111,7 +1111,7 @@ namespace Imgeneus.World.Game.Inventory
                                          .Include(x => x.Guild)
                                          .AsNoTracking()
                                          .FirstOrDefault(x => x.Id == _ownerId);
-                if (character is null || character.Guild is null || !character.Guild.HasHouse)
+                if (character is null || character.Guild is null || !character.Guild.HasHouse || character.Guild.KeepEtin > character.Guild.Etin)
                     return false;
             }
 

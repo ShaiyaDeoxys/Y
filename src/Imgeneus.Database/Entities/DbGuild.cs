@@ -69,7 +69,7 @@ namespace Imgeneus.Database.Entities
         public int Etin { get; set; }
 
         /// <summary>
-        /// TODO: ?
+        /// Etin, that is needed for guild house to function.
         /// </summary>
         public int KeepEtin { get; set; }
 
