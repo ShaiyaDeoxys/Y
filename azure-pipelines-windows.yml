@@ -34,14 +34,14 @@ steps:
     displayName: Build projects
     inputs:
       command: build
-      projects: '**/*.csproj'
+      projects: '**/Imgeneus.*.csproj'
       arguments: '--configuration $(buildConfiguration)'
 
   - task: DotNetCoreCLI@2
     displayName: Run tests
     inputs:
       command: test
-      projects: '**/*Tests/*.csproj'
+      projects: '**/*Tests/Imgeneus.*.csproj'
       arguments: '--configuration $(buildConfiguration)'
 
   - task: DotNetCoreCLI@2
