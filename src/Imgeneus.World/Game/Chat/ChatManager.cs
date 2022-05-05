@@ -21,13 +21,19 @@ namespace Imgeneus.World.Game.Chat
 
         public void SendMessage(Character sender, MessageType messageType, string message, string targetName = "")
         {
+            if (messageType == MessageType.Normal && IsMessageToServer)
+            {
+                messageType = MessageType.MessageToServer;
+                IsMessageToServer = false;
+            }
+
             switch (messageType)
             {
                 case MessageType.Normal:
                     var players = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 50, CountryType.None, true).Cast<Character>();
                     foreach (var player in players)
                     {
-                       _packetFactory.SendNormal(player.GameSession.Client, sender.Id, message, player.GameSession.IsAdmin);
+                        _packetFactory.SendNormal(player.GameSession.Client, sender.Id, message, player.GameSession.IsAdmin);
                     }
                     break;
 
@@ -36,7 +42,7 @@ namespace Imgeneus.World.Game.Chat
                     if (target != null && target.Id != sender.Id && target.CountryProvider.Country == sender.CountryProvider.Country)
                     {
                         _packetFactory.SendWhisper(sender.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
-                        _packetFactory.SendWhisper(target.GameSession.Client, sender.Name, message,sender.GameSession.IsAdmin);
+                        _packetFactory.SendWhisper(target.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
                     }
                     break;
 
@@ -69,6 +75,14 @@ namespace Imgeneus.World.Game.Chat
                     }
                     break;
 
+                case MessageType.MessageToServer:
+                    var allPlayers = _gameWorld.Players.Values;
+                    foreach (var player in allPlayers)
+                    {
+                        _packetFactory.SendMessageToServer(player.GameSession.Client, sender.Name, message);
+                    }
+                    break;
+
                 case MessageType.Guild:
                     if (sender.GuildManager.HasGuild)
                     {
@@ -89,5 +103,7 @@ namespace Imgeneus.World.Game.Chat
                     break;
             }
         }
+
+        public bool IsMessageToServer { get; set; }
     }
 }

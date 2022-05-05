@@ -1718,6 +1718,11 @@ namespace Imgeneus.World.Packets
             SendMessage(PacketType.CHAT_WORLD, client, senderName, message);
         }
 
+        public void SendMessageToServer(IWorldClient client, string senderName, string message)
+        {
+            SendMessage(PacketType.CHAT_MESSAGE_TO_SERVER, client, senderName, message);
+        }
+
         public void SendGuild(IWorldClient client, string senderName, string message, bool isAdmin)
         {
             SendMessage(isAdmin ? PacketType.CHAT_GUILD_ADMIN : PacketType.CHAT_GUILD, client, senderName, message);

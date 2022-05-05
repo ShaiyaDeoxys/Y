@@ -234,7 +234,7 @@
         CHAT_WORLD = 0x1103, // 4355
         CHAT_GUILD = 0x1104, // 4356
         CHAT_PARTY = 0x1105, // 4357
-        CHAT_ANOUNCEMENT = 0x1108, // 4360
+        CHAT_MESSAGE_TO_SERVER = 0x1108, // 4360
         CHAT_MAP = 0x1111, // 4369
 
         // Notice

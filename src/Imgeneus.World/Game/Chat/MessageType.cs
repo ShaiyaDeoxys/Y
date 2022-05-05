@@ -7,6 +7,7 @@
         Party,
         Map,
         World,
-        Guild
+        Guild,
+        MessageToServer
     }
 }

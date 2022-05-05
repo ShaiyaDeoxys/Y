@@ -7,6 +7,7 @@ using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
@@ -59,9 +60,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IAttackManager _attackManager;
         private readonly IPartyManager _partyManager;
         private readonly ITeleportationManager _teleportationManager;
+        private readonly IChatManager _chatManager;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -85,6 +87,7 @@ namespace Imgeneus.World.Game.Inventory
             _attackManager = attackManager;
             _partyManager = partyManager;
             _teleportationManager = teleportationManager;
+            _chatManager = chatManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
             _partyManager.OnSummoned += PartyManager_OnSummoned;
             _teleportationManager.OnCastingTeleportFinished += TeleportationManager_OnCastingTeleportFinished;
@@ -1370,6 +1373,10 @@ namespace Imgeneus.World.Game.Inventory
 
                     _teleportationManager.StartCastingTeleport(savedPlace.MapId, savedPlace.X, savedPlace.Y, savedPlace.Z, item);
                     break;
+
+                case SpecialEffect.MessageToServer:
+                    _chatManager.IsMessageToServer = true;
+                    return true;
 
                 default:
                     _logger.LogError("Uninplemented item effect {special}.", item.Special);

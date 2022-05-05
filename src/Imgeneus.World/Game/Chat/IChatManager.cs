@@ -1,5 +1,4 @@
 ﻿using Imgeneus.World.Game.Player;
-using System;
 
 namespace Imgeneus.World.Game.Chat
 {
@@ -13,5 +12,10 @@ namespace Imgeneus.World.Game.Chat
         /// <param name="message">message itself</param>
         /// <param name="targetName">optional, target name</param>
         public void SendMessage(Character sender, MessageType messageType, string message, string targetName = "");
+
+        /// <summary>
+        /// Is the next message in normal chat willl be message to server?
+        /// </summary>
+        public bool IsMessageToServer { get; set; }
     }
 }

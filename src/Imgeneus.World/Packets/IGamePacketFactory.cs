@@ -260,6 +260,7 @@ namespace Imgeneus.World.Packets
         void SendParty(IWorldClient client, int senderId, string message, bool isAdmin);
         void SendMap(IWorldClient client, string senderName, string message);
         void SendWorld(IWorldClient client, string senderName, string message);
+        void SendMessageToServer(IWorldClient client, string senderName, string message);
         void SendGuild(IWorldClient client, string senderName, string message, bool isAdmin);
         #endregion
 
