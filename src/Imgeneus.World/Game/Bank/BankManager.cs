@@ -18,16 +18,18 @@ namespace Imgeneus.World.Game.Bank
         private readonly IDatabase _database;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
+        private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly IInventoryManager _inventoryManager;
 
         private int _ownerId;
 
-        public BankManager(ILogger<BankManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IInventoryManager inventoryManager)
+        public BankManager(ILogger<BankManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IInventoryManager inventoryManager)
         {
             _logger = logger;
             _database = database;
             _databasePreloader = databasePreloader;
             _enchantConfig = enchantConfig;
+            _itemCreateConfig = itemCreateConfig;
             _inventoryManager = inventoryManager;
 #if DEBUG
             _logger.LogDebug("BankManager {hashcode} created", GetHashCode());
@@ -105,7 +107,7 @@ namespace Imgeneus.World.Game.Bank
 
             bankItem.ClaimTime = DateTime.UtcNow;
 
-            var item = _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, bankItem));
+            var item = _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, bankItem));
             if (item == null)
             {
                 BankItems.TryAdd(bankItem.Slot, bankItem);

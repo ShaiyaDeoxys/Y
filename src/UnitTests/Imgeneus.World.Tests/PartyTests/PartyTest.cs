@@ -47,9 +47,9 @@ namespace Imgeneus.World.Tests.PartyTests
 
             party.DistributeDrop(new List<Item>()
             {
-                new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId)
+                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
             Assert.Equal(2, character1.InventoryManager.InventoryItems.Count);

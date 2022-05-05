@@ -82,10 +82,10 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.AdditionalInfoManager.Grow = Mode.Ultimate;
             character.LevelProvider.Level = mob.LevelProvider.Level;
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
             character.InventoryManager.MoveItem(1, 0, 0, 5);
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, MinSunExpStone.Type, MinSunExpStone.TypeId));
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, MinSunExpStone.Type, MinSunExpStone.TypeId));
             character.InventoryManager.TryUseItem(1, 0);
 
             Assert.Single(character.BuffsManager.ActiveBuffs);

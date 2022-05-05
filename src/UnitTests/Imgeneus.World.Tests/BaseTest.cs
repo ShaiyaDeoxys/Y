@@ -83,6 +83,7 @@ namespace Imgeneus.World.Tests
         protected Mock<IGameSession> gameSessionMock = new Mock<IGameSession>();
         protected Mock<IEtinManager> etinMock = new Mock<IEtinManager>();
         protected Mock<IItemEnchantConfiguration> enchantConfig = new Mock<IItemEnchantConfiguration>();
+        protected Mock<IItemCreateConfiguration> itemCreateConfig = new Mock<IItemCreateConfiguration>();
 
         protected Map testMap => new Map(
                     Map.TEST_MAP_ID,
@@ -136,7 +137,7 @@ namespace Imgeneus.World.Tests
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
 
-            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
             var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object);
@@ -144,12 +145,12 @@ namespace Imgeneus.World.Tests
             var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, databaseMock.Object, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object);
             guildManager.Init(_characterId);
 
-            var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, databasePreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider, enchantConfig.Object);
+            var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, databasePreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider, enchantConfig.Object, itemCreateConfig.Object);
             var tradeManager = new TradeManager(new Mock<ILogger<TradeManager>>().Object, gameWorldMock.Object, inventoryManager);
             var friendsManager = new FriendsManager(new Mock<ILogger<FriendsManager>>().Object, databaseMock.Object, gameWorldMock.Object);
             var duelManager = new DuelManager(new Mock<ILogger<DuelManager>>().Object, gameWorldMock.Object, tradeManager, movementManager, healthManager, killsManager, mapProvider, inventoryManager, teleportManager);
-            var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, inventoryManager);
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, databasePreloader.Object, enchantConfig.Object, levelingManager);
+            var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, inventoryManager);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, levelingManager);
 
             var character = new Character(
                 new Mock<ILogger<Character>>().Object,
@@ -224,6 +225,7 @@ namespace Imgeneus.World.Tests
                 mobLoggerMock.Object,
                 databasePreloader.Object,
                 enchantConfig.Object,
+                itemCreateConfig.Object,
                 countryProvider,
                 statsManager,
                 healthManager,
@@ -385,7 +387,14 @@ namespace Imgeneus.World.Tests
                     { (95, 42), PerfectArmorLapisia_Lvl1 },
                     { (95, 8), LapisiaBreakItem },
                     { (100, 65), TeleportationStone },
-                    { (100, 72), BlueDragonCharm }
+                    { (100, 72), BlueDragonCharm },
+                    { (100, 78), BoxWithApples }
+                });
+
+            databasePreloader
+                .SetupGet((preloader) => preloader.ItemsByGrade)
+                .Returns(new Dictionary<ushort, List<DbItem>>() {
+                    { 1, new List<DbItem>() { RedApple, GreenApple } }
                 });
 
             databasePreloader
@@ -439,7 +448,7 @@ namespace Imgeneus.World.Tests
 
             definitionsPreloader
                 .SetupGet((preloader) => preloader.Quests)
-                .Returns(new Dictionary<short, SQuest>() 
+                .Returns(new Dictionary<short, SQuest>()
                 {
                     { NewBeginnings.Id, NewBeginnings },
                     { Bartering.Id, Bartering },
@@ -449,6 +458,12 @@ namespace Imgeneus.World.Tests
             databaseMock
                 .Setup(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(1));
+
+            itemCreateConfig.Setup(x => x.ItemCreateInfo)
+                .Returns(new Dictionary<ushort, IEnumerable<ItemCreateInfo>>()
+                {
+                    { 1, new List<ItemCreateInfo>() { new ItemCreateInfo() { Grade = 1, Weight = 1 } } }
+                });
         }
 
         #region Test mobs
@@ -763,7 +778,7 @@ namespace Imgeneus.World.Tests
 
         #endregion
 
-            #region Items
+        #region Items
 
         protected DbItem WaterArmor = new DbItem()
         {
@@ -910,7 +925,8 @@ namespace Imgeneus.World.Tests
             ConstHP = 50,
             ReqIg = 1,
             Country = ItemClassType.AllFactions,
-            Count = 255
+            Count = 255,
+            Grade = 1
         };
 
         protected DbItem GreenApple = new DbItem()
@@ -920,7 +936,8 @@ namespace Imgeneus.World.Tests
             Special = SpecialEffect.None,
             ConstMP = 50,
             ReqIg = 1,
-            Country = ItemClassType.AllFactions
+            Country = ItemClassType.AllFactions,
+            Grade = 1
         };
 
         protected DbItem HorseSummonStone = new DbItem()
@@ -1046,8 +1063,8 @@ namespace Imgeneus.World.Tests
             Country = ItemClassType.AllFactions
         };
 
-        protected DbItem TeleportationStone = new DbItem() 
-        { 
+        protected DbItem TeleportationStone = new DbItem()
+        {
             Type = 100,
             TypeId = 65,
             Special = SpecialEffect.TeleportationStone,
@@ -1055,12 +1072,21 @@ namespace Imgeneus.World.Tests
         };
 
         protected DbItem BlueDragonCharm = new DbItem()
-        { 
+        {
             Type = 100,
             TypeId = 72,
             Range = 231,
             AttackTime = 1,
             Special = SpecialEffect.None,
+            Country = ItemClassType.AllFactions
+        };
+
+        protected DbItem BoxWithApples = new DbItem()
+        {
+            Type = 100,
+            TypeId = 78,
+            Special = SpecialEffect.AnotherItemGenerator,
+            ReqVg = 1,
             Country = ItemClassType.AllFactions
         };
 
@@ -1240,7 +1266,8 @@ namespace Imgeneus.World.Tests
 
         #region NPC
 
-        protected TestNpc WeaponMerchant = new TestNpc() {
+        protected TestNpc WeaponMerchant = new TestNpc()
+        {
             Type = NpcType.Merchant,
             TypeId = 1,
             Name = "Erina Probicio",

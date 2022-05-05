@@ -44,7 +44,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public byte EnchantmentLevel;
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, DbCharacterItems dbCharacterItem) : this(databasePreloader, enchantConfig, dbCharacterItem.Type, dbCharacterItem.TypeId, dbCharacterItem.Count)
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbCharacterItems dbCharacterItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbCharacterItem.Type, dbCharacterItem.TypeId, dbCharacterItem.Count)
         {
             Bag = dbCharacterItem.Bag;
             Slot = dbCharacterItem.Slot;
@@ -73,14 +73,15 @@ namespace Imgeneus.World.Game.Inventory
                 Gem6 = new Gem(databasePreloader, dbCharacterItem.GemTypeId6, 5);
         }
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, BankItem bankItem) : this(databasePreloader, enchantConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, BankItem bankItem) : this(databasePreloader, enchantConfig, itemCreateConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
         {
         }
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, byte type, byte typeId, byte count = 1)
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, byte type, byte typeId, byte count = 1)
         {
             _databasePreloader = databasePreloader;
             _enchantConfig = enchantConfig;
+            _itemCreateConfig = itemCreateConfig;
             Type = type;
             TypeId = typeId;
             Count = count;
@@ -1012,6 +1013,7 @@ namespace Imgeneus.World.Game.Inventory
         }
 
         private static readonly List<byte> AllShields = new List<byte>() { 69, 84 };
+        private readonly IItemCreateConfiguration _itemCreateConfig;
 
         public bool IsShield
         {
@@ -1140,9 +1142,46 @@ namespace Imgeneus.World.Game.Inventory
 
         #endregion
 
+        #region Another item generation
+
+        public IList<Item> GenerateItems()
+        {
+            var items = new List<Item>();
+
+            if (_dbItem.ReqVg > 0) // Generate 1 item.
+            {
+                if (!_itemCreateConfig.ItemCreateInfo.ContainsKey(_dbItem.ReqVg))
+                    return items;
+
+                var possibilities = new List<ushort>();
+                foreach (var possibility in _itemCreateConfig.ItemCreateInfo[_dbItem.ReqVg])
+                {
+                    var temp = new ushort[possibility.Weight];
+                    Array.Fill(temp, possibility.Grade);
+                    possibilities.AddRange(temp);
+                }
+
+                var random = new Random();
+                var index = random.Next(possibilities.Count);
+
+                var itemsByGrade = _databasePreloader.ItemsByGrade[possibilities[index]];
+                var dbItem = itemsByGrade[random.Next(items.Count)];
+
+                items.Add(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, dbItem.Type, dbItem.TypeId));
+            }
+            else 
+            {
+                // TODO: generate many items.
+            }
+
+            return items;
+        }
+
+        #endregion
+
         public Item Clone()
         {
-            return new Item(_databasePreloader, _enchantConfig, Type, TypeId)
+            return new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, Type, TypeId)
             {
                 Bag = Bag,
                 Slot = Slot,

@@ -34,10 +34,14 @@ namespace Imgeneus.World.Game.Inventory
 {
     public class InventoryManager : IInventoryManager
     {
+        public const byte MAX_BAG = 5;
+        public const byte MAX_SLOT = 24;
+
         private readonly ILogger _logger;
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IGameDefinitionsPreloder _gameDefinitions;
         private readonly IItemEnchantConfiguration _enchantConfig;
+        private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly IDatabase _database;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
@@ -57,12 +61,13 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ITeleportationManager _teleportationManager;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
             _gameDefinitions = gameDefinitions;
             _enchantConfig = enchantConfig;
+            _itemCreateConfig = itemCreateConfig;
             _database = database;
             _statsManager = statsManager;
             _healthManager = healthManager;
@@ -102,7 +107,7 @@ namespace Imgeneus.World.Game.Inventory
         {
             _ownerId = ownerId;
 
-            foreach (var item in items.Select(x => new Item(_databasePreloader, _enchantConfig, x)))
+            foreach (var item in items.Select(x => new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, x)))
             {
                 InventoryItems.TryAdd((item.Bag, item.Slot), item);
 
@@ -799,7 +804,7 @@ namespace Imgeneus.World.Game.Inventory
                 destinationItem.Bag = destinationBag;
                 destinationItem.Slot = destinationSlot;
 
-                sourceItem = new Item(_databasePreloader, _enchantConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
+                sourceItem = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
             }
             else
             {
@@ -812,7 +817,7 @@ namespace Imgeneus.World.Game.Inventory
                     // Increase destination item count, if they are joinable.
                     destinationItem.Count += sourceItem.Count;
 
-                    sourceItem = new Item(_databasePreloader, _enchantConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
+                    sourceItem = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
                 }
                 else
                 {
@@ -1262,8 +1267,18 @@ namespace Imgeneus.World.Game.Inventory
                     break;
 
                 case SpecialEffect.AnotherItemGenerator:
-                    // TODO: Generate another item based on item ReqVg.
-                    break;
+                    var items = item.GenerateItems();
+
+                    if (items.Count == 0) // Could not generate items.
+                        return false;
+
+                    if (InventoryItems.Count + items.Count > MAX_BAG * MAX_SLOT - 1) // no enough free place
+                        return false;
+
+                    foreach (var x in items)
+                        AddItem(x);
+
+                    return true;
 
                 case SpecialEffect.SkillResetStone:
                     ok = _skillsManager.ResetSkills();
@@ -1505,7 +1520,7 @@ namespace Imgeneus.World.Game.Inventory
 
             Gold = (uint)(Gold - dbItem.Buy * count);
 
-            var item = new Item(_databasePreloader, _enchantConfig, dbItem.Type, dbItem.TypeId);
+            var item = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, dbItem.Type, dbItem.TypeId);
             item.Count = count;
 
             result = BuyResult.Success;
@@ -1550,15 +1565,12 @@ namespace Imgeneus.World.Game.Inventory
 
             if (InventoryItems.Count > 0)
             {
-                var maxBag = 5;
-                var maxSlots = 24;
-
                 // Go though all bags and try to find any free slot.
                 // Start with 1, because 0 is worn items.
-                for (byte i = 1; i <= maxBag; i++)
+                for (byte i = 1; i <= MAX_BAG; i++)
                 {
                     var bagItems = InventoryItems.Where(itm => itm.Value.Bag == i).OrderBy(b => b.Value.Slot);
-                    for (var j = 0; j < maxSlots; j++)
+                    for (var j = 0; j < MAX_SLOT; j++)
                     {
                         if (!bagItems.Any(b => b.Value.Slot == j))
                         {

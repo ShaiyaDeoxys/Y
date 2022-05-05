@@ -4,6 +4,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Movement;
@@ -44,6 +45,7 @@ namespace Imgeneus.World.Game.Monster
                               scope.ServiceProvider.GetRequiredService<ILogger<Mob>>(),
                               scope.ServiceProvider.GetRequiredService<IDatabasePreloader>(),
                               scope.ServiceProvider.GetRequiredService<IItemEnchantConfiguration>(),
+                              scope.ServiceProvider.GetRequiredService<IItemCreateConfiguration>(),
                               scope.ServiceProvider.GetRequiredService<ICountryProvider>(),
                               scope.ServiceProvider.GetRequiredService<IStatsManager>(),
                               scope.ServiceProvider.GetRequiredService<IHealthManager>(),

@@ -26,8 +26,9 @@ namespace Imgeneus.World.Game.Linking
         private readonly IGuildManager _guildManager;
         private readonly IMapProvider _mapProvider;
         private readonly IItemEnchantConfiguration _itemEnchantConfig;
+        private readonly IItemCreateConfiguration _itemCreateConfig;
 
-        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider, IItemEnchantConfiguration itemEnchantConfig)
+        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider, IItemEnchantConfiguration itemEnchantConfig, IItemCreateConfiguration itemCreateConfig)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -38,6 +39,7 @@ namespace Imgeneus.World.Game.Linking
             _guildManager = guildManager;
             _mapProvider = mapProvider;
             _itemEnchantConfig = itemEnchantConfig;
+            _itemCreateConfig = itemCreateConfig;
 
 #if DEBUG
             _logger.LogDebug("LinkingManager {hashcode} created", GetHashCode());
@@ -261,7 +263,7 @@ namespace Imgeneus.World.Game.Linking
                 if (success)
                 {
                     savedGems.Add(gem);
-                    var gemItem = new Item(_databasePreloader, _itemEnchantConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                    var gemItem = new Item(_databasePreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                     _inventoryManager.AddItem(gemItem);
 
                     if (gemItem != null)
@@ -301,7 +303,7 @@ namespace Imgeneus.World.Game.Linking
                     if (success)
                     {
                         savedGems.Add(gem);
-                        var gemItem = new Item(_databasePreloader, _itemEnchantConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                        var gemItem = new Item(_databasePreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                         _inventoryManager.AddItem(gemItem);
 
                         if (gemItem != null)

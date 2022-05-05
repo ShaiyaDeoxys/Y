@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Movement;
@@ -23,6 +24,7 @@ namespace Imgeneus.World.Game.Monster
     {
         private readonly ILogger<Mob> _logger;
         private readonly IItemEnchantConfiguration _enchantConfig;
+        private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly DbMob _dbMob;
 
         public ISpeedManager SpeedManager { get; private set; }
@@ -36,6 +38,7 @@ namespace Imgeneus.World.Game.Monster
                    ILogger<Mob> logger,
                    IDatabasePreloader databasePreloader,
                    IItemEnchantConfiguration enchantConfig,
+                   IItemCreateConfiguration itemCreateConfig,
                    ICountryProvider countryProvider,
                    IStatsManager statsManager,
                    IHealthManager healthManager,
@@ -51,6 +54,7 @@ namespace Imgeneus.World.Game.Monster
         {
             _logger = logger;
             _enchantConfig = enchantConfig;
+            _itemCreateConfig = itemCreateConfig;
             _dbMob = databasePreloader.Mobs[mobId];
 
             Id = map.GenerateId();
@@ -128,7 +132,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, _enchantConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
+            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
         }
 
         public void Dispose()

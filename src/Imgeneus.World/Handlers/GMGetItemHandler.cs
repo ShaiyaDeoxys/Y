@@ -14,12 +14,14 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
+        private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly IInventoryManager _inventoryManager;
 
-        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
+        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
         {
             _databasePreloader = databasePreloader;
             _enchantConfig = enchantConfig;
+            _itemCreateConfig = itemCreateConfig;
             _inventoryManager = inventoryManager;
         }
 
@@ -34,7 +36,7 @@ namespace Imgeneus.World.Handlers
 
             while (itemCount > 0)
             {
-                var newItem = new Item(_databasePreloader, _enchantConfig, packet.Type, packet.TypeId, itemCount);
+                var newItem = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, packet.Type, packet.TypeId, itemCount);
 
                 var item = _inventoryManager.AddItem(newItem);
                 if (item != null)

@@ -12,9 +12,9 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var item = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var item = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             item.EnchantmentLevel = 20;
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
 
             Assert.Equal(0, character.LinkingManager.GetEnchantmentRate(item, lapisia));
         }
@@ -25,13 +25,13 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             armor.EnchantmentLevel = 19;
 
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             weapon.EnchantmentLevel = 19;
 
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
 
             Assert.Equal(200, character.LinkingManager.GetEnchantmentRate(armor, lapisia));
             Assert.Equal(200, character.LinkingManager.GetEnchantmentRate(weapon, lapisia));
@@ -43,10 +43,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             weapon.EnchantmentLevel = 19;
 
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectWeaponLapisia_Lvl2.Type, PerfectWeaponLapisia_Lvl2.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl2.Type, PerfectWeaponLapisia_Lvl2.TypeId);
             Assert.Equal(lapisia.EnchantRate * 100, character.LinkingManager.GetEnchantmentRate(weapon, lapisia));
         }
 
@@ -56,8 +56,8 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
 
             Assert.Equal((uint)1040000, character.LinkingManager.GetEnchantmentGold(armor));
             Assert.Equal((uint)2500000, character.LinkingManager.GetEnchantmentGold(weapon));
@@ -79,7 +79,7 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var dummyItem = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var dummyItem = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             character.InventoryManager.AddItem(dummyItem);
 
             var result = character.LinkingManager.TryEnchant(0, 0, dummyItem.Bag, dummyItem.Slot);
@@ -92,13 +92,13 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
             var result = character.LinkingManager.TryEnchant(0, 0, lapisia.Bag, lapisia.Slot);
             Assert.False(result.Success);
 
-            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             armor.EnchantmentLevel = 20;
             character.InventoryManager.AddItem(armor);
 
@@ -112,10 +112,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             character.InventoryManager.AddItem(weapon);
 
             var result = character.LinkingManager.TryEnchant(weapon.Bag, weapon.Slot, lapisia.Bag, lapisia.Slot);
@@ -128,17 +128,17 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var lapisia1 = new Item(databasePreloader.Object, enchantConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
+            var lapisia1 = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
             character.InventoryManager.AddItem(lapisia1);
 
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             weapon.EnchantmentLevel = 2;
             character.InventoryManager.AddItem(weapon);
 
             var result = character.LinkingManager.TryEnchant(weapon.Bag, weapon.Slot, lapisia1.Bag, lapisia1.Slot);
             Assert.False(result.Success);
 
-            var lapisia2 = new Item(databasePreloader.Object, enchantConfig.Object, PerfectWeaponLapisia_Lvl2.Type, PerfectWeaponLapisia_Lvl2.TypeId);
+            var lapisia2 = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl2.Type, PerfectWeaponLapisia_Lvl2.TypeId);
             character.InventoryManager.AddItem(lapisia2);
 
             weapon.EnchantmentLevel = 0;
@@ -153,10 +153,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             character.InventoryManager.AddItem(weapon);
 
             character.InventoryManager.Gold = character.LinkingManager.GetEnchantmentGold(weapon);
@@ -170,10 +170,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         public void EnchantmentIncreaseMinAndMaxAttack()
         {
             var character = CreateCharacter();
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             character.InventoryManager.AddItem(weapon);
 
             character.InventoryManager.Gold = character.LinkingManager.GetEnchantmentGold(weapon);
@@ -199,10 +199,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         public void EnchantmentIncreaseAbsorption()
         {
             var character = CreateCharacter();
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectArmorLapisia_Lvl1.Type, PerfectArmorLapisia_Lvl1.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectArmorLapisia_Lvl1.Type, PerfectArmorLapisia_Lvl1.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             character.InventoryManager.AddItem(armor);
 
             character.InventoryManager.Gold = character.LinkingManager.GetEnchantmentGold(armor);
@@ -222,10 +222,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         public void EnchantmentCanLowLevelIfFails()
         {
             var character = CreateCharacter();
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, ProtectorsLapisia.Type, ProtectorsLapisia.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, ProtectorsLapisia.Type, ProtectorsLapisia.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             armor.EnchantmentLevel = 19;
             character.InventoryManager.AddItem(armor);
 
@@ -246,10 +246,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         public void EnchantmentCanBreakItemIfFails()
         {
             var character = CreateCharacter();
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, LapisiaBreakItem.Type, LapisiaBreakItem.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, LapisiaBreakItem.Type, LapisiaBreakItem.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             armor.EnchantmentLevel = 19;
             character.InventoryManager.AddItem(armor);
 
@@ -269,10 +269,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectArmorLapisia_Lvl1.Type, PerfectArmorLapisia_Lvl1.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectArmorLapisia_Lvl1.Type, PerfectArmorLapisia_Lvl1.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, FireSword.Type, FireSword.TypeId);
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             character.InventoryManager.AddItem(weapon);
 
             var result = character.LinkingManager.TryEnchant(weapon.Bag, weapon.Slot, lapisia.Bag, lapisia.Slot);
@@ -285,10 +285,10 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         {
             var character = CreateCharacter();
 
-            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
             character.InventoryManager.AddItem(lapisia);
 
-            var armor = new Item(databasePreloader.Object, enchantConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            var armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             character.InventoryManager.AddItem(armor);
 
             var result = character.LinkingManager.TryEnchant(armor.Bag, armor.Slot, lapisia.Bag, lapisia.Slot);

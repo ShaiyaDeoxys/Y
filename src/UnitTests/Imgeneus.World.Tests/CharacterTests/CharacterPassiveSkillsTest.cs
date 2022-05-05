@@ -49,7 +49,7 @@ namespace Imgeneus.World.Tests
         public void WeaponMasteryTest()
         {
             var character = CreateCharacter();
-            var sword = new Item(databasePreloader.Object, enchantConfig.Object, 1, 1);
+            var sword = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, 1, 1);
             Assert.Equal(AttackSpeed.None, character.SpeedManager.TotalAttackSpeed);
 
             character.InventoryManager.Weapon = sword;

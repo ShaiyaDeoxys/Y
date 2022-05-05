@@ -1,0 +1,86 @@
+{
+  "ItemCreateInfo": {
+    "1": [
+      {
+        "Grade": 111,
+        "Weight": 1200
+      },
+      {
+        "Grade": 112,
+        "Weight": 1200
+      },
+      {
+        "Grade": 118,
+        "Weight": 1200
+      },
+      {
+        "Grade": 113,
+        "Weight": 1000
+      },
+      {
+        "Grade": 114,
+        "Weight": 1000
+      },
+      {
+        "Grade": 119,
+        "Weight": 1000
+      },
+      {
+        "Grade": 121,
+        "Weight": 1200
+      },
+      {
+        "Grade": 122,
+        "Weight": 1200
+      },
+      {
+        "Grade": 127,
+        "Weight": 1200
+      },
+      {
+        "Grade": 123,
+        "Weight": 1000
+      },
+      {
+        "Grade": 124,
+        "Weight": 1000
+      },
+      {
+        "Grade": 128,
+        "Weight": 1000
+      },
+      {
+        "Grade": 131,
+        "Weight": 1000
+      },
+      {
+        "Grade": 132,
+        "Weight": 400
+      },
+      {
+        "Grade": 133,
+        "Weight": 100
+      },
+      {
+        "Grade": 141,
+        "Weight": 1000
+      },
+      {
+        "Grade": 143,
+        "Weight": 100
+      },
+      {
+        "Grade": 151,
+        "Weight": 400
+      },
+      {
+        "Grade": 153,
+        "Weight": 75
+      },
+      {
+        "Grade": 154,
+        "Weight": 25
+      }
+    ]
+  }
+}
