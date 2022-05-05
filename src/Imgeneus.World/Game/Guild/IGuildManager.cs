@@ -176,6 +176,12 @@ namespace Imgeneus.World.Game.Guild
         bool HasNpcLevel(byte type, short typeId);
 
         /// <summary>
+        /// Gets discount in %.
+        /// </summary>
+        /// <returns>for ex. 20% discount => 0.2f</returns>
+        float GetDiscount(byte type, short typeId);
+
+        /// <summary>
         /// Tries to upgrade NPC. Updates guild etin as well.
         /// </summary>
         /// <param name="npcType">npc type</param>

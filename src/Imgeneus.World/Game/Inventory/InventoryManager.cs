@@ -1494,7 +1494,7 @@ namespace Imgeneus.World.Game.Inventory
 
         #region Buy/sell
 
-        public Item BuyItem(NpcProduct product, byte count, out BuyResult result)
+        public Item BuyItem(NpcProduct product, byte count, float discount, out BuyResult result)
         {
             result = BuyResult.Unknown;
 
@@ -1505,7 +1505,8 @@ namespace Imgeneus.World.Game.Inventory
                 return null;
             }
 
-            if (dbItem.Buy * count > Gold) // Not enough money.
+            var price = discount > 0 ? dbItem.Buy * (1 - discount) : dbItem.Buy;
+            if (price * count > Gold) // Not enough money.
             {
                 result = BuyResult.NotEnoughMoney;
                 return null;
@@ -1518,7 +1519,7 @@ namespace Imgeneus.World.Game.Inventory
                 return null;
             }
 
-            Gold = (uint)(Gold - dbItem.Buy * count);
+            Gold = (uint)(Gold - price * count);
 
             var item = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, dbItem.Type, dbItem.TypeId);
             item.Count = count;

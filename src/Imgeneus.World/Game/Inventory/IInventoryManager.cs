@@ -176,8 +176,9 @@ namespace Imgeneus.World.Game.Inventory
         /// Buys item from npc store.
         /// </summary>
         /// <param name="product">product to buy</param>
+        /// <param name="discount">discount, e.g. in guild house npc can sell items cheaper</param>
         /// <param name="count">how many items player want to buy</param>
-        Item BuyItem(NpcProduct product, byte count, out BuyResult result);
+        Item BuyItem(NpcProduct product, byte count, float discount, out BuyResult result);
 
         /// <summary>
         /// Sells item.

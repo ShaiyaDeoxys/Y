@@ -41,6 +41,8 @@ namespace Imgeneus.World.Handlers
                 return;
             }
 
+            var discount = 0f;
+
             if (_mapProvider.Map is GuildHouseMap)
             {
                 if (!_guildManager.HasGuild)
@@ -62,10 +64,12 @@ namespace Imgeneus.World.Handlers
                     _packetFactory.SendGuildHouseActionError(client, GuildHouseActionError.LowLevel, 0);
                     return;
                 }
+
+                discount = _guildManager.GetDiscount(npc.Type, npc.TypeId);
             }
 
             var buyItem = npc.Products[packet.ItemIndex];
-            var boughtItem = _inventoryManager.BuyItem(buyItem, packet.Count, out var result);
+            var boughtItem = _inventoryManager.BuyItem(buyItem, packet.Count, discount, out var result);
             _packetFactory.SendBoughtItem(client, result, boughtItem, _inventoryManager.Gold);
         }
     }

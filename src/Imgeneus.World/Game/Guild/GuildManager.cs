@@ -551,7 +551,6 @@ namespace Imgeneus.World.Game.Guild
             return requiredRank >= GuildRank;
         }
 
-        ///  <inheritdoc/>
         public bool HasNpcLevel(byte type, short typeId)
         {
             if (GuildId == 0)
@@ -574,7 +573,28 @@ namespace Imgeneus.World.Game.Guild
             return currentLevel != null && currentLevel.NpcLevel >= npcInfo.NpcLvl;
         }
 
-        ///  <inheritdoc/>
+        public float GetDiscount(byte type, short typeId)
+        {
+            if (GuildId == 0)
+                throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
+
+            var guild = _database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
+            if (guild is null)
+                return 0;
+
+            var npcInfo = FindNpcInfo(_countryProvider.Country, type, typeId);
+            if (npcInfo is null)
+                return 0;
+
+            var maxNpcLevel = guild.NpcLvls.FirstOrDefault(x => x.NpcType == npcInfo.NpcType && x.Group == npcInfo.Group);
+
+            var maxNpcInfo = _houseConfig.NpcInfos.FirstOrDefault(x => x.NpcType == type && x.Group == npcInfo.Group && x.NpcLvl == maxNpcLevel.NpcLevel);
+            if (maxNpcInfo is null)
+                return 0;
+
+            return maxNpcInfo.PriceRate / 100f;
+        }
+
         public async Task<IEnumerable<DbGuildNpcLvl>> GetGuildNpcs()
         {
             if (GuildId == 0)
