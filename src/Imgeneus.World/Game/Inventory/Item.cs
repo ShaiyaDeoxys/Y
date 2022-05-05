@@ -1172,6 +1172,7 @@ namespace Imgeneus.World.Game.Inventory
             else 
             {
                 // TODO: generate many items.
+                // https://www.elitepvpers.com/forum/shaiya-pserver-development/4022975-request-drop-bag.html#post34170021
             }
 
             return items;
