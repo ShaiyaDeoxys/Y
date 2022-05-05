@@ -46,7 +46,7 @@ namespace Imgeneus.World.Tests.GuildTests
                             }
                       });
 
-            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object);
+            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object, new GuildHouseConfiguration());
 
             var interval = rankingManager.GetStartSoonInterval();
 
@@ -83,7 +83,7 @@ namespace Imgeneus.World.Tests.GuildTests
                             }
                       });
 
-            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object);
+            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object, new GuildHouseConfiguration());
 
             var interval = rankingManager.GetStartInterval();
 
@@ -120,7 +120,7 @@ namespace Imgeneus.World.Tests.GuildTests
                             }
                       });
 
-            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object);
+            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object, new GuildHouseConfiguration());
 
             var interval = rankingManager.Get10MinsLeftInterval();
 
@@ -157,7 +157,7 @@ namespace Imgeneus.World.Tests.GuildTests
                             }
                       });
 
-            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object);
+            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object, new GuildHouseConfiguration());
 
             var interval = rankingManager.Get1MinLeftInterval();
 
@@ -195,7 +195,7 @@ namespace Imgeneus.World.Tests.GuildTests
                             }
                       });
 
-            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object);
+            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, timeService.Object, databaseMock.Object, new GuildHouseConfiguration());
 
             var interval = rankingManager.GetCalculateRanksInterval();
 
@@ -240,7 +240,7 @@ namespace Imgeneus.World.Tests.GuildTests
             database.Setup(c => c.Guilds).Returns(mockSet.Object);
             database.Setup(x => x.SaveChangesAsync(default)).ReturnsAsync(1);
 
-            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, new Mock<ITimeService>().Object, database.Object);
+            var rankingManager = new GuildRankingManager(new Mock<ILogger<IGuildRankingManager>>().Object, mapsLoader.Object, new Mock<ITimeService>().Object, database.Object, new GuildHouseConfiguration());
 
             rankingManager.AddPoints(1, 10);
             rankingManager.AddPoints(1, 10);
