@@ -27,6 +27,7 @@ using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
 using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Warehouse;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
 using Microsoft.EntityFrameworkCore;
@@ -72,6 +73,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IBankManager _bankManager;
         private readonly IQuestsManager _questsManager;
         private readonly IUntouchableManager _untouchableManager;
+        private readonly IWarehouseManager _warehouseManager;
         private readonly IGamePacketFactory _packetFactory;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
@@ -108,6 +110,7 @@ namespace Imgeneus.World.Game.Player
                                 IBankManager bankManager,
                                 IQuestsManager questsManager,
                                 IUntouchableManager untouchableManager,
+                                IWarehouseManager warehouseManager,
                                 IGamePacketFactory packetFactory)
         {
             _logger = logger;
@@ -144,6 +147,7 @@ namespace Imgeneus.World.Game.Player
             _bankManager = bankManager;
             _questsManager = questsManager;
             _untouchableManager = untouchableManager;
+            _warehouseManager = warehouseManager;
             _packetFactory = packetFactory;
         }
 
@@ -166,6 +170,8 @@ namespace Imgeneus.World.Game.Player
                                              .Include(c => c.SavedPositions)
                                              .Include(c => c.User)
                                              .ThenInclude(c => c.BankItems)
+                                             .Include(c => c.User)
+                                             .ThenInclude(c => c.WarehouseItems)
                                              .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId);
 
             if (dbCharacter is null)
@@ -249,6 +255,8 @@ namespace Imgeneus.World.Game.Player
 
             _bankManager.Init(dbCharacter.UserId, dbCharacter.User.BankItems.Where(bi => !bi.IsClaimed));
 
+            _warehouseManager.Init(dbCharacter.UserId, dbCharacter.User.WarehouseItems);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -283,6 +291,7 @@ namespace Imgeneus.World.Game.Player
                                         _bankManager,
                                         _questsManager,
                                         _untouchableManager,
+                                        _warehouseManager,
                                         _gameSession,
                                         _packetFactory);
 

@@ -362,6 +362,9 @@
         BANK_ITEM_LIST = 0xB101, // 45313
         BANK_CLAIM_ITEM = 0xB102, // 45314
 
+        // Warehouse
+        WAREHOUSE_ITEM_LIST = 0x0711, // 1809
+
         // Account
         ACCOUNT_POINTS = 0x2601 // 9729
     }

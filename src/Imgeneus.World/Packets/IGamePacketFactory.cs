@@ -301,6 +301,10 @@ namespace Imgeneus.World.Packets
         void SendBankItems(IWorldClient client, ICollection<BankItem> bankItems);
         #endregion
 
+        #region Warehouse
+        void SendWarehouseItems(IWorldClient client, ICollection<Item> items);
+        #endregion
+
         #region Teleport
         void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money);
         void SendTeleportSavedPosition(IWorldClient client, bool success, byte index, ushort mapId, float x, float y, float z);

@@ -17,6 +17,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Trade;
+using Imgeneus.World.Game.Warehouse;
 using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -76,6 +77,7 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<IQuestsManager>().Clear());
             tasks.Add(x.GetService<IAdditionalInfoManager>().Clear());
             tasks.Add(x.GetService<IBankManager>().Clear());
+            tasks.Add(x.GetService<IWarehouseManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

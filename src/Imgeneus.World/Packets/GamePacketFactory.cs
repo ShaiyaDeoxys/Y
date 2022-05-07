@@ -2060,6 +2060,28 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Warehouse
+
+        public void SendWarehouseItems(IWorldClient client, ICollection<Item> items) 
+        {
+            var steps = items.Count / 50;
+            var left = items.Count % 50;
+
+            for (var i = 0; i <= steps; i++)
+            {
+                var startIndex = i * 50;
+                var length = i == steps ? left : 50;
+                var endIndex = startIndex + length;
+
+                using var packet = new ImgeneusPacket(PacketType.WAREHOUSE_ITEM_LIST);
+                packet.Write(0); // gold
+                packet.Write(new WarehouseItems(items.Take(startIndex..endIndex)).Serialize());
+                client.Send(packet);
+            }
+        }
+
+        #endregion
+
         #region Teleport
 
         public void SendTeleportViaNpc(IWorldClient client, NpcTeleportNotAllowedReason reason, uint money)

@@ -21,6 +21,7 @@ using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Warehouse;
 using Imgeneus.World.Game.Zone;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -61,9 +62,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IPartyManager _partyManager;
         private readonly ITeleportationManager _teleportationManager;
         private readonly IChatManager _chatManager;
+        private readonly IWarehouseManager _warehouseManager;
         private int _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -88,6 +90,7 @@ namespace Imgeneus.World.Game.Inventory
             _partyManager = partyManager;
             _teleportationManager = teleportationManager;
             _chatManager = chatManager;
+            _warehouseManager = warehouseManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
             _partyManager.OnSummoned += PartyManager_OnSummoned;
             _teleportationManager.OnCastingTeleportFinished += TeleportationManager_OnCastingTeleportFinished;
@@ -788,7 +791,12 @@ namespace Imgeneus.World.Game.Inventory
         public (Item sourceItem, Item destinationItem) MoveItem(byte sourceBag, byte sourceSlot, byte destinationBag, byte destinationSlot)
         {
             // Find source item.
-            InventoryItems.TryRemove((sourceBag, sourceSlot), out var sourceItem);
+            Item sourceItem;
+            if (sourceBag != WarehouseManager.WAREHOUSE_BAG)
+                InventoryItems.TryRemove((sourceBag, sourceSlot), out sourceItem);
+            else
+                _warehouseManager.Items.TryRemove(sourceSlot, out sourceItem);
+
             if (sourceItem is null)
             {
                 // wrong packet, source item should be always presented.
@@ -797,7 +805,12 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             // Check, if any other item is at destination slot.
-            InventoryItems.TryRemove((destinationBag, destinationSlot), out var destinationItem);
+            Item destinationItem;
+            if (destinationBag != WarehouseManager.WAREHOUSE_BAG)
+                InventoryItems.TryRemove((destinationBag, destinationSlot), out destinationItem);
+            else
+                _warehouseManager.Items.TryRemove(destinationSlot, out destinationItem);
+
             if (destinationItem is null)
             {
                 // No item at destination place.
@@ -952,10 +965,16 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             if (sourceItem.Type != 0 && sourceItem.TypeId != 0)
-                InventoryItems.TryAdd((sourceItem.Bag, sourceItem.Slot), sourceItem);
+                if (sourceItem.Bag != WarehouseManager.WAREHOUSE_BAG)
+                    InventoryItems.TryAdd((sourceItem.Bag, sourceItem.Slot), sourceItem);
+                else
+                    _warehouseManager.Items.TryAdd(sourceItem.Slot, sourceItem);
 
             if (destinationItem.Type != 0 && destinationItem.TypeId != 0)
-                InventoryItems.TryAdd((destinationItem.Bag, destinationItem.Slot), destinationItem);
+                if (destinationItem.Bag != WarehouseManager.WAREHOUSE_BAG)
+                    InventoryItems.TryAdd((destinationItem.Bag, destinationItem.Slot), destinationItem);
+                else
+                    _warehouseManager.Items.TryAdd(destinationItem.Slot, destinationItem);
 
             return (sourceItem, destinationItem);
         }

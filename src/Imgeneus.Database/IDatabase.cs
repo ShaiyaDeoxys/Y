@@ -83,6 +83,12 @@ namespace Imgeneus.Database
         /// </summary>
         public DbSet<DbBankItem> BankItems { get; set; }
 
+
+        /// <summary>
+        /// Collection of user's stored items.
+        /// </summary>
+        public DbSet<DbWarehouseItem> WarehouseItems { get; set; }
+
         /// <summary>
         /// Collection of guilds.
         /// </summary>

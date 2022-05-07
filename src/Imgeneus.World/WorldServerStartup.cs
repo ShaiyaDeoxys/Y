@@ -42,6 +42,7 @@ using Imgeneus.World.Game.Time;
 using Imgeneus.World.Game.Trade;
 using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Vehicle;
+using Imgeneus.World.Game.Warehouse;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
@@ -142,6 +143,7 @@ namespace Imgeneus.World
             services.AddScoped<IBankManager, BankManager>();
             services.AddScoped<IQuestsManager, QuestsManager>();
             services.AddScoped<IUntouchableManager, UntouchableManager>();
+            services.AddScoped<IWarehouseManager, WarehouseManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

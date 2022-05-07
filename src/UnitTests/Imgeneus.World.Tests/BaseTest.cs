@@ -56,6 +56,7 @@ using Parsec.Shaiya.Svmap;
 using Npc = Imgeneus.World.Game.NPCs.Npc;
 using SQuest = Parsec.Shaiya.NpcQuest.Quest;
 using Imgeneus.World.Game.Zone.Portals;
+using Imgeneus.World.Game.Warehouse;
 
 namespace Imgeneus.World.Tests
 {
@@ -137,7 +138,9 @@ namespace Imgeneus.World.Tests
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
 
-            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object);
+            var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object);
+
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
             var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object);
@@ -183,6 +186,7 @@ namespace Imgeneus.World.Tests
                 bankManager,
                 questsManager,
                 untouchableManager,
+                warehouseManager,
                 gameSessionMock.Object,
                 packetFactoryMock.Object);
 

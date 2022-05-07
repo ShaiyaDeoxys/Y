@@ -8,6 +8,7 @@ using System.Text;
 using System.Timers;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Bank;
+using Imgeneus.World.Game.Warehouse;
 
 namespace Imgeneus.World.Game.Inventory
 {
@@ -71,6 +72,35 @@ namespace Imgeneus.World.Game.Inventory
                 Gem5 = new Gem(databasePreloader, dbCharacterItem.GemTypeId5, 4);
             if (dbCharacterItem.GemTypeId6 != 0)
                 Gem6 = new Gem(databasePreloader, dbCharacterItem.GemTypeId6, 5);
+        }
+
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbWarehouseItem dbWarehouseItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbWarehouseItem.Type, dbWarehouseItem.TypeId, dbWarehouseItem.Count) 
+        {
+            Bag = WarehouseManager.WAREHOUSE_BAG;
+            Slot = dbWarehouseItem.Slot;
+            Quality = dbWarehouseItem.Quality;
+
+            CreationTime = dbWarehouseItem.CreationTime;
+            ExpirationTime = dbWarehouseItem.ExpirationTime;
+
+            if (!string.IsNullOrWhiteSpace(dbWarehouseItem.Craftname))
+                ParseCraftname(dbWarehouseItem.Craftname);
+
+            if (dbWarehouseItem.HasDyeColor)
+                DyeColor = new DyeColor(dbWarehouseItem.DyeColorAlpha, dbWarehouseItem.DyeColorSaturation, dbWarehouseItem.DyeColorR, dbWarehouseItem.DyeColorG, dbWarehouseItem.DyeColorB);
+
+            if (dbWarehouseItem.GemTypeId1 != 0)
+                Gem1 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId1, 0);
+            if (dbWarehouseItem.GemTypeId2 != 0)
+                Gem2 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId2, 1);
+            if (dbWarehouseItem.GemTypeId3 != 0)
+                Gem3 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId3, 2);
+            if (dbWarehouseItem.GemTypeId4 != 0)
+                Gem4 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId4, 3);
+            if (dbWarehouseItem.GemTypeId5 != 0)
+                Gem5 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId5, 4);
+            if (dbWarehouseItem.GemTypeId6 != 0)
+                Gem6 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId6, 5);
         }
 
         public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, BankItem bankItem) : this(databasePreloader, enchantConfig, itemCreateConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
