@@ -2064,7 +2064,7 @@ namespace Imgeneus.World.Packets
 
         #region Warehouse
 
-        public void SendWarehouseItems(IWorldClient client, ICollection<Item> items) 
+        public void SendWarehouseItems(IWorldClient client, IReadOnlyCollection<Item> items)
         {
             var steps = items.Count / 50;
             var left = items.Count % 50;
@@ -2078,6 +2078,23 @@ namespace Imgeneus.World.Packets
                 using var packet = new ImgeneusPacket(PacketType.WAREHOUSE_ITEM_LIST);
                 packet.Write(0); // gold
                 packet.Write(new WarehouseItems(items.Take(startIndex..endIndex)).Serialize());
+                client.Send(packet);
+            }
+        }
+
+        public void SendGuildWarehouseItems(IWorldClient client, ICollection<DbGuildWarehouseItem> items)
+        {
+            var steps = items.Count / 50;
+            var left = items.Count % 50;
+
+            for (var i = 0; i <= steps; i++)
+            {
+                var startIndex = i * 50;
+                var length = i == steps ? left : 50;
+                var endIndex = startIndex + length;
+
+                using var packet = new ImgeneusPacket(PacketType.GUILD_WAREHOUSE_ITEM_LIST);
+                packet.Write(new GuildWarehouseItems(items.Take(startIndex..endIndex)).Serialize());
                 client.Send(packet);
             }
         }
@@ -2111,7 +2128,7 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.TELEPORT_SAVE_POSITION_LIST);
             packet.Write((byte)positions.Count);
 
-            foreach(var p in positions)
+            foreach (var p in positions)
             {
                 packet.Write(p.Key);
                 packet.Write(p.Value.MapId);

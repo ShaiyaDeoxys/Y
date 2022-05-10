@@ -255,7 +255,7 @@ namespace Imgeneus.World.Game.Player
 
             _bankManager.Init(dbCharacter.UserId, dbCharacter.User.BankItems.Where(bi => !bi.IsClaimed));
 
-            _warehouseManager.Init(dbCharacter.UserId, dbCharacter.User.WarehouseItems);
+            _warehouseManager.Init(dbCharacter.UserId, dbCharacter.GuildId, dbCharacter.User.WarehouseItems);
 
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;

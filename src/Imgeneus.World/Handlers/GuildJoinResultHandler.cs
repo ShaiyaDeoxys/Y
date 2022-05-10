@@ -68,6 +68,7 @@ namespace Imgeneus.World.Handlers
                 onlinePlayer.GuildManager.GuildName = _guildManager.GuildName;
                 onlinePlayer.GuildManager.GuildRank = 9;
                 onlinePlayer.GuildManager.GuildMembers.AddRange(_guildManager.GuildMembers);
+                onlinePlayer.WarehouseManager.GuildId = _guildManager.GuildId;
 
                 _packetFactory.SendGuildJoinResult(onlinePlayer.GameSession.Client, true, onlinePlayer.GuildManager.GuildId, onlinePlayer.GuildManager.GuildRank, onlinePlayer.GuildManager.GuildName);
                 _packetFactory.SendGuildNpcs(onlinePlayer.GameSession.Client, await onlinePlayer.GuildManager.GetGuildNpcs());

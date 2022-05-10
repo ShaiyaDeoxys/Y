@@ -792,10 +792,10 @@ namespace Imgeneus.World.Game.Inventory
         {
             // Find source item.
             Item sourceItem;
-            if (sourceBag != WarehouseManager.WAREHOUSE_BAG)
+            if (sourceBag != WarehouseManager.WAREHOUSE_BAG && sourceBag != WarehouseManager.GUILD_WAREHOUSE_BAG)
                 InventoryItems.TryRemove((sourceBag, sourceSlot), out sourceItem);
             else
-                _warehouseManager.Items.TryRemove(sourceSlot, out sourceItem);
+                _warehouseManager.TryRemove(sourceBag, sourceSlot, out sourceItem);
 
             if (sourceItem is null)
             {
@@ -811,7 +811,7 @@ namespace Imgeneus.World.Game.Inventory
                 {
                     // Game should check if it's possible to take out item from warehouse.
                     // If packet still came, probably player is cheating.
-                    _warehouseManager.Items.TryAdd(sourceSlot, sourceItem);
+                    _warehouseManager.TryAdd(sourceBag, sourceSlot, sourceItem);
                     _logger.LogError("Could not take out item from warehouse for {characterId}", _ownerId);
                     return (null, null);
                 }
@@ -821,19 +821,16 @@ namespace Imgeneus.World.Game.Inventory
 
             // Check, if any other item is at destination slot.
             Item destinationItem;
-            if (destinationBag != WarehouseManager.WAREHOUSE_BAG)
+            if (destinationBag != WarehouseManager.WAREHOUSE_BAG && destinationBag != WarehouseManager.GUILD_WAREHOUSE_BAG)
                 InventoryItems.TryRemove((destinationBag, destinationSlot), out destinationItem);
             else
             {
-                if (destinationSlot >= 120 && !_warehouseManager.IsDoubledWarehouse)
+                var ok = _warehouseManager.TryRemove(destinationBag, destinationSlot, out destinationItem);
+                if (!ok)
                 {
-                    // Game should check if it's possible to put item in 4,5,6 tab.
-                    // If packet still came, probably player is cheating.
                     InventoryItems.TryAdd((sourceBag, sourceSlot), sourceItem);
-                    _logger.LogError("Could not put item into double warehouse for {characterId}", _ownerId);
                     return (null, null);
                 }
-                _warehouseManager.Items.TryRemove(destinationSlot, out destinationItem);
             }
 
             if (destinationItem is null)
@@ -990,16 +987,16 @@ namespace Imgeneus.World.Game.Inventory
             }
 
             if (sourceItem.Type != 0 && sourceItem.TypeId != 0)
-                if (sourceItem.Bag != WarehouseManager.WAREHOUSE_BAG)
+                if (sourceItem.Bag != WarehouseManager.WAREHOUSE_BAG && sourceItem.Bag != WarehouseManager.GUILD_WAREHOUSE_BAG)
                     InventoryItems.TryAdd((sourceItem.Bag, sourceItem.Slot), sourceItem);
                 else
-                    _warehouseManager.Items.TryAdd(sourceItem.Slot, sourceItem);
+                    _warehouseManager.TryAdd(sourceItem.Bag, sourceItem.Slot, sourceItem);
 
             if (destinationItem.Type != 0 && destinationItem.TypeId != 0)
-                if (destinationItem.Bag != WarehouseManager.WAREHOUSE_BAG)
+                if (destinationItem.Bag != WarehouseManager.WAREHOUSE_BAG && destinationItem.Bag != WarehouseManager.GUILD_WAREHOUSE_BAG)
                     InventoryItems.TryAdd((destinationItem.Bag, destinationItem.Slot), destinationItem);
                 else
-                    _warehouseManager.Items.TryAdd(destinationItem.Slot, destinationItem);
+                    _warehouseManager.TryAdd(destinationItem.Bag, destinationItem.Slot, destinationItem);
 
             return (sourceItem, destinationItem);
         }

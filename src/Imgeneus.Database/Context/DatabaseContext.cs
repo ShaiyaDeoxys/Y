@@ -39,6 +39,8 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbWarehouseItem> WarehouseItems { get; set; }
 
+        public DbSet<DbGuildWarehouseItem> GuildWarehouseItems { get; set; }
+
         public DbSet<DbGuild> Guilds { get; set; }
 
         public DbSet<DbGuildNpcLvl> GuildNpcLvls { get; set; }
@@ -92,6 +94,7 @@ namespace Imgeneus.Database.Context
 
             // Stored Items
             modelBuilder.Entity<DbWarehouseItem>().HasOne(x => x.User).WithMany(x => x.WarehouseItems);
+            modelBuilder.Entity<DbGuildWarehouseItem>().HasOne(x => x.Guild).WithMany(x => x.WarehouseItems);
 
             #endregion
         }

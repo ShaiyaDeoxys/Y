@@ -68,6 +68,7 @@ namespace Imgeneus.World.Handlers
                 m.GuildManager.GuildId = guild.Id;
                 m.GuildManager.GuildName = guild.Name;
                 m.GuildManager.GuildRank = rank;
+                m.WarehouseManager.GuildId = guild.Id;
 
                 await m.GuildManager.TryAddMember(m.Id, rank);
             }

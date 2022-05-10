@@ -78,6 +78,11 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public ICollection<DbGuildNpcLvl> NpcLvls { get; set; }
 
+        /// <summary>
+        /// Guild's stored items.
+        /// </summary>
+        public ICollection<DbGuildWarehouseItem> WarehouseItems { get; set; }
+
         public DbGuild(string name, string message, int masterId, Fraction country)
         {
             Name = name;

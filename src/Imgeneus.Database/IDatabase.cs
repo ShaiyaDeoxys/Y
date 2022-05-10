@@ -90,6 +90,11 @@ namespace Imgeneus.Database
         public DbSet<DbWarehouseItem> WarehouseItems { get; set; }
 
         /// <summary>
+        /// Collection of guild's stored items.
+        /// </summary>
+        public DbSet<DbGuildWarehouseItem> GuildWarehouseItems { get; set; }
+
+        /// <summary>
         /// Collection of guilds.
         /// </summary>
         public DbSet<DbGuild> Guilds { get; set; }
