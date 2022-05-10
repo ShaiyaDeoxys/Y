@@ -12,6 +12,7 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Untouchable;
+using Imgeneus.World.Game.Warehouse;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
 using System;
@@ -36,9 +37,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly ILevelingManager _levelingManager;
         private readonly IAttackManager _attackManager;
         private readonly ITeleportationManager _teleportationManager;
+        private readonly IWarehouseManager _warehouseManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager)
         {
             _logger = logger;
             _database = database;
@@ -52,6 +54,7 @@ namespace Imgeneus.World.Game.Buffs
             _levelingManager = levelingManager;
             _attackManager = attackManager;
             _teleportationManager = teleportationManager;
+            _warehouseManager = warehouseManager;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
             _attackManager.OnStartAttack += CancelStealth;
@@ -697,12 +700,18 @@ namespace Imgeneus.World.Game.Buffs
                     {
                         _teleportationManager.MaxSavedPoints = 4;
                         _levelingManager.ExpGainRate += 120;
+                        _warehouseManager.IsDoubledWarehouse = true;
                     }
                     else
                     {
                         _teleportationManager.MaxSavedPoints = 1;
                         _levelingManager.ExpGainRate -= 120;
+                        _warehouseManager.IsDoubledWarehouse = false;
                     }
+                    return;
+
+                case AbilityType.WarehouseSize:
+                    _warehouseManager.IsDoubledWarehouse = addAbility;
                     return;
 
                 default:

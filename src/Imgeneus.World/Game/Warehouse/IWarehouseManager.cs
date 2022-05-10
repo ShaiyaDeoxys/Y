@@ -14,5 +14,10 @@ namespace Imgeneus.World.Game.Warehouse
         /// Stored items.
         /// </summary>
         ConcurrentDictionary<byte, Item> Items { get; }
+
+        /// <summary>
+        /// Can player put items in 4,5,6 tabs?
+        /// </summary>
+        bool IsDoubledWarehouse { get; set; }
     }
 }

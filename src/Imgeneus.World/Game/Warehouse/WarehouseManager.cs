@@ -95,6 +95,8 @@ namespace Imgeneus.World.Game.Warehouse
 
         #region Items
 
+        public bool IsDoubledWarehouse { get; set; }
+
         public ConcurrentDictionary<byte, Item> Items { get; init; } = new ConcurrentDictionary<byte, Item>();
 
         #endregion

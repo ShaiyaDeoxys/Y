@@ -132,13 +132,13 @@ namespace Imgeneus.World.Tests
             var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager);
             teleportManager.Init(_characterId, new List<DbCharacterSavePositions>());
 
+            var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object);
+
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager);
 
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
-
-            var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object);
 
             var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
@@ -217,7 +217,7 @@ namespace Imgeneus.World.Tests
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
 
@@ -355,7 +355,8 @@ namespace Imgeneus.World.Tests
                     { (63, 1), Stealth },
                     { (249, 1), SpeedRemedy_Lvl1 },
                     { (250, 1), MinSunStone_Lvl1 },
-                    { (231, 1), BlueDragonCharm_Lvl1 }
+                    { (231, 1), BlueDragonCharm_Lvl1 },
+                    { (234, 1), DoubleWarehouseStone_Lvl1 }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -392,7 +393,8 @@ namespace Imgeneus.World.Tests
                     { (95, 8), LapisiaBreakItem },
                     { (100, 65), TeleportationStone },
                     { (100, 72), BlueDragonCharm },
-                    { (100, 78), BoxWithApples }
+                    { (100, 78), BoxWithApples },
+                    { (100, 75), DoubleWarehouse }
                 });
 
             databasePreloader
@@ -780,6 +782,19 @@ namespace Imgeneus.World.Tests
             AbilityValue1 = 1
         };
 
+        protected DbSkill DoubleWarehouseStone_Lvl1 = new DbSkill()
+        {
+            SkillId = 234,
+            SkillLevel = 1,
+            SkillName = "Double Warehouse Stone",
+            SuccessValue = 100,
+            TypeDetail = TypeDetail.Buff,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            TargetType = TargetType.Caster,
+            AbilityType1 = AbilityType.WarehouseSize,
+            AbilityValue1 = 1
+        };
+
         #endregion
 
         #region Items
@@ -801,7 +816,8 @@ namespace Imgeneus.World.Tests
             ItemName = "Thane Breaker of Fire",
             Element = Element.Fire1,
             Count = 1,
-            Quality = 1200
+            Quality = 1200,
+            Buy = 100
         };
 
         protected DbItem PerfectLinkingHammer = new DbItem()
@@ -1092,6 +1108,15 @@ namespace Imgeneus.World.Tests
             Special = SpecialEffect.AnotherItemGenerator,
             ReqVg = 1,
             Country = ItemClassType.AllFactions
+        };
+
+        protected DbItem DoubleWarehouse = new DbItem()
+        {
+            Type = 100,
+            TypeId = 75,
+            Country = ItemClassType.AllFactions,
+            Range = 234,
+            AttackTime = 1
         };
 
         #endregion

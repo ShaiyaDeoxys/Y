@@ -811,6 +811,7 @@ namespace Imgeneus.World.Game.Inventory
                 {
                     // Game should check if it's possible to take out item from warehouse.
                     // If packet still came, probably player is cheating.
+                    _warehouseManager.Items.TryAdd(sourceSlot, sourceItem);
                     _logger.LogError("Could not take out item from warehouse for {characterId}", _ownerId);
                     return (null, null);
                 }
@@ -823,7 +824,17 @@ namespace Imgeneus.World.Game.Inventory
             if (destinationBag != WarehouseManager.WAREHOUSE_BAG)
                 InventoryItems.TryRemove((destinationBag, destinationSlot), out destinationItem);
             else
+            {
+                if (destinationSlot >= 120 && !_warehouseManager.IsDoubledWarehouse)
+                {
+                    // Game should check if it's possible to put item in 4,5,6 tab.
+                    // If packet still came, probably player is cheating.
+                    InventoryItems.TryAdd((sourceBag, sourceSlot), sourceItem);
+                    _logger.LogError("Could not put item into double warehouse for {characterId}", _ownerId);
+                    return (null, null);
+                }
                 _warehouseManager.Items.TryRemove(destinationSlot, out destinationItem);
+            }
 
             if (destinationItem is null)
             {
