@@ -323,7 +323,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMoveItem(IWorldClient client, Item sourceItem, Item destinationItem)
+        public void SendMoveItem(IWorldClient client, Item sourceItem, Item destinationItem, uint gold = 0)
         {
             using var packet = new ImgeneusPacket(PacketType.INVENTORY_MOVE_ITEM);
 
@@ -332,6 +332,8 @@ namespace Imgeneus.World.Packets
 #endif
             packet.Write(new MovedItem(sourceItem).Serialize());
             packet.Write(new MovedItem(destinationItem).Serialize());
+
+            packet.Write(gold);
 
             client.Send(packet);
         }

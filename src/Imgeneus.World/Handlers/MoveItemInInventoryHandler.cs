@@ -23,7 +23,7 @@ namespace Imgeneus.World.Handlers
         public void Handle(WorldClient client, MoveItemInInventoryPacket packet)
         {
             var items = _inventoryManager.MoveItem(packet.CurrentBag, packet.CurrentSlot, packet.DestinationBag, packet.DestinationSlot);
-            _packetFactory.SendMoveItem(client, items.sourceItem, items.destinationItem);
+            _packetFactory.SendMoveItem(client, items.sourceItem, items.destinationItem, _inventoryManager.Gold);
         }
      }
 }

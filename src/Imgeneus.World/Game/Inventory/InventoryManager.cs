@@ -804,6 +804,20 @@ namespace Imgeneus.World.Game.Inventory
                 return (null, null);
             }
 
+            if (sourceBag == WarehouseManager.WAREHOUSE_BAG)
+            {
+                var fee = (uint)Math.Round(sourceItem.Price * 0.05);
+                if (Gold < fee)
+                {
+                    // Game should check if it's possible to take out item from warehouse.
+                    // If packet still came, probably player is cheating.
+                    _logger.LogError("Could not take out item from warehouse for {characterId}", _ownerId);
+                    return (null, null);
+                }
+                else
+                    Gold -= fee;
+            }
+
             // Check, if any other item is at destination slot.
             Item destinationItem;
             if (destinationBag != WarehouseManager.WAREHOUSE_BAG)

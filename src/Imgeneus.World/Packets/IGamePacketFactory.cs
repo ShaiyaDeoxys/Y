@@ -71,7 +71,7 @@ namespace Imgeneus.World.Packets
         void SendInventoryItems(IWorldClient client, ICollection<Item> inventoryItems);
         void SendItemExpiration(IWorldClient client, Item item);
         void SendAddItem(IWorldClient client, Item item);
-        void SendMoveItem(IWorldClient client, Item sourceItem, Item destinationItem);
+        void SendMoveItem(IWorldClient client, Item sourceItem, Item destinationItem, uint gold = 0);
         void SendRemoveItem(IWorldClient client, Item item, bool fullRemove);
         void SendItemDoesNotBelong(IWorldClient client);
         void SendFullInventory(IWorldClient client);

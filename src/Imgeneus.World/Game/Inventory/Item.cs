@@ -1172,6 +1172,12 @@ namespace Imgeneus.World.Game.Inventory
 
         #endregion
 
+        #region Buy/Sell
+
+        public int Price => _dbItem.Buy;
+
+        #endregion
+
         #region Another item generation
 
         public IList<Item> GenerateItems()
