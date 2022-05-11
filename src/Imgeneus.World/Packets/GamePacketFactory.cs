@@ -2099,6 +2099,14 @@ namespace Imgeneus.World.Packets
             }
         }
 
+        public void SendGuildWarehouseItemAdd(IWorldClient client, DbGuildWarehouseItem item, int characterId) 
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_WAREHOUSE_ITEM_ADD);
+            packet.Write(new GuildWarehouseItem(item).Serialize());
+            packet.Write(characterId);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Teleport

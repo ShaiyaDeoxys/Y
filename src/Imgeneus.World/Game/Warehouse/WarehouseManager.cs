@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Linking;
+using Imgeneus.World.Packets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
@@ -23,15 +24,20 @@ namespace Imgeneus.World.Game.Warehouse
         private readonly IDatabasePreloader _databasePreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
-        private int _ownerId;
+        private readonly IGameWorld _gameWorld;
+        private readonly IGamePacketFactory _packetFactory;
+        private int _userId;
+        private int _characterId;
 
-        public WarehouseManager(ILogger<WarehouseManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
+        public WarehouseManager(ILogger<WarehouseManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IGameWorld gameWorld, IGamePacketFactory packetFactory)
         {
             _logger = logger;
             _database = database;
             _databasePreloader = databasePreloader;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
+            _gameWorld = gameWorld;
+            _packetFactory = packetFactory;
             Items = new(_items);
 
 #if DEBUG
@@ -48,9 +54,10 @@ namespace Imgeneus.World.Game.Warehouse
 
         #region Init & Clear
 
-        public void Init(int ownerId, int? guildId, IEnumerable<DbWarehouseItem> items)
+        public void Init(int userId, int characterId, int? guildId, IEnumerable<DbWarehouseItem> items)
         {
-            _ownerId = ownerId;
+            _userId = userId;
+            _characterId = characterId;
             GuildId = guildId;
 
             foreach (var item in items.Select(x => new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, x)))
@@ -61,14 +68,14 @@ namespace Imgeneus.World.Game.Warehouse
 
         public async Task Clear()
         {
-            var oldItems = await _database.WarehouseItems.Where(x => x.UserId == _ownerId).ToListAsync();
+            var oldItems = await _database.WarehouseItems.Where(x => x.UserId == _userId).ToListAsync();
             _database.WarehouseItems.RemoveRange(oldItems);
 
             foreach (var item in _items.Values)
             {
                 var dbItem = new DbWarehouseItem()
                 {
-                    UserId = _ownerId,
+                    UserId = _userId,
                     Type = item.Type,
                     TypeId = item.TypeId,
                     Count = item.Count,
@@ -119,7 +126,7 @@ namespace Imgeneus.World.Game.Warehouse
             {
                 if (!GuildId.HasValue)
                 {
-                    _logger.LogError("Can not load guild house warehouse, no guild id provided. Character id {id}", _ownerId);
+                    _logger.LogError("Can not load guild house warehouse, no guild id provided. Character id {id}", _userId);
                     return false;
                 }
 
@@ -148,8 +155,22 @@ namespace Imgeneus.World.Game.Warehouse
                     Craftname = item.GetCraftName()
                 };
                 _database.GuildWarehouseItems.Add(dbGuildItem);
-                var count = _database.SaveChanges();
-                return count > 0;
+
+                var ok = _database.SaveChanges() > 0;
+                if (ok)
+                {
+                    var me = _gameWorld.Players[_characterId];
+                    foreach(var member in me.GuildManager.GuildMembers)
+                    {
+                        if (!_gameWorld.Players.ContainsKey(member.Id) || me.Id == member.Id)
+                            continue;
+
+                        var player = _gameWorld.Players[member.Id];
+                        _packetFactory.SendGuildWarehouseItemAdd(player.GameSession.Client, dbGuildItem, me.Id);
+                    }
+                }
+
+                return ok;
             }
 
             return false;
@@ -168,7 +189,7 @@ namespace Imgeneus.World.Game.Warehouse
                 {
                     // Game should check if it's possible to put item in 4,5,6 tab.
                     // If packet still came, probably player is cheating.
-                    _logger.LogError("Could not put item into double warehouse for {characterId}", _ownerId);
+                    _logger.LogError("Could not put item into double warehouse for {characterId}", _userId);
                     return false;
                 }
 

@@ -304,6 +304,7 @@ namespace Imgeneus.World.Packets
         #region Warehouse
         void SendWarehouseItems(IWorldClient client, IReadOnlyCollection<Item> items);
         void SendGuildWarehouseItems(IWorldClient client, ICollection<DbGuildWarehouseItem> items);
+        void SendGuildWarehouseItemAdd(IWorldClient client, DbGuildWarehouseItem item, int characterId);
         #endregion
 
         #region Teleport

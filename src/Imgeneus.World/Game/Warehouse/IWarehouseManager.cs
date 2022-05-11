@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Warehouse
 {
     public interface IWarehouseManager: ISessionedService
     {
-        void Init(int ownerId, int? guildId, IEnumerable<DbWarehouseItem> items);
+        void Init(int userId, int characterId, int? guildId, IEnumerable<DbWarehouseItem> items);
 
         /// <summary>
         /// User's stored items.
