@@ -160,7 +160,7 @@ namespace Imgeneus.World.Game.Warehouse
                 if (ok)
                 {
                     var me = _gameWorld.Players[_characterId];
-                    foreach(var member in me.GuildManager.GuildMembers)
+                    foreach (var member in me.GuildManager.GuildMembers)
                     {
                         if (!_gameWorld.Players.ContainsKey(member.Id) || me.Id == member.Id)
                             continue;
@@ -199,9 +199,30 @@ namespace Imgeneus.World.Game.Warehouse
 
             if (bag == GUILD_WAREHOUSE_BAG)
             {
-                /*_database.GuildWarehouseItems
-                    .AsNoTracking()
-                    .FirstOrDefault();*/
+                var dbItem = _database.GuildWarehouseItems
+                                      .FirstOrDefault(x => x.GuildId == GuildId && x.Slot == slot);
+
+                if (dbItem is null)
+                    return true; // No item, nothing to remove.
+
+                _database.GuildWarehouseItems.Remove(dbItem);
+                var ok = _database.SaveChanges() > 0;
+                if (ok)
+                {
+                    item = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, dbItem);
+
+                    var me = _gameWorld.Players[_characterId];
+                    foreach (var member in me.GuildManager.GuildMembers)
+                    {
+                        if (!_gameWorld.Players.ContainsKey(member.Id)) // || me.Id == member.Id) Looks like there is some bug in client game.exe and bag 255 is not processed correctly.
+                            continue;
+
+                        var player = _gameWorld.Players[member.Id];
+                        _packetFactory.SendGuildWarehouseItemRemove(player.GameSession.Client, dbItem, me.Id);
+                    }
+                }
+
+                return ok;
             }
 
             return true;

@@ -2107,6 +2107,14 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendGuildWarehouseItemRemove(IWorldClient client, DbGuildWarehouseItem item, int characterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GUILD_WAREHOUSE_ITEM_REMOVE);
+            packet.Write(new GuildWarehouseItem(item).Serialize());
+            packet.Write(characterId);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Teleport

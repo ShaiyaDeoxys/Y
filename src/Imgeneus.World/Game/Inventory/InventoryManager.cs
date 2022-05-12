@@ -804,7 +804,7 @@ namespace Imgeneus.World.Game.Inventory
                 return (null, null);
             }
 
-            if (sourceBag == WarehouseManager.WAREHOUSE_BAG)
+            if (sourceBag == WarehouseManager.WAREHOUSE_BAG || sourceBag == WarehouseManager.GUILD_WAREHOUSE_BAG)
             {
                 var fee = (uint)Math.Round(sourceItem.Price * 0.05);
                 if (Gold < fee)

@@ -103,6 +103,35 @@ namespace Imgeneus.World.Game.Inventory
                 Gem6 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId6, 5);
         }
 
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbGuildWarehouseItem dbWarehouseItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbWarehouseItem.Type, dbWarehouseItem.TypeId, dbWarehouseItem.Count)
+        {
+            Bag = WarehouseManager.GUILD_WAREHOUSE_BAG;
+            Slot = dbWarehouseItem.Slot;
+            Quality = dbWarehouseItem.Quality;
+
+            CreationTime = dbWarehouseItem.CreationTime;
+            ExpirationTime = dbWarehouseItem.ExpirationTime;
+
+            if (!string.IsNullOrWhiteSpace(dbWarehouseItem.Craftname))
+                ParseCraftname(dbWarehouseItem.Craftname);
+
+            if (dbWarehouseItem.HasDyeColor)
+                DyeColor = new DyeColor(dbWarehouseItem.DyeColorAlpha, dbWarehouseItem.DyeColorSaturation, dbWarehouseItem.DyeColorR, dbWarehouseItem.DyeColorG, dbWarehouseItem.DyeColorB);
+
+            if (dbWarehouseItem.GemTypeId1 != 0)
+                Gem1 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId1, 0);
+            if (dbWarehouseItem.GemTypeId2 != 0)
+                Gem2 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId2, 1);
+            if (dbWarehouseItem.GemTypeId3 != 0)
+                Gem3 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId3, 2);
+            if (dbWarehouseItem.GemTypeId4 != 0)
+                Gem4 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId4, 3);
+            if (dbWarehouseItem.GemTypeId5 != 0)
+                Gem5 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId5, 4);
+            if (dbWarehouseItem.GemTypeId6 != 0)
+                Gem6 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId6, 5);
+        }
+
         public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, BankItem bankItem) : this(databasePreloader, enchantConfig, itemCreateConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
         {
         }
