@@ -79,7 +79,7 @@ namespace Imgeneus.World.Game.NPCs
         /// <summary>
         /// Type of NPC.
         /// </summary>
-        public byte Type { get => (byte)_npc.Type; }
+        public NpcType Type { get => _npc.Type; }
 
         /// <summary>
         /// Type id of NPC.

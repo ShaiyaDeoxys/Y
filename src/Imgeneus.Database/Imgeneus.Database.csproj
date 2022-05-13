@@ -80,6 +80,7 @@
     <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\submodules\Parsec\src\Parsec\Parsec.csproj" />
     <ProjectReference Include="..\Imgeneus.Core\Imgeneus.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

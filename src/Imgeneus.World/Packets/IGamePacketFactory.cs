@@ -26,8 +26,10 @@ using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
+using Parsec.Shaiya.NpcQuest;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Quest = Imgeneus.World.Game.Quests.Quest;
 
 namespace Imgeneus.World.Packets
 {
@@ -289,7 +291,7 @@ namespace Imgeneus.World.Packets
         void SendGuildHouseBuy(IWorldClient client, GuildHouseBuyReason reason, uint gold);
         void SendGetEtin(IWorldClient client, int etin);
         void SendEtinReturnResult(IWorldClient client, IList<Item> etins);
-        void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, byte npcType, byte npcGroup, byte npcLevel);
+        void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, NpcType npcType, byte npcGroup, byte npcLevel);
         void SendGuildNpcs(IWorldClient client, IEnumerable<DbGuildNpcLvl> npcs);
         void SendGRBNotice(IWorldClient client, GRBNotice notice);
         void SendGBRPoints(IWorldClient client, int currentPoints, int maxPoints, int topGuild);

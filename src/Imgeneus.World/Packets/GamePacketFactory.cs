@@ -44,6 +44,8 @@ using Imgeneus.Core.Extensions;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.NPCs;
+using Parsec.Shaiya.NpcQuest;
+using Quest = Imgeneus.World.Game.Quests.Quest;
 
 namespace Imgeneus.World.Packets
 {
@@ -739,7 +741,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.MAP_NPC_ENTER);
             packet.Write(npc.Id);
-            packet.Write(npc.Type);
+            packet.Write((byte)npc.Type);
             packet.Write(npc.TypeId);
             packet.Write(npc.PosX);
             packet.Write(npc.PosY);
@@ -2001,11 +2003,11 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, byte npcType, byte npcGroup, byte npcLevel)
+        public void SendGuildUpgradeNpc(IWorldClient client, GuildNpcUpgradeReason reason, NpcType npcType, byte npcGroup, byte npcLevel)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_NPC_UPGRADE);
             packet.Write((byte)reason);
-            packet.Write(npcType);
+            packet.Write((byte)npcType);
             packet.Write(npcGroup);
             packet.Write(npcLevel);
             packet.WriteByte(0); // TODO: number? what is it?!

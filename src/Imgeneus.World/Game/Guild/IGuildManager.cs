@@ -2,6 +2,7 @@
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
+using Parsec.Shaiya.NpcQuest;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -165,7 +166,7 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="typeId">npc type is</param>
         /// <param name="requiredRank">guild's rank, that needed for this NPC</param>
         /// <returns>true, if player can use it</returns>
-        bool CanUseNpc(byte type, short typeId, out byte requiredRank);
+        bool CanUseNpc(NpcType type, short typeId, out byte requiredRank);
 
         /// <summary>
         /// Checks if guild has bought NPC of the right level.
@@ -173,13 +174,21 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="type">npc type</param>
         /// <param name="typeId">npc type is</param>
         /// <returns>true, if guild has right NPC level</returns>
-        bool HasNpcLevel(byte type, short typeId);
+        bool HasNpcLevel(NpcType type, short typeId);
+
+        /// <summary>
+        /// Checks if guild has npc lvl of npc group.
+        /// </summary>
+        /// <param name="type">npc type</param>
+        /// <param name="level">npc level</param>
+        /// <returns>true, if guild has NPC level, that is >= provided level</returns>
+        bool HasNpcLevel(NpcType type, byte level);
 
         /// <summary>
         /// Gets discount in %.
         /// </summary>
         /// <returns>for ex. 20% discount => 0.2f</returns>
-        float GetDiscount(byte type, short typeId);
+        float GetDiscount(NpcType type, short typeId);
 
         /// <summary>
         /// Tries to upgrade NPC. Updates guild etin as well.
@@ -187,7 +196,7 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="npcType">npc type</param>
         /// <param name="npcGroup">npc group</param>
         /// <param name="npcLevel">npc next level</param>
-        Task<GuildNpcUpgradeReason> TryUpgradeNPC(byte npcType, byte npcGroup, byte npcLevel);
+        Task<GuildNpcUpgradeReason> TryUpgradeNPC(NpcType npcType, byte npcGroup, byte npcLevel);
 
         /// <summary>
         /// Gets blacksmith npc extra rates based on NPC level.

@@ -1,10 +1,11 @@
 ﻿using Imgeneus.Network.PacketProcessor;
+using Parsec.Shaiya.NpcQuest;
 
 namespace Imgeneus.Network.Packets.Game
 {
     public record GuildNpcUpgradePacket : IPacketDeserializer
     {
-        public byte NpcType { get; private set; }
+        public NpcType NpcType { get; private set; }
 
         public byte NpcGroup { get; private set; }
 
@@ -12,7 +13,7 @@ namespace Imgeneus.Network.Packets.Game
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            NpcType = packetStream.Read<byte>();
+            NpcType = (NpcType)packetStream.Read<byte>();
             NpcGroup = packetStream.Read<byte>();
             NpcLevel = packetStream.Read<byte>();
         }

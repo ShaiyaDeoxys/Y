@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Parsec.Shaiya.NpcQuest;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Imgeneus.Database.Entities
@@ -21,7 +22,7 @@ namespace Imgeneus.Database.Entities
         /// <summary>
         /// NPC type.
         /// </summary>
-        public ushort NpcType { get; set; }
+        public NpcType NpcType { get; set; }
 
         /// <summary>
         /// NPC group. Valid only for merchants, e.g. weapon, accessory etc.

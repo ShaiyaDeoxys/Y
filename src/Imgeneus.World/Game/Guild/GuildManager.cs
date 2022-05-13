@@ -9,6 +9,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.NpcQuest;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -532,7 +533,7 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public bool CanUseNpc(byte type, short typeId, out byte requiredRank)
+        public bool CanUseNpc(NpcType type, short typeId, out byte requiredRank)
         {
             if (GuildId == 0)
                 throw new Exception("NPC can not be checked, if guild manager is not initialized.");
@@ -551,7 +552,7 @@ namespace Imgeneus.World.Game.Guild
             return requiredRank >= GuildRank;
         }
 
-        public bool HasNpcLevel(byte type, short typeId)
+        public bool HasNpcLevel(NpcType type, short typeId)
         {
             if (GuildId == 0)
                 throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
@@ -573,7 +574,21 @@ namespace Imgeneus.World.Game.Guild
             return currentLevel != null && currentLevel.NpcLevel >= npcInfo.NpcLvl;
         }
 
-        public float GetDiscount(byte type, short typeId)
+        public bool HasNpcLevel(NpcType type, byte level) 
+        {
+            if (GuildId == 0)
+                throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
+
+            var guild = _database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
+            if (guild is null)
+                return false;
+
+            var npcInfo = _houseConfig.NpcInfos.FirstOrDefault(x => x.NpcType == type);
+            var currentLevel = guild.NpcLvls.FirstOrDefault(x => x.NpcType == npcInfo.NpcType && x.Group == npcInfo.Group);
+            return (currentLevel != null && currentLevel.NpcLevel >= level) || (currentLevel is null && level == 0);
+        }
+
+        public float GetDiscount(NpcType type, short typeId)
         {
             if (GuildId == 0)
                 throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
@@ -604,7 +619,7 @@ namespace Imgeneus.World.Game.Guild
         }
 
         ///  <inheritdoc/>
-        public async Task<GuildNpcUpgradeReason> TryUpgradeNPC(byte npcType, byte npcGroup, byte nextLevel)
+        public async Task<GuildNpcUpgradeReason> TryUpgradeNPC(NpcType npcType, byte npcGroup, byte nextLevel)
         {
             if (GuildId == 0)
                 throw new Exception("NPC can not be upgraded, if guild manager is not initialized.");
@@ -649,7 +664,7 @@ namespace Imgeneus.World.Game.Guild
             return count > 0 ? GuildNpcUpgradeReason.Ok : GuildNpcUpgradeReason.Failed;
         }
 
-        private GuildHouseNpcInfo FindNpcInfo(CountryType country, byte npcType, short npcTypeId)
+        private GuildHouseNpcInfo FindNpcInfo(CountryType country, NpcType npcType, short npcTypeId)
         {
             GuildHouseNpcInfo npcInfo;
             if (country == CountryType.Light)
@@ -664,7 +679,7 @@ namespace Imgeneus.World.Game.Guild
             return npcInfo;
         }
 
-        private GuildHouseNpcInfo FindNpcInfo(byte npcType, byte npcGroup, byte npcLevel)
+        private GuildHouseNpcInfo FindNpcInfo(NpcType npcType, byte npcGroup, byte npcLevel)
         {
             return _houseConfig.NpcInfos.FirstOrDefault(x => x.NpcType == npcType && x.Group == npcGroup && x.NpcLvl == npcLevel);
         }
@@ -675,11 +690,11 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("Linking rate can not be calculated, if guild manager is not initialized.");
 
-            var npc = _database.GuildNpcLvls.AsNoTracking().FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == 3 && x.Group == 0);
+            var npc = _database.GuildNpcLvls.AsNoTracking().FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == NpcType.Blacksmith && x.Group == 0);
             if (npc is null)
                 return (0, 0);
 
-            var npcInfo = FindNpcInfo((byte)npc.NpcType, npc.Group, npc.NpcLevel);
+            var npcInfo = FindNpcInfo((NpcType)npc.NpcType, npc.Group, npc.NpcLevel);
             if (npcInfo is null)
                 return (0, 0);
 

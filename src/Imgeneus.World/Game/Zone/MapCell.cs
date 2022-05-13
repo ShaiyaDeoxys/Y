@@ -13,6 +13,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
+using Parsec.Shaiya.NpcQuest;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -696,7 +697,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Removes npc from cell.
         /// </summary>
-        public void RemoveNPC(byte type, ushort typeId, byte count)
+        public void RemoveNPC(NpcType type, ushort typeId, byte count)
         {
             var npcs = NPCs.Values.Where(n => n.Type == type && n.TypeId == typeId).Take(count);
             foreach (var npc in npcs)

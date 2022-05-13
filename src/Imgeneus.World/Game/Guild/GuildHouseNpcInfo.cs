@@ -1,11 +1,13 @@
-﻿namespace Imgeneus.World.Game.Guild
+﻿using Parsec.Shaiya.NpcQuest;
+
+namespace Imgeneus.World.Game.Guild
 {
     public class GuildHouseNpcInfo
     {
         /// <summary>
         /// NPC type, e.g. Merchant is 1, Gate keeper is 2, Blacksmith is 3, Warehouse is 6.
         /// </summary>
-        public byte NpcType { get; set; }
+        public NpcType NpcType { get; set; }
 
         /// <summary>
         /// NPC type id, only for lights.

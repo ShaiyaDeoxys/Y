@@ -12,6 +12,7 @@ using Imgeneus.World.Game.Zone.Obelisks;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.NpcQuest;
 using Parsec.Shaiya.Svmap;
 using System;
 using System.Collections.Concurrent;
@@ -552,7 +553,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Removes NPC from the map.
         /// </summary>
-        public void RemoveNPC(int cellIndex, byte type, ushort typeId, byte count)
+        public void RemoveNPC(int cellIndex, NpcType type, ushort typeId, byte count)
         {
             Cells[cellIndex].RemoveNPC(type, typeId, count);
         }

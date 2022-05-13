@@ -7,6 +7,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Time;
 using Moq;
+using Parsec.Shaiya.NpcQuest;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -318,7 +319,7 @@ namespace Imgeneus.World.Tests.GuildTests
                 {
                     new GuildHouseNpcInfo()
                     {
-                        NpcType = 1,
+                        NpcType = NpcType.Merchant,
                         LightNpcTypeId = 1,
                         MinRank = 5
                     }
@@ -329,7 +330,7 @@ namespace Imgeneus.World.Tests.GuildTests
             guildManager.GuildId = 1;
             guildManager.GuildRank = 6;
 
-            var canUse = guildManager.CanUseNpc(1, 1, out var requiredRank);
+            var canUse = guildManager.CanUseNpc(NpcType.Merchant, 1, out var requiredRank);
 
             Assert.False(canUse);
             Assert.Equal(5, requiredRank);
@@ -348,7 +349,7 @@ namespace Imgeneus.World.Tests.GuildTests
             guildManager.GuildId = 1;
             guildManager.GuildRank = 31;
 
-            var canUse = guildManager.CanUseNpc(1, 1, out var requiredRank);
+            var canUse = guildManager.CanUseNpc(NpcType.Merchant, 1, out var requiredRank);
 
             Assert.False(canUse);
             Assert.Equal(30, requiredRank);
@@ -367,7 +368,7 @@ namespace Imgeneus.World.Tests.GuildTests
                 {
                     new GuildHouseNpcInfo()
                     {
-                        NpcType = 1,
+                        NpcType = NpcType.Merchant,
                         LightNpcTypeId = 1,
                         MinRank = 5
                     }
@@ -378,7 +379,7 @@ namespace Imgeneus.World.Tests.GuildTests
             guildManager.GuildId = 1;
             guildManager.GuildRank = 5;
 
-            var canUse = guildManager.CanUseNpc(1, 1, out var requiredRank);
+            var canUse = guildManager.CanUseNpc(NpcType.Merchant, 1, out var requiredRank);
 
             Assert.True(canUse);
         }

@@ -1,10 +1,11 @@
 ﻿using Imgeneus.Network.PacketProcessor;
+using Parsec.Shaiya.NpcQuest;
 
 namespace Imgeneus.Network.Packets.Game
 {
     public record GMRemoveNpcPacket : IPacketDeserializer
     {
-        public byte Type { get; private set; }
+        public NpcType Type { get; private set; }
 
         public ushort TypeId { get; private set; }
 
@@ -12,7 +13,7 @@ namespace Imgeneus.Network.Packets.Game
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            Type = packetStream.Read<byte>();
+            Type = (NpcType)packetStream.Read<byte>();
             TypeId = packetStream.Read<ushort>();
             Count = packetStream.Read<byte>();
         }
