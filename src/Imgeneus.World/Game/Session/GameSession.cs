@@ -71,8 +71,13 @@ namespace Imgeneus.World.Game.Session
 
         private async void LogoutTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            // First, remove player from game world.
+            // Because some managers like Guild Manager provide GuildId and player can be found in guild map ONLY if this id is presented.
+            _gameWorld.RemovePlayer(CharId);
+
             try
             {
+                // ONLY after player is unloaded from game world we can clear session servises.
                 await Client.ClearSession(_quitGame);
             }
             catch (Exception ex)
@@ -80,7 +85,6 @@ namespace Imgeneus.World.Game.Session
                 _logger.LogError("Failed clear session for {characterId}. Reason: {message}. Stack trace: {trace}", CharId, ex.Message, ex.StackTrace);
             }
 
-            _gameWorld.RemovePlayer(CharId);
             CharId = 0;
             IsLoggingOff = false;
 

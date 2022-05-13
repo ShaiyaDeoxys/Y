@@ -602,6 +602,8 @@ namespace Imgeneus.World.Game.Guild
                 return 0;
 
             var maxNpcLevel = guild.NpcLvls.FirstOrDefault(x => x.NpcType == npcInfo.NpcType && x.Group == npcInfo.Group);
+            if (maxNpcLevel is null)
+                return 0;
 
             var maxNpcInfo = _houseConfig.NpcInfos.FirstOrDefault(x => x.NpcType == type && x.Group == npcInfo.Group && x.NpcLvl == maxNpcLevel.NpcLevel);
             if (maxNpcInfo is null)

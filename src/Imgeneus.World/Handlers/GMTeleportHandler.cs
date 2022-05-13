@@ -2,6 +2,7 @@
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Session;
@@ -23,8 +24,9 @@ namespace Imgeneus.World.Handlers
         private readonly ITeleportationManager _teleportationManager;
         private readonly IMovementManager _movementManager;
         private readonly IPartyManager _partyManager;
+        private readonly IGuildManager _guildManager;
 
-        public GMTeleportHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IMapsLoader mapLoader, ICountryProvider countryProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IPartyManager partyManager) : base(packetFactory, gameSession)
+        public GMTeleportHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IMapsLoader mapLoader, ICountryProvider countryProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IPartyManager partyManager, IGuildManager guildManager) : base(packetFactory, gameSession)
         {
             _gameWorld = gameWorld;
             _mapLoader = mapLoader;
@@ -32,6 +34,7 @@ namespace Imgeneus.World.Handlers
             _teleportationManager = teleportationManager;
             _movementManager = movementManager;
             _partyManager = partyManager;
+            _guildManager = guildManager;
         }
 
         [HandlerAction(PacketType.GM_TELEPORT_MAP)]
@@ -100,10 +103,8 @@ namespace Imgeneus.World.Handlers
                     _partyManager.PreviousPartyId = mapId;
                 }
 
-                //if (player.Map is IGuildMap)
-                //{
-                //    GuildId = player.GuildId;
-                //}
+                if (player.Map is IGuildMap)
+                    _guildManager.GuildId = player.GuildManager.GuildId;
 
                 _teleportationManager.Teleport(player.Map.Id, player.PosX, player.PosY, player.PosZ);
 

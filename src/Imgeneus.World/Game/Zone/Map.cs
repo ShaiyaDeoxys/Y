@@ -274,31 +274,41 @@ namespace Imgeneus.World.Game.Zone
         /// Unloads player from map.
         /// </summary>
         /// <param name="characterId">player, that we need to unload</param>
+        /// <param name="exitGame">if case player exits game, he/she should be teleported to rebirth map</param>
         /// <returns>returns true if we could unload player to map, otherwise false</returns>
-        public virtual bool UnloadPlayer(int characterId)
+        public virtual bool UnloadPlayer(int characterId, bool exitGame = false)
         {
-            var success = Players.TryRemove(characterId, out var character);
+            if (!Players.ContainsKey(characterId))
+                return false;
 
-            if (success)
+            var character = Players[characterId];
+
+            character.VehicleManager.RemoveVehicle();
+
+            if (exitGame)
             {
-                character.VehicleManager.RemoveVehicle();
-
-                if (character.HealthManager.IsDead)
+                var rebirthMap = GetRebirthMap(character);
+                if (rebirthMap.MapId != Id)
                 {
-                    var rebirthMap = GetRebirthMap(character);
-                    character.TeleportationManager.Teleport(rebirthMap.MapId, rebirthMap.X, rebirthMap.Y, rebirthMap.Z);
-                    character.HealthManager.Rebirth();
+                    character.MapProvider.NextMapId = rebirthMap.MapId;
+                    character.MovementManager.PosX = rebirthMap.X;
+                    character.MovementManager.PosY = rebirthMap.Y;
+                    character.MovementManager.PosZ = rebirthMap.Z;
                 }
 
-                Cells[character.CellId].RemovePlayer(character, true);
-                UnregisterSearchForParty(character);
-                character.MovementManager.OnMove -= Character_OnMove;
-                character.OldCellId = -1;
-                character.CellId = -1;
-                _logger.LogDebug($"Player {character.Id} left map {Id}");
+                if (character.HealthManager.IsDead)
+                    character.HealthManager.Rebirth();
             }
 
-            return success;
+            Cells[character.CellId].RemovePlayer(character, true);
+            UnregisterSearchForParty(character);
+            character.MovementManager.OnMove -= Character_OnMove;
+            character.OldCellId = -1;
+            character.CellId = -1;
+
+            _logger.LogDebug($"Player {character.Id} left map {Id}");
+
+            return Players.TryRemove(characterId, out var _);
         }
 
         /// <summary>

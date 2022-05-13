@@ -441,7 +441,7 @@ namespace Imgeneus.World.Game
                 if (map is null)
                     _logger.LogError("Couldn't find character's {characterId} map {mapId}.", characterId, player.MapProvider.Map.Id);
                 else
-                    map.UnloadPlayer(player.Id);
+                    map.UnloadPlayer(player.Id, exitGame: true);
 
                 player.Dispose();
             }
