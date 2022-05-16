@@ -18,6 +18,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -176,8 +177,8 @@ namespace Imgeneus.World.Game.Zone
             RemoveListeners(character);
             Players.TryRemove(character.Id, out var removedCharacter);
 
-            foreach (var mob in GetAllMobs(true).Where(m => m.Target == character))
-                mob.ClearTarget();
+            foreach (var mob in GetAllMobs(true).Where(m => m.AttackManager.Target == character))
+                mob.AttackManager.Target = null;
 
             if (notifyPlayers)
                 foreach (var player in GetAllPlayers(true))
@@ -580,8 +581,8 @@ namespace Imgeneus.World.Game.Zone
         {
             mob.HealthManager.OnDead += Mob_OnDead;
             mob.MovementManager.OnMove += Mob_OnMove;
-            mob.OnAttack += Mob_OnAttack;
-            mob.OnUsedSkill += Mob_OnUsedSkill;
+            mob.AttackManager.OnAttack += Mob_OnAttack;
+            mob.SkillsManager.OnUsedSkill += Mob_OnUsedSkill;
             mob.HealthManager.OnRecover += Mob_OnRecover;
         }
 
@@ -593,8 +594,8 @@ namespace Imgeneus.World.Game.Zone
         {
             mob.HealthManager.OnDead -= Mob_OnDead;
             mob.MovementManager.OnMove -= Mob_OnMove;
-            mob.OnAttack -= Mob_OnAttack;
-            mob.OnUsedSkill -= Mob_OnUsedSkill;
+            mob.AttackManager.OnAttack -= Mob_OnAttack;
+            mob.SkillsManager.OnUsedSkill -= Mob_OnUsedSkill;
             mob.HealthManager.OnRecover -= Mob_OnRecover;
             mob.TimeToRebirth -= RebirthMob;
         }
@@ -635,6 +636,20 @@ namespace Imgeneus.World.Game.Zone
                 mob.TimeToRebirth += RebirthMob;
 
             mob.Dispose();
+
+#if DEBUG
+            // ONLY for debug! Don't uncomment it in prod.
+            // It's for checking if every scoped service is finalized, when mob is killed.
+
+            // Wait 0.5 sec after client disconnected.
+            Task.Delay(500).ContinueWith((x) =>
+            {
+                // Collect everything.
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.WaitForFullGCComplete();
+            });
+#endif
         }
 
         private void Mob_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
@@ -643,22 +658,22 @@ namespace Imgeneus.World.Game.Zone
                 Map.PacketFactory.SendMobMove(player.GameSession.Client, senderId, x, z, motion);
         }
 
-        private void Mob_OnAttack(IKiller sender, IKillable target, AttackResult attackResult)
+        private void Mob_OnAttack(int senderId, IKillable target, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                Map.PacketFactory.SendMobAttack(player.GameSession.Client, (Mob)sender, target.Id, attackResult);
+                Map.PacketFactory.SendMobAttack(player.GameSession.Client, senderId, target.Id, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
                     Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);
             }
         }
 
-        private void Mob_OnUsedSkill(IKiller sender, IKillable target, Skill skill, AttackResult attackResult)
+        private void Mob_OnUsedSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
-                Map.PacketFactory.SendMobUsedSkill(player.GameSession.Client, (Mob)sender, target.Id, skill, attackResult);
+                Map.PacketFactory.SendMobUsedSkill(player.GameSession.Client, senderId, target.Id, skill, attackResult);
 
                 if (attackResult.Absorb != 0 && player == target)
                     Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);

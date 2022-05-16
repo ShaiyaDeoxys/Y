@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
@@ -15,6 +16,7 @@ using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -26,17 +28,24 @@ namespace Imgeneus.World.Game.Monster
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly DbMob _dbMob;
+        private readonly MoveArea _moveArea;
 
+        public IAIManager AIManager { get; private set; }
         public ISpeedManager SpeedManager { get; private set; }
         public IAttackManager AttackManager { get; private set; }
         public ISkillsManager SkillsManager { get; private set; }
 
+        /// <summary>
+        /// My scope.
+        /// </summary>
+        public IServiceScope Scope { get; set; }
+
         public Mob(ushort mobId,
                    bool shouldRebirth,
                    MoveArea moveArea,
-                   Map map,
                    ILogger<Mob> logger,
                    IDatabasePreloader databasePreloader,
+                   IAIManager aiManager,
                    IItemEnchantConfiguration enchantConfig,
                    IItemCreateConfiguration itemCreateConfig,
                    ICountryProvider countryProvider,
@@ -56,42 +65,19 @@ namespace Imgeneus.World.Game.Monster
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
             _dbMob = databasePreloader.Mobs[mobId];
+            _moveArea = moveArea;
 
-            Id = map.GenerateId();
+            AIManager = aiManager;
+
             Exp = _dbMob.Exp;
-            AI = _dbMob.AI;
             ShouldRebirth = shouldRebirth;
 
-            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, def: _dbMob.Defense, res: _dbMob.Magic);
-            LevelProvider.Init(Id, _dbMob.Level);
-            HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
-            BuffsManager.Init(Id);
-
-            CountryProvider.Init(Id, _dbMob.Fraction);
-
             SpeedManager = speedManager;
-            SpeedManager.Init(Id);
-
             AttackManager = attackManager;
-            AttackManager.Init(Id);
-
             SkillsManager = skillsManager;
-            SkillsManager.Init(Id, new Skill[0]);
 
             ElementProvider.ConstAttackElement = _dbMob.Element;
             ElementProvider.ConstDefenceElement = _dbMob.Element;
-
-            MoveArea = moveArea;
-            Map = map;
-
-            var x = new Random().NextFloat(MoveArea.X1, MoveArea.X2);
-            var y = new Random().NextFloat(MoveArea.Y1, MoveArea.Y2);
-            var z = new Random().NextFloat(MoveArea.Z1, MoveArea.Z2);
-            MovementManager.Init(Id, x, y, z, 0, MoveMotion.Walk);
-
-            IsAttack1Enabled = _dbMob.AttackOk1 != 0;
-            IsAttack2Enabled = _dbMob.AttackOk2 != 0;
-            IsAttack3Enabled = _dbMob.AttackOk3 != 0;
 
             if (ShouldRebirth)
             {
@@ -102,9 +88,57 @@ namespace Imgeneus.World.Game.Monster
             }
 
             HealthManager.OnGotDamage += OnDecreaseHP;
+            AIManager.OnStateChanged += AIManager_OnStateChanged;
+        }
 
-            SetupAITimers();
-            State = MobState.Idle;
+        public void Init(int ownerId)
+        {
+            Id = ownerId;
+
+            AIManager.Init(Id,
+                           _dbMob.AI,
+                           _moveArea,
+                           idleTime: _dbMob.NormalTime <= 0 ? 4000 : _dbMob.NormalTime,
+                           chaseRange: _dbMob.ChaseRange,
+                           chaseSpeed: _dbMob.ChaseStep,
+                           chaseTime: _dbMob.ChaseTime,
+                           isAttack1Enabled: _dbMob.AttackOk1 != 0,
+                           isAttack2Enabled: _dbMob.AttackOk2 != 0,
+                           isAttack3Enabled: _dbMob.AttackOk3 != 0,
+                           attack1Range: _dbMob.AttackRange1,
+                           attack2Range: _dbMob.AttackRange2,
+                           attack3Range: _dbMob.AttackRange3,
+                           attackType1: _dbMob.AttackType1,
+                           attackType2: _dbMob.AttackType2,
+                           attackType3: _dbMob.AttackType3,
+                           attackAttrib1: _dbMob.AttackAttrib1,
+                           attackAttrib2: _dbMob.AttackAttrib2,
+                           attack1: _dbMob.Attack1 < 0 ? (ushort)(_dbMob.Attack1 + ushort.MaxValue) : (ushort)_dbMob.Attack1,
+                           attack2: _dbMob.Attack2 < 0 ? (ushort)(_dbMob.Attack2 + ushort.MaxValue) : (ushort)_dbMob.Attack2,
+                           attack3: _dbMob.Attack3 < 0 ? (ushort)(_dbMob.Attack3 + ushort.MaxValue) : (ushort)_dbMob.Attack3,
+                           attackTime1: _dbMob.AttackTime1,
+                           attackTime2: _dbMob.AttackTime2,
+                           attackTime3: _dbMob.AttackTime3);
+
+            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, def: _dbMob.Defense, res: _dbMob.Magic);
+            LevelProvider.Init(Id, _dbMob.Level);
+            HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
+            BuffsManager.Init(Id);
+            CountryProvider.Init(Id, _dbMob.Fraction);
+            SpeedManager.Init(Id);
+            AttackManager.Init(Id);
+            SkillsManager.Init(Id, new Skill[0]);
+
+            var x = new Random().NextFloat(_moveArea.X1, _moveArea.X2);
+            var y = new Random().NextFloat(_moveArea.Y1, _moveArea.Y2);
+            var z = new Random().NextFloat(_moveArea.Z1, _moveArea.Z2);
+            MovementManager.Init(Id, x, y, z, 0, MoveMotion.Walk);
+        }
+
+        private void AIManager_OnStateChanged(AIState newState)
+        {
+            if (newState == AIState.Idle)
+                HealthManager.FullRecover();
         }
 
         /// <summary>
@@ -132,14 +166,16 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, MoveArea, Map, _logger, _databasePreloader, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
+            return new Mob(MobId, ShouldRebirth, _moveArea, _logger, _databasePreloader, AIManager, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
         }
 
         public void Dispose()
         {
             HealthManager.OnDead -= MobRebirth_OnDead;
             HealthManager.OnGotDamage -= OnDecreaseHP;
-            ClearTimers();
+            AIManager.OnStateChanged -= AIManager_OnStateChanged;
+
+            Scope.Dispose();
         }
     }
 }

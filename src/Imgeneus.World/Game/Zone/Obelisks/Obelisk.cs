@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
@@ -57,8 +58,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
             ObeliskAI = _mobFactory.CreateMob(mobId,
                                     false,
-                                    new MoveArea(PosX, PosX, PosY, PosY, PosZ, PosZ),
-                                    Map);
+                                    new MoveArea(PosX, PosX, PosY, PosY, PosZ, PosZ));
 
             Map.AddMob(ObeliskAI);
             ObeliskAI.HealthManager.OnDead += ObeliskAI_OnDead;
@@ -120,16 +120,14 @@ namespace Imgeneus.World.Game.Zone.Obelisks
                 // Init new ai.
                 ObeliskAI = _mobFactory.CreateMob(_config.LightObeliskMobId,
                                     false,
-                                    new MoveArea(PosX, PosX, PosY, PosY, PosZ, PosZ),
-                                    Map);
+                                    new MoveArea(PosX, PosX, PosY, PosY, PosZ, PosZ));
             }
             else if (ObeliskCountry == ObeliskCountry.Dark)
             {
                 // Init new ai.
                 ObeliskAI = _mobFactory.CreateMob(_config.DarkObeliskMobId,
                                     false,
-                                    new MoveArea(PosX, PosX, PosY, PosY, PosZ, PosZ),
-                                    Map);
+                                    new MoveArea(PosX, PosX, PosY, PosY, PosZ, PosZ));
             }
 
             ObeliskAI.HealthManager.OnDead += ObeliskAI_OnDead;
@@ -221,8 +219,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
                 var guardAI = _mobFactory.CreateMob(guardId,
                                       false,
-                                      new MoveArea(mob.PosX, mob.PosX, mob.PosY, mob.PosY, mob.PosZ, mob.PosZ),
-                                      Map);
+                                      new MoveArea(mob.PosX, mob.PosX, mob.PosY, mob.PosY, mob.PosZ, mob.PosZ));
                 Map.AddMob(guardAI);
                 Guards.Add(guardAI);
                 guardAI.HealthManager.OnDead += Guard_OnDead;

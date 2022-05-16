@@ -67,9 +67,9 @@ namespace Imgeneus.World.Game
 
         public Map Map { get => MapProvider.Map; set => MapProvider.Map = value; }
 
-        public int CellId { get; set; } = -1;
+        public int CellId { get => MapProvider.CellId; set => MapProvider.CellId = value; }
 
-        public int OldCellId { get; set; } = -1;
+        public int OldCellId { get => MapProvider.OldCellId; set => MapProvider.OldCellId = value; }
 
         #endregion
 

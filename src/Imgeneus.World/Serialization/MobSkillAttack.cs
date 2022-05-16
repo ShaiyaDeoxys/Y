@@ -29,10 +29,10 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(6)]
         public ushort[] Damage;
 
-        public MobSkillAttack(Mob mob, int targetId, Skill skill, AttackResult attackResult)
+        public MobSkillAttack(int mobId, int targetId, Skill skill, AttackResult attackResult)
         {
             IsSuccess = attackResult.Success;
-            MobId = mob.Id;
+            MobId = mobId;
             TargetId = targetId;
             SkillId = skill.SkillId;
             SkillLevel = skill.SkillLevel;

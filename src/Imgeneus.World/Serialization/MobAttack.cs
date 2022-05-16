@@ -19,10 +19,10 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(3)]
         public ushort[] Damage;
 
-        public MobAttack(Mob mob, int targetId, AttackResult attackResult)
+        public MobAttack(int mobId, int targetId, AttackResult attackResult)
         {
             IsSuccess = attackResult.Success;
-            MobId = mob.Id;
+            MobId = mobId;
             TargetId = targetId;
             Damage = new ushort[] { attackResult.Damage.HP, attackResult.Damage.SP, attackResult.Damage.MP };
         }

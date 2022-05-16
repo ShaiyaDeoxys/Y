@@ -1,4 +1,4 @@
-﻿namespace Imgeneus.World.Game.Monster
+﻿namespace Imgeneus.World.Game.AI
 {
     /// <summary>
     /// Mob move area.

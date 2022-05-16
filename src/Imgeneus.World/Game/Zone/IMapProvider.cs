@@ -11,5 +11,15 @@
         /// Next map id.
         /// </summary>
         public ushort NextMapId { get; set; }
+
+        /// <summary>
+        /// Current cell id.
+        /// </summary>
+        int CellId { get; set; }
+
+        /// <summary>
+        /// Previous cell id.
+        /// </summary>
+        int OldCellId { get; set; }
     }
 }

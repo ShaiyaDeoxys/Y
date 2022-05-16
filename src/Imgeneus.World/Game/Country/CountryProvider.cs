@@ -65,5 +65,29 @@ namespace Imgeneus.World.Game.Country
                     break;
             }
         }
+
+        public CountryType EnemyPlayersFraction
+        {
+            get
+            {
+                CountryType playerFraction;
+                switch (Country)
+                {
+                    case CountryType.Dark:
+                        playerFraction = CountryType.Light;
+                        break;
+
+                    case CountryType.Light:
+                        playerFraction = CountryType.Dark;
+                        break;
+
+                    default:
+                        playerFraction = CountryType.None;
+                        break;
+                }
+
+                return playerFraction;
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Imgeneus.World.Game.Monster
+﻿namespace Imgeneus.World.Game.AI
 {
-    public enum MobState
+    public enum AIState
     {
         /// <summary>
         /// Mob will walk around.

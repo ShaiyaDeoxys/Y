@@ -7,6 +7,7 @@ using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
@@ -144,6 +145,7 @@ namespace Imgeneus.World
             services.AddScoped<IQuestsManager, QuestsManager>();
             services.AddScoped<IUntouchableManager, UntouchableManager>();
             services.AddScoped<IWarehouseManager, WarehouseManager>();
+            services.AddScoped<IAIManager, AIManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

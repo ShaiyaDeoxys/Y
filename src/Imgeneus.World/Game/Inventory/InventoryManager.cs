@@ -1347,7 +1347,7 @@ namespace Imgeneus.World.Game.Inventory
                         return false;
                     }
 
-                    if (!_gameDefinitions.NPCs.TryGetValue((2, (short)item.NpcId), out var npc))
+                    if (!_gameDefinitions.NPCs.TryGetValue((NpcType.GateKeeper, (short)item.NpcId), out var npc))
                         return false;
 
 

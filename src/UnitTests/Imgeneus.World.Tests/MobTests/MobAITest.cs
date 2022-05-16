@@ -1,5 +1,5 @@
-﻿using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Monster;
+﻿using Imgeneus.World.Game.AI;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Skills;
 using Xunit;
 
@@ -40,7 +40,7 @@ namespace Imgeneus.World.Tests.MobTests
             mob.Attack(character, 0, Database.Constants.Element.None, 100, 100);
 
             Assert.True(character.HealthManager.IsDead);
-            Assert.Equal(MobState.BackToBirthPosition, mob.State);
+            Assert.Equal(AIState.BackToBirthPosition, mob.State);
         }
 
         [Fact]

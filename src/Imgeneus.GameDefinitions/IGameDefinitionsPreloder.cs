@@ -23,7 +23,7 @@ namespace Imgeneus.GameDefinitions
         /// <summary>
         /// Preloaded NPCs.
         /// </summary>
-        Dictionary<(byte Type, short TypeId), BaseNpc> NPCs { get; }
+        Dictionary<(NpcType Type, short TypeId), BaseNpc> NPCs { get; }
 
         /// <summary>
         /// Preloaded quests.

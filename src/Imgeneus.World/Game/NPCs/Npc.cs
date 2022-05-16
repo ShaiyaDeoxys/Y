@@ -1,4 +1,6 @@
-﻿using Imgeneus.World.Game.Zone;
+﻿using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.NpcQuest;
 using System;
@@ -12,15 +14,16 @@ namespace Imgeneus.World.Game.NPCs
         private readonly ILogger _logger;
         private readonly BaseNpc _npc;
 
-        public Npc(List<(float X, float Y, float Z, ushort Angle)> moveCoordinates, Map map, ILogger<Npc> logger, BaseNpc npc) : this(logger, npc)
+        public IMovementManager MovementManager { get; private set; }
+        public ICountryProvider CountryProvider { get; private set; }
+
+        public Npc(Map map, ILogger<Npc> logger, BaseNpc npc, IMovementManager movementManager, ICountryProvider countryProvider) : this(logger, npc)
         {
             _logger = logger;
             _npc = npc;
-            PosX = moveCoordinates[0].X;
-            PosY = moveCoordinates[0].Y;
-            PosZ = moveCoordinates[0].Z;
-            Angle = moveCoordinates[0].Angle;
             Map = map;
+            MovementManager = movementManager;
+            CountryProvider = countryProvider;
         }
 
         public Npc(ILogger<Npc> logger, BaseNpc npc)
@@ -58,17 +61,17 @@ namespace Imgeneus.World.Game.NPCs
 
         public int Id { get; set; }
 
-        /// <inheritdoc />
-        public float PosX { get; set; }
+        #region Position
 
-        /// <inheritdoc />
-        public float PosY { get; set; }
+        public float PosX { get => MovementManager.PosX; }
 
-        /// <inheritdoc />
-        public float PosZ { get; set; }
+        public float PosY { get => MovementManager.PosY; }
 
-        /// <inheritdoc />
-        public ushort Angle { get; set; }
+        public float PosZ { get => MovementManager.PosZ; }
+
+        public ushort Angle { get => MovementManager.Angle; }
+
+        #endregion
 
         public Map Map { get; private set; }
 

@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Preload;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Session;
@@ -67,7 +68,7 @@ namespace Imgeneus.World.Handlers
                 // TODO: calculate move area.
                 var moveArea = new MoveArea(_movementManager.PosX > 10 ? _movementManager.PosX - 10 : 1, _movementManager.PosX + 10, _movementManager.PosY > 10 ? _movementManager.PosY - 10 : _movementManager.PosY, _movementManager.PosY + 10, _movementManager.PosZ > 10 ? _movementManager.PosZ - 10 : 1, _movementManager.PosZ + 10);
 
-                var mob = _mobFactory.CreateMob(packet.MobId, false, moveArea, _mapProvider.Map);
+                var mob = _mobFactory.CreateMob(packet.MobId, false, moveArea);
 
                 _mapProvider.Map.AddMob(mob);
             }

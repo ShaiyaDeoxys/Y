@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
@@ -441,6 +442,8 @@ namespace Imgeneus.World.Game.Zone
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(Map));
 
+            mob.Init(GenerateId());
+            mob.Map = this;
             Cells[GetCellIndex(mob)].AddMob(mob);
 
 #if DEBUG
@@ -484,8 +487,7 @@ namespace Imgeneus.World.Game.Zone
                         {
                             var mob = _mobFactory.CreateMob((ushort)mobConf.MobId,
                                                             true,
-                                                            new MoveArea(mobArea.Area.LowerLimit.X, mobArea.Area.UpperLimit.X, mobArea.Area.LowerLimit.Y, mobArea.Area.UpperLimit.Y, mobArea.Area.LowerLimit.Z, mobArea.Area.UpperLimit.Z),
-                                                            this);
+                                                            new MoveArea(mobArea.Area.LowerLimit.X, mobArea.Area.UpperLimit.X, mobArea.Area.LowerLimit.Y, mobArea.Area.UpperLimit.Y, mobArea.Area.LowerLimit.Z, mobArea.Area.UpperLimit.Z));
                             AddMob(mob);
                             finalMobsCount++;
                         }
@@ -582,7 +584,7 @@ namespace Imgeneus.World.Game.Zone
             foreach (var conf in _config.Npcs)
             {
                 var moveCoordinates = conf.Locations.Select(c => (c.Position.X, c.Position.Y, c.Position.Z, Convert.ToUInt16(c.Orientation))).ToList();
-                var npc = _npcFactory.CreateNpc(((byte)conf.Type, (short)conf.NpcId), moveCoordinates, this);
+                var npc = _npcFactory.CreateNpc(((NpcType)conf.Type, (short)conf.NpcId), moveCoordinates, this);
                 if (npc is null)
                     continue;
 

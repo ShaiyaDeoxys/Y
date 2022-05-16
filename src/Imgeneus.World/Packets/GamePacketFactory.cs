@@ -1516,17 +1516,17 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMobAttack(IWorldClient client, Mob mob, int targetId, AttackResult attackResult)
+        public void SendMobAttack(IWorldClient client, int mobId, int targetId, AttackResult attackResult)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_ATTACK);
-            packet.Write(new MobAttack(mob, targetId, attackResult).Serialize());
+            packet.Write(new MobAttack(mobId, targetId, attackResult).Serialize());
             client.Send(packet);
         }
 
-        public void SendMobUsedSkill(IWorldClient client, Mob mob, int targetId, Skill skill, AttackResult attackResult)
+        public void SendMobUsedSkill(IWorldClient client, int mobId, int targetId, Skill skill, AttackResult attackResult)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_SKILL_USE);
-            packet.Write(new MobSkillAttack(mob, targetId, skill, attackResult).Serialize());
+            packet.Write(new MobSkillAttack(mobId, targetId, skill, attackResult).Serialize());
             client.Send(packet);
         }
 

@@ -303,6 +303,6 @@
 
         Karamel_Polly_Candy = 254,
 
-        MadPumpkinQueen = 255
+        Guard = 255
     }
 }

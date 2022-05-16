@@ -11,7 +11,6 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 
 namespace Imgeneus.World.Game.Attack
 {
@@ -59,6 +58,8 @@ namespace Imgeneus.World.Game.Attack
 
         #region Target
 
+        public event Action<IKillable> OnTargetChanged;
+
         private IKillable _target;
         public IKillable Target
         {
@@ -78,6 +79,8 @@ namespace Imgeneus.World.Game.Attack
                     _target.BuffsManager.OnBuffAdded += Target_OnBuffAdded;
                     _target.BuffsManager.OnBuffRemoved += Target_OnBuffRemoved;
                 }
+
+                OnTargetChanged?.Invoke(_target);
             }
         }
 

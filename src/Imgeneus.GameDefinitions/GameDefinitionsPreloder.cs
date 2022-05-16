@@ -12,7 +12,7 @@ namespace Imgeneus.GameDefinitions
 
         public Dictionary<(long Type, long TypeId), DBItemDataRecord> Items { get; init; } = new();
         public Dictionary<long, List<DBItemDataRecord>> ItemsByGrade { get; init; } = new();
-        public Dictionary<(byte Type, short TypeId), BaseNpc> NPCs { get; init; } = new();
+        public Dictionary<(NpcType Type, short TypeId), BaseNpc> NPCs { get; init; } = new();
         public Dictionary<short, Quest> Quests { get; init; } = new();
 
         public GameDefinitionsPreloder(ILogger<GameDefinitionsPreloder> logger)
@@ -68,43 +68,43 @@ namespace Imgeneus.GameDefinitions
             var npcQuest = Reader.ReadFromFile<NpcQuest>("config/SData/NpcQuest.SData", Format.EP8);
 
             foreach (var npc in npcQuest.Merchants)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.Gatekeepers)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.Blacksmiths)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.PvpManagers)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.GamblingHouses)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.Warehouses)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.NormalNpcs)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.Guards)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.Animals)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.Apprentices)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.GuildMasters)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.DeadNpcs)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var npc in npcQuest.CombatCommanders)
-                NPCs.Add(((byte)npc.Type, npc.TypeId), npc);
+                NPCs.Add((npc.Type, npc.TypeId), npc);
 
             foreach (var quest in npcQuest.Quests)
                 Quests.Add(quest.Id, quest);

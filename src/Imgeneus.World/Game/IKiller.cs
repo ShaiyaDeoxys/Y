@@ -1,5 +1,6 @@
 ﻿using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 
@@ -18,5 +19,7 @@ namespace Imgeneus.World.Game
         public IAttackManager AttackManager { get; }
 
         public ISkillsManager SkillsManager { get; }
+
+        public IMovementManager MovementManager { get; }
     }
 }

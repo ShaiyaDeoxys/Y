@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
@@ -16,7 +17,6 @@ using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Monster
 {
@@ -24,26 +24,22 @@ namespace Imgeneus.World.Game.Monster
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private readonly Dictionary<int, IServiceScope> _mobScopes = new Dictionary<int, IServiceScope>();
-
-        private readonly Dictionary<int, Mob> _mobs = new Dictionary<int, Mob>();
-
         public MobFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         /// <inheritdoc/>
-        public Mob CreateMob(ushort mobId, bool shouldRebirth, MoveArea moveArea, Map map)
+        public Mob CreateMob(ushort mobId, bool shouldRebirth, MoveArea moveArea)
         {
             var scope = _serviceProvider.CreateScope();
 
             var mob = new Mob(mobId,
                               shouldRebirth,
                               moveArea,
-                              map,
                               scope.ServiceProvider.GetRequiredService<ILogger<Mob>>(),
                               scope.ServiceProvider.GetRequiredService<IDatabasePreloader>(),
+                              scope.ServiceProvider.GetRequiredService<IAIManager>(),
                               scope.ServiceProvider.GetRequiredService<IItemEnchantConfiguration>(),
                               scope.ServiceProvider.GetRequiredService<IItemCreateConfiguration>(),
                               scope.ServiceProvider.GetRequiredService<ICountryProvider>(),
@@ -59,26 +55,9 @@ namespace Imgeneus.World.Game.Monster
                               scope.ServiceProvider.GetRequiredService<IUntouchableManager>(),
                               scope.ServiceProvider.GetRequiredService<IMapProvider>());
 
-            if (!mob.ShouldRebirth)
-            {
-                mob.HealthManager.OnDead += Mob_OnDead;
-                _mobScopes.Add(mob.Id, scope);
-                _mobs.Add(mob.Id, mob);
-            }
+            mob.Scope = scope;
 
             return mob;
-        }
-
-        private void Mob_OnDead(int senderId, IKiller killer)
-        {
-            _mobs.TryGetValue(senderId, out var mob);
-
-            mob.HealthManager.OnDead -= Mob_OnDead;
-            _mobs.Remove(senderId);
-
-            _mobScopes.Remove(senderId, out var scope);
-            scope.Dispose();
-            scope = null;
         }
     }
 }

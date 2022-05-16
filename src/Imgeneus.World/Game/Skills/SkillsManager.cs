@@ -94,7 +94,7 @@ namespace Imgeneus.World.Game.Skills
             character.SkillPoint = SkillPoints;
             character.Skills.Clear();
 
-            foreach(var skill in Skills)
+            foreach (var skill in Skills)
             {
                 // Save char and learned skill.
                 var skillToAdd = new DbCharacterSkill()
@@ -374,42 +374,7 @@ namespace Imgeneus.World.Game.Skills
             int n = 0;
             do
             {
-                var targets = new List<IKillable>();
-                switch (skill.TargetType)
-                {
-                    case TargetType.None:
-                    case TargetType.Caster:
-                        targets.Add(skillOwner as IKillable);
-                        break;
-
-                    case TargetType.SelectedEnemy:
-                        if (target != null)
-                            targets.Add(target);
-                        else
-                            targets.Add(skillOwner as IKillable);
-                        break;
-
-                    case TargetType.PartyMembers:
-                        var t = skillOwner as Character;
-                        if (t.PartyManager.Party != null)
-                        {
-                            var partyMembers = t.PartyManager.Party.GetShortMembersList(t);
-                            var nearMembers = partyMembers.Where(m => m.Map == t.Map && MathExtensions.Distance(t.PosX, m.PosX, t.PosZ, m.PosZ) < skill.ApplyRange);
-                            targets.AddRange(nearMembers);
-                        }
-                        else
-                            targets.Add(skillOwner as IKillable);
-                        break;
-
-                    case TargetType.EnemiesNearTarget:
-                        var enemies = _mapProvider.Map.Cells[(skillOwner as Character).CellId].GetEnemies(skillOwner, target, skill.ApplyRange);
-                        foreach (var e in enemies)
-                            targets.Add(e);
-                        break;
-
-                    default:
-                        throw new NotImplementedException("Not implemented skill target.");
-                }
+                var targets = GetTargets(skill, skillOwner, target);
 
                 foreach (var t in targets)
                 {
@@ -453,6 +418,68 @@ namespace Imgeneus.World.Game.Skills
             while (n < skill.MultiAttack);
         }
 
+        private IEnumerable<IKillable> GetTargets(Skill skill, IKiller skillOwner, IKillable target)
+        {
+            var targets = new List<IKillable>();
+            switch (skill.TargetType)
+            {
+                case TargetType.None:
+                    if (skillOwner is Character)
+                        targets.Add(skillOwner as IKillable);
+                    else
+                        targets.Add(target);
+                    break;
+
+                case TargetType.Caster:
+                    targets.Add(skillOwner as IKillable);
+                    break;
+
+                case TargetType.SelectedEnemy:
+                    if (target != null)
+                        targets.Add(target);
+                    else
+                        targets.Add(skillOwner as IKillable);
+                    break;
+
+                case TargetType.PartyMembers:
+                    var t = skillOwner as Character;
+                    if (t.PartyManager.Party != null)
+                    {
+                        var partyMembers = t.PartyManager.Party.GetShortMembersList(t);
+                        var nearMembers = partyMembers.Where(m => m.Map == t.Map && MathExtensions.Distance(t.PosX, m.PosX, t.PosZ, m.PosZ) < skill.ApplyRange);
+                        targets.AddRange(nearMembers);
+                    }
+                    else
+                        targets.Add(skillOwner as IKillable);
+                    break;
+
+                case TargetType.EnemiesNearCaster:
+                    if (skillOwner is Character)
+                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, skillOwner as IKillable, skill.ApplyRange));
+                    else
+                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange, _countryProvider.EnemyPlayersFraction));
+                    break;
+
+                case TargetType.EnemiesNearTarget:
+                    if (skillOwner is Character)
+                    {
+                        var enemies = _mapProvider.Map.Cells[(skillOwner as Character).CellId].GetEnemies(skillOwner, target, skill.ApplyRange);
+                        foreach (var e in enemies)
+                            targets.Add(e);
+                    }
+                    else
+                    {
+                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange, _countryProvider.EnemyPlayersFraction));
+                    }
+                    break;
+
+                default:
+                    throw new NotImplementedException("Not implemented skill target.");
+            }
+
+            return targets;
+        }
+
         public void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, AttackResult attackResult, int n = 0)
         {
             switch (skill.Type)
@@ -468,6 +495,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.ElementalProtection:
                 case TypeDetail.Untouchable:
                 case TypeDetail.Stealth:
+                case TypeDetail.Sleep:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

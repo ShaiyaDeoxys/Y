@@ -23,6 +23,11 @@ namespace Imgeneus.World.Game.Attack
         void StartAttack();
 
         /// <summary>
+        /// Event, that is fired when <see cref="Target"/> changes.
+        /// </summary>
+        event Action<IKillable> OnTargetChanged;
+
+        /// <summary>
         /// Current enemy in target.
         /// </summary>
         IKillable Target { get; set; }

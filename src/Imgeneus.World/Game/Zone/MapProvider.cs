@@ -23,5 +23,7 @@ namespace Imgeneus.World.Game.Zone
 
         public Map Map { get; set; }
         public ushort NextMapId { get; set; }
+        public int CellId { get; set; } = -1;
+        public int OldCellId { get; set; } = -1;
     }
 }
