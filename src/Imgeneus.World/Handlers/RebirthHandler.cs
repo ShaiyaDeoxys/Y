@@ -1,13 +1,19 @@
-﻿using Imgeneus.Network.Packets;
+﻿using Imgeneus.Database.Constants;
+using Imgeneus.Database.Preload;
+using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
+using System.Linq;
 
 namespace Imgeneus.World.Handlers
 {
@@ -19,14 +25,20 @@ namespace Imgeneus.World.Handlers
         private readonly IHealthManager _healthManager;
         private readonly ITeleportationManager _teleportationManager;
         private readonly IMovementManager _movementManager;
+        private readonly IBuffsManager _buffsManager;
+        private readonly IInventoryManager _inventoryManager;
+        private readonly IDatabasePreloader _databasePreloader;
 
-        public RebirthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IHealthManager healthManager, ITeleportationManager teleportationManager, IMovementManager movementManager) : base(packetFactory, gameSession)
+        public RebirthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IHealthManager healthManager, ITeleportationManager teleportationManager, IMovementManager movementManager, IBuffsManager buffsManager, IInventoryManager inventoryManager, IDatabasePreloader databasePreloader) : base(packetFactory, gameSession)
         {
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
             _healthManager = healthManager;
             _teleportationManager = teleportationManager;
             _movementManager = movementManager;
+            _buffsManager = buffsManager;
+            _inventoryManager = inventoryManager;
+            _databasePreloader = databasePreloader;
         }
 
         [HandlerAction(PacketType.REBIRTH_TO_NEAREST_TOWN)]
@@ -45,14 +57,26 @@ namespace Imgeneus.World.Handlers
             }
 
             // Rebirth with rune. Will rebirth at the same place.
-            if (rebirthType == RebirthType.KillSoulByItem) 
+            if (rebirthType == RebirthType.KillSoulByItem)
             {
-                rebirthCoordinate.MapId = _mapProvider.Map.Id;
-                rebirthCoordinate.X = _movementManager.PosX;
-                rebirthCoordinate.Y = _movementManager.PosY;
-                rebirthCoordinate.Z = _movementManager.PosZ;
+                var rune = _inventoryManager.InventoryItems.Values.FirstOrDefault(x => x.Special == SpecialEffect.ResurrectionRune);
+                if (rune != null)
+                {
+                    _inventoryManager.TryUseItem(rune.Bag, rune.Slot, skillApplyingItemEffect: true);
 
-                // TODO: use rune item.
+                    rebirthCoordinate.MapId = _mapProvider.Map.Id;
+                    rebirthCoordinate.X = _movementManager.PosX;
+                    rebirthCoordinate.Y = _movementManager.PosY;
+                    rebirthCoordinate.Z = _movementManager.PosZ;
+
+                    // Add untouchable buff for 6 secs.
+                    _databasePreloader.Skills.TryGetValue((199, 2), out var dbSkill);
+                    _buffsManager.AddBuff(new Skill(dbSkill, 0, 0), null);
+                }
+                else
+                {
+                    rebirthCoordinate = _mapProvider.Map.GetRebirthMap(_gameWorld.Players[_gameSession.CharId]);
+                }
             }
 
             if (_mapProvider.Map.Id != rebirthCoordinate.MapId)
