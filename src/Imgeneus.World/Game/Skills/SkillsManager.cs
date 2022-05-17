@@ -458,7 +458,7 @@ namespace Imgeneus.World.Game.Skills
                     break;
 
                 case TargetType.EnemiesNearTarget:
-                    targets.AddRange(_mapProvider.Map.Cells[(skillOwner as Character).CellId].GetEnemies(skillOwner, target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange));
+                    targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange));
                     break;
 
                 default:
