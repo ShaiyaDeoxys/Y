@@ -234,11 +234,16 @@ namespace Imgeneus.World.Game.Attack
                                              _statsManager.MinMagicAttack,
                                              _statsManager.MaxMagicAttack);
 
+            OnAttack?.Invoke(_ownerId, Target, result); // Event should go first, otherwise AI manager will clear target and it will be null.
             Target.HealthManager.DecreaseHP(result.Damage.HP, sender);
-            Target.HealthManager.CurrentSP -= result.Damage.SP;
-            Target.HealthManager.CurrentMP -= result.Damage.MP;
 
-            OnAttack?.Invoke(_ownerId, Target, result);
+            // In AI manager, if target is killed, it's cleared via setting to null.
+            // That's why after decreasing HP we must check if target is still presented, otherwise null exception is thrown.
+            if (Target != null)
+            {
+                Target.HealthManager.CurrentSP -= result.Damage.SP;
+                Target.HealthManager.CurrentMP -= result.Damage.MP;
+            }
         }
 
         public bool AttackSuccessRate(IKillable target, TypeAttack typeAttack, Skill skill = null)

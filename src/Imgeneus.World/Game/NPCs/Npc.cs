@@ -1,7 +1,9 @@
-﻿using Imgeneus.World.Game.Country;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Common;
 using Parsec.Shaiya.NpcQuest;
 using System;
 using System.Collections.Generic;
@@ -13,20 +15,24 @@ namespace Imgeneus.World.Game.NPCs
     {
         private readonly ILogger _logger;
         private readonly BaseNpc _npc;
+        protected readonly List<(float X, float Y, float Z, ushort Angle)> _moveCoordinates;
 
         public IMovementManager MovementManager { get; private set; }
         public ICountryProvider CountryProvider { get; private set; }
+        public IMapProvider MapProvider { get; private set; }
 
-        public Npc(Map map, ILogger<Npc> logger, BaseNpc npc, IMovementManager movementManager, ICountryProvider countryProvider) : this(logger, npc)
+        public Npc(ILogger<Npc> logger, BaseNpc npc, List<(float X, float Y, float Z, ushort Angle)> moveCoordinates, IMovementManager movementManager, ICountryProvider countryProvider, IMapProvider mapProvider) : this(npc)
         {
             _logger = logger;
             _npc = npc;
-            Map = map;
+            _moveCoordinates = moveCoordinates;
+
             MovementManager = movementManager;
             CountryProvider = countryProvider;
+            MapProvider = mapProvider;
         }
 
-        public Npc(ILogger<Npc> logger, BaseNpc npc)
+        public Npc(BaseNpc npc)
         {
             // Set products.
             if (npc is Merchant merchant)
@@ -59,6 +65,30 @@ namespace Imgeneus.World.Game.NPCs
             }
         }
 
+        public virtual void Init(int ownerId)
+        {
+            Id = ownerId;
+
+            MovementManager.Init(Id, _moveCoordinates[0].X, _moveCoordinates[0].Y, _moveCoordinates[0].Z, _moveCoordinates[0].Angle, MoveMotion.Run);
+
+            Fraction country;
+            switch (_npc.Faction)
+            {
+                case NpcFaction.Light:
+                    country = Fraction.Light;
+                    break;
+
+                case NpcFaction.Fury:
+                    country = Fraction.Dark;
+                    break;
+
+                default:
+                    country = Fraction.NotSelected;
+                    break;
+            }
+            CountryProvider.Init(Id, country);
+        }
+
         public int Id { get; set; }
 
         #region Position
@@ -73,11 +103,11 @@ namespace Imgeneus.World.Game.NPCs
 
         #endregion
 
-        public Map Map { get; private set; }
+        public Map Map { get => MapProvider.Map; set => MapProvider.Map = value; }
 
-        public int CellId { get; set; }
+        public int CellId { get => MapProvider.CellId; set => MapProvider.CellId = value; }
 
-        public int OldCellId { get; set; }
+        public int OldCellId { get => MapProvider.OldCellId; set => MapProvider.OldCellId = value; }
 
         /// <summary>
         /// Type of NPC.

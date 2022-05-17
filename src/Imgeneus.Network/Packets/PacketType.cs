@@ -151,6 +151,8 @@
         MAP_NPC_ENTER = 0x0E01, // 3585
         MAP_NPC_LEAVE = 0x0E02, // 3586
         MAP_NPC_MOVE = 0x0E03, // 3587
+        MAP_NPC_ATTACK_PLAYER = 0x0E05, // 3589
+        MAP_NPC_ATTACK_MOB = 0x0E06, // 3590
 
         // Obelisk
         OBELISK_LIST = 0x2101, // 8449

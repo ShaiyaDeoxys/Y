@@ -454,23 +454,11 @@ namespace Imgeneus.World.Game.Skills
                     break;
 
                 case TargetType.EnemiesNearCaster:
-                    if (skillOwner is Character)
-                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, skillOwner as IKillable, skill.ApplyRange));
-                    else
-                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange, _countryProvider.EnemyPlayersFraction));
+                    targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange));
                     break;
 
                 case TargetType.EnemiesNearTarget:
-                    if (skillOwner is Character)
-                    {
-                        var enemies = _mapProvider.Map.Cells[(skillOwner as Character).CellId].GetEnemies(skillOwner, target, skill.ApplyRange);
-                        foreach (var e in enemies)
-                            targets.Add(e);
-                    }
-                    else
-                    {
-                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange, _countryProvider.EnemyPlayersFraction));
-                    }
+                    targets.AddRange(_mapProvider.Map.Cells[(skillOwner as Character).CellId].GetEnemies(skillOwner, target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange));
                     break;
 
                 default:

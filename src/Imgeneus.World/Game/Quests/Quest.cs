@@ -117,47 +117,47 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_1 { get => Config.RewardItems.Count > 0 ? Config.RewardItems[0].Type : (byte)0; }
+        public byte FarmItemType_1 { get => Config.FarmItems.Count > 0 ? Config.FarmItems[0].Type : (byte)0; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_1 { get => Config.RewardItems.Count > 0 ? Config.RewardItems[0].TypeId : (byte)0; }
+        public byte FarmItemTypeId_1 { get => Config.FarmItems.Count > 0 ? Config.FarmItems[0].TypeId : (byte)0; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_1 { get => Config.RewardItems.Count > 0 ? Config.RewardItems[0].Count : (byte)0; }
+        public byte FarmItemCount_1 { get => Config.FarmItems.Count > 0 ? Config.FarmItems[0].Count : (byte)0; }
 
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_2 { get => Config.RewardItems.Count > 1 ? Config.RewardItems[1].Type : (byte)0; }
+        public byte FarmItemType_2 { get => Config.FarmItems.Count > 1 ? Config.FarmItems[1].Type : (byte)0; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_2 { get => Config.RewardItems.Count > 1 ? Config.RewardItems[1].TypeId : (byte)0; }
+        public byte FarmItemTypeId_2 { get => Config.FarmItems.Count > 1 ? Config.FarmItems[1].TypeId : (byte)0; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_2 { get => Config.RewardItems.Count > 1 ? Config.RewardItems[1].Count : (byte)0; }
+        public byte FarmItemCount_2 { get => Config.FarmItems.Count > 1 ? Config.FarmItems[1].Count : (byte)0; }
 
         /// <summary>
         /// Item type, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemType_3 { get => Config.RewardItems.Count > 2 ? Config.RewardItems[2].Type : (byte)0; }
+        public byte FarmItemType_3 { get => Config.FarmItems.Count > 2 ? Config.FarmItems[2].Type : (byte)0; }
 
         /// <summary>
         /// Item type id, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemTypeId_3 { get => Config.RewardItems.Count > 2 ? Config.RewardItems[2].TypeId : (byte)0; }
+        public byte FarmItemTypeId_3 { get => Config.FarmItems.Count > 2 ? Config.FarmItems[2].TypeId : (byte)0; }
 
         /// <summary>
         /// Number of items, that player must have in order to complete quest.
         /// </summary>
-        public byte FarmItemCount_3 { get => Config.RewardItems.Count > 2 ? Config.RewardItems[2].Count : (byte)0; }
+        public byte FarmItemCount_3 { get => Config.FarmItems.Count > 2 ? Config.FarmItems[2].Count : (byte)0; }
 
         /// <summary>
         /// Mob 1, that should be killed.

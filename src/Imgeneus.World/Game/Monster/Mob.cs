@@ -95,10 +95,25 @@ namespace Imgeneus.World.Game.Monster
         {
             Id = ownerId;
 
+            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, def: _dbMob.Defense, res: _dbMob.Magic);
+            LevelProvider.Init(Id, _dbMob.Level);
+            HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
+            BuffsManager.Init(Id);
+            CountryProvider.Init(Id, _dbMob.Fraction);
+            SpeedManager.Init(Id);
+            AttackManager.Init(Id);
+            SkillsManager.Init(Id, new Skill[0]);
+
+            var x = new Random().NextFloat(_moveArea.X1, _moveArea.X2);
+            var y = new Random().NextFloat(_moveArea.Y1, _moveArea.Y2);
+            var z = new Random().NextFloat(_moveArea.Z1, _moveArea.Z2);
+            MovementManager.Init(Id, x, y, z, 0, MoveMotion.Walk);
+
             AIManager.Init(Id,
                            _dbMob.AI,
                            _moveArea,
                            idleTime: _dbMob.NormalTime <= 0 ? 4000 : _dbMob.NormalTime,
+                           idleSpeed: _dbMob.NormalStep,
                            chaseRange: _dbMob.ChaseRange,
                            chaseSpeed: _dbMob.ChaseStep,
                            chaseTime: _dbMob.ChaseTime,
@@ -119,20 +134,6 @@ namespace Imgeneus.World.Game.Monster
                            attackTime1: _dbMob.AttackTime1,
                            attackTime2: _dbMob.AttackTime2,
                            attackTime3: _dbMob.AttackTime3);
-
-            StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, def: _dbMob.Defense, res: _dbMob.Magic);
-            LevelProvider.Init(Id, _dbMob.Level);
-            HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
-            BuffsManager.Init(Id);
-            CountryProvider.Init(Id, _dbMob.Fraction);
-            SpeedManager.Init(Id);
-            AttackManager.Init(Id);
-            SkillsManager.Init(Id, new Skill[0]);
-
-            var x = new Random().NextFloat(_moveArea.X1, _moveArea.X2);
-            var y = new Random().NextFloat(_moveArea.Y1, _moveArea.Y2);
-            var z = new Random().NextFloat(_moveArea.Z1, _moveArea.Z2);
-            MovementManager.Init(Id, x, y, z, 0, MoveMotion.Walk);
         }
 
         private void AIManager_OnStateChanged(AIState newState)

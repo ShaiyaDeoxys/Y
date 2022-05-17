@@ -38,46 +38,26 @@ namespace Imgeneus.World.Game.NPCs
                 Npc npc;
                 if (id.Type == NpcType.Guard)
                 {
-                    npc = new GuardNpc(map,
-                                       _logger,
+                    npc = new GuardNpc(_logger,
                                        dbNpc,
+                                       moveCoordinates,
                                        scope.ServiceProvider.GetRequiredService<IMovementManager>(),
                                        scope.ServiceProvider.GetRequiredService<ICountryProvider>(),
+                                       scope.ServiceProvider.GetRequiredService<IMapProvider>(),
                                        scope.ServiceProvider.GetRequiredService<IAIManager>(),
                                        scope.ServiceProvider.GetRequiredService<ISpeedManager>(),
                                        scope.ServiceProvider.GetRequiredService<IAttackManager>(),
                                        scope.ServiceProvider.GetRequiredService<IStatsManager>());
-
-                    ((GuardNpc)npc).AIManager.Init(npc.Id, MobAI.Combative, new MoveArea(moveCoordinates[0].X, moveCoordinates[0].Y, moveCoordinates[0].Z, moveCoordinates[0].X, moveCoordinates[0].Y, moveCoordinates[0].Z));
-                    ((GuardNpc)npc).StatsManager.Init(npc.Id, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
                 }
                 else
                 {
-                    npc = new Npc(map,
-                                  _logger,
+                    npc = new Npc(_logger,
                                   dbNpc,
+                                  moveCoordinates,
                                   scope.ServiceProvider.GetRequiredService<IMovementManager>(),
-                                  scope.ServiceProvider.GetRequiredService<ICountryProvider>());
+                                  scope.ServiceProvider.GetRequiredService<ICountryProvider>(),
+                                  scope.ServiceProvider.GetRequiredService<IMapProvider>());
                 }
-
-                npc.MovementManager.Init(npc.Id, moveCoordinates[0].X, moveCoordinates[0].Y, moveCoordinates[0].Z, moveCoordinates[0].Angle, MoveMotion.Run);
-
-                Fraction country;
-                switch (dbNpc.Faction)
-                {
-                    case FactionInt.Light:
-                        country = Fraction.Light;
-                        break;
-
-                    case FactionInt.Fury:
-                        country = Fraction.Dark;
-                        break;
-
-                    default:
-                        country = Fraction.NotSelected;
-                        break;
-                }
-                npc.CountryProvider.Init(npc.Id, country);
 
                 return npc;
             }

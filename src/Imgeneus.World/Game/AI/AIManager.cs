@@ -37,6 +37,9 @@ namespace Imgeneus.World.Game.AI
         {
             get
             {
+                if (_mapProvider.Map is null || _mapProvider.CellId == -1) // Still not loaded into map.
+                    return null;
+
                 if (_owner is not null)
                     return _owner;
 
@@ -93,7 +96,7 @@ namespace Imgeneus.World.Game.AI
                          int idleTime = 4000,
                          byte chaseRange = 10,
                          byte chaseSpeed = 5,
-                         int chaseTime = 1,
+                         int chaseTime = 1000,
                          byte idleSpeed = 1,
                          bool isAttack1Enabled = false,
                          bool isAttack2Enabled = false,
@@ -158,6 +161,8 @@ namespace Imgeneus.World.Game.AI
             AttackTime3 = attackTime3;
 
             SetupAITimers();
+
+            State = AIState.Idle;
         }
 
         public void Dispose()
@@ -323,9 +328,9 @@ namespace Imgeneus.World.Game.AI
                         State = AIState.Chase;
                     else
                         if (_attackManager.Target != null && MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ) <= _chaseRange)
-                            State = AIState.ReadyToAttack;
-                        else
-                            State = AIState.Idle;
+                        State = AIState.ReadyToAttack;
+                    else
+                        State = AIState.Idle;
                     break;
 
                 case MobAI.Relic:
@@ -460,27 +465,47 @@ namespace Imgeneus.World.Game.AI
             if (State != AIState.Idle)
                 return;
 
-            if (TryGetPlayer())
+            if (TryGetEnemy())
                 SelectActionBasedOnAI();
+            else
+                _watchTimer.Start();
         }
 
         /// <summary>
         /// Tries to get the nearest player on the map.
         /// </summary>
-        public bool TryGetPlayer()
+        public bool TryGetEnemy()
         {
-            var players = _mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(_movementManager.PosX, _movementManager.PosZ, _chaseRange, _countryProvider.EnemyPlayersFraction);
+            if (Owner is null) // Still not loaded into map.
+                return false;
 
-            // No players, keep watching.
-            if (!players.Any(x => !(x as Character).StealthManager.IsStealth))
+            var enemies = _mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(Owner, _movementManager.PosX, _movementManager.PosZ, _chaseRange);
+
+            var anyVisibleEnemy = enemies.Any(x =>
+            {
+                if (x is Character character)
+                    return character.StealthManager.IsStealth == false;
+
+                return true;
+            });
+
+            // No enemies, keep watching.
+            if (!anyVisibleEnemy)
             {
                 _watchTimer.Start();
                 return false;
             }
 
             // There is some player in vision.
-            _attackManager.Target = players.First();
-            return true;
+            _attackManager.Target = enemies.First(x =>
+            {
+                if (x is Character character)
+                    return character.StealthManager.IsStealth == false;
+
+                return true;
+            });
+
+            return _attackManager.Target != null;
         }
 
         #endregion
@@ -532,6 +557,7 @@ namespace Imgeneus.World.Game.AI
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} target is already cleared.", GetHashCode());
 #endif
+                State = AIState.BackToBirthPosition;
                 return;
             }
 
@@ -649,15 +675,22 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         private void ReturnToBirthPosition()
         {
-            if (Math.Abs(_movementManager.PosX - StartPosX) > DELTA || Math.Abs(_movementManager.PosZ - StartPosZ) > DELTA)
+            if (Math.Round(MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ)) > DELTA)
             {
                 _backToBirthPositionTimer.Start();
+            }
+            else
+            {
+                StartPosX = -1;
+                StartPosZ = -1;
+                State = AIState.Idle;
+                _movementManager.MoveMotion = MoveMotion.Walk;
             }
         }
 
         private void BackToBirthPositionTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (Math.Abs(_movementManager.PosX - StartPosX) > DELTA || Math.Abs(_movementManager.PosZ - StartPosZ) > DELTA)
+            if (Math.Round(MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ)) > DELTA)
             {
                 Move(StartPosX, StartPosZ);
                 _backToBirthPositionTimer.Start();
@@ -677,16 +710,6 @@ namespace Imgeneus.World.Game.AI
         #endregion
 
         #region Attack
-
-        /// <summary>
-        /// Event, that is fired, when mob uses some skill.
-        /// </summary>
-        public event Action<int, IKillable, Skill, AttackResult> OnUsedSkill;
-
-        /// <summary>
-        /// Event, that is fired, when mob uses only range skill.
-        /// </summary>
-        public event Action<int, IKillable, Skill, AttackResult> OnUsedRangeSkill;
 
         /// <summary>
         /// When time from the last attack elapsed, we can decide what to do next.

@@ -10,6 +10,7 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.NpcQuest;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.NPCs
 {
@@ -20,7 +21,7 @@ namespace Imgeneus.World.Game.NPCs
         public IAttackManager AttackManager { get; private set; }
         public IStatsManager StatsManager { get; private set; }
 
-        public GuardNpc(Map map, ILogger<Npc> logger, BaseNpc npc, IMovementManager movementManager, ICountryProvider countryProvider, IAIManager aiManager, ISpeedManager speedManager, IAttackManager attackManager, IStatsManager statsManager) : base(map, logger, npc, movementManager, countryProvider)
+        public GuardNpc(ILogger<Npc> logger, BaseNpc npc, List<(float X, float Y, float Z, ushort Angle)> moveCoordinates, IMovementManager movementManager, ICountryProvider countryProvider, IMapProvider mapProvider, IAIManager aiManager, ISpeedManager speedManager, IAttackManager attackManager, IStatsManager statsManager) : base(logger, npc, moveCoordinates, movementManager, countryProvider, mapProvider)
         {
             AIManager = aiManager;
             SpeedManager = speedManager;
@@ -31,5 +32,19 @@ namespace Imgeneus.World.Game.NPCs
         public ILevelProvider LevelProvider => throw new System.NotImplementedException();
 
         public ISkillsManager SkillsManager => throw new System.NotImplementedException();
+
+        public override void Init(int ownerId)
+        {
+            base.Init(ownerId);
+            AIManager.Init(Id,
+                           MobAI.Guard,
+                           new MoveArea(_moveCoordinates[0].X, _moveCoordinates[0].Y, _moveCoordinates[0].Z, _moveCoordinates[0].X, _moveCoordinates[0].Y, _moveCoordinates[0].Z),
+                           chaseTime: 1800,
+                           chaseSpeed: 8,
+                           chaseRange: 30,
+                           isAttack1Enabled: true);
+            StatsManager.Init(Id, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
+            AttackManager.Init(Id);
+        }
     }
 }

@@ -161,10 +161,10 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Gets enemies near target.
         /// </summary>
-        public IEnumerable<IKillable> GetEnemies(IKiller sender, IKillable target, byte range)
+        public IEnumerable<IKillable> GetEnemies(IKiller sender, float x, float z, byte range)
         {
-            IEnumerable<IKillable> mobs = GetAllMobs(true).Where(m => !m.HealthManager.IsDead && MathExtensions.Distance(target.MovementManager.PosX, m.PosX, target.MovementManager.PosZ, m.PosZ) <= range);
-            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.HealthManager.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(target.MovementManager.PosX, p.PosX, target.MovementManager.PosZ, p.PosZ) <= range);
+            IEnumerable<IKillable> mobs = sender is Mob ? new List<IKillable>() : GetAllMobs(true).Where(m => !m.HealthManager.IsDead && m.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, m.PosX, z, m.PosZ) <= range);
+            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.HealthManager.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, p.PosX, z, p.PosZ) <= range);
 
             return mobs.Concat(chars);
         }
@@ -626,7 +626,7 @@ namespace Imgeneus.World.Game.Zone
                     var notDistributedItems = killerCharacter.PartyManager.Party.DistributeDrop(items, killerCharacter);
                     foreach (var item in notDistributedItems)
                         Map.AddItem(new MapItem(item, killerCharacter, mob.PosX, 0, mob.PosZ));
-                }                  
+                }
             }
 
             if (Map is GRBMap)
@@ -704,6 +704,8 @@ namespace Imgeneus.World.Game.Zone
             if (NPCs.TryAdd(npc.Id, npc))
             {
                 AssignCellIndex(npc);
+                AddListeners(npc);
+
                 foreach (var player in GetAllPlayers(true))
                     Map.PacketFactory.SendNpcEnter(player.GameSession.Client, npc);
             }
@@ -719,10 +721,33 @@ namespace Imgeneus.World.Game.Zone
             {
                 if (NPCs.TryRemove(npc.Id, out var removedNpc))
                 {
+                    RemoveListeners(removedNpc);
                     foreach (var player in GetAllPlayers(true))
                         Map.PacketFactory.SendNpcLeave(player.GameSession.Client, npc);
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds listeners to npc events.
+        /// </summary>
+        private void AddListeners(Npc npc)
+        {
+            npc.MovementManager.OnMove += Npc_OnMove;
+
+            if (npc is GuardNpc guard)
+                guard.AttackManager.OnAttack += Npc_OnAttack;
+        }
+
+        /// <summary>
+        /// Remove listeners from npc events.
+        /// </summary>
+        private void RemoveListeners(Npc npc)
+        {
+            npc.MovementManager.OnMove -= Npc_OnMove;
+
+            if (npc is GuardNpc guard)
+                guard.AttackManager.OnAttack -= Npc_OnAttack;
         }
 
         /// <summary>
@@ -755,6 +780,18 @@ namespace Imgeneus.World.Game.Zone
             if (includeNeighbors)
                 return myNPCs.Concat(NeighborCells.SelectMany(index => Map.Cells[index].GetAllNPCs(false))).Distinct();
             return myNPCs;
+        }
+
+        private void Npc_OnMove(int senderId, float x, float y, float z, ushort angle, MoveMotion motion)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendNpcMove(player.GameSession.Client, senderId, x, y, z, motion);
+        }
+
+        private void Npc_OnAttack(int senderId, IKillable target, AttackResult result)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendNpcAttack(player.GameSession.Client, senderId, target, result);
         }
 
         #endregion

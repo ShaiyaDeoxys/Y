@@ -122,6 +122,8 @@ namespace Imgeneus.World.Packets
         #region NPC
         void SendNpcLeave(IWorldClient client, Npc npc);
         void SendNpcEnter(IWorldClient client, Npc npc);
+        void SendNpcMove(IWorldClient client, int senderId, float x, float y, float z, MoveMotion motion);
+        void SendNpcAttack(IWorldClient client, int senderId, IKillable target, AttackResult result);
         #endregion
 
         #region Linking

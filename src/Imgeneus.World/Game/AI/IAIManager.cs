@@ -11,7 +11,7 @@ namespace Imgeneus.World.Game.AI
                   int idleTime = 4000,
                   byte chaseRange = 10,
                   byte chaseSpeed = 5,
-                  int chaseTime = 1,
+                  int chaseTime = 1000,
                   byte idleSpeed = 1,
                   bool isAttack1Enabled = false,
                   bool isAttack2Enabled = false,

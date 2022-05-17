@@ -750,6 +750,27 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendNpcMove(IWorldClient client, int senderId, float x, float y, float z, MoveMotion motion)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MAP_NPC_MOVE);
+            packet.Write(senderId);
+            packet.Write((byte)motion);
+            packet.Write(x);
+            packet.Write(y);
+            packet.Write(z);
+            client.Send(packet);
+        }
+
+        public void SendNpcAttack(IWorldClient client, int senderId, IKillable target, AttackResult result)
+        {
+            using var packet = new ImgeneusPacket(target is Character ? PacketType.MAP_NPC_ATTACK_PLAYER : PacketType.MAP_NPC_ATTACK_MOB);
+            packet.Write((byte)result.Success);
+            packet.Write(senderId);
+            packet.Write(target.Id);
+            packet.Write(result.Damage.HP);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Linking
@@ -2101,7 +2122,7 @@ namespace Imgeneus.World.Packets
             }
         }
 
-        public void SendGuildWarehouseItemAdd(IWorldClient client, DbGuildWarehouseItem item, int characterId) 
+        public void SendGuildWarehouseItemAdd(IWorldClient client, DbGuildWarehouseItem item, int characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_WAREHOUSE_ITEM_ADD);
             packet.Write(new GuildWarehouseItem(item).Serialize());

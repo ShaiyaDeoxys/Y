@@ -558,7 +558,8 @@ namespace Imgeneus.World.Game.Zone
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(Map));
 
-            npc.Id = GenerateId();
+            npc.Init(GenerateId());
+            npc.Map = this;
             Cells[cellIndex].AddNPC(npc);
         }
 
