@@ -77,7 +77,7 @@ namespace Imgeneus.World.Game.Health
             character.StaminaPoints = (ushort)CurrentSP;
 
             await _database.SaveChangesAsync();
-        } 
+        }
 
         public void Dispose()
         {
@@ -342,7 +342,7 @@ namespace Imgeneus.World.Game.Health
         private void StatsManager_OnWisUpdate() => OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
 
         private void StatsManager_OnDexUpdate() => OnMaxSPChanged?.Invoke(_ownerId, MaxSP);
-        
+
         #endregion
 
         #region Events
@@ -417,6 +417,23 @@ namespace Imgeneus.World.Game.Health
 
             OnRebirthed?.Invoke(_ownerId);
         }
+
+        #endregion
+
+        #region IsAttackable?
+
+        private bool _isAttackable = true;
+        public bool IsAttackable
+        {
+            get => _isAttackable;
+            set
+            {
+                _isAttackable = value;
+                OnIsAttackableChanged?.Invoke(_isAttackable);
+            }
+        }
+
+        public event Action<bool> OnIsAttackableChanged;
 
         #endregion
 

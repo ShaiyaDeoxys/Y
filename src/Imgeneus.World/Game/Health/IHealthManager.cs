@@ -120,6 +120,16 @@ namespace Imgeneus.World.Game.Health
         bool IsDead { get; }
 
         /// <summary>
+        /// Can be attacked by someone?
+        /// </summary>
+        bool IsAttackable { get; set; }
+
+        /// <summary>
+        /// Event, that is fired, when <see cref="IsAttackable"/> changes.
+        /// </summary>
+        event Action<bool> OnIsAttackableChanged;
+
+        /// <summary>
         /// Event, that is fired, when entity is killed.
         /// </summary>
         event Action<int, IKiller> OnDead;

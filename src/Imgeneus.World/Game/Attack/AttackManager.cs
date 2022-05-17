@@ -184,7 +184,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (target is null || target.HealthManager.IsDead)
+            if (target is null || target.HealthManager.IsDead || !target.HealthManager.IsAttackable)
             {
                 success = AttackSuccess.WrongTarget;
                 return false;

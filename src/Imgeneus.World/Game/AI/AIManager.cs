@@ -365,6 +365,7 @@ namespace Imgeneus.World.Game.AI
             if (_target != null)
             {
                 _target.HealthManager.OnDead -= Target_OnDead;
+                _target.HealthManager.OnIsAttackableChanged -= Target_OnIsAttackableChanged;
 
                 if (_target is Character player)
                     player.StealthManager.OnStealthChange -= Target_OnStealth;
@@ -375,6 +376,7 @@ namespace Imgeneus.World.Game.AI
             if (_target != null)
             {
                 _target.HealthManager.OnDead += Target_OnDead;
+                _target.HealthManager.OnIsAttackableChanged += Target_OnIsAttackableChanged;
 
                 if (_target is Character player)
                     player.StealthManager.OnStealthChange += Target_OnStealth;
@@ -401,6 +403,12 @@ namespace Imgeneus.World.Game.AI
         private void Target_OnDead(int senderId, IKiller killer)
         {
             _attackManager.Target = null;
+        }
+
+        private void Target_OnIsAttackableChanged(bool isAttackable)
+        {
+            if (!isAttackable)
+                _attackManager.Target = null;
         }
 
         #endregion

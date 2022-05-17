@@ -163,8 +163,8 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         public IEnumerable<IKillable> GetEnemies(IKiller sender, float x, float z, byte range)
         {
-            IEnumerable<IKillable> mobs = sender is Mob ? new List<IKillable>() : GetAllMobs(true).Where(m => !m.HealthManager.IsDead && m.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, m.PosX, z, m.PosZ) <= range);
-            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.HealthManager.IsDead && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, p.PosX, z, p.PosZ) <= range);
+            IEnumerable<IKillable> mobs = sender is Mob ? new List<IKillable>() : GetAllMobs(true).Where(m => !m.HealthManager.IsDead && m.HealthManager.IsAttackable && m.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, m.PosX, z, m.PosZ) <= range);
+            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.HealthManager.IsDead && p.HealthManager.IsAttackable && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, p.PosX, z, p.PosZ) <= range);
 
             return mobs.Concat(chars);
         }
