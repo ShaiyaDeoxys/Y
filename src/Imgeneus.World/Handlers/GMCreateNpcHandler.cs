@@ -68,6 +68,9 @@ namespace Imgeneus.World.Handlers
                         };
 
             var npc = _npcFactory.CreateNpc((packet.Type, packet.TypeId), moveCoordinates, _mapProvider.Map);
+            npc.Init(_mapProvider.Map.GenerateId());
+            npc.Map = _mapProvider.Map;
+
 
             _mapProvider.Map.AddNPC(_gameWorld.Players[_gameSession.CharId].CellId, npc);
             _packetFactory.SendGmCommandSuccess(client);

@@ -603,6 +603,9 @@ namespace Imgeneus.World.Game.Zone
         private void Mob_OnDead(int senderId, IKiller killer)
         {
             Mobs.TryRemove(senderId, out var mob);
+            if (mob is null)
+                return;
+
             RemoveListeners(mob);
 
             foreach (var player in GetAllPlayers(true))

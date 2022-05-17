@@ -558,8 +558,6 @@ namespace Imgeneus.World.Game.Zone
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(Map));
 
-            npc.Init(GenerateId());
-            npc.Map = this;
             Cells[cellIndex].AddNPC(npc);
         }
 
@@ -588,6 +586,9 @@ namespace Imgeneus.World.Game.Zone
                 var npc = _npcFactory.CreateNpc(((NpcType)conf.Type, (short)conf.NpcId), moveCoordinates, this);
                 if (npc is null)
                     continue;
+
+                npc.Init(GenerateId());
+                npc.Map = this;
 
                 var cellIndex = GetCellIndex(npc);
                 AddNPC(cellIndex, npc);
