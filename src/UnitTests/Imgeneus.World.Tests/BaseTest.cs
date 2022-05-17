@@ -57,6 +57,7 @@ using Npc = Imgeneus.World.Game.NPCs.Npc;
 using SQuest = Parsec.Shaiya.NpcQuest.Quest;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Warehouse;
+using Imgeneus.World.Game.AI;
 
 namespace Imgeneus.World.Tests
 {
@@ -201,13 +202,19 @@ namespace Imgeneus.World.Tests
             return character;
         }
 
+        private int _mobId;
+
         protected Mob CreateMob(ushort mobId, Map map, Fraction country = Fraction.NotSelected)
         {
+            _mobId++;
+
             var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
             countryProvider.Init(0, country);
 
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
             var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
+            levelProvider.Init(_mobId, databasePreloader.Object.Mobs[mobId].Level);
+
             var levelingManager = new Mock<ILevelingManager>();
             var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
             var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object);
@@ -220,14 +227,15 @@ namespace Imgeneus.World.Tests
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
+            var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, databasePreloader.Object);
 
             var mob = new Mob(
                 mobId,
                 true,
                 new MoveArea(0, 0, 0, 0, 0, 0),
-                map,
                 mobLoggerMock.Object,
                 databasePreloader.Object,
+                aiManager,
                 enchantConfig.Object,
                 itemCreateConfig.Object,
                 countryProvider,
@@ -242,6 +250,7 @@ namespace Imgeneus.World.Tests
                 movementManager,
                 untouchableManager,
                 mapProvider);
+
             return mob;
         }
 
@@ -439,14 +448,14 @@ namespace Imgeneus.World.Tests
 
             definitionsPreloader
                 .SetupGet((preloader) => preloader.NPCs)
-                .Returns(new Dictionary<(byte Type, short TypeId), BaseNpc>()
+                .Returns(new Dictionary<(NpcType Type, short TypeId), BaseNpc>()
                 {
-                    { (1, 1), WeaponMerchant }
+                    { (NpcType.Merchant, 1), WeaponMerchant }
                 });
 
             NewBeginnings.Results.Add(new QuestResult() { Exp = 5, Money = 3000 });
 
-            Bartering.RewardItems.Add(new QuestItem() { Type = RedApple.Type, TypeId = RedApple.TypeId, Count = 10 });
+            Bartering.FarmItems.Add(new QuestItem() { Type = RedApple.Type, TypeId = RedApple.TypeId, Count = 10 });
             Bartering.Results.Add(new QuestResult() { Exp = 3, Money = 3000, ItemType1 = RedApple.Type, ItemTypeId1 = RedApple.TypeId, ItemCount1 = 20 });
 
             SkillsAndStats.Results.Add(new QuestResult() { ItemType1 = WaterArmor.Type, ItemTypeId1 = WaterArmor.TypeId, ItemCount1 = 1 });

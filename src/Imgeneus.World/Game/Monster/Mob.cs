@@ -176,7 +176,7 @@ namespace Imgeneus.World.Game.Monster
             HealthManager.OnGotDamage -= OnDecreaseHP;
             AIManager.OnStateChanged -= AIManager_OnStateChanged;
 
-            Scope.Dispose();
+            Scope?.Dispose();
         }
     }
 }

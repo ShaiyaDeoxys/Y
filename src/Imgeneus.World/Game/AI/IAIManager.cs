@@ -54,5 +54,19 @@ namespace Imgeneus.World.Game.AI
         /// Turns on ai of mob, based on its' type.
         /// </summary>
         void SelectActionBasedOnAI();
+
+        /// <summary>
+        /// Tries to get the nearest player on the map.
+        /// </summary>
+        bool TryGetEnemy();
+
+        /// <summary>
+        /// Uses some attack.
+        /// </summary>
+        /// <param name="skillId">skill id</param>
+        /// <param name="minAttack">min damage</param>
+        /// <param name="element">element</param>
+        /// <param name="additionalDamage">plus damage</param>
+        void Attack(ushort skillId, Element element, ushort minAttack, ushort additionalDamage);
     }
 }

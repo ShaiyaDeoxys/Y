@@ -133,7 +133,7 @@ namespace Imgeneus.World.Tests.QuestTests
             var ok = questsManager.TryFinishQuest(0, Bartering.Id, out var q);
             Assert.False(ok);
 
-            items.TryAdd((1, 0), new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Bartering.RewardItems[0].Type, Bartering.RewardItems[0].TypeId, Bartering.RewardItems[0].Count));
+            items.TryAdd((1, 0), new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Bartering.FarmItems[0].Type, Bartering.FarmItems[0].TypeId, Bartering.FarmItems[0].Count));
             ok = questsManager.TryFinishQuest(0, Bartering.Id, out q);
             Assert.True(ok);
         }

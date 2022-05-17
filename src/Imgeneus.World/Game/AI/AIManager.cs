@@ -3,6 +3,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
@@ -28,6 +29,7 @@ namespace Imgeneus.World.Game.AI
         private readonly IMapProvider _mapProvider;
         private readonly ISkillsManager _skillsManager;
         private readonly IStatsManager _statsManager;
+        private readonly IElementProvider _elementProvider;
         private readonly IDatabasePreloader _databasePreloader;
 
         private int _ownerId;
@@ -63,7 +65,7 @@ namespace Imgeneus.World.Game.AI
             }
         }
 
-        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IDatabasePreloader databasePreloader)
+        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IElementProvider elementProvider, IDatabasePreloader databasePreloader)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -73,6 +75,7 @@ namespace Imgeneus.World.Game.AI
             _mapProvider = mapProvider;
             _skillsManager = skillsManager;
             _statsManager = statsManager;
+            _elementProvider = elementProvider;
             _databasePreloader = databasePreloader;
 
             _attackManager.OnTargetChanged += AttackManager_OnTargetChanged;
@@ -471,9 +474,6 @@ namespace Imgeneus.World.Game.AI
                 _watchTimer.Start();
         }
 
-        /// <summary>
-        /// Tries to get the nearest player on the map.
-        /// </summary>
         public bool TryGetEnemy()
         {
             if (Owner is null) // Still not loaded into map.
@@ -737,7 +737,7 @@ namespace Imgeneus.World.Game.AI
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 1.", GetHashCode());
 #endif
-                Attack(_attackManager.Target, AttackType1, AttackAttrib1, Attack1, AttackPlus1);
+                Attack(AttackType1, AttackAttrib1, Attack1, AttackPlus1);
                 _lastAttack1Time = now;
                 delay = AttackTime1 > 0 ? AttackTime1 : 5000;
             }
@@ -747,7 +747,7 @@ namespace Imgeneus.World.Game.AI
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 2.", GetHashCode());
 #endif
-                Attack(_attackManager.Target, AttackType2, AttackAttrib2, Attack2, AttackPlus2);
+                Attack(AttackType2, AttackAttrib2, Attack2, AttackPlus2);
                 _lastAttack2Time = now;
                 delay = AttackTime2 > 0 ? AttackTime2 : 5000;
             }
@@ -757,7 +757,7 @@ namespace Imgeneus.World.Game.AI
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 3.", GetHashCode());
 #endif
-                Attack(_attackManager.Target, AttackType3, Element.None, Attack3, AttackPlus3);
+                Attack(AttackType3, Element.None, Attack3, AttackPlus3);
                 _lastAttack3Time = now;
                 delay = AttackTime3 > 0 ? AttackTime3 : 5000;
             }
@@ -850,12 +850,11 @@ namespace Imgeneus.World.Game.AI
         /// <summary>
         /// Uses some attack.
         /// </summary>
-        /// <param name="target">target</param>
         /// <param name="skillId">skill id</param>
         /// <param name="minAttack">min damage</param>
         /// <param name="element">element</param>
         /// <param name="additionalDamage">plus damage</param>
-        public void Attack(IKillable target, ushort skillId, Element element, ushort minAttack, ushort additionalDamage)
+        public void Attack(ushort skillId, Element element, ushort minAttack, ushort additionalDamage)
         {
             var isMeleeAttack = false;
             Skill skill = null;
@@ -880,6 +879,7 @@ namespace Imgeneus.World.Game.AI
             {
                 _statsManager.WeaponMinAttack = minAttack;
                 _statsManager.WeaponMaxAttack = minAttack + additionalDamage;
+                _elementProvider.AttackSkillElement = _elementProvider.ConstAttackElement;
 
                 _attackManager.AutoAttack(Owner);
             }
@@ -887,6 +887,7 @@ namespace Imgeneus.World.Game.AI
             {
                 try
                 {
+                    _elementProvider.AttackSkillElement = element;
                     _skillsManager.UseSkill(skill, Owner, _attackManager.Target);
                 }
                 catch (Exception ex)

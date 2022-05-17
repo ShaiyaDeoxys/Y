@@ -18,8 +18,8 @@ namespace Imgeneus.World.Tests.MobTests
             map.LoadPlayer(character);
             map.AddMob(mob);
 
-            Assert.True(mob.TryGetPlayer());
-            Assert.Equal(mob.Target, character);
+            Assert.True(mob.AIManager.TryGetEnemy());
+            Assert.Equal(mob.AttackManager.Target, character);
         }
 
         [Fact]
@@ -36,11 +36,10 @@ namespace Imgeneus.World.Tests.MobTests
             map.LoadPlayer(character);
             map.AddMob(mob);
 
-            Assert.True(mob.TryGetPlayer());
-            mob.Attack(character, 0, Database.Constants.Element.None, 100, 100);
+            Assert.True(mob.AIManager.TryGetEnemy());
+            mob.AIManager.Attack(0, Database.Constants.Element.None, 100, 100);
 
             Assert.True(character.HealthManager.IsDead);
-            Assert.Equal(AIState.BackToBirthPosition, mob.State);
         }
 
         [Fact]
@@ -55,7 +54,7 @@ namespace Imgeneus.World.Tests.MobTests
             map.LoadPlayer(character);
             map.AddMob(mob);
 
-            Assert.False(mob.TryGetPlayer());
+            Assert.False(mob.AIManager.TryGetEnemy());
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿using Imgeneus.World.Game.Inventory;
+﻿using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
+using Moq;
 using Parsec.Shaiya.Svmap;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -138,7 +141,7 @@ namespace Imgeneus.World.Tests.MapTests
         {
             var map = testMap;
             var cell = new MapCell(0, new List<int>(), map);
-            cell.AddNPC(new Npc(new List<(float X, float Y, float Z, ushort Angle)>() { (0, 0, 0, 0) }, map, npcLoggerMock.Object, WeaponMerchant));
+            cell.AddNPC(new Npc(npcLoggerMock.Object, WeaponMerchant, new List<(float X, float Y, float Z, ushort Angle)>() { (0, 0, 0, 0) }, new Mock<IMovementManager>().Object, new Mock<ICountryProvider>().Object, new Mock<IMapProvider>().Object));
 
             Assert.NotEmpty(cell.GetAllNPCs(false));
 
