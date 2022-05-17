@@ -291,6 +291,9 @@ namespace Imgeneus.World.Game.AI
                             _watchTimer.Start();
 
                         _untouchableManager.IsUntouchable = false;
+                        StartPosX = -1;
+                        StartPosZ = -1;
+                        _movementManager.MoveMotion = MoveMotion.Walk;
                         break;
 
                     case AIState.Chase:
@@ -327,6 +330,7 @@ namespace Imgeneus.World.Game.AI
             {
                 case MobAI.Combative:
                 case MobAI.Peaceful:
+                case MobAI.Guard:
                     if (_chaseSpeed > 0)
                         State = AIState.Chase;
                     else
@@ -448,8 +452,10 @@ namespace Imgeneus.World.Game.AI
             if (z2 < MoveArea.Z2)
                 z2 = MoveArea.Z2;
 
-            _movementManager.PosX = new Random().NextFloat(x1, x2);
-            _movementManager.PosZ = new Random().NextFloat(z1, z2);
+            var x = new Random().NextFloat(x1, x2);
+            var z = new Random().NextFloat(z1, z2);
+
+            Move(x, z);
 
 #if DEBUG
             _logger.LogDebug("AI {hashcode} walks to new position x={PosX} y={PosY} z={PosZ}.", GetHashCode(), _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);
@@ -534,10 +540,8 @@ namespace Imgeneus.World.Game.AI
         {
             _movementManager.MoveMotion = MoveMotion.Run;
 
-            if (StartPosX == -1)
-                StartPosX = _movementManager.PosX;
-            if (StartPosZ == -1)
-                StartPosZ = _movementManager.PosZ;
+            StartPosX = _movementManager.PosX;
+            StartPosZ = _movementManager.PosZ;
 
             _chaseTimer.Start();
         }
@@ -627,7 +631,7 @@ namespace Imgeneus.World.Game.AI
             var normalizedVector = Vector2.Normalize(destinationVector - mobVector);
             var deltaTime = now.Subtract(_lastMoveUpdate);
             var deltaMilliseconds = deltaTime.TotalMilliseconds > 2000 ? 500 : deltaTime.TotalMilliseconds;
-            var temp = normalizedVector * (float)(_chaseSpeed * 1.0 / _chaseTime * deltaMilliseconds);
+            var temp = normalizedVector * (float)(State == AIState.Idle ? _idleSpeed : _chaseSpeed * 1.0 / (State == AIState.Idle ? _idleTime : _chaseTime) * deltaMilliseconds);
             _movementManager.PosX += float.IsNaN(temp.X) ? 0 : temp.X;
             _movementManager.PosZ += float.IsNaN(temp.Y) ? 0 : temp.Y;
 
@@ -681,10 +685,7 @@ namespace Imgeneus.World.Game.AI
             }
             else
             {
-                StartPosX = -1;
-                StartPosZ = -1;
                 State = AIState.Idle;
-                _movementManager.MoveMotion = MoveMotion.Walk;
             }
         }
 
@@ -700,10 +701,7 @@ namespace Imgeneus.World.Game.AI
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} reached birth position, back to idle state.", GetHashCode());
 #endif
-                StartPosX = -1;
-                StartPosZ = -1;
                 State = AIState.Idle;
-                _movementManager.MoveMotion = MoveMotion.Walk;
             }
         }
 
