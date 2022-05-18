@@ -2392,6 +2392,27 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMyShopStarted(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_START);
+            client.Send(packet);
+        }
+
+        public void SendMyShopStarted(IWorldClient client, int senderId, string shopName) 
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_INFO);
+            packet.Write(senderId);
+            packet.Write(true); // Is open?
+            packet.WriteByte((byte)(shopName.Length + 1));
+
+#if (EP8_V2 || SHAIYA_US || DEBUG)
+            packet.WriteString(shopName, shopName.Length + 1, Encoding.Unicode);
+#else
+            packet.WriteString(shopName, shopName.Length + 1);
+#endif
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

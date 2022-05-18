@@ -361,6 +361,8 @@ namespace Imgeneus.World.Packets
         void SendMyShopBegin(IWorldClient client);
         void SendMyShopAddItem(IWorldClient client, byte bag, byte slot, byte shopSlot, int price);
         void SendMyShopRemoveItem(IWorldClient client, byte shopSlot);
+        void SendMyShopStarted(IWorldClient client);
+        void SendMyShopStarted(IWorldClient client, int senderId, string shopName);
         #endregion
 
         #region GM

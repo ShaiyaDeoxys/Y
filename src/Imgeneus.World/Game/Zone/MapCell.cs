@@ -218,6 +218,7 @@ namespace Imgeneus.World.Game.Zone
             character.TeleportationManager.OnTeleporting += Character_OnTeleport;
             character.PartyManager.OnSummonning += Character_OnItemCasting;
             character.TeleportationManager.OnCastingTeleport += Character_OnItemCasting;
+            character.ShopManager.OnShopStarted += Character_OnShopStarted;
         }
 
         /// <summary>
@@ -250,6 +251,7 @@ namespace Imgeneus.World.Game.Zone
             character.TeleportationManager.OnTeleporting -= Character_OnTeleport;
             character.PartyManager.OnSummonning -= Character_OnItemCasting;
             character.TeleportationManager.OnCastingTeleport -= Character_OnItemCasting;
+            character.ShopManager.OnShopStarted -= Character_OnShopStarted;
         }
 
         #region Character listeners
@@ -480,6 +482,15 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendItemCasting(p.GameSession.Client, senderId);
+        }
+
+        /// <summary>
+        /// Notifies other players that character started shop.
+        /// </summary>
+        private void Character_OnShopStarted(int senderId, string shopName)
+        {
+            foreach (var p in GetAllPlayers(true))
+                Map.PacketFactory.SendMyShopStarted(p.GameSession.Client, senderId, shopName);
         }
 
         #endregion

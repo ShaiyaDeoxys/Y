@@ -39,5 +39,13 @@ namespace Imgeneus.World.Handlers
             if (ok)
                 _packetFactory.SendMyShopRemoveItem(client, packet.ShopSlot);
         }
+
+        [HandlerAction(PacketType.MY_SHOP_START)]
+        public void HandleStart(WorldClient client, MyShopStartPacket packet)
+        {
+           var ok = _shopManager.TryStart(packet.Name);
+            if (ok)
+                _packetFactory.SendMyShopStarted(client);
+        }
     }
 }

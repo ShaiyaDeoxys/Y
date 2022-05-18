@@ -254,6 +254,7 @@
         MY_SHOP_CANCEL = 0x2304, // 8964
         MY_SHOP_ADD_ITEM = 0x2305, // 8965
         MY_SHOP_REMOVE_ITEM = 0x2306, // 8966
+        MY_SHOP_INFO = 0x0523, // 1315
 
         // Duel
         DUEL_REQUEST = 0x2401, // 9217

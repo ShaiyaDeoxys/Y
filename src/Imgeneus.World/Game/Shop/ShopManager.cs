@@ -1,5 +1,6 @@
 ﻿using Imgeneus.World.Game.Inventory;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,6 +51,8 @@ namespace Imgeneus.World.Game.Shop
 
         #region Items
 
+        public string Name { get; private set; }
+
         private ConcurrentDictionary<byte, Item> _items { get; init; } = new();
         public IReadOnlyDictionary<byte, Item> Items { get; init; }
 
@@ -90,6 +93,19 @@ namespace Imgeneus.World.Game.Shop
 
             item.IsInShop = false;
             item.ShopPrice = 0;
+
+            return true;
+        }
+
+        public event Action<int, string> OnShopStarted;
+
+        public bool TryStart(string name)
+        {
+            if (string.IsNullOrEmpty(name) || Items.Count == 0)
+                return false;
+
+            Name = name;
+            OnShopStarted?.Invoke(_ownerId, Name);
 
             return true;
         }
