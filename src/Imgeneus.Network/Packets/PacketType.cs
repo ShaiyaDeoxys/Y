@@ -247,6 +247,14 @@
         NOTICE_MAP = 0xF909, // 63753
         NOTICE_WORLD = 0xF90B, // 63755
 
+        // My shop
+        MY_SHOP_BEGIN = 0x2301, // 8961
+        MY_SHOP_END = 0x2302, // 8962
+        MY_SHOP_START = 0x2303, // 8963
+        MY_SHOP_CANCEL = 0x2304, // 8964
+        MY_SHOP_ADD_ITEM = 0x2305, // 8965
+        MY_SHOP_REMOVE_ITEM = 0x2306, // 8966
+
         // Duel
         DUEL_REQUEST = 0x2401, // 9217
         DUEL_RESPONSE = 0x2402, // 9218

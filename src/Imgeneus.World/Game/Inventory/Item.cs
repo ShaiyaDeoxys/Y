@@ -1245,6 +1245,14 @@ namespace Imgeneus.World.Game.Inventory
 
         #endregion
 
+        #region Shop
+
+        public bool IsInShop { get; set; }
+
+        public int ShopPrice { get; set; }
+
+        #endregion
+
         public Item Clone()
         {
             return new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, Type, TypeId)

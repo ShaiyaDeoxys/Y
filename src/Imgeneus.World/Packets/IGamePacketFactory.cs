@@ -357,6 +357,11 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Shop
+        void SendMyShopBegin(IWorldClient client);
+        void SendMyShopAddItem(IWorldClient client, byte bag, byte slot, byte shopSlot, int price);
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

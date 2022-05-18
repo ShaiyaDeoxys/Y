@@ -2367,6 +2367,26 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Shop
+
+        public void SendMyShopBegin(IWorldClient client) 
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_BEGIN);
+            client.Send(packet);
+        }
+
+        public void SendMyShopAddItem(IWorldClient client, byte bag, byte slot, byte shopSlot, int price)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_ADD_ITEM);
+            packet.Write(bag);
+            packet.Write(slot);
+            packet.Write(shopSlot);
+            packet.Write(price);
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {

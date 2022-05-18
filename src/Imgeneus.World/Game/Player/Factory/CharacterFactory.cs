@@ -19,6 +19,7 @@ using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Shop;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -74,6 +75,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IQuestsManager _questsManager;
         private readonly IUntouchableManager _untouchableManager;
         private readonly IWarehouseManager _warehouseManager;
+        private readonly IShopManager _shopManager;
         private readonly IGamePacketFactory _packetFactory;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
@@ -111,6 +113,7 @@ namespace Imgeneus.World.Game.Player
                                 IQuestsManager questsManager,
                                 IUntouchableManager untouchableManager,
                                 IWarehouseManager warehouseManager,
+                                IShopManager shopManager,
                                 IGamePacketFactory packetFactory)
         {
             _logger = logger;
@@ -148,6 +151,7 @@ namespace Imgeneus.World.Game.Player
             _questsManager = questsManager;
             _untouchableManager = untouchableManager;
             _warehouseManager = warehouseManager;
+            _shopManager = shopManager;
             _packetFactory = packetFactory;
         }
 
@@ -257,6 +261,8 @@ namespace Imgeneus.World.Game.Player
 
             _warehouseManager.Init(dbCharacter.UserId, dbCharacter.Id, dbCharacter.GuildId, dbCharacter.User.WarehouseItems);
 
+            _shopManager.Init(dbCharacter.Id);
+
             _stealthManager.Init(dbCharacter.Id);
             _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
 
@@ -292,6 +298,7 @@ namespace Imgeneus.World.Game.Player
                                         _questsManager,
                                         _untouchableManager,
                                         _warehouseManager,
+                                        _shopManager,
                                         _gameSession,
                                         _packetFactory);
 

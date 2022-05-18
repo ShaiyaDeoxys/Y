@@ -34,6 +34,7 @@ using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Shop;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -146,6 +147,7 @@ namespace Imgeneus.World
             services.AddScoped<IUntouchableManager, UntouchableManager>();
             services.AddScoped<IWarehouseManager, WarehouseManager>();
             services.AddScoped<IAIManager, AIManager>();
+            services.AddScoped<IShopManager, ShopManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
