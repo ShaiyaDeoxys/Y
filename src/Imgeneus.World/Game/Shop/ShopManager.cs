@@ -80,6 +80,20 @@ namespace Imgeneus.World.Game.Shop
             return _items.TryAdd(shopSlot, item);
         }
 
+        public bool TryRemoveItem(byte shopSlot)
+        {
+            if (!_items.TryRemove(shopSlot, out var item))
+            {
+                _logger.LogWarning("Character {id} is trying to remove non-existing item from inventory, possible cheating?", _ownerId);
+                return false;
+            }
+
+            item.IsInShop = false;
+            item.ShopPrice = 0;
+
+            return true;
+        }
+
         #endregion
     }
 }

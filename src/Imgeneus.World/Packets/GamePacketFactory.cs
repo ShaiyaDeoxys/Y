@@ -2385,6 +2385,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMyShopRemoveItem(IWorldClient client, byte shopSlot)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_REMOVE_ITEM);
+            packet.Write(shopSlot);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

@@ -18,5 +18,10 @@
         /// Tries to add item to shop.
         /// </summary>
         bool TryAddItem(byte bag, byte slot, byte shopSlot, int price);
+
+        /// <summary>
+        /// Tries to remove item from shop.
+        /// </summary>
+        bool TryRemoveItem(byte shopSlot);
     }
 }
