@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Imgeneus.World.Game.Session;
+using System;
 
 namespace Imgeneus.World.Game.Shop
 {
-    public interface IShopManager
+    public interface IShopManager : ISessionedService
     {
         void Init(int ownerId);
 

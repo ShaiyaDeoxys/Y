@@ -1,9 +1,11 @@
 ﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Shop
 {
@@ -11,13 +13,15 @@ namespace Imgeneus.World.Game.Shop
     {
         private readonly ILogger<ShopManager> _logger;
         private readonly IInventoryManager _inventoryManager;
+        private readonly IMapProvider _mapProvider;
 
         private int _ownerId;
 
-        public ShopManager(ILogger<ShopManager> logger, IInventoryManager inventoryManager)
+        public ShopManager(ILogger<ShopManager> logger, IInventoryManager inventoryManager, IMapProvider mapProvider)
         {
             _logger = logger;
             _inventoryManager = inventoryManager;
+            _mapProvider = mapProvider;
 
             Items = new ReadOnlyDictionary<byte, Item>(_items);
 
@@ -38,13 +42,21 @@ namespace Imgeneus.World.Game.Shop
             _ownerId = ownerId;
         }
 
+        public Task Clear()
+        {
+            TryEnd();
+            return Task.CompletedTask;
+        }
+
         #region Begin/end
 
         public bool IsShopOpened { get; private set; }
 
         public bool TryBegin()
         {
-            // TODO: check map id.
+            if (_mapProvider.Map.Id != 35 && _mapProvider.Map.Id != 36 && _mapProvider.Map.Id != 42)
+                return false;
+
             return true;
         }
 

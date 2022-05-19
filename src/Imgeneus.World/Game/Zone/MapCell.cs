@@ -83,6 +83,8 @@ namespace Imgeneus.World.Game.Zone
 
                     // Notify new player, about already loaded player.
                     Map.PacketFactory.SendCharacterEnter(character.GameSession.Client, player);
+                    if (player.ShopManager.IsShopOpened)
+                        Map.PacketFactory.SendMyShopStarted(character.GameSession.Client, player.Id, player.ShopManager.Name);
                 }
                 else // Original server sends this also to player himself, although I'm not sure if it's needed.
                      // Added it as a fix for admin stealth.

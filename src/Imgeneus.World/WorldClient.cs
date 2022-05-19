@@ -13,6 +13,7 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Quests;
 using Imgeneus.World.Game.Session;
+using Imgeneus.World.Game.Shop;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
@@ -78,6 +79,7 @@ namespace Imgeneus.World
             tasks.Add(x.GetService<IAdditionalInfoManager>().Clear());
             tasks.Add(x.GetService<IBankManager>().Clear());
             tasks.Add(x.GetService<IWarehouseManager>().Clear());
+            tasks.Add(x.GetService<IShopManager>().Clear());
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

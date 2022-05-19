@@ -600,7 +600,8 @@ namespace Imgeneus.World.Packets
 
             SendCharacterShape(client, character); // Fix for admin in stealth + dye.
 
-            SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.TypeId);
+            if (character.ShapeManager.Shape != ShapeEnum.None)
+                SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.TypeId);
         }
 
         public void SendAttackAndMovementSpeed(IWorldClient client, int senderId, AttackSpeed attack, MoveSpeed move)
@@ -2369,7 +2370,7 @@ namespace Imgeneus.World.Packets
 
         #region Shop
 
-        public void SendMyShopBegin(IWorldClient client) 
+        public void SendMyShopBegin(IWorldClient client)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_BEGIN);
             client.Send(packet);
@@ -2410,7 +2411,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMyShopStarted(IWorldClient client, int senderId, string shopName) 
+        public void SendMyShopStarted(IWorldClient client, int senderId, string shopName)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_INFO);
             packet.Write(senderId);
