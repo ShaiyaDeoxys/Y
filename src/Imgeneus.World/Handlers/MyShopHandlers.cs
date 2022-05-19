@@ -20,8 +20,9 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.MY_SHOP_BEGIN)]
         public void HandleBegin(WorldClient client, MyShopBeginPacket packet)
         {
-            _shopManager.Begin();
-            _packetFactory.SendMyShopBegin(client);
+            var ok = _shopManager.TryBegin();
+            if (ok)
+                _packetFactory.SendMyShopBegin(client);
         }
 
         [HandlerAction(PacketType.MY_SHOP_ADD_ITEM)]
@@ -43,9 +44,25 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.MY_SHOP_START)]
         public void HandleStart(WorldClient client, MyShopStartPacket packet)
         {
-           var ok = _shopManager.TryStart(packet.Name);
+            var ok = _shopManager.TryStart(packet.Name);
             if (ok)
                 _packetFactory.SendMyShopStarted(client);
+        }
+
+        [HandlerAction(PacketType.MY_SHOP_CANCEL)]
+        public void HandleCancel(WorldClient client, MyShopCancelPacket packet)
+        {
+            var ok = _shopManager.TryCancel();
+            if (ok)
+                _packetFactory.SendMyShopCanceled(client);
+        }
+
+        [HandlerAction(PacketType.MY_SHOP_END)]
+        public void HandleEnd(WorldClient client, MyShopEndPacket packet)
+        {
+            var ok = _shopManager.TryEnd();
+            if (ok)
+                _packetFactory.SendMyShopEnded(client);
         }
     }
 }

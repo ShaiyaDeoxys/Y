@@ -42,9 +42,21 @@ namespace Imgeneus.World.Game.Shop
 
         public bool IsShopOpened { get; private set; }
 
-        public void Begin()
+        public bool TryBegin()
         {
-            IsShopOpened = true;
+            // TODO: check map id.
+            return true;
+        }
+
+        public bool TryCancel()
+        {
+            if (!IsShopOpened)
+                return false;
+
+            IsShopOpened = false;
+            OnShopFinished?.Invoke(_ownerId);
+
+            return true;
         }
 
         #endregion
@@ -98,14 +110,35 @@ namespace Imgeneus.World.Game.Shop
         }
 
         public event Action<int, string> OnShopStarted;
+        public event Action<int> OnShopFinished;
 
         public bool TryStart(string name)
         {
             if (string.IsNullOrEmpty(name) || Items.Count == 0)
                 return false;
 
+            if (IsShopOpened)
+                return false;
+
             Name = name;
+            IsShopOpened = true;
             OnShopStarted?.Invoke(_ownerId, Name);
+
+            return true;
+        }
+
+        public bool TryEnd()
+        {
+            if (IsShopOpened)
+                TryCancel();
+
+            foreach (var item in _items)
+            {
+                item.Value.IsInShop = false;
+                item.Value.ShopPrice = 0;
+            }
+
+            _items.Clear();
 
             return true;
         }

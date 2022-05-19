@@ -2398,6 +2398,18 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMyShopCanceled(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_CANCEL);
+            client.Send(packet);
+        }
+
+        public void SendMyShopEnded(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_END);
+            client.Send(packet);
+        }
+
         public void SendMyShopStarted(IWorldClient client, int senderId, string shopName) 
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_INFO);
@@ -2410,6 +2422,14 @@ namespace Imgeneus.World.Packets
 #else
             packet.WriteString(shopName, shopName.Length + 1);
 #endif
+            client.Send(packet);
+        }
+
+        public void SendMyShopFinished(IWorldClient client, int senderId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_INFO);
+            packet.Write(senderId);
+            packet.Write(false); // Is open?
             client.Send(packet);
         }
 

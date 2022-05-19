@@ -19,7 +19,12 @@ namespace Imgeneus.World.Game.Shop
         /// <summary>
         /// Begins shop.
         /// </summary>
-        void Begin();
+        bool TryBegin();
+
+        /// <summary>
+        /// Closes shop.
+        /// </summary>
+        bool TryCancel();
 
         /// <summary>
         /// Tries to add item to shop.
@@ -37,8 +42,18 @@ namespace Imgeneus.World.Game.Shop
         bool TryStart(string name);
 
         /// <summary>
+        /// Tries to end local shop.
+        /// </summary>
+        bool TryEnd();
+
+        /// <summary>
         /// Event, that is fired, when shop is started.
         /// </summary>
         event Action<int, string> OnShopStarted;
+
+        /// <summary>
+        /// Event, that is fired, when shop is closed.
+        /// </summary>
+        event Action<int> OnShopFinished;
     }
 }

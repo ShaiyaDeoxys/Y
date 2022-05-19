@@ -219,6 +219,7 @@ namespace Imgeneus.World.Game.Zone
             character.PartyManager.OnSummonning += Character_OnItemCasting;
             character.TeleportationManager.OnCastingTeleport += Character_OnItemCasting;
             character.ShopManager.OnShopStarted += Character_OnShopStarted;
+            character.ShopManager.OnShopFinished += Character_OnShopFinished;
         }
 
         /// <summary>
@@ -252,6 +253,7 @@ namespace Imgeneus.World.Game.Zone
             character.PartyManager.OnSummonning -= Character_OnItemCasting;
             character.TeleportationManager.OnCastingTeleport -= Character_OnItemCasting;
             character.ShopManager.OnShopStarted -= Character_OnShopStarted;
+            character.ShopManager.OnShopFinished -= Character_OnShopFinished;
         }
 
         #region Character listeners
@@ -491,6 +493,15 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendMyShopStarted(p.GameSession.Client, senderId, shopName);
+        }
+
+        /// <summary>
+        /// Notifies other players that character closed shop.
+        /// </summary>
+        private void Character_OnShopFinished(int senderId)
+        {
+            foreach (var p in GetAllPlayers(true))
+                Map.PacketFactory.SendMyShopFinished(p.GameSession.Client, senderId);
         }
 
         #endregion
