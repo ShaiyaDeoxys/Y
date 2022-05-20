@@ -373,6 +373,7 @@ namespace Imgeneus.World.Packets
         void SendMyShopBuyItemFailed(IWorldClient client);
         void SendMyShopBuyItemSuccess(IWorldClient client, uint money, byte shopSlot, byte shopCount, Item item);
         void SendUseShopItemCountChanged(IWorldClient client, byte slot, byte count);
+        void SendMyShopSoldItem(IWorldClient client, byte slot, byte count, uint gold);
         #endregion
 
         #region GM

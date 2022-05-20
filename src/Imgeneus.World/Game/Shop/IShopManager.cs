@@ -94,5 +94,10 @@ namespace Imgeneus.World.Game.Shop
         /// Event, that is fired, when number of items in used shop changes.
         /// </summary>
         event Action<byte, byte> OnUseShopItemCountChanged;
+
+        /// <summary>
+        /// Event, that is fired, when some item is sold.
+        /// </summary>
+        event Action<byte, byte> OnSoldItem;
     }
 }

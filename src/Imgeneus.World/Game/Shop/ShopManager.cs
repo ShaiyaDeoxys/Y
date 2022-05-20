@@ -228,6 +228,8 @@ namespace Imgeneus.World.Game.Shop
 
         public event Action<byte, byte> OnSellItemCountChanged;
 
+        public event Action<byte, byte> OnSoldItem;
+
         public Item TrySellItem(byte slot, byte count)
         {
             if (!Items.TryGetValue(slot, out var item))
@@ -241,13 +243,18 @@ namespace Imgeneus.World.Game.Shop
 
             Item resultItem;
             if (item.Count == 0)
+            {
+                _items.TryRemove(slot, out var _);
+                Items = new ReadOnlyDictionary<byte, Item>(_items);
                 resultItem = _inventoryManager.RemoveItem(item);
+            }
             else
                 resultItem = item.Clone();
 
             resultItem.Count = count;
 
             OnSellItemCountChanged?.Invoke(slot, item.Count);
+            OnSoldItem?.Invoke(slot, item.Count);
 
             return resultItem;
         }

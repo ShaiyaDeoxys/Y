@@ -91,5 +91,7 @@ namespace Imgeneus.World.Game.Player
         public void SendUseShopClosed() => _packetFactory.SendUseShopClosed(GameSession.Client);
 
         public void SendUseShopItemCountChanged(byte slot, byte count) => _packetFactory.SendUseShopItemCountChanged(GameSession.Client, slot, count);
+
+        public void SendSoldItem(byte slot, byte count) => _packetFactory.SendMyShopSoldItem(GameSession.Client, slot, count, InventoryManager.Gold);
     }
 }

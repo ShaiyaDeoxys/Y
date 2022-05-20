@@ -254,6 +254,7 @@
         MY_SHOP_CANCEL = 0x2304, // 8964
         MY_SHOP_ADD_ITEM = 0x2305, // 8965
         MY_SHOP_REMOVE_ITEM = 0x2306, // 8966
+        MY_SHOP_SOLD_ITEM = 0x2308, // 8968
         MY_SHOP_VISIT = 0x2309, // 8969
         MY_SHOP_LEAVE = 0x230A, // 8970
         MY_SHOP_ITEM_LIST = 0x230B, // 8971

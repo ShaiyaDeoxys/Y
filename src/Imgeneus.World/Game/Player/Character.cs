@@ -152,6 +152,7 @@ namespace Imgeneus.World.Game.Player
             QuestsManager.OnQuestFinished += SendQuestFinished;
             ShopManager.OnUseShopClosed += SendUseShopClosed;
             ShopManager.OnUseShopItemCountChanged += SendUseShopItemCountChanged;
+            ShopManager.OnSoldItem += SendSoldItem;
 
             Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;
@@ -181,6 +182,7 @@ namespace Imgeneus.World.Game.Player
             QuestsManager.OnQuestFinished -= SendQuestFinished;
             ShopManager.OnUseShopClosed -= SendUseShopClosed;
             ShopManager.OnUseShopItemCountChanged -= SendUseShopItemCountChanged;
+            ShopManager.OnSoldItem -= SendSoldItem;
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;

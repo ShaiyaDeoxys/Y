@@ -2487,6 +2487,15 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMyShopSoldItem(IWorldClient client, byte slot, byte count, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_SOLD_ITEM);
+            packet.Write(slot);
+            packet.Write(count);
+            packet.Write(gold);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM
