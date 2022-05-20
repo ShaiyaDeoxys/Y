@@ -23,8 +23,6 @@ namespace Imgeneus.World.Game.Shop
             _inventoryManager = inventoryManager;
             _mapProvider = mapProvider;
 
-            Items = new ReadOnlyDictionary<byte, Item>(_items);
-
 #if DEBUG
             _logger.LogDebug("ShopManager {hashcode} created", GetHashCode());
 #endif
@@ -57,6 +55,8 @@ namespace Imgeneus.World.Game.Shop
             if (_mapProvider.Map.Id != 35 && _mapProvider.Map.Id != 36 && _mapProvider.Map.Id != 42)
                 return false;
 
+            Items = new ReadOnlyDictionary<byte, Item>(_items);
+
             return true;
         }
 
@@ -78,7 +78,7 @@ namespace Imgeneus.World.Game.Shop
         public string Name { get; private set; }
 
         private ConcurrentDictionary<byte, Item> _items { get; init; } = new();
-        public IReadOnlyDictionary<byte, Item> Items { get; init; }
+        public IReadOnlyDictionary<byte, Item> Items { get; set; }
 
         public bool TryAddItem(byte bag, byte slot, byte shopSlot, int price)
         {

@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
+using Imgeneus.World.Game;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shop;
 using Imgeneus.World.Packets;
@@ -11,10 +12,12 @@ namespace Imgeneus.World.Handlers
     public class MyShopHandlers : BaseHandler
     {
         private readonly IShopManager _shopManager;
+        private readonly IGameWorld _gameWorld;
 
-        public MyShopHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IShopManager shopManager) : base(packetFactory, gameSession)
+        public MyShopHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IShopManager shopManager, IGameWorld gameWorld) : base(packetFactory, gameSession)
         {
             _shopManager = shopManager;
+            _gameWorld = gameWorld;
         }
 
         [HandlerAction(PacketType.MY_SHOP_BEGIN)]
@@ -63,6 +66,19 @@ namespace Imgeneus.World.Handlers
             var ok = _shopManager.TryEnd();
             if (ok)
                 _packetFactory.SendMyShopEnded(client);
+        }
+
+        [HandlerAction(PacketType.MY_SHOP_VISIT)]
+        public void HandleItemList(WorldClient client, MyShopItemListPacket packet)
+        {
+            if (!_gameWorld.Players.TryGetValue(packet.CharacterId, out var player))
+                return;
+
+            if (!player.ShopManager.IsShopOpened)
+                return;
+
+            _packetFactory.SendMyShopVisit(client, true, player.Id);
+            _packetFactory.SendMyShopItems(client, player.ShopManager.Items);
         }
     }
 }

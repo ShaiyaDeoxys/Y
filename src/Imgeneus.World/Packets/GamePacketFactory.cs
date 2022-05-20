@@ -2434,6 +2434,21 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMyShopVisit(IWorldClient client, bool ok, int characterId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_VISIT);
+            packet.Write(ok);
+            packet.Write(characterId);
+            client.Send(packet);
+        }
+
+        public void SendMyShopItems(IWorldClient client, IReadOnlyDictionary<byte, Item> items)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_ITEM_LIST);
+            packet.Write(new MyShopItems(items).Serialize());
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

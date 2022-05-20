@@ -1,11 +1,18 @@
-﻿using Imgeneus.World.Game.Session;
+﻿using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Session;
 using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Shop
 {
     public interface IShopManager : ISessionedService
     {
         void Init(int ownerId);
+
+        /// <summary>
+        /// Items, that are currently in shop.
+        /// </summary>
+        IReadOnlyDictionary<byte, Item> Items { get; }
 
         /// <summary>
         /// Is shop currently opened?
