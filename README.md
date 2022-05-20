@@ -20,7 +20,9 @@ This repo also uses the best parts of these repos: [Drakkus/ShaiyaGenesis](https
 ```
 These files are added to the ignore list, so you can be sure, that you won't commit any of your credentials.
 
-3. Run Imgeneus.Login & Imgeneus.World projects. For this right click on solution => Properties => Startup Project => Multiple startup projects => Imgeneus.Login - Start; Imgeneus.World - Start.
+3. Add to folder `config\SData` next files: `DBItemData.SData`, `NpcQuest.SData`. You can find these files in os game data.saf. If you can not open EP 8 data.saf file, please check [Parsec project](https://github.com/matigramirez/Parsec).
+
+4. Run Imgeneus.Login & Imgeneus.World projects. For this right click on solution => Properties => Startup Project => Multiple startup projects => Imgeneus.Login - Start; Imgeneus.World - Start.
 
 __You are not dev, feel lost but still want to start?__  Check out our [wiki page](https://github.com/aosyatnik/Imgeneus/wiki/Setup-for-non-devs).
 
