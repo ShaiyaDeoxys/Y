@@ -1249,7 +1249,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public bool IsInShop { get; set; }
 
-        public int ShopPrice { get; set; }
+        public uint ShopPrice { get; set; }
 
         #endregion
 

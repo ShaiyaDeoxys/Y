@@ -2376,7 +2376,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMyShopAddItem(IWorldClient client, byte bag, byte slot, byte shopSlot, int price)
+        public void SendMyShopAddItem(IWorldClient client, byte bag, byte slot, byte shopSlot, uint price)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_ADD_ITEM);
             packet.Write(bag);
@@ -2458,6 +2458,32 @@ namespace Imgeneus.World.Packets
         public void SendUseShopClosed(IWorldClient client)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_USE_STOP);
+            client.Send(packet);
+        }
+
+        public void SendMyShopBuyItemFailed(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_BUY_ITEM);
+            packet.Write(false);
+            client.Send(packet);
+        }
+
+        public void SendMyShopBuyItemSuccess(IWorldClient client, uint money, byte shopSlot, byte shopCount, Item item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_BUY_ITEM);
+            packet.Write(true);
+            packet.Write(money);
+            packet.Write(shopSlot);
+            packet.Write(shopCount);
+            packet.Write(new SoldItem(item).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendUseShopItemCountChanged(IWorldClient client, byte slot, byte count) 
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_USE_SHOP_ITEM_COUNT);
+            packet.Write(slot);
+            packet.Write(count);
             client.Send(packet);
         }
 

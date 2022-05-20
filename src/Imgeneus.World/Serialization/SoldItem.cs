@@ -4,13 +4,13 @@ using Imgeneus.World.Game.Inventory;
 
 namespace Imgeneus.World.Serialization
 {
-    public class MyShopItem : BaseSerializable
+    public class SoldItem : BaseSerializable
     {
         [FieldOrder(0)]
-        public byte Slot { get; }
+        public byte Bag { get; }
 
         [FieldOrder(1)]
-        public uint Price { get; }
+        public byte Slot { get; }
 
         [FieldOrder(2)]
         public byte Type { get; }
@@ -45,10 +45,10 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(12)]
         public CraftName CraftName { get; }
 
-        public MyShopItem(byte slot, Item item)
+        public SoldItem(Item item)
         {
-            Price = item.ShopPrice;
-            Slot = slot;
+            Bag = item.Bag;
+            Slot = item.Slot;
             Type = item.Type;
             TypeId = item.TypeId;
             Count = item.Count;

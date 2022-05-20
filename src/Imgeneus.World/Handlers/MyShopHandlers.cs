@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Shop;
 using Imgeneus.World.Packets;
@@ -12,11 +13,13 @@ namespace Imgeneus.World.Handlers
     public class MyShopHandlers : BaseHandler
     {
         private readonly IShopManager _shopManager;
+        private readonly IInventoryManager _inventoryManager;
         private readonly IGameWorld _gameWorld;
 
-        public MyShopHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IShopManager shopManager, IGameWorld gameWorld) : base(packetFactory, gameSession)
+        public MyShopHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IShopManager shopManager, IInventoryManager inventoryManager, IGameWorld gameWorld) : base(packetFactory, gameSession)
         {
             _shopManager = shopManager;
+            _inventoryManager = inventoryManager;
             _gameWorld = gameWorld;
         }
 
@@ -92,11 +95,11 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.MY_SHOP_BUY_ITEM)]
         public void HandleBuy(WorldClient client, MyShopBuyPacket packet)
         {
-            if (_shopManager.UseShop is null)
-                return;
-
-            if (!_shopManager.UseShop.Items.ContainsKey(packet.Slot))
-                return;
+            var ok = _shopManager.TryBuyItem(packet.Slot, packet.Count, out var soldItem, out var shopItem);
+            if (ok)
+                _packetFactory.SendMyShopBuyItemSuccess(client, _inventoryManager.Gold, packet.Slot, shopItem.Count, soldItem);
+            else
+                _packetFactory.SendMyShopBuyItemFailed(client);
         }
     }
 }

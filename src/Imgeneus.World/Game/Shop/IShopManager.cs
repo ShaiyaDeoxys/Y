@@ -37,7 +37,7 @@ namespace Imgeneus.World.Game.Shop
         /// <summary>
         /// Tries to add item to shop.
         /// </summary>
-        bool TryAddItem(byte bag, byte slot, byte shopSlot, int price);
+        bool TryAddItem(byte bag, byte slot, byte shopSlot, uint price);
 
         /// <summary>
         /// Tries to remove item from shop.
@@ -73,5 +73,26 @@ namespace Imgeneus.World.Game.Shop
         /// Event, that is fired, when use shop is closed by shop owner.
         /// </summary>
         event Action OnUseShopClosed;
+
+        /// <summary>
+        /// Tries to buy item in <see cref="UseShop"/>
+        /// </summary>
+        bool TryBuyItem(byte slot, byte count, out Item soldItem, out Item shopItem);
+
+        /// <summary>
+        /// Sells item.
+        /// </summary>
+        Item TrySellItem(byte slot, byte count);
+
+        /// <summary>
+        /// Event, that is fired, when number of sold items changes,
+        /// i.e. when player opened shop window and see, that someone buys some item.
+        /// </summary>
+        event Action<byte, byte> OnSellItemCountChanged;
+
+        /// <summary>
+        /// Event, that is fired, when number of items in used shop changes.
+        /// </summary>
+        event Action<byte, byte> OnUseShopItemCountChanged;
     }
 }

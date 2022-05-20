@@ -359,7 +359,7 @@ namespace Imgeneus.World.Packets
 
         #region Shop
         void SendMyShopBegin(IWorldClient client);
-        void SendMyShopAddItem(IWorldClient client, byte bag, byte slot, byte shopSlot, int price);
+        void SendMyShopAddItem(IWorldClient client, byte bag, byte slot, byte shopSlot, uint price);
         void SendMyShopRemoveItem(IWorldClient client, byte shopSlot);
         void SendMyShopStarted(IWorldClient client);
         void SendMyShopCanceled(IWorldClient client);
@@ -370,6 +370,9 @@ namespace Imgeneus.World.Packets
         void SendMyShopLeave(IWorldClient client);
         void SendMyShopItems(IWorldClient client, IReadOnlyDictionary<byte, Item> items);
         void SendUseShopClosed(IWorldClient client);
+        void SendMyShopBuyItemFailed(IWorldClient client);
+        void SendMyShopBuyItemSuccess(IWorldClient client, uint money, byte shopSlot, byte shopCount, Item item);
+        void SendUseShopItemCountChanged(IWorldClient client, byte slot, byte count);
         #endregion
 
         #region GM

@@ -78,7 +78,7 @@ namespace Imgeneus.World.Game.Shop
         private ConcurrentDictionary<byte, Item> _items { get; init; } = new();
         public IReadOnlyDictionary<byte, Item> Items { get; set; }
 
-        public bool TryAddItem(byte bag, byte slot, byte shopSlot, int price)
+        public bool TryAddItem(byte bag, byte slot, byte shopSlot, uint price)
         {
             if (!_inventoryManager.InventoryItems.TryGetValue((bag, slot), out var item))
             {
@@ -124,7 +124,7 @@ namespace Imgeneus.World.Game.Shop
 
         public bool TryStart(string name)
         {
-            if (string.IsNullOrEmpty(name) || Items.Count == 0)
+            if (string.IsNullOrEmpty(name) || _items.Count == 0)
                 return false;
 
             if (IsShopOpened)
@@ -166,25 +166,91 @@ namespace Imgeneus.World.Game.Shop
             {
                 if (_useShop is not null)
                 {
-                    _useShop.OnShopFinished -= CurrentShop_OnShopFinished;
+                    _useShop.OnShopFinished -= UseShop_OnShopFinished;
+                    _useShop.OnSellItemCountChanged -= UseShop_OnSellItemCountChanged;
                 }
 
                 _useShop = value;
 
                 if (_useShop is not null)
                 {
-                    _useShop.OnShopFinished += CurrentShop_OnShopFinished;
+                    _useShop.OnShopFinished += UseShop_OnShopFinished;
+                    _useShop.OnSellItemCountChanged += UseShop_OnSellItemCountChanged;
                 }
             }
         }
 
-        private void CurrentShop_OnShopFinished(int senderId)
+        private void UseShop_OnShopFinished(int senderId)
         {
             UseShop = null;
             OnUseShopClosed?.Invoke();
         }
 
+        private void UseShop_OnSellItemCountChanged(byte slot, byte count)
+        {
+            OnUseShopItemCountChanged?.Invoke(slot, count);
+        }
+
         public event Action OnUseShopClosed;
+
+        public event Action<byte, byte> OnUseShopItemCountChanged;
+
+        public bool TryBuyItem(byte slot, byte count, out Item soldItem, out Item shopItem)
+        {
+            soldItem = null;
+            shopItem = null;
+
+            if (UseShop is null)
+                return false;
+
+            if (!UseShop.Items.TryGetValue(slot, out shopItem))
+                return false;
+
+            if (shopItem.Count < count)
+                count = shopItem.Count;
+
+            if (shopItem.ShopPrice * count > _inventoryManager.Gold)
+                return false;
+
+            _inventoryManager.Gold -= shopItem.ShopPrice * count;
+
+            soldItem = UseShop.TrySellItem(slot, count);
+            if (soldItem is null)
+            {
+                _inventoryManager.Gold += shopItem.ShopPrice * count;
+                return false;
+            }
+
+            _inventoryManager.AddItem(soldItem);
+
+            return true;
+        }
+
+        public event Action<byte, byte> OnSellItemCountChanged;
+
+        public Item TrySellItem(byte slot, byte count)
+        {
+            if (!Items.TryGetValue(slot, out var item))
+                return null;
+
+            if (item.Count < count)
+                count = item.Count;
+
+            _inventoryManager.Gold += item.ShopPrice * count;
+            item.Count -= count;
+
+            Item resultItem;
+            if (item.Count == 0)
+                resultItem = _inventoryManager.RemoveItem(item);
+            else
+                resultItem = item.Clone();
+
+            resultItem.Count = count;
+
+            OnSellItemCountChanged?.Invoke(slot, item.Count);
+
+            return resultItem;
+        }
 
         #endregion
     }

@@ -259,6 +259,7 @@
         MY_SHOP_ITEM_LIST = 0x230B, // 8971
         MY_SHOP_USE_STOP = 0x230C, // 8972
         MY_SHOP_BUY_ITEM = 0x230D, // 8973
+        MY_SHOP_USE_SHOP_ITEM_COUNT = 0x230E, // 8974
         MY_SHOP_INFO = 0x0523, // 1315
 
         // Duel
