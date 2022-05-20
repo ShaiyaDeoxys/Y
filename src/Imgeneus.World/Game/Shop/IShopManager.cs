@@ -63,5 +63,15 @@ namespace Imgeneus.World.Game.Shop
         /// Event, that is fired, when shop is closed.
         /// </summary>
         event Action<int> OnShopFinished;
+
+        /// <summary>
+        /// If player is buying something from another's player shop, we keep reference to another player's shop.
+        /// </summary>
+        IShopManager UseShop { get; set; }
+
+        /// <summary>
+        /// Event, that is fired, when use shop is closed by shop owner.
+        /// </summary>
+        event Action OnUseShopClosed;
     }
 }

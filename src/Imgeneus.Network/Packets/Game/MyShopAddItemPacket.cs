@@ -17,7 +17,7 @@ namespace Imgeneus.Network.Packets.Game
             Bag = packetStream.Read<byte>();
             Slot = packetStream.Read<byte>();
             ShopSlot = packetStream.Read<byte>();
-            Price = packetStream.Read<byte>();
+            Price = packetStream.Read<int>();
         }
     }
 }

@@ -2442,10 +2442,22 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMyShopLeave(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_LEAVE);
+            client.Send(packet);
+        }
+
         public void SendMyShopItems(IWorldClient client, IReadOnlyDictionary<byte, Item> items)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_ITEM_LIST);
             packet.Write(new MyShopItems(items).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendUseShopClosed(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MY_SHOP_USE_STOP);
             client.Send(packet);
         }
 

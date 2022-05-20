@@ -150,6 +150,7 @@ namespace Imgeneus.World.Game.Player
             LevelingManager.OnExpChanged += SendExperienceGain;
             QuestsManager.OnQuestMobCountChanged += SendQuestCountUpdate;
             QuestsManager.OnQuestFinished += SendQuestFinished;
+            ShopManager.OnUseShopClosed += SendUseShopClosed;
 
             Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;
@@ -177,6 +178,7 @@ namespace Imgeneus.World.Game.Player
             LevelingManager.OnExpChanged -= SendExperienceGain;
             QuestsManager.OnQuestMobCountChanged -= SendQuestCountUpdate;
             QuestsManager.OnQuestFinished -= SendQuestFinished;
+            ShopManager.OnUseShopClosed -= SendUseShopClosed;
 
             Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;

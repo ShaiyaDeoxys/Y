@@ -87,5 +87,7 @@ namespace Imgeneus.World.Game.Player
         public void SendGuildRanksCalculated(IEnumerable<(int GuildId, int Points, byte Rank)> results) => _packetFactory.SendGuildRanksCalculated(GameSession.Client, results);
 
         public void SendGoldUpdate() => _packetFactory.SendGoldUpdate(GameSession.Client, InventoryManager.Gold);
+
+        public void SendUseShopClosed() => _packetFactory.SendUseShopClosed(GameSession.Client);
     }
 }

@@ -55,8 +55,6 @@ namespace Imgeneus.World.Game.Shop
             if (_mapProvider.Map.Id != 35 && _mapProvider.Map.Id != 36 && _mapProvider.Map.Id != 42)
                 return false;
 
-            Items = new ReadOnlyDictionary<byte, Item>(_items);
-
             return true;
         }
 
@@ -134,6 +132,7 @@ namespace Imgeneus.World.Game.Shop
 
             Name = name;
             IsShopOpened = true;
+            Items = new ReadOnlyDictionary<byte, Item>(_items);
             OnShopStarted?.Invoke(_ownerId, Name);
 
             return true;
@@ -154,6 +153,38 @@ namespace Imgeneus.World.Game.Shop
 
             return true;
         }
+
+        #endregion
+
+        #region Buy in another shop
+
+        private IShopManager _useShop;
+        public IShopManager UseShop
+        {
+            get => _useShop;
+            set
+            {
+                if (_useShop is not null)
+                {
+                    _useShop.OnShopFinished -= CurrentShop_OnShopFinished;
+                }
+
+                _useShop = value;
+
+                if (_useShop is not null)
+                {
+                    _useShop.OnShopFinished += CurrentShop_OnShopFinished;
+                }
+            }
+        }
+
+        private void CurrentShop_OnShopFinished(int senderId)
+        {
+            UseShop = null;
+            OnUseShopClosed?.Invoke();
+        }
+
+        public event Action OnUseShopClosed;
 
         #endregion
     }

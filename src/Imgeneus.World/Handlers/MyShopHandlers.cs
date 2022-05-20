@@ -69,7 +69,7 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.MY_SHOP_VISIT)]
-        public void HandleItemList(WorldClient client, MyShopItemListPacket packet)
+        public void HandleItemList(WorldClient client, MyShopVisitPacket packet)
         {
             if (!_gameWorld.Players.TryGetValue(packet.CharacterId, out var player))
                 return;
@@ -77,8 +77,26 @@ namespace Imgeneus.World.Handlers
             if (!player.ShopManager.IsShopOpened)
                 return;
 
+            _shopManager.UseShop = player.ShopManager;
             _packetFactory.SendMyShopVisit(client, true, player.Id);
             _packetFactory.SendMyShopItems(client, player.ShopManager.Items);
+        }
+
+        [HandlerAction(PacketType.MY_SHOP_LEAVE)]
+        public void HandleLeave(WorldClient client, MyShopLeavePacket packet)
+        {
+            _shopManager.UseShop = null;
+            _packetFactory.SendMyShopLeave(client);
+        }
+
+        [HandlerAction(PacketType.MY_SHOP_BUY_ITEM)]
+        public void HandleBuy(WorldClient client, MyShopBuyPacket packet)
+        {
+            if (_shopManager.UseShop is null)
+                return;
+
+            if (!_shopManager.UseShop.Items.ContainsKey(packet.Slot))
+                return;
         }
     }
 }

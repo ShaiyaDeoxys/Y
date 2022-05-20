@@ -255,7 +255,10 @@
         MY_SHOP_ADD_ITEM = 0x2305, // 8965
         MY_SHOP_REMOVE_ITEM = 0x2306, // 8966
         MY_SHOP_VISIT = 0x2309, // 8969
+        MY_SHOP_LEAVE = 0x230A, // 8970
         MY_SHOP_ITEM_LIST = 0x230B, // 8971
+        MY_SHOP_USE_STOP = 0x230C, // 8972
+        MY_SHOP_BUY_ITEM = 0x230D, // 8973
         MY_SHOP_INFO = 0x0523, // 1315
 
         // Duel
