@@ -52,7 +52,7 @@ namespace Imgeneus.World.Game.Shop
 
         public bool TryBegin()
         {
-            if (_mapProvider.Map.Id != 35 && _mapProvider.Map.Id != 36 && _mapProvider.Map.Id != 42)
+            if (_mapProvider.Map is null || (_mapProvider.Map.Id != 35 && _mapProvider.Map.Id != 36 && _mapProvider.Map.Id != 42))
                 return false;
 
             return true;
@@ -76,7 +76,7 @@ namespace Imgeneus.World.Game.Shop
         public string Name { get; private set; }
 
         private ConcurrentDictionary<byte, Item> _items { get; init; } = new();
-        public IReadOnlyDictionary<byte, Item> Items { get; set; }
+        public IReadOnlyDictionary<byte, Item> Items { get => new ReadOnlyDictionary<byte, Item>(_items); }
 
         public bool TryAddItem(byte bag, byte slot, byte shopSlot, uint price)
         {
@@ -91,7 +91,6 @@ namespace Imgeneus.World.Game.Shop
                 _logger.LogWarning("Character {id} is trying to add item from inventory to same slot, possible cheating?", _ownerId);
                 return false;
             }
-
 
             if (item.IsInShop)
             {
@@ -124,6 +123,9 @@ namespace Imgeneus.World.Game.Shop
 
         public bool TryStart(string name)
         {
+            if (!TryBegin())
+                return false;
+
             if (string.IsNullOrEmpty(name) || _items.Count == 0)
                 return false;
 
@@ -132,7 +134,6 @@ namespace Imgeneus.World.Game.Shop
 
             Name = name;
             IsShopOpened = true;
-            Items = new ReadOnlyDictionary<byte, Item>(_items);
             OnShopStarted?.Invoke(_ownerId, Name);
 
             return true;
@@ -245,7 +246,6 @@ namespace Imgeneus.World.Game.Shop
             if (item.Count == 0)
             {
                 _items.TryRemove(slot, out var _);
-                Items = new ReadOnlyDictionary<byte, Item>(_items);
                 resultItem = _inventoryManager.RemoveItem(item);
             }
             else
