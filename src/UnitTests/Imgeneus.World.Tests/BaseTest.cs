@@ -58,6 +58,7 @@ using SQuest = Parsec.Shaiya.NpcQuest.Quest;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Warehouse;
 using Imgeneus.World.Game.AI;
+using Imgeneus.World.Game.Shop;
 
 namespace Imgeneus.World.Tests
 {
@@ -155,6 +156,7 @@ namespace Imgeneus.World.Tests
             var duelManager = new DuelManager(new Mock<ILogger<DuelManager>>().Object, gameWorldMock.Object, tradeManager, movementManager, healthManager, killsManager, mapProvider, inventoryManager, teleportManager);
             var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, inventoryManager);
             var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, levelingManager);
+            var shopManager = new ShopManager(new Mock<ILogger<ShopManager>>().Object, inventoryManager, mapProvider);
 
             var character = new Character(
                 new Mock<ILogger<Character>>().Object,
@@ -188,6 +190,7 @@ namespace Imgeneus.World.Tests
                 questsManager,
                 untouchableManager,
                 warehouseManager,
+                shopManager,
                 gameSessionMock.Object,
                 packetFactoryMock.Object);
 
