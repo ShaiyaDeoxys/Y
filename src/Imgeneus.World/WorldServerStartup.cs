@@ -152,6 +152,10 @@ namespace Imgeneus.World
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
             services.AddTransient<ITimeService, TimeService>();
+
+            // Add admin website
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder)
@@ -161,7 +165,13 @@ namespace Imgeneus.World
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
             app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapBlazorHub();
+                endpoints.MapFallbackToPage("/_Host");
+            });
 
             mainDb.Migrate();
             logsDb.Migrate();

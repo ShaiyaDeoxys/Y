@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parsec", "submodules\Parsec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.GameDefinitions", "src\Imgeneus.GameDefinitions\Imgeneus.GameDefinitions.csproj", "{3480F8B8-1837-4BF9-99F1-20A3423207FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imgeneus.Game", "src\Imgeneus.Game\Imgeneus.Game.csproj", "{B679251D-867D-407A-AA1B-6BD5F2E47D85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.Game", "src\Imgeneus.Game\Imgeneus.Game.csproj", "{B679251D-867D-407A-AA1B-6BD5F2E47D85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
