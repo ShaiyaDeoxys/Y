@@ -18,10 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Imgeneus.Game\Imgeneus.Game.csproj" />
     <ProjectReference Include="..\..\submodules\LiteNetwork\src\LiteNetwork\LiteNetwork.csproj" />
     <ProjectReference Include="..\..\submodules\Sylver.HandlerInvoker\src\Sylver.HandlerInvoker\Sylver.HandlerInvoker.csproj" />
     <ProjectReference Include="..\Imgeneus.GameDefinitions\Imgeneus.GameDefinitions.csproj" />
+    <ProjectReference Include="..\Imgeneus.Game\Imgeneus.Game.csproj" />
     <ProjectReference Include="..\Imgeneus.InterServer\Imgeneus.InterServer.csproj" />
     <ProjectReference Include="..\Imgeneus.Logs\Imgeneus.Logs.csproj" />
     <ProjectReference Include="..\Imgeneus.Core\Imgeneus.Core.csproj" />
