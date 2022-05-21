@@ -43,6 +43,9 @@ In-game logs, that are saved via SQLite in file.
 ##### Imgeneus.InterServer
 Communication between servers (login and game) is done with the help of SignalR. You can read more about SignalR [here](https://docs.microsoft.com/en-us/aspnet/core/tutorials/signalr).
 
+##### Imgeneus.Game
+Game logic.
+
 ##### Imgeneus.Login
 Login server, that handles all packets in the login screen. Redirects to the selected game server.
 

@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.World", "src\Imgen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{D2B05B8D-E630-4702-A4E9-5A028DAF9EEE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.World.Tests", "src\UnitTests\Imgeneus.World.Tests\Imgeneus.World.Tests.csproj", "{D3CDC69A-46E8-459C-BFDA-99C2FA8C5BF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.Game.Tests", "src\UnitTests\Imgeneus.World.Tests\Imgeneus.Game.Tests.csproj", "{D3CDC69A-46E8-459C-BFDA-99C2FA8C5BF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.Logs", "src\Imgeneus.Logs\Imgeneus.Logs.csproj", "{8E34CA3C-A971-47DD-AE63-619EC76EAF15}"
 EndProject
@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sylver.HandlerInvoker", "su
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parsec", "submodules\Parsec\src\Parsec\Parsec.csproj", "{BD267F63-0F95-4254-8C88-96AB354DDE8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imgeneus.GameDefinitions", "src\Imgeneus.GameDefinitions\Imgeneus.GameDefinitions.csproj", "{3480F8B8-1837-4BF9-99F1-20A3423207FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.GameDefinitions", "src\Imgeneus.GameDefinitions\Imgeneus.GameDefinitions.csproj", "{3480F8B8-1837-4BF9-99F1-20A3423207FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imgeneus.Game", "Imgeneus.Game\Imgeneus.Game.csproj", "{B679251D-867D-407A-AA1B-6BD5F2E47D85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -280,6 +282,26 @@ Global
 		{3480F8B8-1837-4BF9-99F1-20A3423207FF}.SHAIYA_US|Any CPU.Build.0 = Debug|Any CPU
 		{3480F8B8-1837-4BF9-99F1-20A3423207FF}.SHAIYA_US|x86.ActiveCfg = Debug|Any CPU
 		{3480F8B8-1837-4BF9-99F1-20A3423207FF}.SHAIYA_US|x86.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Debug|x86.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V1|Any CPU.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V1|Any CPU.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V1|x86.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V1|x86.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V2|Any CPU.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V2|Any CPU.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V2|x86.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.EP8_V2|x86.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Release|x86.ActiveCfg = Release|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.Release|x86.Build.0 = Release|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.SHAIYA_US|Any CPU.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.SHAIYA_US|Any CPU.Build.0 = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.SHAIYA_US|x86.ActiveCfg = Debug|Any CPU
+		{B679251D-867D-407A-AA1B-6BD5F2E47D85}.SHAIYA_US|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
