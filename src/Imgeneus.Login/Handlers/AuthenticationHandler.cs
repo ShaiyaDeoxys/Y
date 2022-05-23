@@ -18,13 +18,15 @@ namespace Imgeneus.Login.Handlers
         private readonly ILoginPacketFactory _loginPacketFactory;
         private readonly IDatabase _database;
         private readonly IPasswordHasher<DbUser> _passwordHasher;
+        private readonly UserManager<DbUser> _userManager;
 
-        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IDatabase database, IPasswordHasher<DbUser> passwordHasher)
+        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IDatabase database, IPasswordHasher<DbUser> passwordHasher, UserManager<DbUser> userManager)
         {
             _server = server;
             _loginPacketFactory = loginPacketFactory;
             _database = database;
             _passwordHasher = passwordHasher;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -84,7 +86,10 @@ namespace Imgeneus.Login.Handlers
 
             sender.SetClientUserID(dbUser.Id);
 
-            _loginPacketFactory.AuthenticationSuccess(sender, result, dbUser);
+            var roles = await _userManager.GetRolesAsync(dbUser);
+            var isAdmin = roles.Contains(DbRole.ADMIN) || roles.Contains(DbRole.SUPER_ADMIN);
+
+            _loginPacketFactory.AuthenticationSuccess(sender, result, dbUser, isAdmin);
         }
 
         private AuthenticationResult Authentication(string username, string password)
@@ -107,7 +112,7 @@ namespace Imgeneus.Login.Handlers
                 return AuthenticationResult.INVALID_PASSWORD;
             }
 
-            return (AuthenticationResult)dbUser.Status;
+            return AuthenticationResult.SUCCESS;
         }
     }
 }

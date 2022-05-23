@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database;
+using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
@@ -31,6 +32,7 @@ using Imgeneus.World.Game.Vehicle;
 using Imgeneus.World.Game.Warehouse;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
@@ -77,6 +79,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IWarehouseManager _warehouseManager;
         private readonly IShopManager _shopManager;
         private readonly IGamePacketFactory _packetFactory;
+        private readonly UserManager<DbUser> _userManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
                                 IDatabase database,
@@ -114,7 +117,8 @@ namespace Imgeneus.World.Game.Player
                                 IUntouchableManager untouchableManager,
                                 IWarehouseManager warehouseManager,
                                 IShopManager shopManager,
-                                IGamePacketFactory packetFactory)
+                                IGamePacketFactory packetFactory,
+                                UserManager<DbUser> userManager)
         {
             _logger = logger;
             _database = database;
@@ -153,6 +157,7 @@ namespace Imgeneus.World.Game.Player
             _warehouseManager = warehouseManager;
             _shopManager = shopManager;
             _packetFactory = packetFactory;
+            _userManager = userManager;
         }
 
         public async Task<Character> CreateCharacter(int userId, int characterId)
@@ -184,10 +189,13 @@ namespace Imgeneus.World.Game.Player
                 return null;
             }
 
+            var roles = await _userManager.GetRolesAsync(dbCharacter.User);
+            var isAdmin = roles.Contains(DbRole.ADMIN) || roles.Contains(DbRole.SUPER_ADMIN);
+
             _levelProvider.Init(dbCharacter.Id, dbCharacter.Level);
 
             _gameSession.CharId = dbCharacter.Id;
-            _gameSession.IsAdmin = dbCharacter.User.Authority == 0;
+            _gameSession.IsAdmin = isAdmin;
 
             _countryProvider.Init(dbCharacter.Id, dbCharacter.User.Faction);
 
@@ -264,7 +272,7 @@ namespace Imgeneus.World.Game.Player
             _shopManager.Init(dbCharacter.Id);
 
             _stealthManager.Init(dbCharacter.Id);
-            _stealthManager.IsAdminStealth = dbCharacter.User.Authority == 0;
+            _stealthManager.IsAdminStealth = isAdmin;
 
             var player = Character.FromDbCharacter(dbCharacter,
                                         _characterLogger,

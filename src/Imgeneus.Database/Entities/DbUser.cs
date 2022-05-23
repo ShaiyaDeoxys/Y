@@ -11,18 +11,6 @@ namespace Imgeneus.Database.Entities
     public class DbUser : IdentityUser<int>
     {
         /// <summary>
-        /// Gets or sets the user's current status.
-        /// </summary>
-        [DefaultValue(0)]
-        public byte Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user's current status.
-        /// </summary>
-        [DefaultValue(0)]
-        public byte Authority { get; set; }
-
-        /// <summary>
         /// Gets or sets the user's current points.
         /// </summary>
         public uint Points { get; set; }

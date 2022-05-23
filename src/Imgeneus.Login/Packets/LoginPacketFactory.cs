@@ -38,13 +38,13 @@ namespace Imgeneus.Login.Packets
             client.Send(packet);
         }
 
-        public void AuthenticationSuccess(LoginClient client, AuthenticationResult result, DbUser user)
+        public void AuthenticationSuccess(LoginClient client, AuthenticationResult result, DbUser user, bool isAdmin)
         {
             using var packet = new ImgeneusPacket(PacketType.LOGIN_REQUEST);
 
             packet.Write((byte)result);
             packet.Write(user.Id);
-            packet.Write(user.Authority);
+            packet.Write(isAdmin ? (byte)0 : (byte)255);
             packet.Write(client.Id.ToByteArray());
 
             client.Send(packet);
