@@ -1,5 +1,7 @@
 ﻿using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
+using Imgeneus.Database.Context;
+using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.GameDefinitions;
 using Imgeneus.Logs;
@@ -54,6 +56,7 @@ using InterServer.Client;
 using InterServer.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -156,9 +159,18 @@ namespace Imgeneus.World
             // Add admin website
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddDefaultIdentity<DbUser>(options =>
+                {
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequiredLength = 1;
+                })
+                .AddRoles<DbRole>()
+                .AddEntityFrameworkStores<DatabaseContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder, RoleManager<DbRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -166,12 +178,23 @@ namespace Imgeneus.World
             }
 
             app.UseStaticFiles();
+
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.SUPER_ADMIN }).Wait();
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.ADMIN }).Wait();
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.USER }).Wait();
 
             mainDb.Migrate();
             logsDb.Migrate();

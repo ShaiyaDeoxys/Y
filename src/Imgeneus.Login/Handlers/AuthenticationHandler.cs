@@ -1,10 +1,11 @@
 ﻿using Imgeneus.Database;
+using Imgeneus.Database.Entities;
 using Imgeneus.Login.Packets;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Login;
+using Microsoft.AspNetCore.Identity;
 using Sylver.HandlerInvoker.Attributes;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,12 +17,16 @@ namespace Imgeneus.Login.Handlers
         private readonly ILoginServer _server;
         private readonly ILoginPacketFactory _loginPacketFactory;
         private readonly IDatabase _database;
+        private readonly IPasswordHasher<DbUser> _passwordHasher;
+        private readonly UserManager<DbUser> _userManager;
 
-        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IDatabase database)
+        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IDatabase database, IPasswordHasher<DbUser> passwordHasher, UserManager<DbUser> userManager)
         {
             _server = server;
             _loginPacketFactory = loginPacketFactory;
             _database = database;
+            _passwordHasher = passwordHasher;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -67,7 +72,7 @@ namespace Imgeneus.Login.Handlers
                 return;
             }
 
-            var dbUser = _database.Users.First(x => x.Username == username);
+            var dbUser = _database.Users.First(x => x.UserName == username);
 
             if (_server.IsClientConnected(dbUser.Id))
             {
@@ -81,12 +86,15 @@ namespace Imgeneus.Login.Handlers
 
             sender.SetClientUserID(dbUser.Id);
 
-            _loginPacketFactory.AuthenticationSuccess(sender, result, dbUser);
+            var roles = await _userManager.GetRolesAsync(dbUser);
+            var isAdmin = roles.Contains(DbRole.ADMIN) || roles.Contains(DbRole.SUPER_ADMIN);
+
+            _loginPacketFactory.AuthenticationSuccess(sender, result, dbUser, isAdmin);
         }
 
         private AuthenticationResult Authentication(string username, string password)
         {
-            var dbUser = _database.Users.FirstOrDefault(x => x.Username == username);
+            var dbUser = _database.Users.FirstOrDefault(x => x.UserName == username);
 
             if (dbUser == null)
             {
@@ -98,12 +106,13 @@ namespace Imgeneus.Login.Handlers
                 return AuthenticationResult.ACCOUNT_IN_DELETE_PROCESS_1;
             }
 
-            if (!dbUser.Password.Equals(password))
+            var result = _passwordHasher.VerifyHashedPassword(dbUser, _passwordHasher.HashPassword(dbUser, password), password);
+            if (result == PasswordVerificationResult.Failed)
             {
                 return AuthenticationResult.INVALID_PASSWORD;
             }
 
-            return (AuthenticationResult)dbUser.Status;
+            return AuthenticationResult.SUCCESS;
         }
     }
 }

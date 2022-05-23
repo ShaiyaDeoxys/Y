@@ -7,7 +7,7 @@ namespace Imgeneus.Login.Packets
     {
         void SendLoginHandshake(LoginClient client);
         void AuthenticationFailed(LoginClient client, AuthenticationResult result);
-        void AuthenticationSuccess(LoginClient client, AuthenticationResult result, DbUser user);
+        void AuthenticationSuccess(LoginClient client, AuthenticationResult result, DbUser user, bool isAdmin);
         void SelectServerFailed(LoginClient client, SelectServer error);
         void SelectServerSuccess(LoginClient client, byte[] worldIp);
     }

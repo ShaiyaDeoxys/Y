@@ -1,14 +1,13 @@
 ﻿using Imgeneus.Database.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Imgeneus.Database.Context
 {
-    public class DatabaseContext : DbContext, IDatabase
+    public class DatabaseContext : IdentityDbContext<DbUser, DbRole, int>, IDatabase
     {
-        public DbSet<DbUser> Users { get; set; }
-
         public DbSet<DbCharacter> Characters { get; set; }
 
         public DbSet<DbCharacterItems> CharacterItems { get; set; }
@@ -51,7 +50,7 @@ namespace Imgeneus.Database.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DbUser>().HasIndex(c => new { c.Username, c.Email }).IsUnique();
+            modelBuilder.Entity<DbUser>().HasIndex(c => new { c.UserName, c.Email }).IsUnique();
 
             modelBuilder.Entity<DbSkill>().HasIndex(s => new { s.SkillId, s.SkillLevel });
 
@@ -97,6 +96,17 @@ namespace Imgeneus.Database.Context
             modelBuilder.Entity<DbGuildWarehouseItem>().HasOne(x => x.Guild).WithMany(x => x.WarehouseItems);
 
             #endregion
+
+            base.OnModelCreating(modelBuilder);
+
+            // Get rid of "aspnet" prefix in table names
+            var tableNamePrefix = "AspNet";
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var tableName = entityType.GetTableName();
+                if (tableName.StartsWith(tableNamePrefix))
+                    entityType.SetTableName(tableName.Substring(tableNamePrefix.Length));
+            }
         }
 
         /// <summary>
