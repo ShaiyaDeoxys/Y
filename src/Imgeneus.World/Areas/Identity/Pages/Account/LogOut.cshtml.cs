@@ -1,8 +1,5 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
+﻿#nullable disable
 
-using System;
 using System.Threading.Tasks;
 using Imgeneus.Database.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Imgeneus.World.Areas.Identity.Pages.Account
 {
+    [IgnoreAntiforgeryToken]
     public class LogOutModel : PageModel
     {
         private readonly SignInManager<DbUser> _signInManager;
