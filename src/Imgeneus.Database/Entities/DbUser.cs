@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,28 +8,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Imgeneus.Database.Entities
 {
     [Table("Users")]
-    public class DbUser : DbEntity
+    public class DbUser : IdentityUser<int>
     {
-        /// <summary>
-        /// Gets or sets the user's name.
-        /// </summary>
-        [Required]
-        [MaxLength(19)]
-        public string Username { get; set; }
-
         /// <summary>
         /// Gets or sets the user's password.
         /// </summary>
         [Required]
         [MaxLength(16)]
         public string Password { get; set; }
-
-        /// <summary>
-        /// Gets pr sets the user's email address.
-        /// </summary>
-        [Required]
-        [MaxLength(30)]
-        public string Email { get; set; }
 
         /// <summary>
         /// Gets or sets the user's current status.
@@ -99,6 +86,7 @@ namespace Imgeneus.Database.Entities
         {
             this.CreateTime = DateTime.UtcNow;
             this.Characters = new HashSet<DbCharacter>();
+            Password = "1";
         }
 
     }

@@ -1,5 +1,7 @@
 ﻿using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
+using Imgeneus.Database.Context;
+using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.GameDefinitions;
 using Imgeneus.Logs;
@@ -156,6 +158,14 @@ namespace Imgeneus.World
             // Add admin website
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddDefaultIdentity<DbUser>(options =>
+                {
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                })
+                .AddRoles<DbRole>()
+                .AddEntityFrameworkStores<DatabaseContext>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder)
@@ -166,9 +176,15 @@ namespace Imgeneus.World
             }
 
             app.UseStaticFiles();
+
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

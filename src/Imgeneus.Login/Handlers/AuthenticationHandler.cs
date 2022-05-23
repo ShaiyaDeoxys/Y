@@ -67,7 +67,7 @@ namespace Imgeneus.Login.Handlers
                 return;
             }
 
-            var dbUser = _database.Users.First(x => x.Username == username);
+            var dbUser = _database.Users.First(x => x.UserName == username);
 
             if (_server.IsClientConnected(dbUser.Id))
             {
@@ -86,7 +86,7 @@ namespace Imgeneus.Login.Handlers
 
         private AuthenticationResult Authentication(string username, string password)
         {
-            var dbUser = _database.Users.FirstOrDefault(x => x.Username == username);
+            var dbUser = _database.Users.FirstOrDefault(x => x.UserName == username);
 
             if (dbUser == null)
             {
