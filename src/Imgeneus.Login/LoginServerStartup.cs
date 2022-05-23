@@ -1,4 +1,6 @@
 using Imgeneus.Database;
+using Imgeneus.Database.Context;
+using Imgeneus.Database.Entities;
 using Imgeneus.Login.Packets;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
@@ -31,6 +33,16 @@ namespace Imgeneus.Login
             services.AddSingleton<ILoginServer, LoginServer>();
             services.AddSingleton<ILoginPacketFactory, LoginPacketFactory>();
             services.AddTransient<ICryptoManager, CryptoManager>();
+
+            services.AddDefaultIdentity<DbUser>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredLength = 1;
+            })
+                .AddRoles<DbRole>()
+                .AddEntityFrameworkStores<DatabaseContext>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer)

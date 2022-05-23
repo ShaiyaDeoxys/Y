@@ -11,13 +11,6 @@ namespace Imgeneus.Database.Entities
     public class DbUser : IdentityUser<int>
     {
         /// <summary>
-        /// Gets or sets the user's password.
-        /// </summary>
-        [Required]
-        [MaxLength(16)]
-        public string Password { get; set; }
-
-        /// <summary>
         /// Gets or sets the user's current status.
         /// </summary>
         [DefaultValue(0)]
@@ -84,9 +77,8 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public DbUser()
         {
-            this.CreateTime = DateTime.UtcNow;
-            this.Characters = new HashSet<DbCharacter>();
-            Password = "1";
+            CreateTime = DateTime.UtcNow;
+            Characters = new HashSet<DbCharacter>();
         }
 
     }

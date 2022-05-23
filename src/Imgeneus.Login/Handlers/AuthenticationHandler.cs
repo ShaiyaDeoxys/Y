@@ -1,10 +1,11 @@
 ﻿using Imgeneus.Database;
+using Imgeneus.Database.Entities;
 using Imgeneus.Login.Packets;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Login;
+using Microsoft.AspNetCore.Identity;
 using Sylver.HandlerInvoker.Attributes;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,12 +17,14 @@ namespace Imgeneus.Login.Handlers
         private readonly ILoginServer _server;
         private readonly ILoginPacketFactory _loginPacketFactory;
         private readonly IDatabase _database;
+        private readonly IPasswordHasher<DbUser> _passwordHasher;
 
-        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IDatabase database)
+        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IDatabase database, IPasswordHasher<DbUser> passwordHasher)
         {
             _server = server;
             _loginPacketFactory = loginPacketFactory;
             _database = database;
+            _passwordHasher = passwordHasher;
         }
 
         /// <summary>
@@ -98,7 +101,8 @@ namespace Imgeneus.Login.Handlers
                 return AuthenticationResult.ACCOUNT_IN_DELETE_PROCESS_1;
             }
 
-            if (!dbUser.Password.Equals(password))
+            var result = _passwordHasher.VerifyHashedPassword(dbUser, _passwordHasher.HashPassword(dbUser, password), password);
+            if (result == PasswordVerificationResult.Failed)
             {
                 return AuthenticationResult.INVALID_PASSWORD;
             }
