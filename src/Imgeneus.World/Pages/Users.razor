@@ -1,4 +1,5 @@
 ﻿@page "/Users"
+@attribute [Authorize(Roles = "SuperAdmin, Admin")]  
 @using Imgeneus.Database.Entities
 @using Microsoft.EntityFrameworkCore
 

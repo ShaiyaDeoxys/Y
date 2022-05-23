@@ -56,6 +56,7 @@ using InterServer.Client;
 using InterServer.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -169,7 +170,7 @@ namespace Imgeneus.World
                 .AddEntityFrameworkStores<DatabaseContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder, RoleManager<DbRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -189,6 +190,11 @@ namespace Imgeneus.World
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.SUPER_ADMIN }).Wait();
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.ADMIN }).Wait();
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.USER }).Wait();
 
             mainDb.Migrate();
             logsDb.Migrate();

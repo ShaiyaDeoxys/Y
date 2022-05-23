@@ -1,6 +1,4 @@
-﻿@inject IDatabase _database
-
-<AuthorizeView>
+﻿<AuthorizeView>
     <Authorized>
         <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
         <form method="post" action="Identity/Account/LogOut">
@@ -8,10 +6,7 @@
         </form>
     </Authorized>
     <NotAuthorized>
-        @if (ShowRegisterButton)
-        {
-            <a href="Identity/Account/Register">Register</a>
-        }
+        <a href="Identity/Account/Register">Register</a>
         <a href="Identity/Account/Login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>

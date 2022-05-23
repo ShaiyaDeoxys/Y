@@ -77,14 +77,7 @@ namespace Imgeneus.World.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = _database.Users.FirstOrDefault(x => x.UserName == Input.UserName);
-                if (user is null)
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
-
-                var result = await _signInManager.PasswordSignInAsync(user.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(Input.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");

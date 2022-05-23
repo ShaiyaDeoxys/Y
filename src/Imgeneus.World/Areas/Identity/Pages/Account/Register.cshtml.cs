@@ -69,20 +69,22 @@ namespace Imgeneus.World.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            if (_database.Users.FirstOrDefault() != null)
-            {
-                return new ConflictObjectResult("Super Admin account already exists.");
-            }
+            // Very first user will be super admin.
+            var isSuperAdmin = _database.Users.FirstOrDefault() is null;
 
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new DbUser();
+                var user = new DbUser() { Faction = Fraction.NotSelected };
 
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                if (isSuperAdmin)
+                    await _userManager.AddToRoleAsync(user, DbRole.SUPER_ADMIN);
+                else
+                    await _userManager.AddToRoleAsync(user, DbRole.USER);
 
                 if (result.Succeeded)
                 {
