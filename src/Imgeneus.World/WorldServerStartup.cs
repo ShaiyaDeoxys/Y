@@ -163,6 +163,8 @@ namespace Imgeneus.World
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireLowercase = false;
+
+                    options.User.RequireUniqueEmail = true;
                 })
                 .AddRoles<DbRole>()
                 .AddEntityFrameworkStores<DatabaseContext>();
