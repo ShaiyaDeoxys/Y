@@ -4,8 +4,8 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 
-@inject IDatabase _database
 @inject UserManager<DbUser> _userManger
+@inject AuthenticationStateProvider _authProvider
 
 <PageTitle>Users</PageTitle>
 
@@ -18,31 +18,49 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Name</th>
                 <th>Points</th>
                 <th>Faction</th>
                 <th>Role</th>
                 <th>Last connection time</th>
                 <th>Is deleted</th>
-                <th>Actions</th>
+                @if (IsSuperAdmin)
+                {
+                    <th>Add role</th>
+                }
             </tr>
         </thead>
         <tbody>
             @foreach (var user in _users)
             {
                 <tr>
+                    <td>@user.Id</td>
                     <td>@user.UserName</td>
                     <td>@user.Points</td>
                     <td>@user.Faction</td>
                     <td>
                         @foreach (var role in @user.Roles)
                         {
-                            <span class="badge @(StyleForRole(@role))">@role</span>
+                            <span class="badge @(StyleForRole(@role))">
+                                @role
+                                @if (@role == DbRole.ADMIN && IsSuperAdmin)
+                                {
+                                    <small>
+                                        <span onclick="@(async () => @RemoveRoleAsync(@user, @role))" class="oi oi-x remove-role"></span>
+                                    </small>
+                                }
+                            </span>
                         }
                     </td>
                     <td>@user.LastConnectionTime.ToLongDateString() @user.LastConnectionTime.ToLongTimeString()</td>
                     <td>@user.IsDeleted</td>
-                    <td>// TODO: make GM and non-GM</td>
+                    <td>
+                        @if (IsSuperAdmin)
+                        {
+                            <button type="button" onclick="@(async () => @AddRoleAsync(@user, DbRole.ADMIN))" class="btn btn-primary">Add Admin role</button>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
@@ -52,9 +70,21 @@ else
 @code {
     private UserDTO[] _users;
 
+    public bool IsSuperAdmin { get; private set; }
+
     protected override async Task OnInitializedAsync()
     {
-        var dbUsers = await _database.Users.ToArrayAsync();
+        await InitUsers();
+
+        var state = await _authProvider.GetAuthenticationStateAsync();
+        var claimPrincipal = state.User;
+
+        IsSuperAdmin = claimPrincipal.IsInRole(DbRole.SUPER_ADMIN);
+    }
+
+    private async Task InitUsers()
+    {
+        var dbUsers = await _userManger.Users.ToArrayAsync();
         var users = new UserDTO[dbUsers.Length];
 
         for (var i = 0; i < dbUsers.Length; i++)
@@ -79,4 +109,45 @@ else
                 return "bg-secondary";
         }
     }
+
+    private async Task AddRoleAsync(UserDTO user, string role)
+    {
+        if (role == DbRole.SUPER_ADMIN) // Super admin can be set only via database.
+            return;
+
+        if (!IsSuperAdmin) // Only super admin can give role.
+            return;
+
+        var dbUser = await _userManger.FindByNameAsync(user.UserName);
+        var result = await _userManger.AddToRoleAsync(dbUser, role);
+        if (result.Succeeded)
+        {
+            user.Roles.Add(role);
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveRoleAsync(UserDTO user, string role)
+    {
+        if (role == DbRole.SUPER_ADMIN) // Super admin can be deleted only via database.
+            return;
+
+        if (!IsSuperAdmin) // Only super admin can give role.
+            return;
+
+        var dbUser = await _userManger.FindByNameAsync(user.UserName);
+        var result = await _userManger.RemoveFromRoleAsync(dbUser, role);
+        if (result.Succeeded)
+        {
+            user.Roles.Remove(role);
+            StateHasChanged();
+        }
+    }
 }
+
+<style>
+    .remove-role {
+        margin: 0px 0px 0px 5px;
+        cursor: pointer;
+    }
+</style>

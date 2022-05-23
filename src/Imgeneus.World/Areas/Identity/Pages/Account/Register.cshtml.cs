@@ -81,10 +81,11 @@ namespace Imgeneus.World.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
+                await _userManager.AddToRoleAsync(user, DbRole.USER);
                 if (isSuperAdmin)
                     await _userManager.AddToRoleAsync(user, DbRole.SUPER_ADMIN);
-                else
-                    await _userManager.AddToRoleAsync(user, DbRole.USER);
+                    
 
                 if (result.Succeeded)
                 {
