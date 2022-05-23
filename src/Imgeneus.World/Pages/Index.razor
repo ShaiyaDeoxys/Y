@@ -1,7 +1,42 @@
 ﻿@page "/"
 
+@using Imgeneus.World.Game
+@using Game.Country
+
+@inject IWorldServer _worldServer;
+@inject IGameWorld _gameWorld;
+
 <PageTitle>Home</PageTitle>
 
 <h1>Welcome to imgeneus admin panel!</h1>
 
-<h2>Hint: if it's first-time, when you run server, click "Register" link and create the first Super Admin account.</h2>
+<div class="alert alert-secondary" role="alert">
+    Hint: if it's first-time, when you run server, click "Register" link and create the first Super Admin account.
+</div>
+
+<h2>Open TPC connections: @GetNumberOfConnections()</h2>
+<h2>Number of players in game world: @GetNumberOfPlayers()</h2>
+<h2>Light player: @GetNumberOfLightPlayers()</h2>
+<h2>Dark players: @GetNumberOfDarkPlayers()</h2>
+
+@code {
+    private int GetNumberOfConnections()
+    {
+        return _worldServer.ConnectedUsers.Count();
+    }
+
+    private int GetNumberOfPlayers()
+    {
+        return _gameWorld.Players.Count;
+    }
+
+    private int GetNumberOfLightPlayers()
+    {
+        return _gameWorld.Players.Count(x => x.Value.CountryProvider.Country == CountryType.Light);
+    }
+
+    private int GetNumberOfDarkPlayers()
+    {
+        return _gameWorld.Players.Count(x => x.Value.CountryProvider.Country == CountryType.Dark);
+    }
+}
