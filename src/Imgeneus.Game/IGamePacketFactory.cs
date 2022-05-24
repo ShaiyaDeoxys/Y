@@ -381,7 +381,7 @@ namespace Imgeneus.World.Packets
         void SendGmCommandError(IWorldClient client, PacketType error);
         void SendCharacterPosition(IWorldClient client, Character player);
         void SendGmTeleportToPlayer(IWorldClient client, Character player);
-        void SendGmSummon(IWorldClient client, Character player, PacketType type);
+        void SendGmSummon(IWorldClient client, int senderId, ushort mapId, float x, float y, float z);
         void SendWarning(IWorldClient client, string message);
         #endregion
 

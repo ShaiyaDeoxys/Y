@@ -291,7 +291,7 @@ namespace Imgeneus.World.Game.Duel
             Lose();
         }
 
-        private void TeleportationManager_OnTeleporting(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
+        private void TeleportationManager_OnTeleporting(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
         {
             if (_mapProvider.Map.Id != mapId|| MathExtensions.Distance(x, _x, z, _z) >= 45)
                 Cancel(_ownerId, DuelCancelReason.TooFarAway);

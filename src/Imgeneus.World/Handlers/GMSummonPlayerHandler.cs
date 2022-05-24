@@ -65,10 +65,7 @@ namespace Imgeneus.World.Handlers
             var ok = Handle(player, _mapProvider.Map.Id, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);
 
             if (ok)
-            {
                 _packetFactory.SendGmCommandSuccess(client);
-                _packetFactory.SendGmSummon(player.GameSession.Client, player, PacketType.GM_SUMMON_PLAYER);
-            }
             else
                 _packetFactory.SendGmCommandError(client, PacketType.GM_SUMMON_PLAYER);
         }
@@ -83,10 +80,7 @@ namespace Imgeneus.World.Handlers
             var ok = Handle(player, _mapProvider.Map.Id, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);
 
             if (ok)
-            {
                 _packetFactory.SendGmCommandSuccess(client);
-                _packetFactory.SendGmSummon(player.GameSession.Client, player, PacketType.GM_SHAIYA_US_SUMMON_PLAYER);
-            }
             else
                 _packetFactory.SendGmCommandError(client, PacketType.GM_SHAIYA_US_SUMMON_PLAYER);
         }
@@ -99,7 +93,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameWorld.Maps.ContainsKey(mapId))
                 return false;
 
-            target.TeleportationManager.Teleport(mapId, x, y, z, true);
+            target.TeleportationManager.Teleport(mapId, x, y, z, teleportedByAdmin: true, summonedByAdmin: true);
 
             return true;
         }

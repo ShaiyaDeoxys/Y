@@ -473,10 +473,13 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Teleports player to new position.
         /// </summary>
-        private void Character_OnTeleport(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
+        private void Character_OnTeleport(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
         {
             foreach (var p in GetAllPlayers(true))
-                Map.PacketFactory.SendCharacterTeleport(p.GameSession.Client, senderId, mapId, x, y, z, teleportedByAdmin);
+                if (!summonedByAdmin)
+                    Map.PacketFactory.SendCharacterTeleport(p.GameSession.Client, senderId, mapId, x, y, z, teleportedByAdmin);
+                else
+                    Map.PacketFactory.SendGmSummon(p.GameSession.Client, senderId, mapId, x, y, z);
         }
 
         /// <summary>

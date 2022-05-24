@@ -19,7 +19,7 @@ namespace Imgeneus.World.Game.Teleport
         /// <summary>
         /// Fires event, that teleports player.
         /// </summary>
-        event Action<int, ushort, float, float, float, bool> OnTeleporting;
+        event Action<int, ushort, float, float, float, bool, bool> OnTeleporting;
 
         /// <summary>
         /// Teleports character inside one map or to another map.
@@ -29,7 +29,7 @@ namespace Imgeneus.World.Game.Teleport
         /// <param name="Y">y coordinate, where to teleport</param>
         /// <param name="Z">z coordinate, where to teleport</param>
         /// <param name="teleportedByAdmin">Indicates whether the teleport was issued by an admin or not</param>
-        void Teleport(ushort mapId, float x, float y, float z, bool teleportedByAdmin = false);
+        void Teleport(ushort mapId, float x, float y, float z, bool teleportedByAdmin = false, bool summonedByAdmin = false);
 
         /// <summary>
         /// Teleports character with the help of the portal, if it's possible.

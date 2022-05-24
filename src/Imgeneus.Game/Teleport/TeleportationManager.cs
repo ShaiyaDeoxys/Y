@@ -114,14 +114,14 @@ namespace Imgeneus.World.Game.Teleport
 
         #region Teleport
 
-        public event Action<int, ushort, float, float, float, bool> OnTeleporting;
+        public event Action<int, ushort, float, float, float, bool, bool> OnTeleporting;
 
         /// <summary>
         /// Indicator if character is teleporting between maps.
         /// </summary>
         public bool IsTeleporting { get; set; }
 
-        public void Teleport(ushort mapId, float x, float y, float z, bool teleportedByAdmin = false)
+        public void Teleport(ushort mapId, float x, float y, float z, bool teleportedByAdmin = false, bool summonedByAdmin = false)
         {
             IsTeleporting = true;
 
@@ -135,7 +135,7 @@ namespace Imgeneus.World.Game.Teleport
             _movementManager.PosY = y;
             _movementManager.PosZ = z;
 
-            OnTeleporting?.Invoke(_ownerId, _mapProvider.NextMapId, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ, teleportedByAdmin);
+            OnTeleporting?.Invoke(_ownerId, _mapProvider.NextMapId, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ, teleportedByAdmin, summonedByAdmin);
 
             var prevMapId = _mapProvider.Map.Id;
             if (prevMapId == mapId)

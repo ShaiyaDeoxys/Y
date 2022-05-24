@@ -2533,14 +2533,18 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGmSummon(IWorldClient client, Character player, PacketType type)
+        public void SendGmSummon(IWorldClient client, int senderId, ushort mapId, float x, float y, float z)
         {
-            using var packet = new ImgeneusPacket(type);
-            packet.Write(player.Id);
-            packet.Write(player.MapProvider.NextMapId);
-            packet.Write(player.PosX);
-            packet.Write(player.PosY);
-            packet.Write(player.PosZ);
+#if SHAIYA_US
+            using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_SUMMON_PLAYER);
+#else
+            using var packet = new ImgeneusPacket(PacketType.GM_SUMMON_PLAYER);
+#endif
+            packet.Write(senderId);
+            packet.Write(mapId);
+            packet.Write(x);
+            packet.Write(y);
+            packet.Write(z);
             client.Send(packet);
         }
 
