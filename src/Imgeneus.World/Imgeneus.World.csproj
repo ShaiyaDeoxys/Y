@@ -73,4 +73,16 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Players\Player.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Players\Player.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Players\Player.razor" />
+  </ItemGroup>
+
 </Project>

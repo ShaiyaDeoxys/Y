@@ -5,6 +5,7 @@
 @using Imgeneus.World.Game.Player
 
 @inject IGameWorld _gameWorld
+@inject NavigationManager _navigationManager
 
 <PageTitle>Players</PageTitle>
 
@@ -20,7 +21,7 @@ else
     }
     else
     {
-        <table class="table">
+        <table class="table table-hover">
             <thead>
                 <tr>
                     <th>Id</th>
@@ -35,11 +36,11 @@ else
             <tbody>
                 @foreach (var player in _players)
                 {
-                    <tr>
+                    <tr class="character-row" @onclick="@(() => @RedirectToPlayerPage(@player))">
                         <td>@player.Id</td>
                         <td>@player.Name</td>
                         <td>@player.AdditionalInfoManager.Class</td>
-                        <td>@player.MapProvider.Map.Id</td>
+                        <td>@player.MapProvider.NextMapId</td>
                         <td>@player.MovementManager.PosX</td>
                         <td>@player.MovementManager.PosY</td>
                         <td>@player.MovementManager.PosZ</td>
@@ -66,4 +67,16 @@ else
 
         _players = players;
     }
+
+    private void RedirectToPlayerPage(Character player)
+    {
+        _navigationManager.NavigateTo($"Players/{player.Id}");
+    }
 }
+
+<style>
+    .character-row {
+        cursor: pointer;
+    }
+</style>
+

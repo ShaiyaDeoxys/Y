@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World
 {
@@ -10,5 +11,10 @@ namespace Imgeneus.World
         void Start();
 
         IEnumerable<WorldClient> ConnectedUsers { get; }
+
+        /// <summary>
+        /// Disconnect client from server.
+        /// </summary>
+        void DisconnectUser(Guid clientId);
     }
 }

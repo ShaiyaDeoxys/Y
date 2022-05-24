@@ -1,0 +1,238 @@
+﻿@page "/Players/{Id:int}"
+
+@attribute [Authorize(Roles = "SuperAdmin, Admin")]
+
+@using Microsoft.AspNetCore.Authorization
+@using Imgeneus.World.Game
+@using Imgeneus.World.Game.Player
+
+@inject IGameWorld _gameWorld
+
+<PageTitle>Player</PageTitle>
+
+@if (player is null)
+{
+    <h2>Player with id @Id is not connected to game world.</h2>
+}
+else
+{
+    <ul class="nav nav-tabs">
+        <li class="nav-item tab" @onclick=@(() => CurrentTab = STATS_TAB)>
+            <a class="nav-link @(CurrentTab == STATS_TAB ? "active" : "")">
+                Stats
+            </a>
+        </li>
+        <li class="nav-item tab" @onclick=@(() => CurrentTab = INVENTORY_TAB)>
+            <a class="nav-link @(CurrentTab == INVENTORY_TAB ? "active" : "")">
+                Inventory
+            </a>
+        </li>
+        <li class="nav-item tab" @onclick=@(() => CurrentTab = ACTIVE_BUFFS_TAB)>
+            <a class="nav-link @(CurrentTab == ACTIVE_BUFFS_TAB ? "active": "")">
+                Active buffs
+            </a>
+        </li>
+    </ul>
+
+    @if (CurrentTab == STATS_TAB)
+    {
+        <div class="d-flex justify-content-start">
+            <span class="border d-flex flex-column">
+                <span class="p-2">Name: @player.Name</span>
+                <span class="p-2">Level: @player.LevelProvider.Level</span>
+                <span class="p-2">Exp: @player.LevelingManager.Exp</span>
+                <span class="p-2">Grow: @player.AdditionalInfoManager.Grow.ToString()</span>
+                <span class="p-2">Country: @player.CountryProvider.Country.ToString()</span>
+            </span>
+
+            <span class="border d-flex flex-column">
+                <span class="p-2">Const HP: @player.HealthManager.ConstHP</span>
+                <span class="p-2">Extra HP: @player.HealthManager.ExtraHP</span>
+                <span class="p-2">Total HP: @player.HealthManager.MaxHP</span>
+                <span class="p-2">Current HP: @player.HealthManager.CurrentHP</span>
+                <br />
+                <span class="p-2">Const MP: @player.HealthManager.ConstMP</span>
+                <span class="p-2">Extra MP: @player.HealthManager.ExtraMP</span>
+                <span class="p-2">Total MP: @player.HealthManager.MaxMP</span>
+                <span class="p-2">Current MP: @player.HealthManager.CurrentMP</span>
+                <br />
+                <span class="p-2">Const SP: @player.HealthManager.ConstSP</span>
+                <span class="p-2">Extra SP: @player.HealthManager.ExtraSP</span>
+                <span class="p-2">Total SP: @player.HealthManager.MaxSP</span>
+                <span class="p-2">Current SP: @player.HealthManager.CurrentSP</span>
+            </span>
+
+            <span class="border d-flex flex-column">
+                <span class="p-2">Const str: @player.StatsManager.Strength</span>
+                <span class="p-2">Extra str: @player.StatsManager.ExtraStr</span>
+                <span class="p-2">Total str: @player.StatsManager.TotalStr</span>
+                <br />
+                <span class="p-2">Const rec: @player.StatsManager.Reaction</span>
+                <span class="p-2">Extra rec: @player.StatsManager.ExtraRec</span>
+                <span class="p-2">Total rec: @player.StatsManager.TotalRec</span>
+                <br />
+                <span class="p-2">Const dex: @player.StatsManager.Dexterity</span>
+                <span class="p-2">Extra dex: @player.StatsManager.ExtraDex</span>
+                <span class="p-2">Total dex: @player.StatsManager.TotalDex</span>
+                <br />
+                <span class="p-2">Const int: @player.StatsManager.Intelligence</span>
+                <span class="p-2">Extra int: @player.StatsManager.ExtraInt</span>
+                <span class="p-2">Total int: @player.StatsManager.TotalInt</span>
+                <br />
+                <span class="p-2">Const wis: @player.StatsManager.Wisdom</span>
+                <span class="p-2">Extra wis: @player.StatsManager.ExtraWis</span>
+                <span class="p-2">Total wis: @player.StatsManager.TotalWis</span>
+                <br />
+                <span class="p-2">Const luc: @player.StatsManager.Luck</span>
+                <span class="p-2">Extra luc: @player.StatsManager.ExtraLuc</span>
+                <span class="p-2">Total luc: @player.StatsManager.TotalLuc</span>
+            </span>
+
+            <span class="border d-flex flex-column">
+                <span class="p-2">Physical hitting chance: @player.StatsManager.PhysicalHittingChance</span>
+                <span class="p-2">Physical evasion chance: @player.StatsManager.PhysicalEvasionChance</span>
+                <span class="p-2">Critical hitting chance: @player.StatsManager.CriticalHittingChance</span>
+                <span class="p-2">Magic hitting chance: @player.StatsManager.MagicHittingChance</span>
+                <span class="p-2">Magic evasion chance: @player.StatsManager.MagicEvasionChance</span>
+            </span>
+
+            <span class="border d-flex flex-column">
+                <span class="p-2">Physical min attack: @player.StatsManager.MinAttack</span>
+                <span class="p-2">Physical max attack: @player.StatsManager.MaxAttack</span>
+                <span class="p-2">Magic min attack: @player.StatsManager.MinMagicAttack</span>
+                <span class="p-2">Magic max attack: @player.StatsManager.MaxMagicAttack</span>
+            </span>
+
+            <span class="border d-flex flex-column">
+                <span class="p-2">Attack element: @player.ElementProvider.AttackElement</span>
+                <span class="p-2">Defence element: @player.ElementProvider.DefenceElement</span>
+            </span>
+        </div>
+    }
+
+    @if (CurrentTab == INVENTORY_TAB)
+    {
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    @for (byte i = 0; i < 17; i++)
+                    {
+                        <td class="item-slot">
+                            @if (player.InventoryManager.InventoryItems.TryGetValue((0, i), out var item))
+                            {
+                                <span>Slot: @item.Slot</span>
+                                <span>Type: @item.Type</span>
+                                <span>TypeId: @item.TypeId</span>
+                            }
+                        </td>
+                    }
+                </tr>
+            </tbody>
+        </table>
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item tab" @onclick=@(() => CurrentBag = 1)>
+                <a class="nav-link @(CurrentBag == 1 ? "active" : "")">
+                    I
+                </a>
+            </li>
+            <li class="nav-item tab" @onclick=@(() => CurrentBag = 2)>
+                <a class="nav-link @(CurrentBag == 2 ? "active" : "")">
+                    II
+                </a>
+            </li>
+            <li class="nav-item tab" @onclick=@(() => CurrentBag = 3)>
+                <a class="nav-link @(CurrentBag == 3 ? "active" : "")">
+                    III
+                </a>
+            </li>
+            <li class="nav-item tab" @onclick=@(() => CurrentBag = 4)>
+                <a class="nav-link @(CurrentBag == 4 ? "active" : "")">
+                    IV
+                </a>
+            </li>
+            <li class="nav-item tab" @onclick=@(() => CurrentBag = 5)>
+                <a class="nav-link @(CurrentBag == 5 ? "active" : "")">
+                    V
+                </a>
+            </li>
+        </ul>
+        <table class="table table-bordered">
+            <tbody>
+                @for (byte i = 0; i < 4; i++)
+                {
+                    <tr>
+                        @for (byte j = 0; j < 6; j++)
+                        {
+                            <td class="item-slot">
+                                @if (player.InventoryManager.InventoryItems.TryGetValue((CurrentBag, (byte)(i * 6 + j)), out var item))
+                                {
+                                    <div class="grid">
+                                        <span class="row">Slot: @item.Slot</span>
+                                        <span class="row">Type: @item.Type</span>
+                                        <span class="row">TypeId: @item.TypeId</span>
+                                        <span class="row">Count: @item.Count</span>
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (CurrentTab == ACTIVE_BUFFS_TAB)
+    {
+        <h4>Total number of buffs: @player.BuffsManager.ActiveBuffs.Count</h4>
+        <div class="d-flex justify-content-start">
+            @foreach (var buff in player.BuffsManager.ActiveBuffs)
+            {
+                <span class="border d-flex flex-column">
+                    <span class="p-2">Skill id: @buff.SkillId</span>
+                    <span class="p-2">Skill level: @buff.SkillLevel</span>
+                    <span class="p-2">Is debuff: @buff.IsDebuff</span>
+                    <span class="p-2">Buff creator: @buff.BuffCreator.ToString().Split(".").Last() @buff.BuffCreator.Id</span>
+                    <span class="p-2">End time (UTC): @buff.ResetTime.ToLongDateString() @buff.ResetTime.ToLongTimeString()</span>
+                </span>
+            }
+        </div>
+    }
+}
+
+
+@code {
+    public Character player { get; private set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    public string CurrentTab { get; set; } = STATS_TAB;
+
+    public const string STATS_TAB = "Stats";
+    public const string INVENTORY_TAB = "Inventory";
+    public const string ACTIVE_BUFFS_TAB = "ActiveBuffs";
+
+    public byte CurrentBag { get; set; } = 1;
+
+    protected override void OnInitialized()
+    {
+        if (_gameWorld.Players.TryGetValue(Id, out var character))
+            player = character;
+    }
+}
+
+<style>
+    .tab {
+        cursor: pointer;
+    }
+
+    .item-slot {
+        height: 100px;
+        width: 100px;
+    }
+
+    .row {
+        margin: 0px;
+    }
+</style>
