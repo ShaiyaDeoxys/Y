@@ -217,6 +217,8 @@ namespace Imgeneus.World.Game.Player
                                autoWis: dbCharacter.AutoWis,
                                autoLuc: dbCharacter.AutoLuc);
 
+            _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender, dbCharacter.Mode, dbCharacter.User.Points);
+
             _levelingManager.Init(dbCharacter.Id, dbCharacter.Exp);
 
             _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints, profession: dbCharacter.Class);
@@ -236,8 +238,6 @@ namespace Imgeneus.World.Game.Player
             _shapeManager.Init(dbCharacter.Id);
 
             _movementManager.Init(dbCharacter.Id, dbCharacter.PosX, dbCharacter.PosY, dbCharacter.PosZ, dbCharacter.Angle, MoveMotion.Run);
-
-            _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender, dbCharacter.Mode, dbCharacter.User.Points);
 
             _mapProvider.NextMapId = dbCharacter.Map;
 

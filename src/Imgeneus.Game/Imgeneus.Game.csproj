@@ -2,8 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	<Configurations>Debug;Release;EP8_V1;EP8_V2;SHAIYA_US</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='SHAIYA_US'">
+    <Optimize>True</Optimize>
+    <DefineConstants>SHAIYA_US</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

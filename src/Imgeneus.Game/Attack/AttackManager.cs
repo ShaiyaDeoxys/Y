@@ -174,7 +174,7 @@ namespace Imgeneus.World.Game.Attack
             {
                 // TODO: send not enough elapsed time?
                 //_logger.Log(LogLevel.Debug, "Too fast attack.");
-                success = AttackSuccess.CanNotAttack;
+                success = AttackSuccess.TooFastAttack;
                 return false;
             }
 
@@ -190,7 +190,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && Target.CountryProvider.Country == _countryProvider.Country && (Target is Character && ((Character)Target).DuelManager.OpponentId != _ownerId))
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && target.CountryProvider.Country == _countryProvider.Country && (target is Character && ((Character)target).DuelManager.OpponentId != _ownerId))
             {
                 success = AttackSuccess.WrongTarget;
                 return false;

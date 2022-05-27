@@ -7,6 +7,11 @@
 	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='SHAIYA_US'">
+    <Optimize>True</Optimize>
+	<DefineConstants>SHAIYA_US</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="BinarySerializer" Version="8.6.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.5" />

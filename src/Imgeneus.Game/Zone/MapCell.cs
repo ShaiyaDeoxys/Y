@@ -627,7 +627,7 @@ namespace Imgeneus.World.Game.Zone
             mob.TimeToRebirth -= RebirthMob;
         }
 
-        private void Mob_OnDead(int senderId, IKiller killer)
+        private async void Mob_OnDead(int senderId, IKiller killer)
         {
             Mobs.TryRemove(senderId, out var mob);
             if (mob is null)
@@ -642,6 +642,10 @@ namespace Imgeneus.World.Game.Zone
             // Update quest.
             if (killer is Character killerCharacter)
             {
+                // For some unknown reason, when character gets new level, mob death animation is not played.
+                // This is not pretty fix, but I could not find any reason why animation is not played.
+                await Task.Delay(500).ConfigureAwait(false);
+
                 killerCharacter.LevelingManager.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
                 killerCharacter.QuestsManager.UpdateQuestMobCount(mob.MobId);
 

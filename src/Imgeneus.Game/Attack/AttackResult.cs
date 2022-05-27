@@ -41,6 +41,7 @@
         PreviousSkillRequired = 8,
         CooldownNotOver = 9,
         CanNotAttack = 10,
-        WrongTarget = 11
+        WrongTarget = 11,
+        TooFastAttack = 12
     }
 }
