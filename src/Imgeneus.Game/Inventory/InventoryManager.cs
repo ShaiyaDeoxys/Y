@@ -371,7 +371,7 @@ namespace Imgeneus.World.Game.Inventory
                     _elementProvider.ConstAttackElement = _weapon.Element;
 
                     _attackManager.IsWeaponAvailable = true;
-                    _attackManager.WeaponType = _weapon.Type;
+                    _statsManager.WeaponType = _weapon.Type;
                 }
                 else
                 {
@@ -380,7 +380,7 @@ namespace Imgeneus.World.Game.Inventory
                     _elementProvider.ConstAttackElement = Element.None;
 
                     _attackManager.IsWeaponAvailable = false;
-                    _attackManager.WeaponType = 0;
+                    _statsManager.WeaponType = 0;
                 }
 
                 TakeOnItem(_weapon);

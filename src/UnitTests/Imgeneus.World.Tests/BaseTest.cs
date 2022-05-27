@@ -368,7 +368,8 @@ namespace Imgeneus.World.Tests
                     { (249, 1), SpeedRemedy_Lvl1 },
                     { (250, 1), MinSunStone_Lvl1 },
                     { (231, 1), BlueDragonCharm_Lvl1 },
-                    { (234, 1), DoubleWarehouseStone_Lvl1 }
+                    { (234, 1), DoubleWarehouseStone_Lvl1 },
+                    { (613, 1), MainWeaponPowerUp }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -805,6 +806,18 @@ namespace Imgeneus.World.Tests
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.WarehouseSize,
             AbilityValue1 = 1
+        };
+
+        protected DbSkill MainWeaponPowerUp = new DbSkill()
+        {
+            SkillId = 613,
+            SkillLevel = 1,
+            SkillName = "Main Weapon Power Up",
+            TypeDetail = TypeDetail.WeaponPowerUp,
+            TypeAttack = TypeAttack.Passive,
+            Weapon1 = 1,
+            Weapon2 = 2,
+            Weaponvalue = 35
         };
 
         #endregion

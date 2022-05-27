@@ -260,7 +260,7 @@ namespace Imgeneus.Database.Entities
         public byte Weapon2 { get; set; }
 
         /// <summary>
-        /// Only for passive skills; passive skill speed modificator.
+        /// Only for passive skills; passive skill speed modificator or passive attack power up.
         /// </summary>
         public byte Weaponvalue { get; set; }
 

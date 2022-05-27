@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Session;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Stats
@@ -216,6 +217,16 @@ namespace Imgeneus.World.Game.Stats
         /// Additional attack power.
         /// </summary>
         int ExtraMagicAttackPower { get; set; }
+
+        /// <summary>
+        /// Set by inventory weapon.
+        /// </summary>
+        byte WeaponType { get; set; }
+
+        /// <summary>
+        /// Passive weapon power ups go here.
+        /// </summary>
+        Dictionary<byte, byte> WeaponAttackPassiveSkillModificator { get; }
 
         /// <summary>
         /// Min attack from weapon.

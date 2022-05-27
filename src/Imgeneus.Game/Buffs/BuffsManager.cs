@@ -372,6 +372,19 @@ namespace Imgeneus.World.Game.Buffs
 
                     break;
 
+                case TypeDetail.WeaponPowerUp:
+                    if (skill.Weapon1 != 0)
+                    {
+                        _statsManager.WeaponAttackPassiveSkillModificator.Add(skill.Weapon1, skill.Weaponvalue);
+                        _statsManager.RaiseAdditionalStatsUpdate();
+                    }
+                    if (skill.Weapon2 != 0)
+                    {
+                        _statsManager.WeaponAttackPassiveSkillModificator.Add(skill.Weapon2, skill.Weaponvalue);
+                        _statsManager.RaiseAdditionalStatsUpdate();
+                    }
+                    break;
+
                 case TypeDetail.RemoveAttribute:
                     _elementProvider.IsRemoveElement = true;
                     break;
@@ -479,6 +492,19 @@ namespace Imgeneus.World.Game.Buffs
                     {
                         _speedManager.WeaponSpeedPassiveSkillModificator.Remove(skill.Weapon2);
                         _speedManager.RaisePassiveModificatorChanged(skill.Weapon2, skill.Weaponvalue, false);
+                    }
+                    break;
+
+                case TypeDetail.WeaponPowerUp:
+                    if (skill.Weapon1 != 0)
+                    {
+                        _statsManager.WeaponAttackPassiveSkillModificator.Remove(skill.Weapon1);
+                        _statsManager.RaiseAdditionalStatsUpdate();
+                    }
+                    if (skill.Weapon2 != 0)
+                    {
+                        _statsManager.WeaponAttackPassiveSkillModificator.Remove(skill.Weapon2);
+                        _statsManager.RaiseAdditionalStatsUpdate();
                     }
                     break;
 

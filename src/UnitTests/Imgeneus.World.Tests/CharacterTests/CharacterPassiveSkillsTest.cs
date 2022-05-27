@@ -3,7 +3,6 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Imgeneus.World.Tests
@@ -15,7 +14,7 @@ namespace Imgeneus.World.Tests
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
                 .Returns(new Dictionary<(byte Type, byte TypeId), DbItem>() {
-                    { (1,1), new DbItem() { Type = 1, TypeId = 1, ItemName = "Long Sword", AttackTime = 5 } }
+                    { (1,1), new DbItem() { Type = 1, TypeId = 1, ItemName = "Long Sword", AttackTime = 5, MinAttack = 10, PlusAttack = 5 } }
                 });
         }
 
@@ -62,6 +61,21 @@ namespace Imgeneus.World.Tests
             // Learn passive skill lvl 2.
             character.SkillsManager.TryLearnNewSkill(15, 2);
             Assert.Equal(AttackSpeed.Fast, character.SpeedManager.TotalAttackSpeed);
+        }
+
+        [Fact]
+        public void WeaponPowerUpTest()
+        {
+            var character = CreateCharacter();
+            var sword = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, 1, 1);
+            character.InventoryManager.Weapon = sword;
+
+            Assert.Equal(10, character.StatsManager.MinAttack);
+            Assert.Equal(15, character.StatsManager.MaxAttack);
+
+            character.SkillsManager.TryLearnNewSkill(MainWeaponPowerUp.SkillId, MainWeaponPowerUp.SkillLevel);
+            Assert.Equal(10 + MainWeaponPowerUp.Weaponvalue, character.StatsManager.MinAttack);
+            Assert.Equal(15 + MainWeaponPowerUp.Weaponvalue, character.StatsManager.MaxAttack);
         }
     }
 }

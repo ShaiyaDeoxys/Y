@@ -2,6 +2,7 @@
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Skills;
 using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Attack
 {
@@ -40,11 +41,6 @@ namespace Imgeneus.World.Game.Attack
         /// Set by inventory weapon.
         /// </summary>
         bool IsWeaponAvailable { get; set; }
-
-        /// <summary>
-        /// Set by inventory weapon.
-        /// </summary>
-        byte WeaponType { get; set; }
 
         /// <summary>
         /// Set by inventory shield.

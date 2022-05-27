@@ -5,6 +5,7 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player.Config;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Stats
@@ -277,6 +278,10 @@ namespace Imgeneus.World.Game.Stats
 
         #region Min/Max Attack & Magic attack
 
+        public byte WeaponType { get; set; }
+
+        public Dictionary<byte, byte> WeaponAttackPassiveSkillModificator { get; init; } = new();
+
         public int WeaponMinAttack { get; set; }
 
         public int WeaponMaxAttack { get; set; }
@@ -295,7 +300,9 @@ namespace Imgeneus.World.Game.Stats
                     characterAttack = GetCharacterAttack();
                 }
 
-                return WeaponMinAttack + characterAttack + ExtraPhysicalAttackPower;
+                WeaponAttackPassiveSkillModificator.TryGetValue(WeaponType, out var passivePowerUp);
+
+                return WeaponMinAttack + characterAttack + ExtraPhysicalAttackPower + passivePowerUp;
             }
         }
 
@@ -316,7 +323,9 @@ namespace Imgeneus.World.Game.Stats
                     characterAttack = GetCharacterAttack();
                 }
 
-                return WeaponMaxAttack + characterAttack + ExtraPhysicalAttackPower;
+                WeaponAttackPassiveSkillModificator.TryGetValue(WeaponType, out var passivePowerUp);
+
+                return WeaponMaxAttack + characterAttack + ExtraPhysicalAttackPower + passivePowerUp;
             }
         }
 
@@ -335,7 +344,9 @@ namespace Imgeneus.World.Game.Stats
                     characterAttack = GetCharacterAttack();
                 }
 
-                return WeaponMinAttack + characterAttack + ExtraMagicAttackPower;
+                WeaponAttackPassiveSkillModificator.TryGetValue(WeaponType, out var passivePowerUp);
+
+                return WeaponMinAttack + characterAttack + ExtraMagicAttackPower + passivePowerUp;
             }
         }
 
@@ -354,7 +365,9 @@ namespace Imgeneus.World.Game.Stats
                     characterAttack = GetCharacterAttack();
                 }
 
-                return WeaponMaxAttack + characterAttack + ExtraMagicAttackPower;
+                WeaponAttackPassiveSkillModificator.TryGetValue(WeaponType, out var passivePowerUp);
+
+                return WeaponMaxAttack + characterAttack + ExtraMagicAttackPower + passivePowerUp;
             }
         }
 

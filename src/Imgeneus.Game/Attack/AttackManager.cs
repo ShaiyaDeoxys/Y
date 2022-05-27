@@ -11,6 +11,7 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Attack
 {
@@ -155,8 +156,6 @@ namespace Imgeneus.World.Game.Attack
         public event Action<int, IKillable, AttackResult> OnAttack;
 
         public bool IsWeaponAvailable { get; set; } = true;
-
-        public byte WeaponType { get; set; }
 
         public bool IsShieldAvailable { get; set; } = true;
 
