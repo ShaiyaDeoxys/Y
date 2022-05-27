@@ -2535,7 +2535,7 @@ namespace Imgeneus.World.Packets
 
         public void SendGmSummon(IWorldClient client, int senderId, ushort mapId, float x, float y, float z)
         {
-#if SHAIYA_US
+#if DEBUG || SHAIYA_US
             using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_SUMMON_PLAYER);
 #else
             using var packet = new ImgeneusPacket(PacketType.GM_SUMMON_PLAYER);
