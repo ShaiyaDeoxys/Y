@@ -13,6 +13,7 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
+using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,9 +43,10 @@ namespace Imgeneus.World.Game.Skills
         private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IGameWorld _gameWorld;
         private readonly IMapProvider _mapProvider;
+        private readonly ITeleportationManager _teleportationManager;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider)
+        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -60,6 +62,7 @@ namespace Imgeneus.World.Game.Skills
             _additionalInfoManager = additionalInfoManager;
             _gameWorld = gameWorld;
             _mapProvider = mapProvider;
+            _teleportationManager = teleportationManager;
             _castTimer.Elapsed += CastTimer_Elapsed;
             _levelProvider.OnLevelUp += OnLevelUp;
 
@@ -503,6 +506,11 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.PassiveDefence:
                 case TypeDetail.WeaponMastery:
                     target.BuffsManager.AddBuff(skill, skillOwner);
+                    break;
+
+                case TypeDetail.TownPortal:
+                    var map = _mapProvider.Map.GetRebirthMap((Character)skillOwner);
+                    _teleportationManager.Teleport(map.MapId, map.X, map.Y, map.Z);
                     break;
 
                 default:
