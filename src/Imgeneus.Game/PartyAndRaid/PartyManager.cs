@@ -193,7 +193,17 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         #region Helpers
 
-        private Character Player { get => _gameWorld.Players[_ownerId]; }
+        private Character _player;
+        private Character Player
+        {
+            get
+            {
+                if (_player is null)
+                    _player = _gameWorld.Players[_ownerId];
+
+                return _player;
+            }
+        }
 
         public bool HasParty { get => Party != null; }
 
