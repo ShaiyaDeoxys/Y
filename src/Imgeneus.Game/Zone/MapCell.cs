@@ -644,7 +644,8 @@ namespace Imgeneus.World.Game.Zone
             {
                 // For some unknown reason, when character gets new level, mob death animation is not played.
                 // This is not pretty fix, but I could not find any reason why animation is not played.
-                await Task.Delay(500).ConfigureAwait(false);
+                if (mob.Map.Id != Map.TEST_MAP_ID)
+                    await Task.Delay(1000).ConfigureAwait(false);
 
                 killerCharacter.LevelingManager.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
                 killerCharacter.QuestsManager.UpdateQuestMobCount(mob.MobId);
@@ -676,7 +677,7 @@ namespace Imgeneus.World.Game.Zone
             // It's for checking if every scoped service is finalized, when mob is killed.
 
             // Wait 0.5 sec after client disconnected.
-            Task.Delay(500).ContinueWith((x) =>
+            await Task.Delay(500).ContinueWith((x) =>
             {
                 // Collect everything.
                 GC.Collect();
