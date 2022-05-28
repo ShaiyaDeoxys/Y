@@ -400,12 +400,14 @@ namespace Imgeneus.Database.Entities
         public ushort TimeHealSP { get; set; }
 
         /// <summary>
-        /// TODO: ?
+        /// For "Fleet Foot" it's value 2, which is block shoot attack for X %.
+        /// For "Magic Veil" it's value 3, which is block X magic attacks.
         /// </summary>
         public byte DefenceType { get; set; }
 
         /// <summary>
-        /// TODO: ?
+        /// When <see cref="DefenceType"/> is 2, it's % of blocked shoot attacks.
+        /// When <see cref="DefenceType"/> is 3, it's block X magic attacks.
         /// </summary>
         public byte DefenceValue { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.Database.Entities;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Skills;
 using System.ComponentModel;
@@ -37,6 +38,20 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             attackSuccess = (character2 as IKiller).AttackManager.AttackSuccessRate(character, TypeAttack.ShootingAttack, new Skill(BullsEye, 0, 0));
             Assert.False(attackSuccess); // When target is untouchable, bull eye is going to fail.
+        }
+
+        [Fact]
+        [Description("Archer should miss if fighter used 'FleetFoot' skill.")]
+        public void FleetFootTest()
+        {
+            var fighter = CreateCharacter();
+            var archer = CreateCharacter(profession: CharacterProfession.Archer);
+
+            fighter.BuffsManager.AddBuff(new Skill(FleetFoot, 0, 0), null);
+            Assert.Single(fighter.BuffsManager.ActiveBuffs);
+
+            var attackSuccess = (archer as IKiller).AttackManager.AttackSuccessRate(fighter, TypeAttack.ShootingAttack);
+            Assert.False(attackSuccess);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
@@ -219,14 +220,19 @@ namespace Imgeneus.World.Game.Attack
             StartAttack();
 
             AttackResult result;
-            if (!AttackSuccessRate(Target, TypeAttack.PhysicalAttack))
+
+            var typeAttack = TypeAttack.PhysicalAttack;
+            if (sender is Character character && character.AdditionalInfoManager.Class == CharacterProfession.Archer)
+                typeAttack = TypeAttack.ShootingAttack;
+
+            if (!AttackSuccessRate(Target, typeAttack))
             {
                 result = new AttackResult(AttackSuccess.Miss, new Damage());
                 OnAttack?.Invoke(_ownerId, Target, result);
                 return;
             }
 
-            result = CalculateDamage(Target, TypeAttack.PhysicalAttack,
+            result = CalculateDamage(Target, typeAttack,
                                              _elementManager.AttackElement,
                                              _statsManager.MinAttack,
                                              _statsManager.MaxAttack,
@@ -269,22 +275,34 @@ namespace Imgeneus.World.Game.Attack
             {
                 case TypeAttack.PhysicalAttack:
                 case TypeAttack.ShootingAttack:
-                    levelDifference = _levelProvider.Level * 1.0 / (target.LevelProvider.Level + _levelProvider.Level);
-                    var targetAttackPercent = target.StatsManager.PhysicalHittingChance / (target.StatsManager.PhysicalHittingChance + _statsManager.PhysicalEvasionChance);
-                    var myAttackPercent = _statsManager.PhysicalHittingChance / (_statsManager.PhysicalHittingChance + target.StatsManager.PhysicalEvasionChance);
-                    var attackPercent = targetAttackPercent * 100 - myAttackPercent * 100;
-                    result = levelDifference * 160 - attackPercent;
-                    if (result >= 20)
-                    {
-                        if (result > 99)
-                            result = 99;
-                    }
+
+                    if (typeAttack == TypeAttack.ShootingAttack && target.StatsManager.ConstShootingEvasionChance > 0)
+                        result = 100 - target.StatsManager.ConstShootingEvasionChance;
                     else
                     {
-                        if (target is Mob)
-                            result = 20;
+                        levelDifference = _levelProvider.Level * 1.0 / (target.LevelProvider.Level + _levelProvider.Level);
+                        var targetAttackPercent = typeAttack == TypeAttack.PhysicalAttack ?
+                            target.StatsManager.PhysicalHittingChance / (target.StatsManager.PhysicalHittingChance + _statsManager.PhysicalEvasionChance)
+                            :
+                            target.StatsManager.ShootingHittingChance / (target.StatsManager.ShootingHittingChance + _statsManager.ShootingEvasionChance);
+                        var myAttackPercent = typeAttack == TypeAttack.PhysicalAttack ?
+                            _statsManager.PhysicalHittingChance / (_statsManager.PhysicalHittingChance + target.StatsManager.PhysicalEvasionChance)
+                            :
+                            _statsManager.ShootingHittingChance / (_statsManager.ShootingHittingChance + target.StatsManager.ShootingEvasionChance);
+                        var attackPercent = targetAttackPercent * 100 - myAttackPercent * 100;
+                        result = levelDifference * 160 - attackPercent;
+                        if (result >= 20)
+                        {
+                            if (result > 99)
+                                result = 99;
+                        }
                         else
-                            result = 1;
+                        {
+                            if (target is Mob)
+                                result = 20;
+                            else
+                                result = 1;
+                        }
                     }
 
                     return new Random().Next(1, 101) < result;

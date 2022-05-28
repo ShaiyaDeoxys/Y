@@ -156,6 +156,8 @@ namespace Imgeneus.World.Game.Stats
         public int ExtraResistance { get; set; }
         public int ExtraPhysicalHittingChance { get; set; }
         public int ExtraPhysicalEvasionChance { get; set; }
+        public int ExtraShootingHittingChance { get; set; }
+        public int ExtraShootingEvasionChance { get; set; }
         public int ExtraCriticalHittingChance { get; set; }
         public int ExtraMagicHittingChance { get; set; }
         public int ExtraMagicEvasionChance { get; set; }
@@ -242,6 +244,26 @@ namespace Imgeneus.World.Game.Stats
                 return calculated > 0 ? calculated : 1;
             }
         }
+
+        public double ShootingHittingChance
+        {
+            get
+            {
+                var calculated = 1.0 * TotalDex / 2 + ExtraShootingHittingChance;
+                return calculated > 0 ? calculated : 1;
+            }
+        }
+
+        public double ShootingEvasionChance
+        {
+            get
+            {
+                var calculated = 1.0 * TotalDex / 2 + ExtraShootingEvasionChance;
+                return calculated > 0 ? calculated : 1;
+            }
+        }
+
+        public byte ConstShootingEvasionChance { get; set; }
 
         public double CriticalHittingChance
         {

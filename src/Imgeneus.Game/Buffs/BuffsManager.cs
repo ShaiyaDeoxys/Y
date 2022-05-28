@@ -409,6 +409,10 @@ namespace Imgeneus.World.Game.Buffs
                     _untouchableManager.IsUntouchable = true;
                     break;
 
+                case TypeDetail.BlockShootingAttack:
+                    _statsManager.ConstShootingEvasionChance += skill.DefenceValue;
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -522,6 +526,10 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.Untouchable:
                     _untouchableManager.IsUntouchable = ActiveBuffs.Any(b => b.IsUntouchable);
+                    break;
+
+                case TypeDetail.BlockShootingAttack:
+                    _statsManager.ConstShootingEvasionChance -= skill.DefenceValue;
                     break;
 
                 default:

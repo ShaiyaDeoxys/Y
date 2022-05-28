@@ -102,7 +102,7 @@ namespace Imgeneus.World.Tests
                     timeMock.Object);
 
         private int _characterId;
-        protected Character CreateCharacter(Map map = null, Fraction country = Fraction.Light, GuildConfiguration guildConfiguration = null, GuildHouseConfiguration guildHouseConfiguration = null)
+        protected Character CreateCharacter(Map map = null, Fraction country = Fraction.Light, GuildConfiguration guildConfiguration = null, GuildHouseConfiguration guildHouseConfiguration = null, CharacterProfession profession = CharacterProfession.Fighter )
         {
             _characterId++;
 
@@ -115,6 +115,8 @@ namespace Imgeneus.World.Tests
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
             var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
             var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
+            additionalInfoManager.Init(_characterId, Race.Human, profession, 0, 0, 0, Gender.Man, Mode.Ultimate, 0);
+
             var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object);
 
             var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, config.Object, databaseMock.Object);
@@ -369,7 +371,8 @@ namespace Imgeneus.World.Tests
                     { (250, 1), MinSunStone_Lvl1 },
                     { (231, 1), BlueDragonCharm_Lvl1 },
                     { (234, 1), DoubleWarehouseStone_Lvl1 },
-                    { (613, 1), MainWeaponPowerUp }
+                    { (613, 1), MainWeaponPowerUp },
+                    { (711, 10), FleetFoot }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -818,6 +821,15 @@ namespace Imgeneus.World.Tests
             Weapon1 = 1,
             Weapon2 = 2,
             Weaponvalue = 35
+        };
+
+        protected DbSkill FleetFoot = new DbSkill()
+        {
+            SkillId = 711,
+            SkillLevel = 10,
+            SkillName = "Fleet Foot",
+            TypeDetail = TypeDetail.BlockShootingAttack,
+            DefenceValue = 100
         };
 
         #endregion

@@ -169,6 +169,21 @@ namespace Imgeneus.World.Game.Stats
         double PhysicalEvasionChance { get; }
 
         /// <summary>
+        /// Possibility to shot enemy.
+        /// </summary>
+        double ShootingHittingChance { get; }
+
+        /// <summary>
+        /// Possibility to escape shot.
+        /// </summary>
+        double ShootingEvasionChance { get; }
+
+        /// <summary>
+        /// Exclusive for fighters. There is skill "Fleet Foot", that provides possibility to escape shot regardless dex value.
+        /// </summary>
+        byte ConstShootingEvasionChance { get; set; }
+
+        /// <summary>
         /// Possibility to make critical hit.
         /// </summary>
         double CriticalHittingChance { get; }
@@ -192,6 +207,16 @@ namespace Imgeneus.World.Game.Stats
         /// Possibility to escape hit gained from skills.
         /// </summary>
         int ExtraPhysicalEvasionChance { get; set; }
+
+        /// <summary>
+        /// Possibility to shoot enemy gained from skills.
+        /// </summary>
+        int ExtraShootingHittingChance { get; set; }
+
+        /// <summary>
+        /// Possibility to escape shoot gained from skills.
+        /// </summary>
+        int ExtraShootingEvasionChance { get; set; }
 
         /// <summary>
         /// Possibility to make critical hit.
