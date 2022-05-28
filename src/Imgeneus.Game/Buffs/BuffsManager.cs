@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -38,9 +39,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IAttackManager _attackManager;
         private readonly ITeleportationManager _teleportationManager;
         private readonly IWarehouseManager _warehouseManager;
+        private readonly IShapeManager _shapeManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager)
         {
             _logger = logger;
             _database = database;
@@ -55,6 +57,7 @@ namespace Imgeneus.World.Game.Buffs
             _attackManager = attackManager;
             _teleportationManager = teleportationManager;
             _warehouseManager = warehouseManager;
+            _shapeManager = shapeManager;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
             _attackManager.OnStartAttack += CancelStealth;
@@ -322,6 +325,22 @@ namespace Imgeneus.World.Game.Buffs
                     _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
+                case TypeDetail.Transformation:
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
+                    _shapeManager.IsTranformated = true;
+                    break;
+
                 case TypeDetail.PeriodicalHeal:
                     buff.TimeHealHP = skill.TimeHealHP;
                     buff.TimeHealMP = skill.TimeHealMP;
@@ -457,6 +476,22 @@ namespace Imgeneus.World.Game.Buffs
                     ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
+                    break;
+
+                case TypeDetail.Transformation:
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
+                    _shapeManager.IsTranformated = false;
                     break;
 
                 case TypeDetail.PeriodicalHeal:

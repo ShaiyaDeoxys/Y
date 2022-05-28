@@ -9,11 +9,21 @@ namespace Imgeneus.World.Game.Shape
         /// <summary>
         /// Event, that is fired, when character changes shape.
         /// </summary>
-        public event Action<int, ShapeEnum, int, int> OnShapeChange;
+        event Action<int, ShapeEnum, int, int> OnShapeChange;
 
         /// <summary>
         /// Character shape.
         /// </summary>
-        public ShapeEnum Shape { get; }
+        ShapeEnum Shape { get; }
+
+        /// <summary>
+        /// When Transformation buff is used, set to true.
+        /// </summary>
+        bool IsTranformated { get; set; }
+
+        /// <summary>
+        /// Event, that is fired, when tranform forms changes.
+        /// </summary>
+        event Action<int, bool> OnTranformated;
     }
 }

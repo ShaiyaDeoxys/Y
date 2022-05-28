@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imgeneus.World.Game.Inventory;
+using System;
 
 namespace Imgeneus.World.Game.Vehicle
 {
@@ -36,6 +37,11 @@ namespace Imgeneus.World.Game.Vehicle
         #endregion
 
         #region Vehicle
+
+        /// <summary>
+        /// Mount item.
+        /// </summary>
+        Item Mount { get; set; }
 
         /// <summary>
         /// Event, that is fired, when the player change vehicle status.

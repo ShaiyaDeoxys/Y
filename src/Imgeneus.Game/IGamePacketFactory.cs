@@ -117,6 +117,7 @@ namespace Imgeneus.World.Packets
         void SendUsedRangeSkill(IWorldClient client, int senderId, IKillable target, Skill skill, AttackResult attackResult);
         void SendAddItem(IWorldClient client, MapItem mapItem);
         void SendRemoveItem(IWorldClient client, MapItem mapItem);
+        void SendTransformation(IWorldClient client, int senderId, bool isTransformed);
         #endregion
 
         #region NPC

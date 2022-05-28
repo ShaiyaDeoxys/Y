@@ -11,15 +11,13 @@ namespace Imgeneus.World.Game.Shape
         private readonly ILogger<ShapeManager> _logger;
         private readonly IStealthManager _stealthManager;
         private readonly IVehicleManager _vehicleManager;
-        private readonly IInventoryManager _inventoryManager;
         private int _ownerId;
 
-        public ShapeManager(ILogger<ShapeManager> logger, IStealthManager stealthManager, IVehicleManager vehicleManager, IInventoryManager inventoryManager)
+        public ShapeManager(ILogger<ShapeManager> logger, IStealthManager stealthManager, IVehicleManager vehicleManager)
         {
             _logger = logger;
             _stealthManager = stealthManager;
             _vehicleManager = vehicleManager;
-            _inventoryManager = inventoryManager;
 
             _stealthManager.OnStealthChange += StealthManager_OnStealthChange;
             _vehicleManager.OnVehicleChange += VehicleManager_OnVehicleChange;
@@ -61,8 +59,8 @@ namespace Imgeneus.World.Game.Shape
 
                 if (_vehicleManager.IsOnVehicle)
                 {
-                    var value1 = (byte)_inventoryManager.Mount.Grow >= 2 ? 15 : 14;
-                    var value2 = _inventoryManager.Mount.Range < 2 ? _inventoryManager.Mount.Range * 2 : _inventoryManager.Mount.Range + 7;
+                    var value1 = (byte)_vehicleManager.Mount.Grow >= 2 ? 15 : 14;
+                    var value2 = _vehicleManager.Mount.Range < 2 ? _vehicleManager.Mount.Range * 2 : _vehicleManager.Mount.Range + 7;
                     var mountType = value1 + value2;
                     return (ShapeEnum)mountType;
                 }
@@ -78,9 +76,21 @@ namespace Imgeneus.World.Game.Shape
 
         private void VehicleManager_OnVehicleChange(int senderId, bool isOnVehicle)
         {
-            var param1 = _inventoryManager.Mount is null ? 0 : _inventoryManager.Mount.Type;
-            var param2 = _inventoryManager.Mount is null ? 0 : _inventoryManager.Mount.TypeId;
+            var param1 = _vehicleManager.Mount is null ? 0 : _vehicleManager.Mount.Type;
+            var param2 = _vehicleManager.Mount is null ? 0 : _vehicleManager.Mount.TypeId;
             OnShapeChange?.Invoke(_ownerId, Shape, param1, param2);
         }
+
+        private bool _isTranformated;
+        public bool IsTranformated
+        {
+            get => _isTranformated; set
+            {
+                _isTranformated = value;
+                OnTranformated?.Invoke(_ownerId, _isTranformated);
+            }
+        }
+
+        public event Action<int, bool> OnTranformated;
     }
 }

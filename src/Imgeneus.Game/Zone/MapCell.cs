@@ -85,6 +85,8 @@ namespace Imgeneus.World.Game.Zone
                     Map.PacketFactory.SendCharacterEnter(character.GameSession.Client, player);
                     if (player.ShopManager.IsShopOpened)
                         Map.PacketFactory.SendMyShopStarted(character.GameSession.Client, player.Id, player.ShopManager.Name);
+                    if (player.ShapeManager.IsTranformated)
+                        Map.PacketFactory.SendTransformation(character.GameSession.Client, player.Id, player.ShapeManager.IsTranformated);
                 }
                 else // Original server sends this also to player himself, although I'm not sure if it's needed.
                      // Added it as a fix for admin stealth.
@@ -212,6 +214,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRecover += Character_OnRecover;
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange += Character_OnShapeChange;
+            character.ShapeManager.OnTranformated += Character_OnTranformated;
             character.HealthManager.OnRebirthed += Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged += Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle += Character_OnStartSummonVehicle;
@@ -246,6 +249,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnRecover -= Character_OnRecover;
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange -= Character_OnShapeChange;
+            character.ShapeManager.OnTranformated -= Character_OnTranformated;
             character.HealthManager.OnRebirthed -= Character_OnRebirthed;
             character.AdditionalInfoManager.OnAppearanceChanged -= Character_OnAppearanceChanged;
             character.VehicleManager.OnStartSummonVehicle -= Character_OnStartSummonVehicle;
@@ -507,6 +511,12 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendMyShopFinished(p.GameSession.Client, senderId);
+        }
+
+        private void Character_OnTranformated(int senderId, bool isTransformed)
+        {
+            foreach (var p in GetAllPlayers(true))
+                Map.PacketFactory.SendTransformation(p.GameSession.Client, senderId, isTransformed);
         }
 
         #endregion

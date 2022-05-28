@@ -489,6 +489,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.Stealth:
                 case TypeDetail.Sleep:
                 case TypeDetail.BlockShootingAttack:
+                case TypeDetail.Transformation:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

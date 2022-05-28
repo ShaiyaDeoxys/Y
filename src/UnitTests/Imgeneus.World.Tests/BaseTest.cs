@@ -102,7 +102,7 @@ namespace Imgeneus.World.Tests
                     timeMock.Object);
 
         private int _characterId;
-        protected Character CreateCharacter(Map map = null, Fraction country = Fraction.Light, GuildConfiguration guildConfiguration = null, GuildHouseConfiguration guildHouseConfiguration = null, CharacterProfession profession = CharacterProfession.Fighter )
+        protected Character CreateCharacter(Map map = null, Fraction country = Fraction.Light, GuildConfiguration guildConfiguration = null, GuildHouseConfiguration guildHouseConfiguration = null, CharacterProfession profession = CharacterProfession.Fighter)
         {
             _characterId++;
 
@@ -137,18 +137,17 @@ namespace Imgeneus.World.Tests
             teleportManager.Init(_characterId, new List<DbCharacterSavePositions>());
 
             var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
-
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager);
+            var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
+            var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager);
 
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, teleportManager);
-            var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
-
             var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
+
             var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object);
-            var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager, inventoryManager);
             var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, databaseMock.Object, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object);
             guildManager.Init(_characterId);
 
@@ -229,7 +228,7 @@ namespace Imgeneus.World.Tests
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, null);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
             var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, databasePreloader.Object);
@@ -372,7 +371,8 @@ namespace Imgeneus.World.Tests
                     { (231, 1), BlueDragonCharm_Lvl1 },
                     { (234, 1), DoubleWarehouseStone_Lvl1 },
                     { (613, 1), MainWeaponPowerUp },
-                    { (711, 10), FleetFoot }
+                    { (711, 10), FleetFoot },
+                    { (460, 1), Transformation }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -830,6 +830,14 @@ namespace Imgeneus.World.Tests
             SkillName = "Fleet Foot",
             TypeDetail = TypeDetail.BlockShootingAttack,
             DefenceValue = 100
+        };
+
+        protected DbSkill Transformation = new DbSkill()
+        {
+            SkillId = 460,
+            SkillLevel = 1,
+            SkillName = "Transformation Skill",
+            TypeDetail = TypeDetail.Transformation
         };
 
         #endregion

@@ -602,6 +602,9 @@ namespace Imgeneus.World.Packets
 
             if (character.ShapeManager.Shape != ShapeEnum.None)
                 SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.TypeId);
+
+            if (character.ShapeManager.IsTranformated)
+                SendTransformation(client, character.Id, character.ShapeManager.IsTranformated);
         }
 
         public void SendAttackAndMovementSpeed(IWorldClient client, int senderId, AttackSpeed attack, MoveSpeed move)
@@ -725,6 +728,15 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.MAP_REMOVE_ITEM);
             packet.Write(mapItem.Id);
+            client.Send(packet);
+        }
+
+        public void SendTransformation(IWorldClient client, int senderId, bool isTransformed)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TRANSFORMATION_MODE);
+            packet.Write(senderId);
+            packet.Write((ushort)1);
+            packet.Write(isTransformed);
             client.Send(packet);
         }
         #endregion

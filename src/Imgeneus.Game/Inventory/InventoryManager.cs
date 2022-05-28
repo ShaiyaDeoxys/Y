@@ -517,6 +517,7 @@ namespace Imgeneus.World.Game.Inventory
                 _vehicleManager.RemoveVehicle();
 
                 _mount = value;
+                _vehicleManager.Mount = _mount;
                 if (_mount != null)
                     _vehicleManager.SummoningTime = _mount.AttackSpeed > 0 ? _mount.AttackSpeed * 1000 : _mount.AttackSpeed + 1000;
                 else

@@ -1,4 +1,5 @@
 ﻿using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Speed;
@@ -105,6 +106,8 @@ namespace Imgeneus.World.Game.Vehicle
         #endregion
 
         #region Vehicle
+
+        public Item Mount { get; set; }
 
         public event Action<int, bool> OnVehicleChange;
 

@@ -53,5 +53,19 @@ namespace Imgeneus.World.Tests.CharacterTests
             var attackSuccess = (archer as IKiller).AttackManager.AttackSuccessRate(fighter, TypeAttack.ShootingAttack);
             Assert.False(attackSuccess);
         }
+
+        [Fact]
+        [Description("Transformation should raise shape change event.")]
+        public void TransformationTest()
+        {
+            var character = CreateCharacter();
+            var shapeChangeCalled = false;
+            character.ShapeManager.OnTranformated += (int sender, bool transformed) => shapeChangeCalled = transformed;
+
+            character.BuffsManager.AddBuff(new Skill(Transformation, 0, 0), null);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+
+            Assert.True(shapeChangeCalled);
+        }
     }
 }
