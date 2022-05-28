@@ -686,8 +686,8 @@ namespace Imgeneus.World.Packets
             packet.Write(skillId);
             packet.Write(skillLevel);
             packet.Write(result.Damage.HP);
-            packet.Write(result.Damage.MP);
             packet.Write(result.Damage.SP);
+            packet.Write(result.Damage.MP);
             client.Send(packet);
         }
 

@@ -308,6 +308,15 @@ namespace Imgeneus.World.Game.Buffs
                     ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
+
+                    if (skill.TimeHealHP != 0 || skill.TimeHealMP != 0 || skill.TimeHealSP != 0)
+                    {
+                        buff.TimeHealHP = skill.TimeHealHP;
+                        buff.TimeHealMP = skill.TimeHealMP;
+                        buff.TimeHealSP = skill.TimeHealSP;
+                        buff.OnPeriodicalHeal += Buff_OnPeriodicalHeal;
+                        buff.StartPeriodicalHeal();
+                    }
                     break;
 
                 case TypeDetail.SubtractingDebuff:
@@ -461,6 +470,11 @@ namespace Imgeneus.World.Game.Buffs
                     ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
+
+                    if (skill.TimeHealHP != 0 || skill.TimeHealMP != 0 || skill.TimeHealSP != 0)
+                    {
+                        buff.OnPeriodicalHeal -= Buff_OnPeriodicalHeal;
+                    }
                     break;
 
                 case TypeDetail.SubtractingDebuff:
@@ -790,11 +804,28 @@ namespace Imgeneus.World.Game.Buffs
 
         private void Buff_OnPeriodicalHeal(Buff buff, AttackResult healResult)
         {
-            _healthManager.IncreaseHP(healResult.Damage.HP);
-            _healthManager.CurrentMP += healResult.Damage.MP;
-            _healthManager.CurrentSP += healResult.Damage.SP;
+            var healedSomething = false;
 
-            OnSkillKeep?.Invoke(_ownerId, buff, healResult);
+            if (_healthManager.CurrentHP != _healthManager.MaxHP && healResult.Damage.HP != 0)
+            {
+                _healthManager.IncreaseHP(healResult.Damage.HP);
+                healedSomething = true;
+            }
+
+            if (_healthManager.CurrentMP != _healthManager.MaxMP && healResult.Damage.MP != 0)
+            {
+                _healthManager.CurrentMP += healResult.Damage.MP;
+                healedSomething = true;
+            }
+
+            if (_healthManager.CurrentSP != _healthManager.MaxSP && healResult.Damage.SP != 0)
+            {
+                _healthManager.CurrentSP += healResult.Damage.SP;
+                healedSomething = true;
+            }
+
+            if (healedSomething)
+                OnSkillKeep?.Invoke(_ownerId, buff, healResult);
         }
 
         private void Buff_OnPeriodicalDebuff(Buff buff, AttackResult debuffResult)
