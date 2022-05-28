@@ -60,5 +60,15 @@
         IncreaseHPByWis = 55,
         IncreaseHPByDex = 56,
         IncreaseHPByLuc = 57,
+        SacrificeStr = 90,
+        SacrificeRec = 91,
+        SacrificeInt = 92,
+        SacrificeWis = 93,
+        SacrificeDex = 94,
+        IncreaseStrBySacrificing = 110,
+        IncreaseIntBySacrificing = 112,
+        IncreaseWisBySacrificing = 113,
+        IncreaseDexBySacrificing = 114,
+        IncreaseLucBySacrificing = 115
     }
 }
