@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
@@ -32,7 +33,7 @@ namespace Imgeneus.World.Game.AI
         private readonly IStatsManager _statsManager;
         private readonly IElementProvider _elementProvider;
         private readonly IDatabasePreloader _databasePreloader;
-
+        private readonly ISpeedManager _speedManager;
         private int _ownerId;
 
         private IKiller _owner;
@@ -66,7 +67,7 @@ namespace Imgeneus.World.Game.AI
             }
         }
 
-        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IElementProvider elementProvider, IDatabasePreloader databasePreloader)
+        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IElementProvider elementProvider, IDatabasePreloader databasePreloader, ISpeedManager speedManager)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -78,6 +79,7 @@ namespace Imgeneus.World.Game.AI
             _statsManager = statsManager;
             _elementProvider = elementProvider;
             _databasePreloader = databasePreloader;
+            _speedManager = speedManager;
 
             _attackManager.OnTargetChanged += AttackManager_OnTargetChanged;
 #if DEBUG
@@ -616,12 +618,7 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         private DateTime _lastMoveUpdate;
 
-        /// <summary>
-        /// Moves AI to the specified position.
-        /// </summary>
-        /// <param name="x">x coordinate</param>
-        /// <param name="z">z coordinate</param>
-        private void Move(float x, float z)
+        public void Move(float x, float z)
         {
 #if DEBUG
             _logger.LogDebug("AI {hashcode} is moving to target: x - {x}, z - {z}, target x - {targetX}, target z - {targetZ}", GetHashCode(), _movementManager.PosX, _movementManager.PosZ, x, z);
@@ -631,6 +628,9 @@ namespace Imgeneus.World.Game.AI
                 return;
 
             if (_chaseSpeed == 0 || _chaseTime == 0)
+                return;
+
+            if (_speedManager.Immobilize)
                 return;
 
             var now = DateTime.UtcNow;

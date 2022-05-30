@@ -365,6 +365,9 @@ namespace Imgeneus.World.Game.Skills
 
         public void UseSkill(Skill skill, IKiller skillOwner, IKillable target = null)
         {
+            if (skill.SkillId == Skill.CHARGE_SKILL_ID || skill.SkillId == Skill.CHARGE_EP_8_SKILL_ID)
+                ChargeUsedLastTime = DateTime.UtcNow;
+
             if (!skill.IsPassive)
                 _attackManager.StartAttack();
 
@@ -552,6 +555,12 @@ namespace Imgeneus.World.Game.Skills
 
             return new AttackResult(AttackSuccess.Normal, new Damage());
         }
+
+        #endregion
+
+        #region Helpers
+
+        public DateTime? ChargeUsedLastTime { get; private set; } = null;
 
         #endregion
     }

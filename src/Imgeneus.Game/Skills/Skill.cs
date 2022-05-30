@@ -6,6 +6,9 @@ namespace Imgeneus.World.Game.Skills
 {
     public class Skill
     {
+        public const ushort CHARGE_SKILL_ID = 56;
+        public const ushort CHARGE_EP_8_SKILL_ID = 625;
+
         private readonly DbSkill _dbSkill;
         public Skill(DbSkill dbSkill, byte skillNumber, int cooldown)
         {

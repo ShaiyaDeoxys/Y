@@ -105,5 +105,10 @@ namespace Imgeneus.World.Game.Skills
         /// Clears debuffs.
         /// </summary>
         AttackResult UsedDispelSkill(Skill skill, IKillable target);
+
+        /// <summary>
+        /// When "Charge" skill was used the last time?
+        /// </summary>
+        DateTime? ChargeUsedLastTime { get; }
     }
 }

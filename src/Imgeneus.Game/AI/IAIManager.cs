@@ -68,5 +68,12 @@ namespace Imgeneus.World.Game.AI
         /// <param name="element">element</param>
         /// <param name="additionalDamage">plus damage</param>
         void Attack(ushort skillId, Element element, ushort minAttack, ushort additionalDamage);
+
+        /// <summary>
+        /// Moves AI to the specified position.
+        /// </summary>
+        /// <param name="x">x coordinate</param>
+        /// <param name="z">z coordinate</param>
+        void Move(float x, float z);
     }
 }

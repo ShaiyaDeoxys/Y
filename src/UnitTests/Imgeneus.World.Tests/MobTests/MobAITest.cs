@@ -56,5 +56,27 @@ namespace Imgeneus.World.Tests.MobTests
 
             Assert.False(mob.AIManager.TryGetEnemy());
         }
+
+        [Fact]
+        public void MobCanNotMoveIfImmobilized()
+        {
+            var map = testMap;
+            var mob = CreateMob(Wolf.Id, map);
+            mob.MovementManager.PosX = 10;
+            mob.MovementManager.PosY = 10;
+            mob.MovementManager.PosZ = 10;
+
+            mob.AIManager.Move(20, 20);
+            Assert.NotEqual(10, mob.MovementManager.PosX);
+            Assert.NotEqual(10, mob.MovementManager.PosZ);
+
+            var newX = mob.MovementManager.PosX;
+            var newZ = mob.MovementManager.PosZ;
+            mob.BuffsManager.AddBuff(new Skill(MagicRoots_Lvl1, 0, 0), null);
+
+            mob.AIManager.Move(20, 20);
+            Assert.Equal(newX, mob.MovementManager.PosX);
+            Assert.Equal(newZ, mob.MovementManager.PosZ);
+        }
     }
 }
