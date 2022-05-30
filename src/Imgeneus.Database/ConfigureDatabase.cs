@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -26,6 +27,10 @@ namespace Imgeneus.Database
                 {
                     var dbConfig = serviceCollection.BuildServiceProvider().GetService<IOptions<DatabaseConfiguration>>();
                     options.ConfigureCorrectDatabase(dbConfig.Value);
+
+#if DEBUG
+                    options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+#endif
                 },
                 contextLifetime: ServiceLifetime.Transient,
                 optionsLifetime: ServiceLifetime.Singleton);

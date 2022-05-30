@@ -168,26 +168,25 @@ namespace Imgeneus.World.Game.Player
             _gameWorld.EnsureMap(await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId));
             await _database.SaveChangesAsync();
 
-            var dbCharacter = await _database.Characters
-                                             .AsNoTracking()
-                                             .Include(c => c.Skills)
-                                             .Include(c => c.Items)
-                                             .Include(c => c.ActiveBuffs)
-                                             .Include(c => c.Guild)
-                                             .Include(c => c.Quests)
-                                             .Include(c => c.QuickItems)
-                                             .Include(c => c.SavedPositions)
-                                             .Include(c => c.User)
-                                             .ThenInclude(c => c.BankItems)
-                                             .Include(c => c.User)
-                                             .ThenInclude(c => c.WarehouseItems)
-                                             .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId);
-
+            var dbCharacter = await _database.Characters.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId).ConfigureAwait(false);
             if (dbCharacter is null)
             {
                 _logger.LogWarning("Character with id {characterId} for user {userId} is not found.", characterId, userId);
                 return null;
             }
+
+            // Load other infos for this character.
+            dbCharacter.Skills = await _database.CharacterSkills.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
+            dbCharacter.Items = await _database.CharacterItems.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
+            dbCharacter.ActiveBuffs = await _database.ActiveBuffs.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
+            dbCharacter.Guild = await _database.Guilds.AsNoTracking().FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId).ConfigureAwait(false);
+            dbCharacter.Quests = await _database.CharacterQuests.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
+            dbCharacter.QuickItems = await _database.QuickItems.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
+            dbCharacter.SavedPositions = await _database.CharacterSavePositions.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
+            dbCharacter.User = await _database.Users.AsNoTracking()
+                                              .Include(c => c.BankItems)
+                                              .Include(c => c.WarehouseItems)
+                                              .FirstOrDefaultAsync(x => x.Id == dbCharacter.UserId).ConfigureAwait(false);
 
             var roles = await _userManager.GetRolesAsync(dbCharacter.User);
             var isAdmin = roles.Contains(DbRole.ADMIN) || roles.Contains(DbRole.SUPER_ADMIN);
