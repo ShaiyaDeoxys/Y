@@ -315,17 +315,17 @@ namespace Imgeneus.Database.Entities
         public ushort TimeDamageMP { get; set; }
 
         /// <summary>
-        /// TODO: ?
+        /// Const skill damage, that is added to damage made of stats.
         /// </summary>
         public ushort AddDamageHP { get; set; }
 
         /// <summary>
-        /// TODO: ?
+        /// Const skill damage, that is added to damage made of stats.
         /// </summary>
         public ushort AddDamageSP { get; set; }
 
         /// <summary>
-        /// TODO: ?
+        /// Const skill damage, that is added to damage made of stats.
         /// </summary>
         public ushort AddDamageMP { get; set; }
 

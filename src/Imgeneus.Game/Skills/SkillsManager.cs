@@ -506,6 +506,8 @@ namespace Imgeneus.World.Game.Skills
 
                 case TypeDetail.UniqueHitAttack:
                 case TypeDetail.MultipleHitsAttack:
+                case TypeDetail.HP_MP_SP_Reduction:
+                case TypeDetail.None:
                     break;
 
                 case TypeDetail.PassiveDefence:

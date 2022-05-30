@@ -2,6 +2,7 @@
 {
     public enum TypeDetail : ushort
     {
+        None = 0,
         WeaponPowerUp = 1,
         Backpack = 2,
         PassiveDefence = 4,

@@ -118,6 +118,21 @@ namespace Imgeneus.World.Game.Skills
         public ushort DamageMP { get => _dbSkill.DamageMP; }
 
         /// <summary>
+        /// Const skill damage, that is added to damage made of stats.
+        /// </summary>
+        public ushort AddDamageHP { get => _dbSkill.AddDamageHP; }
+
+        /// <summary>
+        /// Const skill damage, that is added to damage made of stats.
+        /// </summary>
+        public ushort AddDamageSP { get => _dbSkill.AddDamageSP; }
+
+        /// <summary>
+        /// Const skill damage, that is added to damage made of stats.
+        /// </summary>
+        public ushort AddDamageMP { get => _dbSkill.AddDamageMP; }
+
+        /// <summary>
         /// How many health points can be healed.
         /// </summary>
         public ushort HealHP { get => _dbSkill.HealHP; }
