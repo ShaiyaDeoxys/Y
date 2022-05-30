@@ -6,69 +6,28 @@ namespace Imgeneus.World.Game.Skills
 {
     public class Skill
     {
+        private readonly DbSkill _dbSkill;
         public Skill(DbSkill dbSkill, byte skillNumber, int cooldown)
         {
             Number = skillNumber;
             CooldownInSeconds = cooldown;
-
-            // DB values will be stored.
-            Id = dbSkill.Id;
-            SkillId = dbSkill.SkillId;
-            SkillLevel = dbSkill.SkillLevel;
-            Type = dbSkill.TypeDetail;
-            TargetType = dbSkill.TargetType;
-            ResetTime = dbSkill.ResetTime;
-            KeepTime = dbSkill.KeepTime;
-            CastTime = dbSkill.ReadyTime * 250;
-            TypeAttack = dbSkill.TypeAttack;
-            StateType = dbSkill.StateType;
-            DamageType = dbSkill.DamageType;
-            DamageHP = dbSkill.DamageHP;
-            DamageSP = dbSkill.DamageSP;
-            DamageMP = dbSkill.DamageMP;
-            HealHP = dbSkill.HealHP;
-            HealMP = dbSkill.HealMP;
-            HealSP = dbSkill.HealSP;
-            NeedSP = dbSkill.SP;
-            NeedMP = dbSkill.MP;
-            NeedWeapon1 = dbSkill.NeedWeapon1 == 1;
-            NeedWeapon2 = dbSkill.NeedWeapon2 == 1;
-            NeedWeapon3 = dbSkill.NeedWeapon3 == 1;
-            NeedWeapon4 = dbSkill.NeedWeapon4 == 1;
-            NeedWeapon5 = dbSkill.NeedWeapon5 == 1;
-            NeedWeapon6 = dbSkill.NeedWeapon6 == 1;
-            NeedWeapon7 = dbSkill.NeedWeapon7 == 1;
-            NeedWeapon8 = dbSkill.NeedWeapon8 == 1;
-            NeedWeapon9 = dbSkill.NeedWeapon9 == 1;
-            NeedWeapon10 = dbSkill.NeedWeapon10 == 1;
-            NeedWeapon11 = dbSkill.NeedWeapon11 == 1;
-            NeedWeapon12 = dbSkill.NeedWeapon12 == 1;
-            NeedWeapon13 = dbSkill.NeedWeapon13 == 1;
-            NeedWeapon14 = dbSkill.NeedWeapon14 == 1;
-            NeedWeapon15 = dbSkill.NeedWeapon15 == 1;
-            NeedShield = dbSkill.NeedShield == 1;
-            UseSuccessValue = dbSkill.SuccessType == SuccessType.SuccessBasedOnValue;
-            SuccessValue = dbSkill.SuccessValue;
-            Element = dbSkill.Element;
-            ApplyRange = dbSkill.ApplyRange;
-            MultiAttack = dbSkill.MultiAttack;
-            ShouldClearAfterDeath = dbSkill.FixRange == ClearAfterDeath.Clear;
+            _dbSkill = dbSkill;
         }
 
         /// <summary>
         /// Unique id.
         /// </summary>
-        public int Id;
+        public int Id { get => _dbSkill.Id; }
 
         /// <summary>
         /// Skill id.
         /// </summary>
-        public ushort SkillId;
+        public ushort SkillId { get => _dbSkill.SkillId; }
 
         /// <summary>
         /// Skill level.
         /// </summary>
-        public byte SkillLevel;
+        public byte SkillLevel { get => _dbSkill.SkillLevel; }
 
         /// <summary>
         /// Number. This value client sends, when player used any skill.
@@ -88,32 +47,32 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Skill type.
         /// </summary>
-        public TypeDetail Type;
+        public TypeDetail Type { get => _dbSkill.TypeDetail; }
 
         /// <summary>
         /// To what target this skill can be applied.
         /// </summary>
-        public TargetType TargetType;
+        public TargetType TargetType { get => _dbSkill.TargetType; }
 
         /// <summary>
         /// Passive, physical, magic or shooting attack.
         /// </summary>
-        public TypeAttack TypeAttack;
+        public TypeAttack TypeAttack { get => _dbSkill.TypeAttack; }
 
         /// <summary>
         /// Bool indicator, that shows if we need to use success value in calculations.
         /// </summary>
-        public bool UseSuccessValue;
+        public bool UseSuccessValue { get => _dbSkill.SuccessType == SuccessType.SuccessBasedOnValue; }
 
         /// <summary>
         /// Success rate in %.
         /// </summary>
-        public byte SuccessValue;
+        public byte SuccessValue { get => _dbSkill.SuccessValue; }
 
         /// <summary>
         /// State type contains information about what bad influence debuff has on target.
         /// </summary>
-        public StateType StateType;
+        public StateType StateType { get => _dbSkill.StateType; }
 
         /// <summary>
         /// Category of skill. E.g. combat or special.
@@ -123,157 +82,185 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Time after which skill can be used again.
         /// </summary>
-        public ushort ResetTime;
+        public ushort ResetTime { get => _dbSkill.ResetTime; }
 
         /// <summary>
         /// Time for example for buffs. This time shows how long the skill will be applied.
         /// </summary>
-        public int KeepTime;
+        public int KeepTime { get => _dbSkill.KeepTime; }
 
         /// <summary>
         /// How long character should wait until skill is casted. In milliseconds.
         /// </summary>
-        public int CastTime;
+        public int CastTime { get => _dbSkill.ReadyTime * 250; }
 
         /// <summary>
         /// Damage type;
         /// </summary>
-        public DamageType DamageType;
+        public DamageType DamageType { get => _dbSkill.DamageType; }
 
         /// <summary>
         /// Const damage used, when skill makes fixed damage.
         /// </summary>
-        public ushort DamageHP;
+        public ushort DamageHP { get => _dbSkill.DamageHP; }
 
         /// <summary>
         /// Const damage used, when skill makes fixed damage.
         /// </summary>
-        public ushort DamageSP;
+        public ushort DamageSP { get => _dbSkill.DamageSP; }
 
         /// <summary>
         /// Const damage used, when skill makes fixed damage.
         /// </summary>
-        public ushort DamageMP;
+        public ushort DamageMP { get => _dbSkill.DamageMP; }
 
         /// <summary>
         /// How many health points can be healed.
         /// </summary>
-        public ushort HealHP { get; set; }
+        public ushort HealHP { get => _dbSkill.HealHP; }
 
         /// <summary>
         /// How many mana points can be healed.
         /// </summary>
-        public ushort HealMP { get; set; }
+        public ushort HealMP { get => _dbSkill.HealMP; }
 
         /// <summary>
         /// How many stamina points can be healed.
         /// </summary>
-        public ushort HealSP { get; set; }
+        public ushort HealSP { get => _dbSkill.HealSP; }
 
         /// <summary>
         /// Skill const element.
         /// </summary>
-        public Element Element { get; }
+        public Element Element { get => _dbSkill.Element; }
 
         /// <summary>
         /// Skill will be applied within N meters.
         /// </summary>
-        public byte ApplyRange { get; }
+        public byte ApplyRange { get => _dbSkill.ApplyRange; }
 
         /// <summary>
         /// Skill damage will be multiplied by this number.
         /// </summary>
-        public byte MultiAttack { get; }
+        public byte MultiAttack { get => _dbSkill.MultiAttack; }
 
         /// <summary>
         /// After character death this skill is cleared from buffs list?
         /// </summary>
-        public bool ShouldClearAfterDeath { get; }
+        public bool ShouldClearAfterDeath { get => _dbSkill.FixRange == ClearAfterDeath.Clear; }
+
+        /// <summary>
+        /// When skill should be activated.
+        /// </summary>
+        public byte LimitHP { get => _dbSkill.LimitHP; }
+
+        /// <summary>
+        /// Indicates in skill can be activated/disactivated. Skills like "Berserker's Rage".
+        /// </summary>
+        public bool CanBeActivated
+        {
+            get =>
+                _dbSkill.AbilityType1 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType2 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType3 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType4 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType5 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType6 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType7 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType8 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType9 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType10 == AbilityType.SacrificeHPPercent;
+        }
+
+        /// <summary>
+        /// Case for skills such as "Berserker's Rage", that are activated and disactivated.
+        /// </summary>
+        public bool IsActivated { get; set; }
 
         /// <summary>
         /// How much stamina is needed in order to use this skill.
         /// </summary>
-        public ushort NeedSP;
+        public ushort NeedSP { get => _dbSkill.SP; }
 
         /// <summary>
         /// How much mana is needed in order to use this skill.
         /// </summary>
-        public ushort NeedMP;
+        public ushort NeedMP { get => _dbSkill.MP; }
 
         /// <summary>
         /// Needs 1 Handed Sword.
         /// </summary>
-        public bool NeedWeapon1;
+        public bool NeedWeapon1 { get => _dbSkill.NeedWeapon1 == 1; }
 
         /// <summary>
         /// Needs 2 Handed Sword.
         /// </summary>
-        public bool NeedWeapon2;
+        public bool NeedWeapon2 { get => _dbSkill.NeedWeapon2 == 1; }
 
         /// <summary>
         /// Needs 1 Handed Axe.
         /// </summary>
-        public bool NeedWeapon3;
+        public bool NeedWeapon3 { get => _dbSkill.NeedWeapon3 == 1; }
 
         /// <summary>
         /// Needs 2 Handed Axe.
         /// </summary>
-        public bool NeedWeapon4;
+        public bool NeedWeapon4 { get => _dbSkill.NeedWeapon4 == 1; }
 
         /// <summary>
         /// Needs Double Sword.
         /// </summary>
-        public bool NeedWeapon5;
+        public bool NeedWeapon5 { get => _dbSkill.NeedWeapon5 == 1; }
 
         /// <summary>
         /// Needs 1 Spear.
         /// </summary>
-        public bool NeedWeapon6;
+        public bool NeedWeapon6 { get => _dbSkill.NeedWeapon6 == 1; }
 
         /// <summary>
         /// Needs 1 Handed Blunt.
         /// </summary>
-        public bool NeedWeapon7;
+        public bool NeedWeapon7 { get => _dbSkill.NeedWeapon7 == 1; }
 
         /// <summary>
         /// Needs 2 Handed Blunt.
         /// </summary>
-        public bool NeedWeapon8;
+        public bool NeedWeapon8 { get => _dbSkill.NeedWeapon8 == 1; }
 
         /// <summary>
         /// Needs Reverse sword.
         /// </summary>
-        public bool NeedWeapon9;
+        public bool NeedWeapon9 { get => _dbSkill.NeedWeapon9 == 1; }
 
         /// <summary>
         /// Needs Dagger.
         /// </summary>
-        public bool NeedWeapon10;
+        public bool NeedWeapon10 { get => _dbSkill.NeedWeapon10 == 1; }
 
         /// <summary>
         /// Needs Javelin.
         /// </summary>
-        public bool NeedWeapon11;
+        public bool NeedWeapon11 { get => _dbSkill.NeedWeapon11 == 1; }
 
         /// <summary>
         /// Needs 1 Staff.
         /// </summary>
-        public bool NeedWeapon12;
+        public bool NeedWeapon12 { get => _dbSkill.NeedWeapon12 == 1; }
 
         /// <summary>
         /// Needs Bow.
         /// </summary>
-        public bool NeedWeapon13;
+        public bool NeedWeapon13 { get => _dbSkill.NeedWeapon13 == 1; }
 
         /// <summary>
         /// Needs Crossbow.
         /// </summary>
-        public bool NeedWeapon14;
+        public bool NeedWeapon14 { get => _dbSkill.NeedWeapon14 == 1; }
 
         /// <summary>
         /// Needs Knuckle.
         /// </summary>
-        public bool NeedWeapon15;
+        public bool NeedWeapon15 { get => _dbSkill.NeedWeapon15 == 1; }
 
         private List<byte> _requiredWeapons;
         public List<byte> RequiredWeapons
@@ -377,6 +364,6 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Needs Shield.
         /// </summary>
-        public bool NeedShield;
+        public bool NeedShield { get => _dbSkill.NeedShield == 1; }
     }
 }

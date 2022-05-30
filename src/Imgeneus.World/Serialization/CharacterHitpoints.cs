@@ -15,11 +15,11 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(2)]
         public int SP { get; }
 
-        public CharacterHitpoints(Character character)
+        public CharacterHitpoints(int hp, int mp, int sp)
         {
-            HP = character.HealthManager.CurrentHP;
-            MP = character.HealthManager.CurrentMP;
-            SP = character.HealthManager.CurrentSP;
+            HP = hp;
+            MP = mp;
+            SP = sp;
         }
     }
 }

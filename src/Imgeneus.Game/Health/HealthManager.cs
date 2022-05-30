@@ -191,6 +191,13 @@ namespace Imgeneus.World.Game.Health
             MP_SP_Used?.Invoke(usedMP, usedSP);
         }
 
+        public void RaiseHitpointsChange()
+        {
+            OnCurrentHitpointsChanged?.Invoke(CurrentHP, CurrentMP, CurrentSP);
+        }
+
+        public event Action<int, int, int> OnCurrentHitpointsChanged;
+
         #endregion
 
         #region Extras

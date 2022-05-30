@@ -66,7 +66,7 @@ namespace Imgeneus.World.Packets
         void SendAddBuff(IWorldClient client, Buff buff);
         void SendRemoveBuff(IWorldClient client, Buff buff);
         void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
-        void SendCurrentHitpoints(IWorldClient client, Character character);
+        void SendCurrentHitpoints(IWorldClient client, int hp, int mp, int sp);
         #endregion
 
         #region Inventory

@@ -131,6 +131,7 @@ namespace Imgeneus.World.Game.Player
             GameSession = gameSession;
 
             HealthManager.MP_SP_Used += SendUseMPSP;
+            HealthManager.OnCurrentHitpointsChanged += SendCurrentHitpoints;
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
             StatsManager.OnResetStats += SendResetStats;
             BuffsManager.OnBuffAdded += SendAddBuff;
@@ -161,6 +162,7 @@ namespace Imgeneus.World.Game.Player
         public void Dispose()
         {
             HealthManager.MP_SP_Used -= SendUseMPSP;
+            HealthManager.OnCurrentHitpointsChanged -= SendCurrentHitpoints;
             StatsManager.OnAdditionalStatsUpdate -= SendAdditionalStats;
             StatsManager.OnResetStats -= SendResetStats;
             BuffsManager.OnBuffAdded -= SendAddBuff;

@@ -285,10 +285,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCurrentHitpoints(IWorldClient client, Character character)
+        public void SendCurrentHitpoints(IWorldClient client, int hp, int mp, int sp)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_CURRENT_HITPOINTS);
-            packet.Write(new CharacterHitpoints(character).Serialize());
+            packet.Write(new CharacterHitpoints(hp, mp, sp).Serialize());
             client.Send(packet);
         }
         #endregion

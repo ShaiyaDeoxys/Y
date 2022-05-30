@@ -33,6 +33,10 @@ namespace Imgeneus.World.Game.Buffs
 
         public bool ShouldClearAfterDeath => _skill.ShouldClearAfterDeath;
 
+        public bool CanBeActivatedAndDisactivated => _skill.CanBeActivated;
+
+        public byte LimitHP => _skill.LimitHP;
+
         /// <summary>
         /// Who has created this buff.
         /// </summary>
@@ -146,7 +150,7 @@ namespace Imgeneus.World.Game.Buffs
 
                 // Set up timer.
                 _resetTimer.Stop();
-                _resetTimer.Interval = _resetTime.Subtract(DateTime.UtcNow).TotalMilliseconds;
+                _resetTimer.Interval = _resetTime.Subtract(DateTime.UtcNow).TotalMilliseconds > int.MaxValue ? int.MaxValue : _resetTime.Subtract(DateTime.UtcNow).TotalMilliseconds;
                 _resetTimer.Start();
             }
         }
@@ -235,6 +239,14 @@ namespace Imgeneus.World.Game.Buffs
         public ushort TimeMPDamage;
 
         public TimeDamageType TimeDamageType;
+
+        public int RepeatTime
+        {
+            set
+            {
+                _periodicalDebuffTimer.Interval = value * 1000;
+            }
+        }
 
         private void PeriodicalDebuffTimer_Elapsed(object sender, ElapsedEventArgs e)
         {

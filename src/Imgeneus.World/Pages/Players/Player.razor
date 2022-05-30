@@ -194,7 +194,7 @@ else
                     <span class="p-2">Skill id: @buff.SkillId</span>
                     <span class="p-2">Skill level: @buff.SkillLevel</span>
                     <span class="p-2">Is debuff: @buff.IsDebuff</span>
-                    <span class="p-2">Buff creator: @buff.BuffCreator.ToString().Split(".").Last() @buff.BuffCreator.Id</span>
+                    <span class="p-2">Buff creator: @buff.BuffCreator?.ToString().Split(".").Last() @buff.BuffCreator?.Id</span>
                     <span class="p-2">End time (UTC): @buff.ResetTime.ToLongDateString() @buff.ResetTime.ToLongTimeString()</span>
                 </span>
             }

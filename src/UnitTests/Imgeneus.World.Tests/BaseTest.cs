@@ -372,7 +372,8 @@ namespace Imgeneus.World.Tests
                     { (234, 1), DoubleWarehouseStone_Lvl1 },
                     { (613, 1), MainWeaponPowerUp },
                     { (711, 10), FleetFoot },
-                    { (460, 1), Transformation }
+                    { (460, 1), Transformation },
+                    { (623, 1), BerserkersRage }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -838,6 +839,18 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             SkillName = "Transformation Skill",
             TypeDetail = TypeDetail.Transformation
+        };
+
+        protected DbSkill BerserkersRage = new DbSkill()
+        {
+            SkillId = 623,
+            SkillLevel = 1,
+            SkillName = "Berserker's Rage",
+            TypeDetail = TypeDetail.Buff,
+            KeepTime = 10,
+            AbilityType1 = AbilityType.SacrificeHPPercent,
+            AbilityValue1 = 8,
+            LimitHP = 10
         };
 
         #endregion

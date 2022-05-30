@@ -180,7 +180,7 @@ namespace Imgeneus.World.Game.Attack
 
             if (DateTime.UtcNow < _nextAttackTime)
             {
-                success = AttackSuccess.CooldownNotOver;
+                success = AttackSuccess.TooFastAttack;
                 return false;
             }
 

@@ -183,5 +183,15 @@ namespace Imgeneus.World.Game.Health
         /// Event, that is fired, when killable recovers.
         /// </summary>
         event Action<int, int, int, int> OnRecover;
+
+        /// <summary>
+        /// Raises all 3 hitpoints change.
+        /// </summary>
+        void RaiseHitpointsChange();
+
+        /// <summary>
+        /// Event, that is fired, when all 3 hitpoints change.
+        /// </summary>
+        event Action<int, int, int> OnCurrentHitpointsChanged;
     }
 }

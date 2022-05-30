@@ -30,6 +30,8 @@ namespace Imgeneus.World.Game.Player
 
         private void SendUseMPSP(ushort needMP, ushort needSP) => _packetFactory.SendUseSMMP(GameSession.Client, needMP, needSP);
 
+        private void SendCurrentHitpoints(int hp, int mp, int sp) => _packetFactory.SendCurrentHitpoints(GameSession.Client, hp, mp, sp);
+
         private void SendTargetAddBuff(IKillable target, Buff buff) => _packetFactory.SendTargetAddBuff(GameSession.Client, target.Id, buff, target is Mob);
 
         private void SendTargetRemoveBuff(IKillable target, Buff buff) => _packetFactory.SendTargetRemoveBuff(GameSession.Client, target.Id, buff, target is Mob);

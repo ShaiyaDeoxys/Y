@@ -215,7 +215,7 @@ namespace Imgeneus.World.Game.Buffs
 
         public Buff AddBuff(Skill skill, IKiller creator)
         {
-            var resetTime = skill.KeepTime == 0 ? DateTime.UtcNow.AddDays(10) : DateTime.UtcNow.AddSeconds(skill.KeepTime);
+            var resetTime = skill.KeepTime == 0 || skill.CanBeActivated ? DateTime.UtcNow.AddDays(10) : DateTime.UtcNow.AddSeconds(skill.KeepTime);
             Buff buff;
 
             if (skill.IsPassive)
@@ -239,11 +239,22 @@ namespace Imgeneus.World.Game.Buffs
                     // If buffs are the same level, we should only update reset time.
                     if (buff.SkillLevel == skill.SkillLevel)
                     {
-                        buff.ResetTime = resetTime;
+                        if (!skill.CanBeActivated)
+                        {
+                            buff.ResetTime = resetTime;
 
-                        // Send update of buff.
-                        if (!buff.IsPassive)
-                            OnBuffAdded?.Invoke(_ownerId, buff);
+                            // Send update of buff.
+                            if (!buff.IsPassive)
+                                OnBuffAdded?.Invoke(_ownerId, buff);
+                        }
+                        else
+                        {
+                            if (skill.IsActivated)
+                            {
+                                buff.CancelBuff();
+                                skill.IsActivated = false;
+                            }
+                        }
                     }
 
                     if (buff.SkillLevel < skill.SkillLevel)
@@ -277,6 +288,9 @@ namespace Imgeneus.World.Game.Buffs
                     PassiveBuffs.Add(buff);
                 else
                     ActiveBuffs.Add(buff);
+
+                if (skill.CanBeActivated)
+                    skill.IsActivated = true;
             }
 
             return buff;
@@ -296,16 +310,16 @@ namespace Imgeneus.World.Game.Buffs
             {
                 case TypeDetail.Buff:
                 case TypeDetail.PassiveDefence:
-                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true);
-                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true);
-                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true);
-                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true);
-                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true);
-                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true);
-                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true);
-                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true);
-                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true);
-                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true, buff, skill);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true, buff, skill);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true, buff, skill);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true, buff, skill);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true, buff, skill);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true, buff, skill);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true, buff, skill);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true, buff, skill);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true, buff, skill);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
 
@@ -320,31 +334,31 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.SubtractingDebuff:
-                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false);
-                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false);
-                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false);
-                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false);
-                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false);
-                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false);
-                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false);
-                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false);
-                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false);
-                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false);
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false, buff, skill);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false, buff, skill);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false, buff, skill);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false, buff, skill);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false, buff, skill);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false, buff, skill);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false, buff, skill);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false, buff, skill);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false, buff, skill);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
                 case TypeDetail.Transformation:
-                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true);
-                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true);
-                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true);
-                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true);
-                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true);
-                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true);
-                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true);
-                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true);
-                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true);
-                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true, buff, skill);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true, buff, skill);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true, buff, skill);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true, buff, skill);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true, buff, skill);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true, buff, skill);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true, buff, skill);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true, buff, skill);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true, buff, skill);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
                     _shapeManager.IsTranformated = true;
@@ -458,16 +472,16 @@ namespace Imgeneus.World.Game.Buffs
             {
                 case TypeDetail.Buff:
                 case TypeDetail.PassiveDefence:
-                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false);
-                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false);
-                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false);
-                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false);
-                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false);
-                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false);
-                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false);
-                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false);
-                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false);
-                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false);
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false, buff, skill);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false, buff, skill);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false, buff, skill);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false, buff, skill);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false, buff, skill);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false, buff, skill);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false, buff, skill);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false, buff, skill);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false, buff, skill);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
 
@@ -478,31 +492,31 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.SubtractingDebuff:
-                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true);
-                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true);
-                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true);
-                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true);
-                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true);
-                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true);
-                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true);
-                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true);
-                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true);
-                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true);
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true, buff, skill);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true, buff, skill);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true, buff, skill);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true, buff, skill);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true, buff, skill);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true, buff, skill);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true, buff, skill);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true, buff, skill);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true, buff, skill);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
                 case TypeDetail.Transformation:
-                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false);
-                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false);
-                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false);
-                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false);
-                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false);
-                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false);
-                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false);
-                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false);
-                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false);
-                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false);
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false, buff, skill);
+                    ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false, buff, skill);
+                    ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false, buff, skill);
+                    ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false, buff, skill);
+                    ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false, buff, skill);
+                    ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false, buff, skill);
+                    ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false, buff, skill);
+                    ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false, buff, skill);
+                    ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false, buff, skill);
 
                     _statsManager.RaiseAdditionalStatsUpdate();
                     _shapeManager.IsTranformated = false;
@@ -587,7 +601,7 @@ namespace Imgeneus.World.Game.Buffs
             }
         }
 
-        private void ApplyAbility(AbilityType abilityType, ushort abilityValue, bool addAbility)
+        private void ApplyAbility(AbilityType abilityType, ushort abilityValue, bool addAbility, Buff buff, DbSkill skill)
         {
             switch (abilityType)
             {
@@ -797,6 +811,21 @@ namespace Imgeneus.World.Game.Buffs
                     _warehouseManager.IsDoubledWarehouse = addAbility;
                     return;
 
+                case AbilityType.SacrificeHPPercent:
+                    if (addAbility)
+                    {
+                        buff.TimeHPDamage = abilityValue;
+                        buff.TimeDamageType = TimeDamageType.Percent;
+                        buff.OnPeriodicalDebuff += Buff_OnPeriodicalDebuff;
+                        buff.RepeatTime = skill.KeepTime;
+                        buff.StartPeriodicalDebuff();
+                    }
+                    else
+                    {
+                        buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
+                    }
+                    return;
+
                 default:
                     throw new NotImplementedException($"Not implemented ability type {abilityType}");
             }
@@ -835,16 +864,22 @@ namespace Imgeneus.World.Game.Buffs
             if (buff.TimeDamageType == TimeDamageType.Percent)
             {
                 damage = new Damage(
-                    Convert.ToUInt16(_healthManager.CurrentHP * debuffResult.Damage.HP * 1.0 / 100),
-                    Convert.ToUInt16(_healthManager.CurrentSP * debuffResult.Damage.SP * 1.0 / 100),
-                    Convert.ToUInt16(_healthManager.CurrentMP * debuffResult.Damage.MP * 1.0 / 100));
+                    Convert.ToUInt16(_healthManager.MaxHP * debuffResult.Damage.HP * 1.0 / 100),
+                    Convert.ToUInt16(_healthManager.MaxSP * debuffResult.Damage.SP * 1.0 / 100),
+                    Convert.ToUInt16(_healthManager.MaxMP * debuffResult.Damage.MP * 1.0 / 100));
             }
+
+            if (buff.CanBeActivatedAndDisactivated && _healthManager.CurrentHP <= damage.HP)
+                return;
 
             _healthManager.DecreaseHP(damage.HP, buff.BuffCreator);
             _healthManager.CurrentMP -= damage.MP;
             _healthManager.CurrentSP -= damage.SP;
 
-            OnSkillKeep?.Invoke(_ownerId, buff, new AttackResult(AttackSuccess.Normal, damage));
+            if (!buff.CanBeActivatedAndDisactivated)
+                OnSkillKeep?.Invoke(_ownerId, buff, new AttackResult(AttackSuccess.Normal, damage));
+            else
+                _healthManager.RaiseHitpointsChange();
         }
 
         #endregion

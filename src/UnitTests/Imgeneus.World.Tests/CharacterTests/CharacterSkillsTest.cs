@@ -67,5 +67,24 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.True(shapeChangeCalled);
         }
+
+        [Fact]
+        [Description("BerserkersRage can be activated and disactivated.")]
+        public void BerserkersRageTest()
+        {
+            var character = CreateCharacter();
+            var skill = new Skill(BerserkersRage, 0, 0);
+            Assert.True(skill.CanBeActivated);
+
+            character.BuffsManager.AddBuff(skill, null);
+
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+            Assert.True(skill.IsActivated);
+
+            character.BuffsManager.AddBuff(skill, null);
+
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
+            Assert.False(skill.IsActivated);
+        }
     }
 }

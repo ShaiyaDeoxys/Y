@@ -25,6 +25,9 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(5)]
         public ushort[] Damage = new ushort[3];
 
+        [FieldOrder(6)]
+        public bool KeepActivated { get; }
+
         public SkillRange(int characterId, int targetId, Skill skill, AttackResult attackResult)
         {
             IsSuccess = attackResult.Success;
@@ -33,6 +36,7 @@ namespace Imgeneus.World.Serialization
             SkillId = skill.SkillId;
             SkillLevel = skill.SkillLevel;
             Damage = new ushort[] { attackResult.Damage.HP, attackResult.Damage.SP, attackResult.Damage.MP };
+            KeepActivated = skill.IsActivated;
         }
     }
 }
