@@ -388,6 +388,7 @@ namespace Imgeneus.World.Game.Attack
                     damage = new Random().Next(minAttack, maxAttack);
                     if (skill != null)
                     {
+                        damage += skill.DamageHP;
                         damage += skill.AddDamageHP;
                     }
                     damage -= target.StatsManager.TotalDefense;
@@ -400,6 +401,7 @@ namespace Imgeneus.World.Game.Attack
                     damage = new Random().Next(minAttack, maxAttack);
                     if (skill != null)
                     {
+                        damage += skill.DamageHP;
                         damage += skill.AddDamageHP;
                     }
                     damage -= target.StatsManager.TotalDefense;
@@ -413,6 +415,7 @@ namespace Imgeneus.World.Game.Attack
                     damage = new Random().Next(minMagicAttack, maxMagicAttack);
                     if (skill != null)
                     {
+                        damage += skill.DamageHP;
                         damage += skill.AddDamageHP;
                     }
                     damage -= target.StatsManager.TotalResistance;
