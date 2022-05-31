@@ -183,10 +183,9 @@ namespace Imgeneus.World.Game.Player
             dbCharacter.Quests = await _database.CharacterQuests.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
             dbCharacter.QuickItems = await _database.QuickItems.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
             dbCharacter.SavedPositions = await _database.CharacterSavePositions.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
-            dbCharacter.User = await _database.Users.AsNoTracking()
-                                              .Include(c => c.BankItems)
-                                              .Include(c => c.WarehouseItems)
-                                              .FirstOrDefaultAsync(x => x.Id == dbCharacter.UserId).ConfigureAwait(false);
+            dbCharacter.User = await _database.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == dbCharacter.UserId).ConfigureAwait(false);
+            dbCharacter.User.BankItems = await _database.BankItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);
+            dbCharacter.User.WarehouseItems = await _database.WarehouseItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);                                            
 
             var roles = await _userManager.GetRolesAsync(dbCharacter.User);
             var isAdmin = roles.Contains(DbRole.ADMIN) || roles.Contains(DbRole.SUPER_ADMIN);

@@ -1573,6 +1573,18 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMobSkillKeep(IWorldClient client, int senderId, ushort skillId, byte skillLevel, AttackResult result)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MOB_SKILL_KEEP);
+            packet.Write(senderId);
+            packet.Write(skillId);
+            packet.Write(skillLevel);
+            packet.Write(result.Damage.HP);
+            packet.Write(result.Damage.SP);
+            packet.Write(result.Damage.MP);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Friends

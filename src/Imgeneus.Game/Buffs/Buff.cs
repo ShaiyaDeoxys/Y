@@ -223,9 +223,9 @@ namespace Imgeneus.World.Game.Buffs
         #region Periodical debuff
 
         /// <summary>
-        /// Timer, that is called when it's time to make periodical debuff (every 3 seconds).
+        /// Timer, that is called when it's time to make periodical debuff (every second).
         /// </summary>
-        private readonly Timer _periodicalDebuffTimer = new Timer(3000);
+        private readonly Timer _periodicalDebuffTimer = new Timer(1200);
 
         /// <summary>
         /// Event, that is fired, when it's time to make periodical debuff.

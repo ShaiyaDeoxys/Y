@@ -872,13 +872,14 @@ namespace Imgeneus.World.Game.Buffs
             if (buff.CanBeActivatedAndDisactivated && _healthManager.CurrentHP <= damage.HP)
                 return;
 
+            if (!buff.CanBeActivatedAndDisactivated)
+                OnSkillKeep?.Invoke(_ownerId, buff, new AttackResult(AttackSuccess.Normal, damage));
+
             _healthManager.DecreaseHP(damage.HP, buff.BuffCreator);
             _healthManager.CurrentMP -= damage.MP;
             _healthManager.CurrentSP -= damage.SP;
 
-            if (!buff.CanBeActivatedAndDisactivated)
-                OnSkillKeep?.Invoke(_ownerId, buff, new AttackResult(AttackSuccess.Normal, damage));
-            else
+            if (buff.CanBeActivatedAndDisactivated)
                 _healthManager.RaiseHitpointsChange();
         }
 

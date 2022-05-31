@@ -232,6 +232,7 @@ namespace Imgeneus.World.Packets
         void SendMobAttack(IWorldClient client, int senderId, int targetId, AttackResult attackResult);
         void SendMobUsedSkill(IWorldClient client, int senderId, int targetId, Skill skill, AttackResult attackResult);
         void SendMobDead(IWorldClient client, int senderId, IKiller killer);
+        void SendMobSkillKeep(IWorldClient client, int senderId, ushort skillId, byte skillLevel, AttackResult attackResult);
         #endregion
 
         #region Friends

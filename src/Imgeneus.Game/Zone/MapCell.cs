@@ -621,6 +621,7 @@ namespace Imgeneus.World.Game.Zone
             mob.AttackManager.OnAttack += Mob_OnAttack;
             mob.SkillsManager.OnUsedSkill += Mob_OnUsedSkill;
             mob.HealthManager.OnRecover += Mob_OnRecover;
+            mob.BuffsManager.OnSkillKeep += Mob_OnSkillKeep;
         }
 
         /// <summary>
@@ -634,7 +635,9 @@ namespace Imgeneus.World.Game.Zone
             mob.AttackManager.OnAttack -= Mob_OnAttack;
             mob.SkillsManager.OnUsedSkill -= Mob_OnUsedSkill;
             mob.HealthManager.OnRecover -= Mob_OnRecover;
+            mob.BuffsManager.OnSkillKeep -= Mob_OnSkillKeep;
             mob.TimeToRebirth -= RebirthMob;
+
         }
 
         private async void Mob_OnDead(int senderId, IKiller killer)
@@ -729,6 +732,12 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMobRecover(player.GameSession.Client, senderId, hp);
+        }
+
+        private void Mob_OnSkillKeep(int senderId, Buff buff, AttackResult result)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMobSkillKeep(player.GameSession.Client, senderId, buff.SkillId, buff.SkillLevel, result);
         }
 
         #endregion
