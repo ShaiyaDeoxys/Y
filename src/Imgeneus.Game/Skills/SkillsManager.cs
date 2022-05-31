@@ -526,7 +526,8 @@ namespace Imgeneus.World.Game.Skills
 
             if ((initialTarget == target || skillOwner == target) && n == 0)
                 OnUsedSkill?.Invoke(_ownerId, initialTarget, skill, attackResult);
-            else
+
+            if (skill.MultiAttack > 1)
                 OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
         }
 

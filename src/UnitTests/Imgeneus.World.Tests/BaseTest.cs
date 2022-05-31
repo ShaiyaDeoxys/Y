@@ -374,7 +374,8 @@ namespace Imgeneus.World.Tests
                     { (711, 10), FleetFoot },
                     { (460, 1), Transformation },
                     { (623, 1), BerserkersRage },
-                    { (630, 1), WildRage }
+                    { (630, 1), WildRage },
+                    { (627, 1), DeadlyStrike }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -863,6 +864,17 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.PlusExtraDamage,
             DamageHP = 235,
             DamageSP = 47
+        };
+
+        protected DbSkill DeadlyStrike = new DbSkill()
+        {
+            SkillId = 627,
+            SkillLevel = 1,
+            SkillName = "Deadly Strike",
+            TypeDetail = TypeDetail.MultipleHitsAttack,
+            DamageType = DamageType.PlusExtraDamage,
+            DamageHP = 50,
+            MultiAttack = 2
         };
 
         #endregion

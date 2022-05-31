@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Skills;
 using System.ComponentModel;
 using Xunit;
@@ -98,5 +99,21 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(result.Damage.HP > WildRage.DamageHP);
             Assert.Equal(result.Damage.SP, WildRage.DamageSP);
         }
+
+        [Fact]
+        [Description("Deadly Strike should generate 2 range attacks.")]
+        public void DeadlyStrikeTest()
+        {
+            var character1 = CreateCharacter();
+            var character2 = CreateCharacter();
+
+            var numberOfRangeAttacks = 0;
+            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfRangeAttacks++;
+
+            character1.SkillsManager.UseSkill(new Skill(DeadlyStrike, 0, 0), character1, character2);
+
+            Assert.Equal(2, numberOfRangeAttacks);
+        }
+
     }
 }
