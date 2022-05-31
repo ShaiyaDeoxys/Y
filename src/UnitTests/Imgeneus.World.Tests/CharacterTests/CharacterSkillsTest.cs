@@ -86,5 +86,17 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Empty(character.BuffsManager.ActiveBuffs);
             Assert.False(skill.IsActivated);
         }
+
+        [Fact]
+        [Description("Wild Rage should decrease HP and SP.")]
+        public void WildRageTest()
+        {
+            var character1 = CreateCharacter();
+            var character2 = CreateCharacter();
+
+            var result = character1.AttackManager.CalculateDamage(character2, TypeAttack.PhysicalAttack, Element.None, 1, 5, 0, 0, new Skill(WildRage, 0, 0));
+            Assert.True(result.Damage.HP > WildRage.DamageHP);
+            Assert.Equal(result.Damage.SP, WildRage.DamageSP);
+        }
     }
 }

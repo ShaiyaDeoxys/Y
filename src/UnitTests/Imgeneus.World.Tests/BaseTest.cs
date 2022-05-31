@@ -373,7 +373,8 @@ namespace Imgeneus.World.Tests
                     { (613, 1), MainWeaponPowerUp },
                     { (711, 10), FleetFoot },
                     { (460, 1), Transformation },
-                    { (623, 1), BerserkersRage }
+                    { (623, 1), BerserkersRage },
+                    { (630, 1), WildRage }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -851,6 +852,17 @@ namespace Imgeneus.World.Tests
             AbilityType1 = AbilityType.SacrificeHPPercent,
             AbilityValue1 = 8,
             LimitHP = 10
+        };
+
+        protected DbSkill WildRage = new DbSkill()
+        {
+            SkillId = 630,
+            SkillLevel = 1,
+            SkillName = "Wild Rage",
+            TypeDetail = TypeDetail.UniqueHitAttack,
+            DamageType = DamageType.PlusExtraDamage,
+            DamageHP = 235,
+            DamageSP = 47
         };
 
         #endregion
