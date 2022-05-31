@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Skills;
 using System.ComponentModel;
 using Xunit;
@@ -148,6 +149,26 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(character2GotDamage);
             Assert.True(character3GotDamage);
             Assert.True(character4GotDamage);
+        }
+
+        [Fact]
+        [Description("Nettle Sting can be used only with Spear.")]
+        public void NettleStingNeedsSpearTest()
+        {
+            var character = CreateCharacter();
+            var character2 = CreateCharacter(country: Fraction.Dark);
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.MoveItem(1, 0, 0, 5);
+
+            character.SkillsManager.CanUseSkill(new Skill(NettleSting, 0, 0), character2, out var result);
+            Assert.Equal(AttackSuccess.WrongEquipment, result);
+
+            // Give spear.
+            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Spear.Type, Spear.TypeId));
+            character.InventoryManager.MoveItem(1, 0, 0, 5);
+
+            character.SkillsManager.CanUseSkill(new Skill(NettleSting, 0, 0), character2, out result);
+            Assert.Equal(AttackSuccess.Normal, result);
         }
     }
 }

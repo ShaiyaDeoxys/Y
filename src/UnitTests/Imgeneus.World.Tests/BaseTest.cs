@@ -388,6 +388,7 @@ namespace Imgeneus.World.Tests
                 {
                     { (17, 2), WaterArmor },
                     { (2, 92), FireSword },
+                    { (6, 1), Spear },
                     { (100, 192), PerfectLinkingHammer },
                     { (44, 237), PerfectExtractingHammer },
                     { (100, 139), LuckyCharm },
@@ -891,7 +892,8 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.PlusExtraDamage,
             DamageHP = 285,
             TargetType = TargetType.EnemiesNearTarget,
-            TypeAttack = TypeAttack.PhysicalAttack
+            TypeAttack = TypeAttack.PhysicalAttack,
+            NeedWeapon6 = 1
         };
 
         #endregion
@@ -917,6 +919,12 @@ namespace Imgeneus.World.Tests
             Count = 1,
             Quality = 1200,
             Buy = 100
+        };
+
+        protected DbItem Spear = new DbItem()
+        {
+            Type = 6,
+            TypeId = 1
         };
 
         protected DbItem PerfectLinkingHammer = new DbItem()
