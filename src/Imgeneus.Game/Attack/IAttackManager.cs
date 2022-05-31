@@ -19,6 +19,11 @@ namespace Imgeneus.World.Game.Attack
         void Init(int ownerId);
 
         /// <summary>
+        /// If this set to true, attack will always success. Used mainly in tests.
+        /// </summary>
+        bool AlwaysHit { get; set; }
+
+        /// <summary>
         /// Updates the last date, when attack was called.
         /// </summary>
         void StartAttack();

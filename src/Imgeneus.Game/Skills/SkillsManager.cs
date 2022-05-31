@@ -393,7 +393,8 @@ namespace Imgeneus.World.Game.Skills
                     {
                         if (target == t)
                             OnUsedSkill?.Invoke(_ownerId, t, skill, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
-                        else
+                        
+                        if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
                             OnUsedRangeSkill?.Invoke(_ownerId, t, skill, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
 
                         continue;
@@ -527,7 +528,7 @@ namespace Imgeneus.World.Game.Skills
             if ((initialTarget == target || skillOwner == target) && n == 0)
                 OnUsedSkill?.Invoke(_ownerId, initialTarget, skill, attackResult);
 
-            if (skill.MultiAttack > 1)
+            if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
                 OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
         }
 

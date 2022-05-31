@@ -138,6 +138,8 @@ namespace Imgeneus.World.Tests
 
             var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            attackManager.AlwaysHit = true;
+
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
             var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager);
@@ -228,6 +230,8 @@ namespace Imgeneus.World.Tests
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            attackManager.AlwaysHit = true;
+
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, null);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
@@ -375,7 +379,8 @@ namespace Imgeneus.World.Tests
                     { (460, 1), Transformation },
                     { (623, 1), BerserkersRage },
                     { (630, 1), WildRage },
-                    { (627, 1), DeadlyStrike }
+                    { (627, 1), DeadlyStrike },
+                    { (340, 1), NettleSting }
                 });
             databasePreloader
                 .SetupGet((preloader) => preloader.Items)
@@ -875,6 +880,18 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.PlusExtraDamage,
             DamageHP = 50,
             MultiAttack = 2
+        };
+
+        protected DbSkill NettleSting = new DbSkill()
+        {
+            SkillId = 340,
+            SkillLevel = 1,
+            SkillName = "Nettle Sting",
+            TypeDetail = TypeDetail.UniqueHitAttack,
+            DamageType = DamageType.PlusExtraDamage,
+            DamageHP = 285,
+            TargetType = TargetType.EnemiesNearTarget,
+            TypeAttack = TypeAttack.PhysicalAttack
         };
 
         #endregion

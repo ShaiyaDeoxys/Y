@@ -251,10 +251,13 @@ namespace Imgeneus.World.Game.Attack
             }
         }
 
+        public bool AlwaysHit { get; set; }
+
         public bool AttackSuccessRate(IKillable target, TypeAttack typeAttack, Skill skill = null)
         {
-            // Uncomment this code, if you want to always hit target.
-            // return true;
+            if (AlwaysHit)
+                return true;
+
             if (target.IsUntouchable)
                 return false;
 
@@ -263,7 +266,6 @@ namespace Imgeneus.World.Game.Attack
 
             if (skill != null && skill.UseSuccessValue)
                 return new Random().Next(1, 101) < skill.SuccessValue;
-
 
             double levelDifference;
             double result;

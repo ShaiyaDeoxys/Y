@@ -30,6 +30,8 @@ namespace Imgeneus.World.Tests.CharacterTests
             var character = CreateCharacter();
 
             var character2 = CreateCharacter();
+            character2.AttackManager.AlwaysHit = false;
+
             var attackSuccess = (character2 as IKiller).AttackManager.AttackSuccessRate(character, TypeAttack.ShootingAttack, new Skill(BullsEye, 0, 0));
             Assert.True(attackSuccess); // Bull eye has 100% success rate.
 
@@ -47,6 +49,7 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var fighter = CreateCharacter();
             var archer = CreateCharacter(profession: CharacterProfession.Archer);
+            archer.AttackManager.AlwaysHit = false;
 
             fighter.BuffsManager.AddBuff(new Skill(FleetFoot, 0, 0), null);
             Assert.Single(fighter.BuffsManager.ActiveBuffs);
@@ -115,5 +118,36 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(2, numberOfRangeAttacks);
         }
 
+        [Fact]
+        [Description("Nettle Sting should generate as many range attacks as many targets it got.")]
+        public void NettleStingTest()
+        {
+            var map = testMap;
+            var character1 = CreateCharacter(map: map);
+            var character2 = CreateCharacter(map: map, country: Fraction.Dark);
+            var character3 = CreateCharacter(map: map, country: Fraction.Dark);
+            var character4 = CreateCharacter(map: map, country: Fraction.Dark);
+
+            var numberOfRangeAttacks = 0;
+            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfRangeAttacks++;
+
+            character1.StatsManager.WeaponMinAttack = 1;
+            character1.StatsManager.WeaponMaxAttack = 1;
+
+            var character2GotDamage = false;
+            var character3GotDamage = false;
+            var character4GotDamage = false;
+
+            character2.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character2GotDamage = true;
+            character3.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character3GotDamage = true;
+            character4.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character4GotDamage = true;
+
+            character1.SkillsManager.UseSkill(new Skill(NettleSting, 0, 0), character1, character2);
+
+            Assert.Equal(3, numberOfRangeAttacks);
+            Assert.True(character2GotDamage);
+            Assert.True(character3GotDamage);
+            Assert.True(character4GotDamage);
+        }
     }
 }
