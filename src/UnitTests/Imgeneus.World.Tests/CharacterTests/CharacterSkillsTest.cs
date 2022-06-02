@@ -172,5 +172,22 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.SkillsManager.CanUseSkill(new Skill(NettleSting, 0, 0), character2, out result);
             Assert.Equal(AttackSuccess.Normal, result);
         }
+
+        [Fact]
+        [Description("Eraser should make x2 hp damage and should kill skill owner.")]
+        public void EraserTest()
+        {
+            var character = CreateCharacter();
+            var character2 = CreateCharacter(country: Fraction.Dark);
+
+            character.HealthManager.FullRecover();
+            Assert.Equal(character.HealthManager.MaxHP, character.HealthManager.CurrentHP);
+
+            var result = character.AttackManager.CalculateAttackResult(new Skill(Eraser, 0, 0), character2, Element.None, 0, 0, 0, 0);
+            Assert.Equal(character.HealthManager.CurrentHP * 2, result.Damage.HP);
+
+            character.SkillsManager.UseSkill(new Skill(Eraser, 0, 0), character, character2);
+            Assert.True(character.HealthManager.IsDead);
+        }
     }
 }

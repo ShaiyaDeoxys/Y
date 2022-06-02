@@ -3,6 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
@@ -27,9 +28,10 @@ namespace Imgeneus.World.Game.Attack
         private readonly ICountryProvider _countryProvider;
         private readonly ISpeedManager _speedManager;
         private readonly IStealthManager _stealthManager;
+        private readonly IHealthManager _healthManager;
         private int _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager)
+        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager)
         {
             _logger = logger;
             _statsManager = statsManager;
@@ -38,6 +40,7 @@ namespace Imgeneus.World.Game.Attack
             _countryProvider = countryProvider;
             _speedManager = speedManager;
             _stealthManager = stealthManager;
+            _healthManager = healthManager;
 
 #if DEBUG
             _logger.LogDebug("AttackManager {hashcode} created", GetHashCode());
@@ -367,6 +370,9 @@ namespace Imgeneus.World.Game.Attack
                                            minMagicAttack,
                                            maxMagicAttack,
                                            skill);
+
+                case DamageType.Eraser:
+                    return new AttackResult(AttackSuccess.Normal, new Damage((ushort)(_healthManager.CurrentHP * 2), 0, 0));
 
                 default:
                     throw new NotImplementedException("Not implemented damage type.");

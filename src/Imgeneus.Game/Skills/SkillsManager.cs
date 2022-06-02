@@ -382,9 +382,13 @@ namespace Imgeneus.World.Game.Skills
 
             if (skill.NeedMP > 0 || skill.NeedSP > 0)
             {
-                _healthManager.CurrentMP -= skill.NeedMP;
-                _healthManager.CurrentSP -= skill.NeedSP;
-                _healthManager.InvokeUsedMPSP(skill.NeedMP, skill.NeedSP);
+                var oldMP = _healthManager.CurrentMP;
+                _healthManager.CurrentMP -= skill.NeedMP > 1 ? skill.NeedMP : _healthManager.CurrentMP;
+
+                var oldSP = _healthManager.CurrentSP;
+                _healthManager.CurrentSP -= skill.NeedSP > 1 ? skill.NeedSP : _healthManager.CurrentSP;
+
+                _healthManager.InvokeUsedMPSP((ushort)(oldMP - _healthManager.CurrentMP), (ushort)(oldSP - _healthManager.CurrentSP));
             }
 
             int n = 0;
@@ -528,6 +532,10 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.TownPortal:
                     var map = _mapProvider.Map.GetRebirthMap((Character)skillOwner);
                     _teleportationManager.Teleport(map.MapId, map.X, map.Y, map.Z);
+                    break;
+
+                case TypeDetail.Eraser:
+                    _healthManager.DecreaseHP(_healthManager.MaxHP, skillOwner);
                     break;
 
                 default:

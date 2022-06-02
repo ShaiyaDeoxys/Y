@@ -139,7 +139,7 @@ namespace Imgeneus.World.Tests
             teleportManager.Init(_characterId, new List<DbCharacterSavePositions>());
 
             var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager);
             attackManager.AlwaysHit = true;
 
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
@@ -231,7 +231,7 @@ namespace Imgeneus.World.Tests
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager);
             attackManager.AlwaysHit = true;
 
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null);
@@ -486,7 +486,8 @@ namespace Imgeneus.World.Tests
                     { (623, 1), BerserkersRage },
                     { (630, 1), WildRage },
                     { (627, 1), DeadlyStrike },
-                    { (340, 1), NettleSting }
+                    { (340, 1), NettleSting },
+                    { (631, 1), Eraser }
                 });
 
             databaseMock
@@ -868,6 +869,16 @@ namespace Imgeneus.World.Tests
             TargetType = TargetType.EnemiesNearTarget,
             TypeAttack = TypeAttack.PhysicalAttack,
             NeedWeapon6 = 1
+        };
+
+        protected DbSkill Eraser = new DbSkill()
+        {
+            SkillId = 631,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Eraser,
+            DamageType = DamageType.Eraser,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100
         };
 
         #endregion
