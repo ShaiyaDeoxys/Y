@@ -613,19 +613,31 @@ namespace Imgeneus.World.Game.Buffs
                     return;
 
                 case AbilityType.PhysicalAttackRate:
-                case AbilityType.ShootingAttackRate:
                     if (addAbility)
                         _statsManager.ExtraPhysicalHittingChance += abilityValue;
                     else
                         _statsManager.ExtraPhysicalHittingChance -= abilityValue;
                     return;
 
+                case AbilityType.ShootingAttackRate:
+                    if (addAbility)
+                        _statsManager.ExtraShootingHittingChance += abilityValue;
+                    else
+                        _statsManager.ExtraShootingHittingChance -= abilityValue;
+                    return;
+
                 case AbilityType.PhysicalEvationRate:
-                case AbilityType.ShootingEvationRate:
                     if (addAbility)
                         _statsManager.ExtraPhysicalEvasionChance += abilityValue;
                     else
                         _statsManager.ExtraPhysicalEvasionChance -= abilityValue;
+                    return;
+
+                case AbilityType.ShootingEvationRate:
+                    if (addAbility)
+                        _statsManager.ExtraShootingEvasionChance += abilityValue;
+                    else
+                        _statsManager.ExtraShootingEvasionChance -= abilityValue;
                     return;
 
                 case AbilityType.MagicAttackRate:
