@@ -551,8 +551,9 @@ namespace Imgeneus.World.Game.Skills
                     throw new NotImplementedException("Not implemented skill type.");
             }
 
-            if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
-                OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
+            if (initialTarget != target)
+                if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
+                    OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
         }
 
         /// <summary>
