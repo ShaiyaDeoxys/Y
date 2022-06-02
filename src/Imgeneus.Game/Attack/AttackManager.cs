@@ -327,7 +327,7 @@ namespace Imgeneus.World.Game.Attack
                         fxDef = 1;
                     }
 
-                    var wisDifference = (11 * target.StatsManager.TotalWis - 10 * _statsManager.TotalWis) / (target.StatsManager.TotalWis + _statsManager.TotalWis) * 3.9000001;
+                    var wisDifference = Math.Abs((11 * target.StatsManager.TotalWis - 10 * _statsManager.TotalWis) / (target.StatsManager.TotalWis + _statsManager.TotalWis) * 3.9000001);
                     var nAttackTypea = wisDifference + _statsManager.MagicHittingChance;
                     if (nAttackTypea >= 1)
                     {
