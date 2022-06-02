@@ -3,6 +3,7 @@ using Imgeneus.Database;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
@@ -17,6 +18,7 @@ using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -30,7 +32,7 @@ namespace Imgeneus.World.Game.Skills
     public class SkillsManager : ISkillsManager
     {
         private readonly ILogger<SkillsManager> _logger;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloder;
         private readonly IDatabase _database;
         private readonly IHealthManager _healthManager;
         private readonly IAttackManager _attackManager;
@@ -46,10 +48,10 @@ namespace Imgeneus.World.Game.Skills
         private readonly ITeleportationManager _teleportationManager;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IDatabasePreloader databasePreloader, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider, ITeleportationManager teleportationManager)
+        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider, ITeleportationManager teleportationManager)
         {
             _logger = logger;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloder = definitionsPreloder;
             _database = database;
             _healthManager = healthManager;
             _attackManager = attackManager;
@@ -104,7 +106,8 @@ namespace Imgeneus.World.Game.Skills
                 var skillToAdd = new DbCharacterSkill()
                 {
                     CharacterId = _ownerId,
-                    SkillId = skill.Value.Id,
+                    SkillId = skill.Value.SkillId,
+                    SkillLevel = skill.Value.SkillLevel,
                     Number = skill.Key
                 };
 
@@ -163,7 +166,7 @@ namespace Imgeneus.World.Game.Skills
             }
 
             // Find learned skill.
-            var dbSkill = _databasePreloader.Skills[(skillId, skillLevel)];
+            var dbSkill = _definitionsPreloder.Skills[(skillId, skillLevel)];
             if (SkillPoints < dbSkill.SkillPoint)
             {
                 _logger.LogWarning("Character {characterId} has not enough skill points  for skill {skillId} with level {skillLevel}", _ownerId, skillId, skillLevel);
@@ -177,7 +180,7 @@ namespace Imgeneus.World.Game.Skills
             // If there is skill of lower level => delete it.
             if (isSkillLearned != null)
             {
-                var learnedSkill = _databasePreloader.Skills[(isSkillLearned.SkillId, isSkillLearned.SkillLevel)];
+                var learnedSkill = _definitionsPreloder.Skills[(isSkillLearned.SkillId, isSkillLearned.SkillLevel)];
                 if (learnedSkill is null)
                 {
                     _logger.LogWarning("Learned skill {skillId} {skillLevel} is not found in db for character {characterId}", isSkillLearned.SkillId, isSkillLearned.SkillLevel, _ownerId);

@@ -44,11 +44,6 @@ namespace Imgeneus.Database
         public DbSet<DbCharacterFriend> Friends { get; set; }
 
         /// <summary>
-        /// Collection of skills. Taken from original db.
-        /// </summary>
-        public DbSet<DbSkill> Skills { get; set; }
-
-        /// <summary>
         /// Collection of characters' active buffs.
         /// </summary>
         public DbSet<DbCharacterActiveBuff> ActiveBuffs { get; set; }

@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
@@ -47,6 +48,7 @@ namespace Imgeneus.World.Game.Player
         private readonly ILogger<Character> _characterLogger;
         private readonly IGameWorld _gameWorld;
         private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloder;
         private readonly ICountryProvider _countryProvider;
         private readonly ISpeedManager _speedManager;
         private readonly IStatsManager _statsManager;
@@ -86,6 +88,7 @@ namespace Imgeneus.World.Game.Player
                                 ILogger<Character> characterLogger,
                                 IGameWorld gameWorld,
                                 IDatabasePreloader databasePreloader,
+                                IGameDefinitionsPreloder definitionsPreloder,
                                 ICountryProvider countryProvider,
                                 ISpeedManager speedManager,
                                 IStatsManager statsManager,
@@ -125,6 +128,7 @@ namespace Imgeneus.World.Game.Player
             _characterLogger = characterLogger;
             _gameWorld = gameWorld;
             _databasePreloader = databasePreloader;
+            _definitionsPreloder = definitionsPreloder;
             _countryProvider = countryProvider;
             _speedManager = speedManager;
             _statsManager = statsManager;
@@ -221,7 +225,7 @@ namespace Imgeneus.World.Game.Player
 
             _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints, profession: dbCharacter.Class);
 
-            _skillsManager.Init(dbCharacter.Id, dbCharacter.Skills.Select(s => new Skill(_databasePreloader.SkillsById[s.SkillId], s.Number, 0)), dbCharacter.SkillPoint);
+            _skillsManager.Init(dbCharacter.Id, dbCharacter.Skills.Select(s => new Skill(_definitionsPreloder.Skills[(s.SkillId, s.SkillLevel)], s.Number, 0)), dbCharacter.SkillPoint);
 
             _buffsManager.Init(dbCharacter.Id, dbCharacter.ActiveBuffs);
 

@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
@@ -16,11 +17,13 @@ using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Warehouse;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Game.Buffs
 {
@@ -28,7 +31,7 @@ namespace Imgeneus.World.Game.Buffs
     {
         private readonly ILogger<BuffsManager> _logger;
         private readonly IDatabase _database;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloder;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
         private readonly ISpeedManager _speedManager;
@@ -42,11 +45,11 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IShapeManager _shapeManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager)
         {
             _logger = logger;
             _database = database;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloder = definitionsPreloder;
             _statsManager = statsManager;
             _healthManager = healthManager;
             _speedManager = speedManager;
@@ -87,7 +90,7 @@ namespace Imgeneus.World.Game.Buffs
             {
                 var buffs = new List<Buff>();
                 foreach (var b in initBuffs)
-                    buffs.Add(Buff.FromDbCharacterActiveBuff(b, _databasePreloader.SkillsById[b.SkillId]));
+                    buffs.Add(Buff.FromDbCharacterActiveBuff(b, _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)]));
 
                 ActiveBuffs.AddRange(buffs);
             }
@@ -103,7 +106,8 @@ namespace Imgeneus.World.Game.Buffs
                 var dbBuff = new DbCharacterActiveBuff()
                 {
                     CharacterId = _ownerId,
-                    SkillId = b.SkillUniqueId,
+                    SkillId = b.SkillId,
+                    SkillLevel = b.SkillLevel,
                     ResetTime = b.ResetTime
                 };
                 _database.ActiveBuffs.Add(dbBuff);
@@ -305,7 +309,7 @@ namespace Imgeneus.World.Game.Buffs
         /// </summary>
         protected void ApplyBuffSkill(Buff buff)
         {
-            var skill = _databasePreloader.Skills[(buff.SkillId, buff.SkillLevel)];
+            var skill = _definitionsPreloder.Skills[(buff.SkillId, buff.SkillLevel)];
             switch (skill.TypeDetail)
             {
                 case TypeDetail.Buff:
@@ -436,7 +440,7 @@ namespace Imgeneus.World.Game.Buffs
                     if (elementSkin != null)
                         elementSkin.CancelBuff();
 
-                    _elementProvider.AttackSkillElement = skill.Element;
+                    _elementProvider.AttackSkillElement = (Element)skill.Element;
                     break;
 
                 case TypeDetail.ElementalProtection:
@@ -444,7 +448,7 @@ namespace Imgeneus.World.Game.Buffs
                     if (elementWeapon != null)
                         elementWeapon.CancelBuff();
 
-                    _elementProvider.DefenceSkillElement = skill.Element;
+                    _elementProvider.DefenceSkillElement = (Element)skill.Element;
                     break;
 
                 case TypeDetail.Untouchable:
@@ -467,7 +471,7 @@ namespace Imgeneus.World.Game.Buffs
         /// </summary>
         protected void RelieveBuffSkill(Buff buff)
         {
-            var skill = _databasePreloader.Skills[(buff.SkillId, buff.SkillLevel)];
+            var skill = _definitionsPreloder.Skills[(buff.SkillId, buff.SkillLevel)];
             switch (skill.TypeDetail)
             {
                 case TypeDetail.Buff:
@@ -531,7 +535,7 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Immobilize:
-                    _speedManager.Immobilize = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Immobilize);
+                    _speedManager.Immobilize = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Immobilize);
                     break;
 
                 case TypeDetail.Sleep:
@@ -539,13 +543,13 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.PreventAttack:
                     _attackManager.IsAbleToAttack = ActiveBuffs.Any(b =>
                     {
-                        var dbSkill = _databasePreloader.Skills[(b.SkillId, b.SkillLevel)];
+                        var dbSkill = _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)];
                         return dbSkill.TypeDetail == TypeDetail.Sleep || dbSkill.TypeDetail == TypeDetail.Stun || dbSkill.TypeDetail == TypeDetail.PreventAttack;
                     });
                     break;
 
                 case TypeDetail.Stealth:
-                    _stealthManager.IsStealth = ActiveBuffs.Any(b => _databasePreloader.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
+                    _stealthManager.IsStealth = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
                     break;
 
                 case TypeDetail.WeaponMastery:

@@ -1,8 +1,10 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Skills;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Generic;
+using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Game.Attack
 {

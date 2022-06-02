@@ -26,11 +26,13 @@ using Imgeneus.World.Game.Zone;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.NpcQuest;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Game.Inventory
 {
@@ -1201,7 +1203,7 @@ namespace Imgeneus.World.Game.Inventory
 
                     if (item.SkillId != 0)
                     {
-                        var skill = new Skill(_databasePreloader.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0);
+                        var skill = new Skill(_gameDefinitions.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0);
                         var me = _gameWorld.Players[_ownerId];
 
                         if (_skillsManager.CanUseSkill(skill, me, out var s))

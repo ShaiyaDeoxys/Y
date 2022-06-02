@@ -95,9 +95,6 @@
     <None Update="Migrations\sql\InitItemData.sql">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="Migrations\sql\InitSkillData.sql">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup />
 </Project>

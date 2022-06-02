@@ -59,6 +59,8 @@ using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Warehouse;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Shop;
+using Parsec.Shaiya.Skill;
+using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Tests
 {
@@ -142,9 +144,9 @@ namespace Imgeneus.World.Tests
 
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
             var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager);
 
-            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, teleportManager);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, teleportManager);
             var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
@@ -232,10 +234,10 @@ namespace Imgeneus.World.Tests
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager);
             attackManager.AlwaysHit = true;
 
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, databasePreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null);
-            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, databasePreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, null);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, null);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
-            var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, databasePreloader.Object, speedManager);
+            var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, definitionsPreloader.Object, speedManager);
 
             var mob = new Mob(
                 mobId,
@@ -346,43 +348,6 @@ namespace Imgeneus.World.Tests
                 });
 
             databasePreloader
-                .SetupGet((preloader) => preloader.Skills)
-                .Returns(new Dictionary<(ushort SkillId, byte SkillLevel), DbSkill>()
-                {
-                    { (1, 1) , StrengthTraining },
-                    { (14, 1), ManaTraining },
-                    { (15, 1), SharpenWeaponMastery_Lvl1 },
-                    { (15, 2), SharpenWeaponMastery_Lvl2 },
-                    { (35, 1), MagicRoots_Lvl1 },
-                    { (273, 100), AttributeRemove },
-                    { (732, 1), FireWeapon },
-                    { (735, 1), EarthWeapon },
-                    { (762, 1), FireSkin },
-                    { (765, 1), EarthSkin },
-                    { (672, 1), Panic_Lvl1 },
-                    { (787, 1), Dispel },
-                    { (256, 1), Skill_HealthRemedy_Level1 },
-                    { (112, 1), Leadership },
-                    { (222, 1), EXP },
-                    { (0, 1) , skill1_level1 },
-                    { (0, 2) , skill1_level2 },
-                    { (418, 11), BlastAbsorbRedemySkill },
-                    { (655, 1), Untouchable },
-                    { (724, 1), BullsEye },
-                    { (63, 1), Stealth },
-                    { (249, 1), SpeedRemedy_Lvl1 },
-                    { (250, 1), MinSunStone_Lvl1 },
-                    { (231, 1), BlueDragonCharm_Lvl1 },
-                    { (234, 1), DoubleWarehouseStone_Lvl1 },
-                    { (613, 1), MainWeaponPowerUp },
-                    { (711, 10), FleetFoot },
-                    { (460, 1), Transformation },
-                    { (623, 1), BerserkersRage },
-                    { (630, 1), WildRage },
-                    { (627, 1), DeadlyStrike },
-                    { (340, 1), NettleSting }
-                });
-            databasePreloader
                 .SetupGet((preloader) => preloader.Items)
                 .Returns(new Dictionary<(byte Type, byte TypeId), DbItem>()
                 {
@@ -486,6 +451,44 @@ namespace Imgeneus.World.Tests
                     { SkillsAndStats.Id, SkillsAndStats }
                 });
 
+            definitionsPreloader
+                .SetupGet((preloader) => preloader.Skills)
+                .Returns(new Dictionary<(ushort SkillId, byte SkillLevel), DbSkill>()
+                {
+                    { (1, 1) , StrengthTraining },
+                    { (14, 1), ManaTraining },
+                    { (15, 1), SharpenWeaponMastery_Lvl1 },
+                    { (15, 2), SharpenWeaponMastery_Lvl2 },
+                    { (35, 1), MagicRoots_Lvl1 },
+                    { (273, 100), AttributeRemove },
+                    { (732, 1), FireWeapon },
+                    { (735, 1), EarthWeapon },
+                    { (762, 1), FireSkin },
+                    { (765, 1), EarthSkin },
+                    { (672, 1), Panic_Lvl1 },
+                    { (787, 1), Dispel },
+                    { (256, 1), Skill_HealthRemedy_Level1 },
+                    { (112, 1), Leadership },
+                    { (222, 1), EXP },
+                    { (0, 1) , skill1_level1 },
+                    { (0, 2) , skill1_level2 },
+                    { (418, 11), BlastAbsorbRedemySkill },
+                    { (655, 1), Untouchable },
+                    { (724, 1), BullsEye },
+                    { (63, 1), Stealth },
+                    { (249, 1), SpeedRemedy_Lvl1 },
+                    { (250, 1), MinSunStone_Lvl1 },
+                    { (231, 1), BlueDragonCharm_Lvl1 },
+                    { (234, 1), DoubleWarehouseStone_Lvl1 },
+                    { (613, 1), MainWeaponPowerUp },
+                    { (711, 10), FleetFoot },
+                    { (460, 1), Transformation },
+                    { (623, 1), BerserkersRage },
+                    { (630, 1), WildRage },
+                    { (627, 1), DeadlyStrike },
+                    { (340, 1), NettleSting }
+                });
+
             databaseMock
                 .Setup(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(1));
@@ -538,7 +541,6 @@ namespace Imgeneus.World.Tests
             SkillId = 1,
             SkillLevel = 1,
             TypeDetail = TypeDetail.PassiveDefence,
-            SkillName = "Strength Training Lv1",
             TypeAttack = TypeAttack.Passive,
             AbilityType1 = AbilityType.PhysicalAttackPower,
             AbilityValue1 = 18,
@@ -550,7 +552,6 @@ namespace Imgeneus.World.Tests
             SkillId = 14,
             SkillLevel = 1,
             TypeDetail = TypeDetail.PassiveDefence,
-            SkillName = "Mana Training",
             TypeAttack = TypeAttack.Passive,
             AbilityType1 = AbilityType.MP,
             AbilityValue1 = 110
@@ -561,7 +562,6 @@ namespace Imgeneus.World.Tests
             SkillId = 15,
             SkillLevel = 1,
             TypeDetail = TypeDetail.WeaponMastery,
-            SkillName = "Sharpen Weapon Mastery Lvl 1",
             TypeAttack = TypeAttack.Passive,
             Weapon1 = 1,
             Weapon2 = 3,
@@ -573,7 +573,6 @@ namespace Imgeneus.World.Tests
             SkillId = 15,
             SkillLevel = 2,
             TypeDetail = TypeDetail.WeaponMastery,
-            SkillName = "Sharpen Weapon Mastery Lvl 2",
             TypeAttack = TypeAttack.Passive,
             Weapon1 = 1,
             Weapon2 = 3,
@@ -585,7 +584,6 @@ namespace Imgeneus.World.Tests
             SkillId = 35,
             SkillLevel = 1,
             TypeDetail = TypeDetail.Immobilize,
-            SkillName = "Magic Roots",
             DamageHP = 42,
             TypeAttack = TypeAttack.MagicAttack,
             ResetTime = 10,
@@ -598,7 +596,6 @@ namespace Imgeneus.World.Tests
             SkillId = 273,
             SkillLevel = 100,
             TypeDetail = TypeDetail.RemoveAttribute,
-            SkillName = "Attribute Remove",
             TypeAttack = TypeAttack.MagicAttack,
             DamageType = DamageType.FixedDamage
         };
@@ -607,7 +604,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 732,
             SkillLevel = 1,
-            SkillName = "Flame Weapon",
             TypeDetail = TypeDetail.ElementalAttack,
             Element = Element.Fire1,
             TypeAttack = TypeAttack.ShootingAttack
@@ -617,7 +613,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 735,
             SkillLevel = 1,
-            SkillName = "Earth Weapon",
             TypeDetail = TypeDetail.ElementalAttack,
             Element = Element.Earth1,
             TypeAttack = TypeAttack.ShootingAttack
@@ -627,7 +622,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 762,
             SkillLevel = 1,
-            SkillName = "Flame Skin",
             TypeDetail = TypeDetail.ElementalProtection,
             Element = Element.Fire1,
             TypeAttack = TypeAttack.MagicAttack
@@ -637,7 +631,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 765,
             SkillLevel = 1,
-            SkillName = "Earth Skin",
             TypeDetail = TypeDetail.ElementalProtection,
             Element = Element.Earth1,
             TypeAttack = TypeAttack.MagicAttack
@@ -647,7 +640,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 672,
             SkillLevel = 1,
-            SkillName = "Panic",
             TypeDetail = TypeDetail.SubtractingDebuff,
             AbilityType1 = AbilityType.PhysicalDefense,
             AbilityValue1 = 119,
@@ -658,7 +650,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 787,
             SkillLevel = 1,
-            SkillName = "Dispel",
             TypeDetail = TypeDetail.Dispel,
             TypeAttack = TypeAttack.MagicAttack,
         };
@@ -667,7 +658,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 256,
             SkillLevel = 1,
-            SkillName = "Health Remedy Lv1",
             TypeDetail = TypeDetail.Buff,
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.HP,
@@ -679,7 +669,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 112,
             SkillLevel = 1,
-            SkillName = "Leadership Lv1",
             TypeDetail = TypeDetail.Buff,
             TargetType = TargetType.AlliesNearCaster,
             SuccessType = SuccessType.SuccessBasedOnValue,
@@ -694,7 +683,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 222,
             SkillLevel = 1,
-            SkillName = "Increase EXP",
             TypeDetail = TypeDetail.Buff,
             TargetType = TargetType.Caster,
             SuccessType = SuccessType.SuccessBasedOnValue,
@@ -737,7 +725,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 655,
             SkillLevel = 1,
-            SkillName = "Untouchable Lv1",
             TypeDetail = TypeDetail.Untouchable,
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
@@ -748,7 +735,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 724,
             SkillLevel = 1,
-            SkillName = "Bull's Eye",
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             TargetType = TargetType.SelectedEnemy
@@ -758,7 +744,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 63,
             SkillLevel = 1,
-            SkillName = "Stealth Lvl1",
             SuccessValue = 100,
             TypeDetail = TypeDetail.Stealth,
             SuccessType = SuccessType.SuccessBasedOnValue,
@@ -769,7 +754,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 249,
             SkillLevel = 1,
-            SkillName = "Speedy Remedy",
             SuccessValue = 100,
             TypeDetail = TypeDetail.Buff,
             SuccessType = SuccessType.SuccessBasedOnValue,
@@ -785,7 +769,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 250,
             SkillLevel = 1,
-            SkillName = "Mini Sun EXP Stone",
             SuccessValue = 100,
             TypeDetail = TypeDetail.Buff,
             SuccessType = SuccessType.SuccessBasedOnValue,
@@ -798,7 +781,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 231,
             SkillLevel = 1,
-            SkillName = "Blue Dragon Charm",
             SuccessValue = 100,
             TypeDetail = TypeDetail.Buff,
             SuccessType = SuccessType.SuccessBasedOnValue,
@@ -811,7 +793,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 234,
             SkillLevel = 1,
-            SkillName = "Double Warehouse Stone",
             SuccessValue = 100,
             TypeDetail = TypeDetail.Buff,
             SuccessType = SuccessType.SuccessBasedOnValue,
@@ -824,7 +805,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 613,
             SkillLevel = 1,
-            SkillName = "Main Weapon Power Up",
             TypeDetail = TypeDetail.WeaponPowerUp,
             TypeAttack = TypeAttack.Passive,
             Weapon1 = 1,
@@ -836,7 +816,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 711,
             SkillLevel = 10,
-            SkillName = "Fleet Foot",
             TypeDetail = TypeDetail.BlockShootingAttack,
             DefenceValue = 100
         };
@@ -845,7 +824,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 460,
             SkillLevel = 1,
-            SkillName = "Transformation Skill",
             TypeDetail = TypeDetail.Transformation
         };
 
@@ -853,7 +831,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 623,
             SkillLevel = 1,
-            SkillName = "Berserker's Rage",
             TypeDetail = TypeDetail.Buff,
             KeepTime = 10,
             AbilityType1 = AbilityType.SacrificeHPPercent,
@@ -865,7 +842,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 630,
             SkillLevel = 1,
-            SkillName = "Wild Rage",
             TypeDetail = TypeDetail.UniqueHitAttack,
             DamageType = DamageType.PlusExtraDamage,
             DamageHP = 235,
@@ -876,7 +852,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 627,
             SkillLevel = 1,
-            SkillName = "Deadly Strike",
             TypeDetail = TypeDetail.MultipleHitsAttack,
             DamageType = DamageType.PlusExtraDamage,
             DamageHP = 50,
@@ -887,7 +862,6 @@ namespace Imgeneus.World.Tests
         {
             SkillId = 340,
             SkillLevel = 1,
-            SkillName = "Nettle Sting",
             TypeDetail = TypeDetail.UniqueHitAttack,
             DamageType = DamageType.PlusExtraDamage,
             DamageHP = 285,

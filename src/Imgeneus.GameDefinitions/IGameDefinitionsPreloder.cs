@@ -21,6 +21,11 @@ namespace Imgeneus.GameDefinitions
         Dictionary<long, List<DBItemDataRecord>> ItemsByGrade { get; }
 
         /// <summary>
+        /// Preloaded skills.
+        /// </summary>
+        Dictionary<(ushort SkillId, byte SkillLevel), DbSkill> Skills { get; }
+
+        /// <summary>
         /// Preloaded NPCs.
         /// </summary>
         Dictionary<(NpcType Type, short TypeId), BaseNpc> NPCs { get; }

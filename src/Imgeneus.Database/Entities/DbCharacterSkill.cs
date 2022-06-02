@@ -6,7 +6,8 @@ namespace Imgeneus.Database.Entities
     public class DbCharacterSkill
     {
         public int CharacterId { get; set; }
-        public int SkillId { get; set; }
+        public ushort SkillId { get; set; }
+        public byte SkillLevel { get; set; }
 
         /// <summary>
         /// This is unique learned skill number. It's used by client to send which skill was used.
@@ -15,7 +16,5 @@ namespace Imgeneus.Database.Entities
         public byte Number { get; set; }
 
         public DbCharacter Character { get; set; }
-
-        public DbSkill Skill { get; set; }
     }
 }

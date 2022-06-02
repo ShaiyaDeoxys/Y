@@ -3,6 +3,7 @@ using Parsec;
 using Parsec.Common;
 using Parsec.Shaiya.Item;
 using Parsec.Shaiya.NpcQuest;
+using Parsec.Shaiya.Skill;
 
 namespace Imgeneus.GameDefinitions
 {
@@ -12,6 +13,9 @@ namespace Imgeneus.GameDefinitions
 
         public Dictionary<(long Type, long TypeId), DBItemDataRecord> Items { get; init; } = new();
         public Dictionary<long, List<DBItemDataRecord>> ItemsByGrade { get; init; } = new();
+
+        public Dictionary<(ushort SkillId, byte SkillLevel), DbSkill> Skills { get; private set; } = new();
+
         public Dictionary<(NpcType Type, short TypeId), BaseNpc> NPCs { get; init; } = new();
         public Dictionary<short, Quest> Quests { get; init; } = new();
 
@@ -25,7 +29,7 @@ namespace Imgeneus.GameDefinitions
             try
             {
                 PreloadItems();
-                //PreloadSkills(_database);
+                PreloadSkills();
                 //PreloadMobs(_database);
                 //PreloadMobItems(_database);
                 PreloadNpcsAndQuests();
@@ -57,6 +61,19 @@ namespace Imgeneus.GameDefinitions
                 {
                     ItemsByGrade.Add(item.Grade, new List<DBItemDataRecord>() { item });
                 }
+            }
+        }
+
+        /// <summary>
+        /// Preloads all available skills from DBSkillData.SData.
+        /// </summary>
+        private void PreloadSkills()
+        {
+            var skills = Reader.ReadFromFile<DBSkillData>("config/SData/DBSkillData.SData");
+            for (var i = 1; i <= skills.Records.Count; i++)
+            {
+                var skill = skills.Records[i];
+                Skills.Add(((ushort)skill.SkillId, (byte)skill.SkillLevel), new DbSkill(skill));
             }
         }
 

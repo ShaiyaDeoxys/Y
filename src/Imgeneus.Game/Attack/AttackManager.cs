@@ -11,8 +11,10 @@ using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Generic;
+using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Game.Attack
 {

@@ -20,8 +20,6 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbCharacterFriend> Friends { get; set; }
 
-        public DbSet<DbSkill> Skills { get; set; }
-
         public DbSet<DbCharacterActiveBuff> ActiveBuffs { get; set; }
 
         public DbSet<DbItem> Items { get; set; }
@@ -51,8 +49,6 @@ namespace Imgeneus.Database.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DbUser>().HasIndex(c => new { c.UserName, c.Email }).IsUnique();
-
-            modelBuilder.Entity<DbSkill>().HasIndex(s => new { s.SkillId, s.SkillLevel });
 
             modelBuilder.Entity<DbItem>().HasKey(x => new { x.Type, x.TypeId });
 

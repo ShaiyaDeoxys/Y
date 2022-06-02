@@ -2,8 +2,10 @@
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Parsec.Shaiya.Skill;
 using System.ComponentModel;
 using Xunit;
+using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Tests.ItemTests
 {

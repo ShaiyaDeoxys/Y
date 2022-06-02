@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
@@ -27,9 +28,9 @@ namespace Imgeneus.World.Handlers
         private readonly IMovementManager _movementManager;
         private readonly IBuffsManager _buffsManager;
         private readonly IInventoryManager _inventoryManager;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloder;
 
-        public RebirthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IHealthManager healthManager, ITeleportationManager teleportationManager, IMovementManager movementManager, IBuffsManager buffsManager, IInventoryManager inventoryManager, IDatabasePreloader databasePreloader) : base(packetFactory, gameSession)
+        public RebirthHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider, IGameWorld gameWorld, IHealthManager healthManager, ITeleportationManager teleportationManager, IMovementManager movementManager, IBuffsManager buffsManager, IInventoryManager inventoryManager, IGameDefinitionsPreloder definitionsPreloder) : base(packetFactory, gameSession)
         {
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
@@ -38,7 +39,7 @@ namespace Imgeneus.World.Handlers
             _movementManager = movementManager;
             _buffsManager = buffsManager;
             _inventoryManager = inventoryManager;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloder = definitionsPreloder;
         }
 
         [HandlerAction(PacketType.REBIRTH_TO_NEAREST_TOWN)]
@@ -70,7 +71,7 @@ namespace Imgeneus.World.Handlers
                     rebirthCoordinate.Z = _movementManager.PosZ;
 
                     // Add untouchable buff for 6 secs.
-                    _databasePreloader.Skills.TryGetValue((199, 2), out var dbSkill);
+                    _definitionsPreloder.Skills.TryGetValue((199, 2), out var dbSkill);
                     _buffsManager.AddBuff(new Skill(dbSkill, 0, 0), null);
                 }
                 else

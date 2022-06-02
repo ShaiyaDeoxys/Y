@@ -1,8 +1,8 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Entities;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Skills;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Timers;
 using Timer = System.Timers.Timer;
@@ -20,8 +20,6 @@ namespace Imgeneus.World.Game.Buffs
         private object SyncObj = new object();
 
         public int CountDownInSeconds { get => (int)ResetTime.Subtract(DateTime.UtcNow).TotalSeconds; }
-
-        public int SkillUniqueId => _skill.Id;
 
         public ushort SkillId => _skill.SkillId;
 

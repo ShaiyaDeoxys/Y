@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
@@ -32,7 +33,7 @@ namespace Imgeneus.World.Game.AI
         private readonly ISkillsManager _skillsManager;
         private readonly IStatsManager _statsManager;
         private readonly IElementProvider _elementProvider;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloder;
         private readonly ISpeedManager _speedManager;
         private int _ownerId;
 
@@ -67,7 +68,7 @@ namespace Imgeneus.World.Game.AI
             }
         }
 
-        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IElementProvider elementProvider, IDatabasePreloader databasePreloader, ISpeedManager speedManager)
+        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IElementProvider elementProvider, IGameDefinitionsPreloder definitionsPreloder, ISpeedManager speedManager)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -78,7 +79,7 @@ namespace Imgeneus.World.Game.AI
             _skillsManager = skillsManager;
             _statsManager = statsManager;
             _elementProvider = elementProvider;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloder = definitionsPreloder;
             _speedManager = speedManager;
 
             _attackManager.OnTargetChanged += AttackManager_OnTargetChanged;
@@ -871,7 +872,7 @@ namespace Imgeneus.World.Game.AI
             }
             else
             {
-                if (_databasePreloader.Skills.TryGetValue((skillId, 100), out var dbSkill))
+                if (_definitionsPreloder.Skills.TryGetValue((skillId, 100), out var dbSkill))
                 {
                     skill = new Skill(dbSkill, 0, 0);
                 }

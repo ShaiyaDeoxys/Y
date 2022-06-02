@@ -1,6 +1,8 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Entities;
+﻿using Imgeneus.GameDefinitions;
+using Parsec.Shaiya.Skill;
 using System.Collections.Generic;
+using Imgeneus.Database.Constants;
+using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Game.Skills
 {
@@ -16,11 +18,6 @@ namespace Imgeneus.World.Game.Skills
             CooldownInSeconds = cooldown;
             _dbSkill = dbSkill;
         }
-
-        /// <summary>
-        /// Unique id.
-        /// </summary>
-        public int Id { get => _dbSkill.Id; }
 
         /// <summary>
         /// Skill id.
@@ -70,7 +67,7 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Success rate in %.
         /// </summary>
-        public byte SuccessValue { get => _dbSkill.SuccessValue; }
+        public byte SuccessValue { get => (byte)_dbSkill.SuccessValue; }
 
         /// <summary>
         /// State type contains information about what bad influence debuff has on target.
@@ -150,7 +147,7 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Skill const element.
         /// </summary>
-        public Element Element { get => _dbSkill.Element; }
+        public Element Element { get => (Element)_dbSkill.Element; }
 
         /// <summary>
         /// Skill will be applied within N meters.

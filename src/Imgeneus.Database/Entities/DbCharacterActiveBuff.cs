@@ -14,7 +14,12 @@ namespace Imgeneus.Database.Entities
         /// <summary>
         /// Skill id.
         /// </summary>
-        public int SkillId { get; set; }
+        public ushort SkillId { get; set; }
+
+        /// <summary>
+        /// Skill level.
+        /// </summary>
+        public byte SkillLevel { get; set; }
 
         /// <summary>
         /// Time at which buff ends.
@@ -23,8 +28,5 @@ namespace Imgeneus.Database.Entities
 
         [ForeignKey(nameof(CharacterId))]
         public DbCharacter Character { get; set; }
-
-        [ForeignKey(nameof(SkillId))]
-        public DbSkill Skill { get; set; }
     }
 }

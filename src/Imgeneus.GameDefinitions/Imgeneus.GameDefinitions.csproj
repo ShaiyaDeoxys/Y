@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\Parsec\src\Parsec\Parsec.csproj" />
+    <ProjectReference Include="..\Imgeneus.Database\Imgeneus.Database.csproj" />
   </ItemGroup>
 
 </Project>
