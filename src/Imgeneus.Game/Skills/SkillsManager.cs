@@ -308,7 +308,7 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (target is null && (skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster))
+            if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster))
             {
                 success = AttackSuccess.Normal;
                 return true;
