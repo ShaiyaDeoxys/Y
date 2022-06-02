@@ -167,14 +167,113 @@ namespace Imgeneus.World.Game.Stats
         #endregion
 
         #region Total
-        public int TotalStr => Strength + ExtraStr;
-        public int TotalDex => Dexterity + ExtraDex;
-        public int TotalRec => Reaction + ExtraRec;
-        public int TotalInt => Intelligence + ExtraInt;
-        public int TotalWis => Wisdom + ExtraWis;
-        public int TotalLuc => Luck + ExtraLuc;
-        public int TotalDefense => _def + TotalRec + ExtraDefense;
-        public int TotalResistance => _res + TotalWis + ExtraResistance;
+        public int TotalStr
+        {
+            get
+            {
+                var increaseBySacrificing = 0;
+                if (IncreaseStrBySacrificing)
+                {
+                    increaseBySacrificing += SacrificedDex;
+                    increaseBySacrificing += SacrificedRec;
+                    increaseBySacrificing += SacrificedInt;
+                    increaseBySacrificing += SacrificedWis;
+                    increaseBySacrificing += SacrificedLuc;
+                }
+
+                return Strength + ExtraStr - SacrificedStr + increaseBySacrificing;
+            }
+        }
+
+        public int TotalDex
+        {
+            get
+            {
+                var increaseBySacrificing = 0;
+                if (IncreaseDexBySacrificing)
+                {
+                    increaseBySacrificing += SacrificedStr;
+                    increaseBySacrificing += SacrificedRec;
+                    increaseBySacrificing += SacrificedInt;
+                    increaseBySacrificing += SacrificedWis;
+                    increaseBySacrificing += SacrificedLuc;
+                }
+
+                return Dexterity + ExtraDex - SacrificedDex + increaseBySacrificing;
+            }
+        }
+        public int TotalRec
+        {
+            get
+            {
+                var increaseBySacrificing = 0;
+                if (IncreaseRecBySacrificing)
+                {
+                    increaseBySacrificing += SacrificedStr;
+                    increaseBySacrificing += SacrificedDex;
+                    increaseBySacrificing += SacrificedInt;
+                    increaseBySacrificing += SacrificedWis;
+                    increaseBySacrificing += SacrificedLuc;
+                }
+
+                return Reaction + ExtraRec - SacrificedRec + increaseBySacrificing;
+            }
+        }
+        public int TotalInt
+        {
+            get
+            {
+                var increaseBySacrificing = 0;
+                if (IncreaseIntBySacrificing)
+                {
+                    increaseBySacrificing += SacrificedStr;
+                    increaseBySacrificing += SacrificedDex;
+                    increaseBySacrificing += SacrificedRec;
+                    increaseBySacrificing += SacrificedWis;
+                    increaseBySacrificing += SacrificedLuc;
+                }
+
+                return Intelligence + ExtraInt - SacrificedInt + increaseBySacrificing;
+            }
+        }
+        public int TotalWis
+        {
+            get
+            {
+                var increaseBySacrificing = 0;
+                if (IncreaseWisBySacrificing)
+                {
+                    increaseBySacrificing += SacrificedStr;
+                    increaseBySacrificing += SacrificedDex;
+                    increaseBySacrificing += SacrificedRec;
+                    increaseBySacrificing += SacrificedInt;
+                    increaseBySacrificing += SacrificedLuc;
+                }
+
+                return Wisdom + ExtraWis - SacrificedWis + increaseBySacrificing;
+            }
+        }
+
+        public int TotalLuc
+        {
+            get
+            {
+                var increaseBySacrificing = 0;
+                if (IncreaseLucBySacrificing)
+                {
+                    increaseBySacrificing += SacrificedStr;
+                    increaseBySacrificing += SacrificedDex;
+                    increaseBySacrificing += SacrificedRec;
+                    increaseBySacrificing += SacrificedInt;
+                    increaseBySacrificing += SacrificedWis;
+                }
+
+                return Luck + ExtraLuc - SacrificedLuc + increaseBySacrificing;
+            }
+        }
+
+        public int TotalDefense => _def + Reaction + ExtraRec + ExtraDefense;
+        public int TotalResistance => _res + Wisdom + ExtraWis + ExtraResistance;
         #endregion
 
         #region Auto stats
@@ -222,6 +321,46 @@ namespace Imgeneus.World.Game.Stats
                 return false;
             }
         }
+
+        #endregion
+
+        #region Sacrifice
+
+        public ushort SacrificedStrPercent { get; set; }
+
+        public int SacrificedStr => SacrificedStrPercent > 0 ? (Strength + ExtraStr) / SacrificedStrPercent : 0;
+
+        public ushort SacrificedDexPercent { get; set; }
+
+        public int SacrificedDex => SacrificedDexPercent > 0 ? (Dexterity + ExtraDex) / SacrificedDexPercent : 0;
+
+        public ushort SacrificedRecPercent { get; set; }
+
+        public int SacrificedRec => SacrificedRecPercent > 0 ? (Reaction + ExtraRec) / SacrificedRecPercent : 0;
+
+        public ushort SacrificedIntPercent { get; set; }
+
+        public int SacrificedInt => SacrificedIntPercent > 0 ? (Intelligence + ExtraInt) / SacrificedIntPercent : 0;
+
+        public ushort SacrificedWisPercent { get; set; }
+
+        public int SacrificedWis => SacrificedWisPercent > 0 ? (Wisdom + ExtraWis) / SacrificedWisPercent : 0;
+
+        public ushort SacrificedLucPercent { get; set; }
+
+        public int SacrificedLuc => SacrificedLucPercent > 0 ? (Luck + ExtraLuc) / SacrificedLucPercent : 0;
+
+        public bool IncreaseStrBySacrificing { get; set; }
+
+        public bool IncreaseDexBySacrificing { get; set; }
+
+        public bool IncreaseRecBySacrificing { get; set; }
+
+        public bool IncreaseIntBySacrificing { get; set; }
+
+        public bool IncreaseWisBySacrificing { get; set; }
+
+        public bool IncreaseLucBySacrificing { get; set; }
 
         #endregion
 

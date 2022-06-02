@@ -314,6 +314,19 @@ namespace Imgeneus.World.Game.Buffs
             {
                 case TypeDetail.Buff:
                 case TypeDetail.PassiveDefence:
+                    if (skill.AbilityType1 == AbilityType.SacrificeStr)
+                        _statsManager.SacrificedStrPercent += skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeDex)
+                        _statsManager.SacrificedDexPercent += skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeRec)
+                        _statsManager.SacrificedRecPercent += skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeInt)
+                        _statsManager.SacrificedIntPercent += skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeWis)
+                        _statsManager.SacrificedWisPercent += skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeLuc)
+                        _statsManager.SacrificedLucPercent += skill.AbilityValue2;
+
                     ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
                     ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true, buff, skill);
                     ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true, buff, skill);
@@ -476,6 +489,19 @@ namespace Imgeneus.World.Game.Buffs
             {
                 case TypeDetail.Buff:
                 case TypeDetail.PassiveDefence:
+                    if (skill.AbilityType1 == AbilityType.SacrificeStr)
+                        _statsManager.SacrificedStrPercent -= skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeDex)
+                        _statsManager.SacrificedDexPercent -= skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeRec)
+                        _statsManager.SacrificedRecPercent -= skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeInt)
+                        _statsManager.SacrificedIntPercent -= skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeWis)
+                        _statsManager.SacrificedWisPercent -= skill.AbilityValue2;
+                    if (skill.AbilityType1 == AbilityType.SacrificeLuc)
+                        _statsManager.SacrificedLucPercent -= skill.AbilityValue2;
+
                     ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
                     ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false, buff, skill);
                     ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false, buff, skill);
@@ -841,6 +867,38 @@ namespace Imgeneus.World.Game.Buffs
                         buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
                     }
                     return;
+
+                case AbilityType.SacrificeStr:
+                case AbilityType.SacrificeDex:
+                case AbilityType.SacrificeRec:
+                case AbilityType.SacrificeInt:
+                case AbilityType.SacrificeWis:
+                case AbilityType.SacrificeLuc:
+                    break;
+
+                case AbilityType.IncreaseStrBySacrificing:
+                    _statsManager.IncreaseStrBySacrificing = addAbility;
+                    break;
+
+                case AbilityType.IncreaseDexBySacrificing:
+                    _statsManager.IncreaseDexBySacrificing = addAbility;
+                    break;
+
+                case AbilityType.IncreaseRecBySacrificing:
+                    _statsManager.IncreaseRecBySacrificing = addAbility;
+                    break;
+
+                case AbilityType.IncreaseIntBySacrificing:
+                    _statsManager.IncreaseIntBySacrificing = addAbility;
+                    break;
+
+                case AbilityType.IncreaseWisBySacrificing:
+                    _statsManager.IncreaseWisBySacrificing = addAbility;
+                    break;
+
+                case AbilityType.IncreaseLucBySacrificing:
+                    _statsManager.IncreaseLucBySacrificing = addAbility;
+                    break;
 
                 default:
                     throw new NotImplementedException($"Not implemented ability type {abilityType}");

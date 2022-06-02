@@ -488,7 +488,8 @@ namespace Imgeneus.World.Tests
                     { (627, 1), DeadlyStrike },
                     { (340, 1), NettleSting },
                     { (631, 1), Eraser },
-                    { (636, 1), BloodyArc }
+                    { (636, 1), BloodyArc },
+                    { (615, 1), IntervalTraining }
                 });
 
             databaseMock
@@ -895,9 +896,21 @@ namespace Imgeneus.World.Tests
             TypeAttack = TypeAttack.PhysicalAttack
         };
 
+        protected DbSkill IntervalTraining = new DbSkill()
+        {
+            SkillId = 615,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.PassiveDefence,
+            AbilityType1 = AbilityType.SacrificeStr,
+            AbilityValue1 = 3,
+            AbilityType2 = AbilityType.IncreaseDexBySacrificing,
+            AbilityValue2 = 25,
+            TypeAttack = TypeAttack.Passive
+        };
+
         #endregion
 
-        #region Items
+            #region Items
 
         protected DbItem WaterArmor = new DbItem()
         {

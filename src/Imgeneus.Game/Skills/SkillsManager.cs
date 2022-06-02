@@ -410,7 +410,7 @@ namespace Imgeneus.World.Game.Skills
 
                     if (skill.TypeAttack != TypeAttack.Passive && !_attackManager.AttackSuccessRate(t, skill.TypeAttack, skill))
                     {
-                        if (n == 0)
+                        if (n == 0 && (target == t || target is null))
                             OnUsedSkill?.Invoke(_ownerId, t, skill, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
 
                         if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
@@ -425,7 +425,7 @@ namespace Imgeneus.World.Game.Skills
                     {
                         // First apply skill.
                         PerformSkill(skill, target, t, skillOwner, attackResult, n);
-                        if (n == 0)
+                        if (n == 0 && (target == t || target is null))
                             OnUsedSkill?.Invoke(_ownerId, target, skill, attackResult);
 
                         // Second decrease hp.

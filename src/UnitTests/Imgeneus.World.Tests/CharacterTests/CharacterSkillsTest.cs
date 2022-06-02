@@ -134,6 +134,9 @@ namespace Imgeneus.World.Tests.CharacterTests
             var numberOfRangeAttacks = 0;
             character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfRangeAttacks++;
 
+            var numberOfUsedSkill = 0;
+            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfUsedSkill++;
+
             character1.StatsManager.WeaponMinAttack = 1;
             character1.StatsManager.WeaponMaxAttack = 1;
 
@@ -147,7 +150,8 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             character1.SkillsManager.UseSkill(new Skill(NettleSting, 0, 0), character1, character2);
 
-            Assert.Equal(3, numberOfRangeAttacks);
+            Assert.Equal(2, numberOfRangeAttacks);
+            Assert.Equal(1, numberOfUsedSkill);
             Assert.True(character2GotDamage);
             Assert.True(character3GotDamage);
             Assert.True(character4GotDamage);
@@ -206,6 +210,24 @@ namespace Imgeneus.World.Tests.CharacterTests
             character1.SkillsManager.UseSkill(new Skill(BloodyArc, 0, 0), character1);
 
             Assert.True(character2.HealthManager.CurrentHP < character2.HealthManager.MaxHP);
+        }
+
+        [Fact]
+        [Description("IntervalTraining should decrease str and increase dex.")]
+        public void IntervalTrainingTest()
+        {
+            var character = CreateCharacter();
+            character.StatsManager.TrySetStats(str: 50);
+            character.StatsManager.ExtraStr = 50;
+
+            Assert.Equal(100, character.StatsManager.TotalStr);
+            Assert.Equal(0, character.StatsManager.TotalDex);
+
+            character.BuffsManager.AddBuff(new Skill(IntervalTraining, 0, 0), null);
+
+            Assert.Empty(character.BuffsManager.ActiveBuffs); // IntervalTraining is passive buff.
+            Assert.Equal(96, character.StatsManager.TotalStr);
+            Assert.Equal(4, character.StatsManager.TotalDex);
         }
     }
 }

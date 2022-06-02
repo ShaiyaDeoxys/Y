@@ -154,6 +154,96 @@ namespace Imgeneus.World.Game.Stats
         byte AutoWis { get; }
 
         /// <summary>
+        /// Str %, that is sacrificed for another stat.
+        /// </summary>
+        ushort SacrificedStrPercent { get; set; }
+
+        /// <summary>
+        /// Rounded sacrificed str.
+        /// </summary>
+        int SacrificedStr { get; }
+
+        /// <summary>
+        /// Dex %, that is sacrificed for another stat.
+        /// </summary>
+        ushort SacrificedDexPercent { get; set; }
+
+        /// <summary>
+        /// Rounded sacrificed dex.
+        /// </summary>
+        int SacrificedDex { get; }
+
+        /// <summary>
+        /// Rec %, that is sacrificed for another stat.
+        /// </summary>
+        ushort SacrificedRecPercent { get; set; }
+
+        /// <summary>
+        /// Rounded sacrificed rec.
+        /// </summary>
+        int SacrificedRec { get; }
+
+        /// <summary>
+        /// Int %, that is sacrificed for another stat.
+        /// </summary>
+        ushort SacrificedIntPercent { get; set; }
+
+        /// <summary>
+        /// Rounded sacrificed int.
+        /// </summary>
+        int SacrificedInt { get; }
+
+        /// <summary>
+        /// Wis %, that is sacrificed for another stat.
+        /// </summary>
+        ushort SacrificedWisPercent { get; set; }
+
+        /// <summary>
+        /// Rounded sacrificed wis.
+        /// </summary>
+        int SacrificedWis { get; }
+
+        /// <summary>
+        /// Luc %, that is sacrificed for another stat.
+        /// </summary>
+        ushort SacrificedLucPercent { get; set; }
+
+        /// <summary>
+        /// Rounded sacrificed luc.
+        /// </summary>
+        int SacrificedLuc { get; }
+
+        /// <summary>
+        /// Str is increase by sacrificed stats.
+        /// </summary>
+        bool IncreaseStrBySacrificing { get; set; }
+
+        /// <summary>
+        /// Dex is increase by sacrificed stats.
+        /// </summary>
+        bool IncreaseDexBySacrificing { get; set; }
+
+        /// <summary>
+        /// Rec is increase by sacrificed stats.
+        /// </summary>
+        bool IncreaseRecBySacrificing { get; set; }
+
+        /// <summary>
+        /// Int is increase by sacrificed stats.
+        /// </summary>
+        bool IncreaseIntBySacrificing { get; set; }
+
+        /// <summary>
+        /// Wis is increase by sacrificed stats.
+        /// </summary>
+        bool IncreaseWisBySacrificing { get; set; }
+
+        /// <summary>
+        /// Luc is increase by sacrificed stats.
+        /// </summary>
+        bool IncreaseLucBySacrificing { get; set; }
+
+        /// <summary>
         /// Saves autostats to db.
         /// </summary>
         Task<bool> TrySetAutoStats(byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
