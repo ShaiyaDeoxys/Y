@@ -308,13 +308,19 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
+            if (target is null && (skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster))
+            {
+                success = AttackSuccess.Normal;
+                return true;
+            }
+
             if (!skill.RequiredWeapons.Contains(_statsManager.WeaponType) && skill.RequiredWeapons.Count != 0)
             {
                 success = AttackSuccess.WrongEquipment;
                 return false;
             }
 
-            if(skill.RequiredWeapons.Count == 0 && skill.NeedShield && !_attackManager.IsShieldAvailable)
+            if (skill.RequiredWeapons.Count == 0 && skill.NeedShield && !_attackManager.IsShieldAvailable)
             {
                 success = AttackSuccess.WrongEquipment;
                 return false;
@@ -326,7 +332,7 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (target.CountryProvider.Country == _countryProvider.Country && skill.TargetType != TargetType.Caster)
+            if (target.CountryProvider.Country == _countryProvider.Country && skill.TargetType != TargetType.Caster && skill.TargetType != TargetType.EnemiesNearCaster)
             {
                 if (target is Character)
                 {
@@ -383,10 +389,10 @@ namespace Imgeneus.World.Game.Skills
             if (skill.NeedMP > 0 || skill.NeedSP > 0)
             {
                 var oldMP = _healthManager.CurrentMP;
-                _healthManager.CurrentMP -= skill.NeedMP > 1 ? skill.NeedMP : _healthManager.CurrentMP;
+                _healthManager.CurrentMP = oldMP - (skill.NeedMP == 1 ? _healthManager.CurrentMP : skill.NeedMP);
 
                 var oldSP = _healthManager.CurrentSP;
-                _healthManager.CurrentSP -= skill.NeedSP > 1 ? skill.NeedSP : _healthManager.CurrentSP;
+                _healthManager.CurrentSP = oldSP - (skill.NeedSP == 1 ? _healthManager.CurrentSP : skill.NeedSP);
 
                 _healthManager.InvokeUsedMPSP((ushort)(oldMP - _healthManager.CurrentMP), (ushort)(oldSP - _healthManager.CurrentSP));
             }
@@ -404,9 +410,9 @@ namespace Imgeneus.World.Game.Skills
 
                     if (skill.TypeAttack != TypeAttack.Passive && !_attackManager.AttackSuccessRate(t, skill.TypeAttack, skill))
                     {
-                        if (target == t)
+                        if (n == 0)
                             OnUsedSkill?.Invoke(_ownerId, t, skill, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
-                        
+
                         if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
                             OnUsedRangeSkill?.Invoke(_ownerId, t, skill, new AttackResult(AttackSuccess.Miss, new Damage(0, 0, 0)));
 
@@ -419,6 +425,8 @@ namespace Imgeneus.World.Game.Skills
                     {
                         // First apply skill.
                         PerformSkill(skill, target, t, skillOwner, attackResult, n);
+                        if (n == 0)
+                            OnUsedSkill?.Invoke(_ownerId, target, skill, attackResult);
 
                         // Second decrease hp.
                         if (attackResult.Damage.HP > 0)
@@ -541,9 +549,6 @@ namespace Imgeneus.World.Game.Skills
                 default:
                     throw new NotImplementedException("Not implemented skill type.");
             }
-
-            if ((initialTarget == target || skillOwner == target) && n == 0)
-                OnUsedSkill?.Invoke(_ownerId, initialTarget, skill, attackResult);
 
             if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
                 OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);

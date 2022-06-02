@@ -487,7 +487,8 @@ namespace Imgeneus.World.Tests
                     { (630, 1), WildRage },
                     { (627, 1), DeadlyStrike },
                     { (340, 1), NettleSting },
-                    { (631, 1), Eraser }
+                    { (631, 1), Eraser },
+                    { (636, 1), BloodyArc }
                 });
 
             databaseMock
@@ -879,6 +880,19 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.Eraser,
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100
+        };
+
+        protected DbSkill BloodyArc = new DbSkill()
+        {
+            SkillId = 636,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.SubtractingDebuff,
+            DamageType = DamageType.PlusExtraDamage,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            TargetType = TargetType.EnemiesNearCaster,
+            ApplyRange = 2,
+            TypeAttack = TypeAttack.PhysicalAttack
         };
 
         #endregion

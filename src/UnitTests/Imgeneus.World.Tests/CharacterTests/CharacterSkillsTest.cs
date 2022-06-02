@@ -189,5 +189,23 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.SkillsManager.UseSkill(new Skill(Eraser, 0, 0), character, character2);
             Assert.True(character.HealthManager.IsDead);
         }
+
+        [Fact]
+        [Description("BloodyArc should hit enemy near caster without providing target.")]
+        public void BloodyArcTest()
+        {
+            var map = testMap;
+            var character1 = CreateCharacter(map: map);
+            character1.StatsManager.WeaponMinAttack = 1;
+            character1.StatsManager.WeaponMaxAttack = 1;
+            var character2 = CreateCharacter(map: map, country: Fraction.Dark);
+
+            character2.HealthManager.FullRecover();
+            Assert.Equal(character2.HealthManager.MaxHP, character2.HealthManager.CurrentHP);
+
+            character1.SkillsManager.UseSkill(new Skill(BloodyArc, 0, 0), character1);
+
+            Assert.True(character2.HealthManager.CurrentHP < character2.HealthManager.MaxHP);
+        }
     }
 }

@@ -34,9 +34,7 @@ namespace Imgeneus.World.Handlers
             if (player is null)
                 return;
 
-            var target = packet.TargetId == 0 ? player : _mapProvider.Map.GetPlayer(packet.TargetId);
-            if (target is null)
-                return;
+            var target = packet.TargetId == 0 ? null : _mapProvider.Map.GetPlayer(packet.TargetId);
 
             UseSkill(client, packet.Number, player, target);
         }
