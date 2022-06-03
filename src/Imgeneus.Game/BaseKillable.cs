@@ -94,12 +94,6 @@ namespace Imgeneus.World.Game
 
         #endregion
 
-        #region Untouchable
-
-        public bool IsUntouchable { get => UntouchableManager.IsUntouchable; }
-
-        #endregion
-
         #region Absorption
 
         public ushort Absorption { get => StatsManager.Absorption; }

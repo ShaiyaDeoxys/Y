@@ -1,12 +1,10 @@
-﻿using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Buffs;
+﻿using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
-using Imgeneus.World.Game.Speed;
+using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
-using System;
 
 namespace Imgeneus.World.Game
 {
@@ -29,14 +27,11 @@ namespace Imgeneus.World.Game
 
         public IMapProvider MapProvider { get; }
 
+        public IUntouchableManager UntouchableManager { get; }
+
         /// <summary>
         /// Absorbs damage regardless of REC value.
         /// </summary>
         public ushort Absorption { get; }
-
-        /// <summary>
-        /// Indicator, that shows if the entity cannot be damaged.
-        /// </summary>
-        public bool IsUntouchable { get; }
     }
 }

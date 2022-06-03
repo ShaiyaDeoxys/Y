@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 
 namespace Imgeneus.World.Game.Untouchable
 {
@@ -33,5 +34,18 @@ namespace Imgeneus.World.Game.Untouchable
         #endregion
 
         public bool IsUntouchable { get; set; }
+
+        private byte _blockedMagicAttacks;
+        public byte BlockedMagicAttacks
+        {
+            get => _blockedMagicAttacks;
+            set
+            {
+                _blockedMagicAttacks = value;
+                OnBlockedMagicAttacksChanged?.Invoke(_blockedMagicAttacks);
+            }
+        }
+
+        public event Action<byte> OnBlockedMagicAttacksChanged;
     }
 }

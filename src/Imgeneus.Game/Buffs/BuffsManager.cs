@@ -64,6 +64,7 @@ namespace Imgeneus.World.Game.Buffs
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
             _attackManager.OnStartAttack += CancelStealth;
+            _untouchableManager.OnBlockedMagicAttacksChanged += UntouchableManager_OnBlockedMagicAttacksChanged;
 
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
@@ -130,6 +131,7 @@ namespace Imgeneus.World.Game.Buffs
             _healthManager.OnDead -= HealthManager_OnDead;
             _healthManager.HP_Changed -= HealthManager_HP_Changed;
             _attackManager.OnStartAttack -= CancelStealth;
+            _untouchableManager.OnBlockedMagicAttacksChanged -= UntouchableManager_OnBlockedMagicAttacksChanged;
         }
 
         #endregion
@@ -472,6 +474,10 @@ namespace Imgeneus.World.Game.Buffs
                     _statsManager.ConstShootingEvasionChance += skill.DefenceValue;
                     break;
 
+                case TypeDetail.BlockMagicAttack:
+                    _untouchableManager.BlockedMagicAttacks = skill.DefenceValue;
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -623,6 +629,10 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.BlockShootingAttack:
                     _statsManager.ConstShootingEvasionChance -= skill.DefenceValue;
+                    break;
+
+                case TypeDetail.BlockMagicAttack:
+                    _untouchableManager.BlockedMagicAttacks = 0;
                     break;
 
                 default:
@@ -981,6 +991,16 @@ namespace Imgeneus.World.Game.Buffs
             {
                 var stealthBuff = ActiveBuffs.FirstOrDefault(b => b.IsStealth);
                 stealthBuff.CancelBuff();
+            }
+        }
+
+        private void UntouchableManager_OnBlockedMagicAttacksChanged(byte blockedAttacksLeft)
+        {
+            if (blockedAttacksLeft == 0)
+            {
+                var buff = ActiveBuffs.FirstOrDefault(b => b.IsBlockMagicAttack);
+                if (buff != null)
+                    buff.CancelBuff();
             }
         }
 

@@ -229,5 +229,31 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(96, character.StatsManager.TotalStr);
             Assert.Equal(4, character.StatsManager.TotalDex);
         }
+
+        [Fact]
+        [Description("MagicVeil should block 3 magic attacks.")]
+        public void MagicVeilTest()
+        {
+            var character = CreateCharacter();
+            var character2 = CreateCharacter();
+            character2.AttackManager.AlwaysHit = false;
+
+            character.BuffsManager.AddBuff(new Skill(MagicVeil, 0, 0), null);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+
+            var missed = 0;
+            character2.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult result) =>
+            {
+                if (result.Success == AttackSuccess.Miss)
+                    missed++;
+            };
+
+            character2.SkillsManager.UseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character2, character);
+            character2.SkillsManager.UseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character2, character);
+            character2.SkillsManager.UseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character2, character);
+
+            Assert.Equal(3, missed);
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
+        }
     }
 }

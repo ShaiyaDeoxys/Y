@@ -146,7 +146,7 @@ namespace Imgeneus.World.Tests
             var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager);
 
-            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, teleportManager);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, teleportManager, movementManager);
             var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
@@ -235,8 +235,8 @@ namespace Imgeneus.World.Tests
             attackManager.AlwaysHit = true;
 
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null);
-            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, null);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, gameWorldMock.Object, mapProvider, null, movementManager);
             var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, definitionsPreloader.Object, speedManager);
 
             var mob = new Mob(
@@ -489,7 +489,8 @@ namespace Imgeneus.World.Tests
                     { (340, 1), NettleSting },
                     { (631, 1), Eraser },
                     { (636, 1), BloodyArc },
-                    { (615, 1), IntervalTraining }
+                    { (615, 1), IntervalTraining },
+                    { (772, 1), MagicVeil }
                 });
 
             databaseMock
@@ -592,6 +593,7 @@ namespace Imgeneus.World.Tests
             ResetTime = 10,
             KeepTime = 5,
             DamageType = DamageType.PlusExtraDamage,
+            TargetType = TargetType.SelectedEnemy
         };
 
         protected DbSkill AttributeRemove = new DbSkill()
@@ -908,9 +910,19 @@ namespace Imgeneus.World.Tests
             TypeAttack = TypeAttack.Passive
         };
 
+        protected DbSkill MagicVeil = new DbSkill()
+        {
+            SkillId = 772,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.BlockMagicAttack,
+            DefenceValue = 3,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+        };
+
         #endregion
 
-            #region Items
+        #region Items
 
         protected DbItem WaterArmor = new DbItem()
         {

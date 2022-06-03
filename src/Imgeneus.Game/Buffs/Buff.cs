@@ -131,6 +131,17 @@ namespace Imgeneus.World.Game.Buffs
             }
         }
 
+        /// <summary>
+        /// Does skill block magic attack?
+        /// </summary>
+        public bool IsBlockMagicAttack
+        {
+            get
+            {
+                return _skill.Type == TypeDetail.BlockMagicAttack;
+            }
+        }
+
         #endregion
 
         #region Buff reset
