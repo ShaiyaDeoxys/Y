@@ -20,5 +20,10 @@ namespace Imgeneus.World.Game.Untouchable
         /// Event, that is fired when <see cref="BlockedMagicAttacks"/> changes.
         /// </summary>
         event Action<byte> OnBlockedMagicAttacksChanged;
+
+        /// <summary>
+        /// All incoming debuffs will be blocked.
+        /// </summary>
+        bool BlockDebuffs { get; set; }
     }
 }

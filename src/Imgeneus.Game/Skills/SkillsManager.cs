@@ -323,21 +323,6 @@ namespace Imgeneus.World.Game.Skills
 
         public bool CanUseSkill(Skill skill, IKillable target, out AttackSuccess success)
         {
-            if ((skill.TargetType == TargetType.SelectedEnemy ||
-                skill.TargetType == TargetType.AnyEnemy ||
-                skill.TargetType == TargetType.EnemiesNearTarget)
-                &&
-                (target is null || target.HealthManager.IsDead))
-            {
-                success = AttackSuccess.WrongTarget;
-                return false;
-            }
-
-            if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.AlliesNearCaster))
-            {
-                success = AttackSuccess.Normal;
-                return true;
-            }
 
             if (!skill.RequiredWeapons.Contains(_statsManager.WeaponType) && skill.RequiredWeapons.Count != 0)
             {
@@ -355,6 +340,36 @@ namespace Imgeneus.World.Game.Skills
             {
                 success = AttackSuccess.NotEnoughMPSP;
                 return false;
+            }
+
+            if ((skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack) &&
+                _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
+            {
+                success = AttackSuccess.CanNotAttack;
+                return false;
+            }
+
+            if (skill.TypeAttack == TypeAttack.MagicAttack &&
+                _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Darkness))
+            {
+                success = AttackSuccess.CanNotAttack;
+                return false;
+            }
+
+            if ((skill.TargetType == TargetType.SelectedEnemy ||
+                 skill.TargetType == TargetType.AnyEnemy ||
+                 skill.TargetType == TargetType.EnemiesNearTarget)
+                    &&
+                (target is null || target.HealthManager.IsDead))
+            {
+                success = AttackSuccess.WrongTarget;
+                return false;
+            }
+
+            if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.AlliesNearCaster))
+            {
+                success = AttackSuccess.Normal;
+                return true;
             }
 
             if (target.CountryProvider.Country == _countryProvider.Country && skill.TargetType != TargetType.Caster && skill.TargetType != TargetType.EnemiesNearCaster)
@@ -383,20 +398,6 @@ namespace Imgeneus.World.Game.Skills
                     success = AttackSuccess.WrongTarget;
                     return false;
                 }
-            }
-
-            if ((skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack) &&
-                _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
-            {
-                success = AttackSuccess.CanNotAttack;
-                return false;
-            }
-
-            if (skill.TypeAttack == TypeAttack.MagicAttack &&
-                _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Darkness))
-            {
-                success = AttackSuccess.CanNotAttack;
-                return false;
             }
 
             success = AttackSuccess.Normal;
@@ -546,6 +547,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.Transformation:
                 case TypeDetail.EnergyBackhole:
                 case TypeDetail.BlockMagicAttack:
+                case TypeDetail.EtainShield:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

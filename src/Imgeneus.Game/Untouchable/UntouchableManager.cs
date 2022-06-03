@@ -47,5 +47,7 @@ namespace Imgeneus.World.Game.Untouchable
         }
 
         public event Action<byte> OnBlockedMagicAttacksChanged;
+
+        public bool BlockDebuffs { get; set; }
     }
 }

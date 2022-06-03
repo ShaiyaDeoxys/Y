@@ -255,5 +255,38 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(3, missed);
             Assert.Empty(character.BuffsManager.ActiveBuffs);
         }
+
+        [Fact]
+        [Description("EtainsEmbrace should require 850 MP.")]
+        public void CheckNeedMPTest()
+        {
+            var character = CreateCharacter();
+            Assert.Equal(0, character.HealthManager.CurrentMP);
+
+            var canUse = character.SkillsManager.CanUseSkill(new Skill(EtainsEmbrace, 0, 0), null, out var result);
+            Assert.False(canUse);
+            Assert.Equal(AttackSuccess.NotEnoughMPSP, result);
+
+            character.HealthManager.ExtraMP += 1000;
+            character.HealthManager.FullRecover();
+
+            canUse = character.SkillsManager.CanUseSkill(new Skill(EtainsEmbrace, 0, 0), null, out result);
+            Assert.True(canUse);
+            Assert.Equal(AttackSuccess.Normal, result);
+        }
+
+        [Fact]
+        [Description("EtainsEmbrace should block all debuffs.")]
+        public void EtainsEmbraceTest()
+        {
+            var character = CreateCharacter();
+            character.SkillsManager.UseSkill(new Skill(EtainsEmbrace, 0, 0), character);
+
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+
+            character.BuffsManager.AddBuff(new Skill(Panic_Lvl1, 0, 0), null);
+
+            Assert.Single(character.BuffsManager.ActiveBuffs); // Panic won't be added.
+        }
     }
 }

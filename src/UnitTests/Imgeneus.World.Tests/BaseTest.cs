@@ -490,7 +490,8 @@ namespace Imgeneus.World.Tests
                     { (631, 1), Eraser },
                     { (636, 1), BloodyArc },
                     { (615, 1), IntervalTraining },
-                    { (772, 1), MagicVeil }
+                    { (772, 1), MagicVeil },
+                    { (775, 1), EtainsEmbrace }
                 });
 
             databaseMock
@@ -918,6 +919,17 @@ namespace Imgeneus.World.Tests
             DefenceValue = 3,
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
+        };
+
+        protected DbSkill EtainsEmbrace = new DbSkill()
+        {
+            SkillId = 775,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.EtainShield,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            MP = 850,
+            TargetType = TargetType.Caster
         };
 
         #endregion

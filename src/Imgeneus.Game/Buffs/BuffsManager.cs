@@ -235,6 +235,9 @@ namespace Imgeneus.World.Game.Buffs
 
             if (buff != null) // We already have such buff. Try to update reset time.
             {
+                if (buff.IsDebuff && _untouchableManager.BlockDebuffs)
+                    return null;
+
                 if (buff.SkillLevel > skill.SkillLevel)
                 {
                     // Do nothing, if target already has higher lvl buff.
@@ -290,6 +293,10 @@ namespace Imgeneus.World.Game.Buffs
                 {
                     ResetTime = resetTime
                 };
+
+                if (buff.IsDebuff && _untouchableManager.BlockDebuffs)
+                    return null;
+
                 if (skill.IsPassive)
                     PassiveBuffs.Add(buff);
                 else
@@ -478,6 +485,10 @@ namespace Imgeneus.World.Game.Buffs
                     _untouchableManager.BlockedMagicAttacks = skill.DefenceValue;
                     break;
 
+                case TypeDetail.EtainShield:
+                    _untouchableManager.BlockDebuffs = true;
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -633,6 +644,10 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.BlockMagicAttack:
                     _untouchableManager.BlockedMagicAttacks = 0;
+                    break;
+
+                case TypeDetail.EtainShield:
+                    _untouchableManager.BlockDebuffs = false;
                     break;
 
                 default:
