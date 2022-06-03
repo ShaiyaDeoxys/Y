@@ -333,7 +333,7 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster))
+            if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.AlliesNearCaster))
             {
                 success = AttackSuccess.Normal;
                 return true;
@@ -513,6 +513,10 @@ namespace Imgeneus.World.Game.Skills
 
                 case TargetType.EnemiesNearTarget:
                     targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, target.MovementManager.PosX, target.MovementManager.PosZ, skill.ApplyRange));
+                    break;
+
+                case TargetType.AlliesNearCaster:
+                    targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange, country: skillOwner.CountryProvider.Country));
                     break;
 
                 default:
