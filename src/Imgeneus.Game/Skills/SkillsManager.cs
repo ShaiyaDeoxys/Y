@@ -11,6 +11,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
@@ -46,9 +47,10 @@ namespace Imgeneus.World.Game.Skills
         private readonly IGameWorld _gameWorld;
         private readonly IMapProvider _mapProvider;
         private readonly ITeleportationManager _teleportationManager;
+        private readonly IMovementManager _movementManager;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider, ITeleportationManager teleportationManager)
+        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager)
         {
             _logger = logger;
             _definitionsPreloder = definitionsPreloder;
@@ -65,8 +67,12 @@ namespace Imgeneus.World.Game.Skills
             _gameWorld = gameWorld;
             _mapProvider = mapProvider;
             _teleportationManager = teleportationManager;
+            _movementManager = movementManager;
+
             _castTimer.Elapsed += CastTimer_Elapsed;
             _levelProvider.OnLevelUp += OnLevelUp;
+            _movementManager.OnMove += MovementManager_OnMove;
+            _healthManager.OnGotDamage += HealthManager_OnGotDamage;
 
 #if DEBUG
             _logger.LogDebug("SkillsManager {hashcode} created", GetHashCode());
@@ -123,6 +129,8 @@ namespace Imgeneus.World.Game.Skills
         {
             _castTimer.Elapsed -= CastTimer_Elapsed;
             _levelProvider.OnLevelUp -= OnLevelUp;
+            _movementManager.OnMove -= MovementManager_OnMove;
+            _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
         }
 
         #endregion
@@ -288,6 +296,23 @@ namespace Imgeneus.World.Game.Skills
             if (CanUseSkill(_skillInCast, _targetInCast, out var success))
                 UseSkill(_skillInCast, _gameWorld.Players[_ownerId], _targetInCast);
 
+            _skillInCast = null;
+            _targetInCast = null;
+        }
+
+        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        {
+            CancelCasting();
+        }
+
+        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker)
+        {
+            CancelCasting();
+        }
+
+        public void CancelCasting()
+        {
+            _castTimer.Stop();
             _skillInCast = null;
             _targetInCast = null;
         }
