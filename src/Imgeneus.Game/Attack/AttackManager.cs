@@ -119,31 +119,31 @@ namespace Imgeneus.World.Game.Attack
                 switch (_speedManager.TotalAttackSpeed)
                 {
                     case AttackSpeed.ExteremelySlow:
-                        return 4000;
-
-                    case AttackSpeed.VerySlow:
-                        return 3750;
-
-                    case AttackSpeed.Slow:
-                        return 3500;
-
-                    case AttackSpeed.ABitSlow:
-                        return 3250;
-
-                    case AttackSpeed.Normal:
                         return 3000;
 
-                    case AttackSpeed.ABitFast:
+                    case AttackSpeed.VerySlow:
                         return 2750;
 
-                    case AttackSpeed.Fast:
+                    case AttackSpeed.Slow:
                         return 2500;
 
-                    case AttackSpeed.VeryFast:
+                    case AttackSpeed.ABitSlow:
                         return 2250;
 
-                    case AttackSpeed.ExteremelyFast:
+                    case AttackSpeed.Normal:
                         return 2000;
+
+                    case AttackSpeed.ABitFast:
+                        return 1750;
+
+                    case AttackSpeed.Fast:
+                        return 1500;
+
+                    case AttackSpeed.VeryFast:
+                        return 1250;
+
+                    case AttackSpeed.ExteremelyFast:
+                        return 1000;
 
                     default:
                         return 2000;
