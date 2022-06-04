@@ -1,0 +1,23 @@
+﻿using Imgeneus.World.Game;
+using System;
+
+namespace Imgeneus.Game.Skills
+{
+    public interface ISkillCastingManager : IDisposable
+    {
+        void Init(int ownerId);
+
+        /// <summary>
+        /// Starts casting.
+        /// </summary>
+        /// <param name="skill">skill, that we are casting</param>
+        /// <param name="target">target for which, that we are casting</param>
+        void StartCasting(Skill skill, IKillable target);
+
+
+        /// <summary>
+        /// Event, that is fired, when user starts casting.
+        /// </summary>
+        event Action<int, IKillable, Skill> OnSkillCastStarted;
+    }
+}

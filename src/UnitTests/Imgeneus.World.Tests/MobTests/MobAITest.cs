@@ -1,6 +1,5 @@
-﻿using Imgeneus.World.Game.AI;
+﻿using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Skills;
 using Xunit;
 
 namespace Imgeneus.World.Tests.MobTests

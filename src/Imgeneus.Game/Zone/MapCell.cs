@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
@@ -11,7 +12,6 @@ using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
-using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Parsec.Shaiya.NpcQuest;
 using System;
@@ -206,7 +206,7 @@ namespace Imgeneus.World.Game.Zone
             character.SkillsManager.OnUsedRangeSkill += Character_OnUsedRangeSkill;
             character.AttackManager.OnAttack += Character_OnAttack;
             character.HealthManager.OnDead += Character_OnDead;
-            character.SkillsManager.OnSkillCastStarted += Character_OnSkillCastStarted;
+            character.SkillCastingManager.OnSkillCastStarted += Character_OnSkillCastStarted;
             character.InventoryManager.OnUsedItem += Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged += Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged += Character_OnMaxSPChanged;
@@ -242,7 +242,7 @@ namespace Imgeneus.World.Game.Zone
             character.SkillsManager.OnUsedRangeSkill -= Character_OnUsedRangeSkill;
             character.AttackManager.OnAttack -= Character_OnAttack;
             character.HealthManager.OnDead -= Character_OnDead;
-            character.SkillsManager.OnSkillCastStarted -= Character_OnSkillCastStarted;
+            character.SkillCastingManager.OnSkillCastStarted -= Character_OnSkillCastStarted;
             character.InventoryManager.OnUsedItem -= Character_OnUsedItem;
             character.HealthManager.OnMaxHPChanged -= Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged -= Character_OnMaxSPChanged;

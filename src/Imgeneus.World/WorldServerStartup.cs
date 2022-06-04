@@ -3,6 +3,7 @@ using Imgeneus.Database;
 using Imgeneus.Database.Context;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.Logs;
 using Imgeneus.Network.Server;
@@ -151,6 +152,7 @@ namespace Imgeneus.World
             services.AddScoped<IWarehouseManager, WarehouseManager>();
             services.AddScoped<IAIManager, AIManager>();
             services.AddScoped<IShopManager, ShopManager>();
+            services.AddScoped<ISkillCastingManager, SkillCastingManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

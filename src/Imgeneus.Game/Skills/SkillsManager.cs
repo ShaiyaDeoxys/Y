@@ -3,6 +3,7 @@ using Imgeneus.Database;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
@@ -44,13 +45,12 @@ namespace Imgeneus.World.Game.Skills
         private readonly ICharacterConfiguration _characterConfig;
         private readonly ILevelProvider _levelProvider;
         private readonly IAdditionalInfoManager _additionalInfoManager;
-        private readonly IGameWorld _gameWorld;
         private readonly IMapProvider _mapProvider;
         private readonly ITeleportationManager _teleportationManager;
-        private readonly IMovementManager _movementManager;
+
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IGameWorld gameWorld, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager)
+        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager)
         {
             _logger = logger;
             _definitionsPreloder = definitionsPreloder;
@@ -64,15 +64,10 @@ namespace Imgeneus.World.Game.Skills
             _characterConfig = characterConfig;
             _levelProvider = levelProvider;
             _additionalInfoManager = additionalInfoManager;
-            _gameWorld = gameWorld;
             _mapProvider = mapProvider;
             _teleportationManager = teleportationManager;
-            _movementManager = movementManager;
 
-            _castTimer.Elapsed += CastTimer_Elapsed;
             _levelProvider.OnLevelUp += OnLevelUp;
-            _movementManager.OnMove += MovementManager_OnMove;
-            _healthManager.OnGotDamage += HealthManager_OnGotDamage;
 
 #if DEBUG
             _logger.LogDebug("SkillsManager {hashcode} created", GetHashCode());
@@ -127,10 +122,7 @@ namespace Imgeneus.World.Game.Skills
 
         public void Dispose()
         {
-            _castTimer.Elapsed -= CastTimer_Elapsed;
             _levelProvider.OnLevelUp -= OnLevelUp;
-            _movementManager.OnMove -= MovementManager_OnMove;
-            _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
         }
 
         #endregion
@@ -249,72 +241,6 @@ namespace Imgeneus.World.Game.Skills
             Skills.Clear();
 
             return true;
-        }
-
-        #endregion
-
-        #region Casting
-
-        /// <summary>
-        /// The timer, that is starting skill after cast time.
-        /// </summary>
-        private Timer _castTimer = new Timer();
-
-        /// <summary>
-        /// Skill, that player tries to cast.
-        /// </summary>
-        private Skill _skillInCast;
-
-        /// <summary>
-        /// Target for which we are casting spell.
-        /// </summary>
-        private IKillable _targetInCast;
-
-        /// <summary>
-        /// Event, that is fired, when user starts casting.
-        /// </summary>
-        public event Action<int, IKillable, Skill> OnSkillCastStarted;
-
-        public void StartCasting(Skill skill, IKillable target)
-        {
-            if (!CanUseSkill(skill, target, out var success))
-                return;
-
-            _skillInCast = skill;
-            _targetInCast = target;
-            _castTimer.Interval = skill.CastTime;
-            _castTimer.Start();
-            OnSkillCastStarted?.Invoke(_ownerId, _targetInCast, skill);
-        }
-
-        /// <summary>
-        /// When time for casting has elapsed.
-        /// </summary>
-        private void CastTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            _castTimer.Stop();
-            if (CanUseSkill(_skillInCast, _targetInCast, out var success))
-                UseSkill(_skillInCast, _gameWorld.Players[_ownerId], _targetInCast);
-
-            _skillInCast = null;
-            _targetInCast = null;
-        }
-
-        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
-        {
-            CancelCasting();
-        }
-
-        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker)
-        {
-            CancelCasting();
-        }
-
-        public void CancelCasting()
-        {
-            _castTimer.Stop();
-            _skillInCast = null;
-            _targetInCast = null;
         }
 
         #endregion
@@ -567,6 +493,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.BlockMagicAttack:
                 case TypeDetail.EtainShield:
                 case TypeDetail.DamageReflection:
+                case TypeDetail.PersistBarrier:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

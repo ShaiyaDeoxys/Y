@@ -1,4 +1,4 @@
-using Imgeneus.World.Game.Player;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Skills;
 using System.ComponentModel;
 using Xunit;

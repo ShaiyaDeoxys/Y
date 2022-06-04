@@ -1,6 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Buffs;
-using Imgeneus.World.Game.Skills;
 using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Generic;

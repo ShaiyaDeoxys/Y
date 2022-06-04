@@ -1,7 +1,7 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Skills;
 using Parsec.Shaiya.Skill;
 using System;
 using System.Timers;

@@ -1,6 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using System.Collections.Generic;
 using Xunit;

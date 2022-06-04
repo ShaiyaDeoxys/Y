@@ -1,10 +1,9 @@
 ﻿using Imgeneus.GameDefinitions;
 using Parsec.Shaiya.Skill;
 using System.Collections.Generic;
-using Imgeneus.Database.Constants;
 using Element = Imgeneus.Database.Constants.Element;
 
-namespace Imgeneus.World.Game.Skills
+namespace Imgeneus.Game.Skills
 {
     public class Skill
     {
@@ -54,7 +53,8 @@ namespace Imgeneus.World.Game.Skills
             Type != TypeDetail.Eraser &&
             Type != TypeDetail.PeriodicalHeal &&
             Type != TypeDetail.EtainShield &&
-            Type != TypeDetail.DamageReflection;
+            Type != TypeDetail.DamageReflection &&
+            Type != TypeDetail.PersistBarrier;
 
         /// <summary>
         /// Skill type.
@@ -79,7 +79,7 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Success rate in %.
         /// </summary>
-        public byte SuccessValue { get => (byte)_dbSkill.SuccessValue; }
+        public byte SuccessValue { get => _dbSkill.SuccessValue; }
 
         /// <summary>
         /// State type contains information about what bad influence debuff has on target.
@@ -159,7 +159,7 @@ namespace Imgeneus.World.Game.Skills
         /// <summary>
         /// Skill const element.
         /// </summary>
-        public Element Element { get => (Element)_dbSkill.Element; }
+        public Element Element { get => _dbSkill.Element; }
 
         /// <summary>
         /// Skill will be applied within N meters.

@@ -1,5 +1,5 @@
-﻿using Imgeneus.World.Game.Buffs;
-using Imgeneus.World.Game.Skills;
+﻿using Imgeneus.Game.Skills;
+using Imgeneus.World.Game.Buffs;
 using System.ComponentModel;
 using Xunit;
 

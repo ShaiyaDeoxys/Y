@@ -1,7 +1,7 @@
 ﻿using BinarySerialization;
+using Imgeneus.Game.Skills;
 using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Skills;
 
 namespace Imgeneus.World.Serialization
 {

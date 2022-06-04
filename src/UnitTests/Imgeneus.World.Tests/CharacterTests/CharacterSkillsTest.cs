@@ -1,9 +1,9 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Inventory;
-using Imgeneus.World.Game.Skills;
 using Parsec.Shaiya.Skill;
 using System.ComponentModel;
 using Xunit;

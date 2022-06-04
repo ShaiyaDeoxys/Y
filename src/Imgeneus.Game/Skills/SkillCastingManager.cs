@@ -1,0 +1,122 @@
+﻿using Imgeneus.World.Game;
+using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.Skills;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Timers;
+
+namespace Imgeneus.Game.Skills
+{
+    public class SkillCastingManager : ISkillCastingManager
+    {
+        private readonly ILogger<SkillCastingManager> _logger;
+        private readonly IMovementManager _movementManager;
+        private readonly IHealthManager _healthManager;
+        private readonly ISkillsManager _skillsManager;
+        private readonly IGameWorld _gameWorld;
+        private int _ownerId;
+
+        public SkillCastingManager(ILogger<SkillCastingManager> logger, IMovementManager movementManager, IHealthManager healthManager, ISkillsManager skillsManager, IGameWorld gameWorld)
+        {
+            _logger = logger;
+            _movementManager = movementManager;
+            _healthManager = healthManager;
+            _skillsManager = skillsManager;
+            _gameWorld = gameWorld;
+            _castTimer.Elapsed += CastTimer_Elapsed;
+            _movementManager.OnMove += MovementManager_OnMove;
+            _healthManager.OnGotDamage += HealthManager_OnGotDamage;
+
+#if DEBUG
+            _logger.LogDebug("SkillCastingManager {hashcode} created", GetHashCode());
+#endif
+        }
+
+#if DEBUG
+        ~SkillCastingManager()
+        {
+            _logger.LogDebug("SkillCastingManager {hashcode} collected by GC", GetHashCode());
+        }
+#endif
+
+        #region Init & Clear
+
+        public void Init(int ownerId)
+        {
+            _ownerId = ownerId;
+        }
+
+        public void Dispose()
+        {
+            _castTimer.Elapsed -= CastTimer_Elapsed;
+            _movementManager.OnMove -= MovementManager_OnMove;
+            _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
+        }
+
+        #endregion
+
+            /// <summary>
+            /// The timer, that is starting skill after cast time.
+            /// </summary>
+        private Timer _castTimer = new Timer();
+
+        /// <summary>
+        /// Skill, that player tries to cast.
+        /// </summary>
+        private Skill _skillInCast;
+
+        /// <summary>
+        /// Target for which we are casting spell.
+        /// </summary>
+        private IKillable _targetInCast;
+
+        /// <summary>
+        /// Event, that is fired, when user starts casting.
+        /// </summary>
+        public event Action<int, IKillable, Skill> OnSkillCastStarted;
+
+        public void StartCasting(Skill skill, IKillable target)
+        {
+            if (!_skillsManager.CanUseSkill(skill, target, out var success))
+                return;
+
+            _skillInCast = skill;
+            _targetInCast = target;
+            _castTimer.Interval = skill.CastTime;
+            _castTimer.Start();
+            OnSkillCastStarted?.Invoke(_ownerId, _targetInCast, skill);
+        }
+
+        /// <summary>
+        /// When time for casting has elapsed.
+        /// </summary>
+        private void CastTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _castTimer.Stop();
+            if (_skillsManager.CanUseSkill(_skillInCast, _targetInCast, out var success))
+                _skillsManager.UseSkill(_skillInCast, _gameWorld.Players[_ownerId], _targetInCast);
+
+            _skillInCast = null;
+            _targetInCast = null;
+        }
+
+        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        {
+            CancelCasting();
+        }
+
+        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker)
+        {
+            CancelCasting();
+        }
+
+        public void CancelCasting()
+        {
+            _castTimer.Stop();
+            _skillInCast = null;
+            _targetInCast = null;
+        }
+
+    }
+}

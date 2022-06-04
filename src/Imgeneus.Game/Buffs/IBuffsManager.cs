@@ -1,7 +1,7 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Session;
-using Imgeneus.World.Game.Skills;
 using MvvmHelpers;
 using System;
 using System.Collections.Generic;

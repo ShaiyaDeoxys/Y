@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Attack;
+﻿using Imgeneus.Game.Skills;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Session;
 using System;
 using System.Collections.Concurrent;
@@ -31,11 +32,6 @@ namespace Imgeneus.World.Game.Skills
         /// Event, that is fired, when range skill is used.
         /// </summary>
         event Action<int, IKillable, Skill, AttackResult> OnUsedRangeSkill;
-
-        /// <summary>
-        /// Event, that is fired, when user starts casting.
-        /// </summary>
-        event Action<int, IKillable, Skill> OnSkillCastStarted;
 
         /// <summary>
         /// Free skill points.
@@ -83,13 +79,6 @@ namespace Imgeneus.World.Game.Skills
         /// <param name="attackResult">result after performing skill</param>
         /// <param name="n">How many times this skill was called, used in multi skills.</param>
         void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, AttackResult attackResult, int n = 0);
-
-        /// <summary>
-        /// Starts casting.
-        /// </summary>
-        /// <param name="skill">skill, that we are casting</param>
-        /// <param name="target">target for which, that we are casting</param>
-        void StartCasting(Skill skill, IKillable target);
 
         /// <summary>
         /// Clears skills and adds skill points.

@@ -1,4 +1,5 @@
-﻿using Imgeneus.Network.Packets;
+﻿using Imgeneus.Game.Skills;
+using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
@@ -18,13 +19,15 @@ namespace Imgeneus.World.Handlers
         private readonly ISkillsManager _skillsManager;
         private readonly IAttackManager _attackManager;
         private readonly IMapProvider _mapProvider;
+        private readonly ISkillCastingManager _skillCastingManager;
 
-        public UseSkillHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, ISkillsManager skillsManager, IAttackManager attackManager, IMapProvider mapProvider) : base(packetFactory, gameSession)
+        public UseSkillHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, ISkillsManager skillsManager, IAttackManager attackManager, IMapProvider mapProvider, ISkillCastingManager skillCastingManager) : base(packetFactory, gameSession)
         {
             _gameWorld = gameWorld;
             _skillsManager = skillsManager;
             _attackManager = attackManager;
             _mapProvider = mapProvider;
+            _skillCastingManager = skillCastingManager;
         }
 
         [HandlerAction(PacketType.USE_CHARACTER_TARGET_SKILL)]
@@ -80,7 +83,7 @@ namespace Imgeneus.World.Handlers
             }
             else
             {
-                _skillsManager.StartCasting(skill, target);
+                _skillCastingManager.StartCasting(skill, target);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
@@ -80,6 +81,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IUntouchableManager _untouchableManager;
         private readonly IWarehouseManager _warehouseManager;
         private readonly IShopManager _shopManager;
+        private readonly ISkillCastingManager _skillCastingManager;
         private readonly IGamePacketFactory _packetFactory;
         private readonly UserManager<DbUser> _userManager;
 
@@ -120,6 +122,7 @@ namespace Imgeneus.World.Game.Player
                                 IUntouchableManager untouchableManager,
                                 IWarehouseManager warehouseManager,
                                 IShopManager shopManager,
+                                ISkillCastingManager skillCastingManager,
                                 IGamePacketFactory packetFactory,
                                 UserManager<DbUser> userManager)
         {
@@ -160,6 +163,7 @@ namespace Imgeneus.World.Game.Player
             _untouchableManager = untouchableManager;
             _warehouseManager = warehouseManager;
             _shopManager = shopManager;
+            _skillCastingManager = skillCastingManager;
             _packetFactory = packetFactory;
             _userManager = userManager;
         }
@@ -257,6 +261,8 @@ namespace Imgeneus.World.Game.Player
 
             _untouchableManager.Init(dbCharacter.Id);
 
+            _skillCastingManager.Init(dbCharacter.Id);
+
             if (dbCharacter.GuildId != null)
             {
                 var guild = await _database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId);
@@ -309,6 +315,7 @@ namespace Imgeneus.World.Game.Player
                                         _untouchableManager,
                                         _warehouseManager,
                                         _shopManager,
+                                        _skillCastingManager,
                                         _gameSession,
                                         _packetFactory);
 

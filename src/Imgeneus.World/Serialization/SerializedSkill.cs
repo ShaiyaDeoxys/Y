@@ -1,5 +1,5 @@
 ﻿using BinarySerialization;
-using Imgeneus.World.Game.Skills;
+using Imgeneus.Game.Skills;
 
 namespace Imgeneus.Network.Serialization
 {

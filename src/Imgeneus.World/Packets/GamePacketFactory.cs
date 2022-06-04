@@ -20,7 +20,6 @@ using Imgeneus.World.Serialization;
 using Imgeneus.Database.Constants;
 using Imgeneus.World.Game.Health;
 using Imgeneus.Network.Packets.Game;
-using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Shape;
@@ -46,6 +45,7 @@ using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.NPCs;
 using Parsec.Shaiya.NpcQuest;
 using Quest = Imgeneus.World.Game.Quests.Quest;
+using Imgeneus.Game.Skills;
 
 namespace Imgeneus.World.Packets
 {

@@ -2,13 +2,13 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Shape;
-using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
@@ -494,6 +494,11 @@ namespace Imgeneus.World.Game.Buffs
                     _healthManager.ReflectMagicDamage = skill.AbilityValue3 == 1;
                     break;
 
+                case TypeDetail.PersistBarrier:
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
+                    
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -658,6 +663,11 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.DamageReflection:
                     _healthManager.ReflectPhysicDamage = false;
                     _healthManager.ReflectMagicDamage = false;
+                    break;
+
+                case TypeDetail.PersistBarrier:
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
+
                     break;
 
                 default:

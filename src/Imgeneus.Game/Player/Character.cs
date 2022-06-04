@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
@@ -67,6 +68,7 @@ namespace Imgeneus.World.Game.Player
         public IQuestsManager QuestsManager { get; private set; }
         public IWarehouseManager WarehouseManager { get; private set; }
         public IShopManager ShopManager { get; private set; }
+        public ISkillCastingManager SkillCastingManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -101,6 +103,7 @@ namespace Imgeneus.World.Game.Player
                          IUntouchableManager untouchableManager,
                          IWarehouseManager warehouseManager,
                          IShopManager shopManager,
+                         ISkillCastingManager skillCastingManager,
                          IGameSession gameSession,
                          IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
@@ -128,6 +131,7 @@ namespace Imgeneus.World.Game.Player
             QuestsManager = questsManager;
             WarehouseManager = warehouseManager;
             ShopManager = shopManager;
+            SkillCastingManager = skillCastingManager;
             GameSession = gameSession;
 
             HealthManager.MP_SP_Used += SendUseMPSP;
@@ -267,6 +271,7 @@ namespace Imgeneus.World.Game.Player
             IUntouchableManager untouchableManager,
             IWarehouseManager warehouseManager,
             IShopManager shopManager,
+            ISkillCastingManager skillCastingManager,
             IGameSession gameSession,
             IGamePacketFactory packetFactory)
         {
@@ -302,6 +307,7 @@ namespace Imgeneus.World.Game.Player
                                           untouchableManager,
                                           warehouseManager,
                                           shopManager,
+                                          skillCastingManager,
                                           gameSession,
                                           packetFactory)
             {

@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
