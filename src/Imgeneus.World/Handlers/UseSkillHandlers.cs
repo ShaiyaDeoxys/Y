@@ -63,6 +63,8 @@ namespace Imgeneus.World.Handlers
             {
                 if (success != AttackSuccess.TooFastAttack)
                     _packetFactory.SendUseSkillFailed(client, player.Id, skill, target, success);
+                else
+                    _packetFactory.SendUseSkillFailed(client, player.Id, skill, target, AttackSuccess.CooldownNotOver);
                 return;
             }
 
