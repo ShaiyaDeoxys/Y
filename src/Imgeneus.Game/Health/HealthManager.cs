@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
@@ -441,6 +442,25 @@ namespace Imgeneus.World.Game.Health
         }
 
         public event Action<bool> OnIsAttackableChanged;
+
+        #endregion
+
+        #region Reflect damage
+
+        public bool ReflectPhysicDamage { get; set; }
+
+        public bool ReflectMagicDamage { get; set; }
+
+        public event Action<int, int, Damage> OnMirrowDamage;
+
+        public void InvokeMirrowDamage(Damage damage, IKillable damageMaker)
+        {
+            DecreaseHP(damage.HP, damageMaker as IKiller);
+            CurrentSP -= damage.SP;
+            CurrentMP -= damage.MP;
+
+            OnMirrowDamage?.Invoke(_ownerId, damageMaker.Id, damage);
+        }
 
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Session;
 using System;
 
@@ -193,5 +194,25 @@ namespace Imgeneus.World.Game.Health
         /// Event, that is fired, when all 3 hitpoints change.
         /// </summary>
         event Action<int, int, int> OnCurrentHitpointsChanged;
+
+        /// <summary>
+        /// Reflects all physical damage.
+        /// </summary>
+        bool ReflectPhysicDamage { get; set; }
+
+        /// <summary>
+        /// Reflects all magical damage.
+        /// </summary>
+        bool ReflectMagicDamage { get; set; }
+
+        /// <summary>
+        /// Makes mirrow damage.
+        /// </summary>
+        void InvokeMirrowDamage(Damage damage, IKillable damageMaker);
+
+        /// <summary>
+        /// Event, that is fired when mirror damage comes.
+        /// </summary>
+        event Action<int, int, Damage> OnMirrowDamage;
     }
 }

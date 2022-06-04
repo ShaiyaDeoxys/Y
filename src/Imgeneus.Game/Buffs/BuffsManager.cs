@@ -489,6 +489,11 @@ namespace Imgeneus.World.Game.Buffs
                     _untouchableManager.BlockDebuffs = true;
                     break;
 
+                case TypeDetail.DamageReflection:
+                    _healthManager.ReflectPhysicDamage = skill.AbilityValue1 == 1;
+                    _healthManager.ReflectMagicDamage = skill.AbilityValue3 == 1;
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -648,6 +653,11 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.EtainShield:
                     _untouchableManager.BlockDebuffs = false;
+                    break;
+
+                case TypeDetail.DamageReflection:
+                    _healthManager.ReflectPhysicDamage = false;
+                    _healthManager.ReflectMagicDamage = false;
                     break;
 
                 default:

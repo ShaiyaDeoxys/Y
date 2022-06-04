@@ -211,6 +211,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxHPChanged += Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged += Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged += Character_OnMaxMPChanged;
+            character.HealthManager.OnMirrowDamage += Character_OnMirrowDamage;
             character.HealthManager.OnRecover += Character_OnRecover;
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange += Character_OnShapeChange;
@@ -246,6 +247,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMaxHPChanged -= Character_OnMaxHPChanged;
             character.HealthManager.OnMaxSPChanged -= Character_OnMaxSPChanged;
             character.HealthManager.OnMaxMPChanged -= Character_OnMaxMPChanged;
+            character.HealthManager.OnMirrowDamage -= Character_OnMirrowDamage;
             character.HealthManager.OnRecover -= Character_OnRecover;
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
             character.ShapeManager.OnShapeChange -= Character_OnShapeChange;
@@ -407,6 +409,12 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMaxHitpoints(player.GameSession.Client, senderId, HitpointType.MP, value);
+        }
+
+        private void Character_OnMirrowDamage(int senderId, int targetId, Damage damage)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendCharacterMirrorDamage(player.GameSession.Client, senderId, targetId, damage);
         }
 
         private void Character_OnSkillKeep(int senderId, Buff buff, AttackResult result)
@@ -622,6 +630,7 @@ namespace Imgeneus.World.Game.Zone
             mob.SkillsManager.OnUsedSkill += Mob_OnUsedSkill;
             mob.HealthManager.OnRecover += Mob_OnRecover;
             mob.BuffsManager.OnSkillKeep += Mob_OnSkillKeep;
+            mob.HealthManager.OnMirrowDamage += Mob_OnMirrowDamage;
         }
 
         /// <summary>
@@ -636,8 +645,8 @@ namespace Imgeneus.World.Game.Zone
             mob.SkillsManager.OnUsedSkill -= Mob_OnUsedSkill;
             mob.HealthManager.OnRecover -= Mob_OnRecover;
             mob.BuffsManager.OnSkillKeep -= Mob_OnSkillKeep;
+            mob.HealthManager.OnMirrowDamage -= Mob_OnMirrowDamage;
             mob.TimeToRebirth -= RebirthMob;
-
         }
 
         private async void Mob_OnDead(int senderId, IKiller killer)
@@ -738,6 +747,12 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMobSkillKeep(player.GameSession.Client, senderId, buff.SkillId, buff.SkillLevel, result);
+        }
+
+        private void Mob_OnMirrowDamage(int senderId, int targetId, Damage damage)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMobMirrorDamage(player.GameSession.Client, senderId, targetId, damage);
         }
 
         #endregion

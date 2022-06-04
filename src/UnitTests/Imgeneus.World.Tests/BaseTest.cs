@@ -491,7 +491,8 @@ namespace Imgeneus.World.Tests
                     { (636, 1), BloodyArc },
                     { (615, 1), IntervalTraining },
                     { (772, 1), MagicVeil },
-                    { (775, 1), EtainsEmbrace }
+                    { (775, 1), EtainsEmbrace },
+                    { (776, 1), MagicMirror }
                 });
 
             databaseMock
@@ -929,6 +930,15 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             MP = 850,
+            TargetType = TargetType.Caster
+        };
+
+        protected DbSkill MagicMirror = new DbSkill()
+        {
+            SkillId = 776,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.DamageReflection,
+            AbilityValue3 = 1,
             TargetType = TargetType.Caster
         };
 

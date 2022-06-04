@@ -53,7 +53,8 @@ namespace Imgeneus.World.Game.Skills
             Type != TypeDetail.Transformation &&
             Type != TypeDetail.Eraser &&
             Type != TypeDetail.PeriodicalHeal &&
-            Type != TypeDetail.EtainShield;
+            Type != TypeDetail.EtainShield &&
+            Type != TypeDetail.DamageReflection;
 
         /// <summary>
         /// Skill type.

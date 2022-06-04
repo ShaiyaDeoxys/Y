@@ -739,6 +739,28 @@ namespace Imgeneus.World.Packets
             packet.Write(isTransformed);
             client.Send(packet);
         }
+
+        public void SendCharacterMirrorDamage(IWorldClient client, int senderId, int targetId, Damage damage)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILL_MIRROR);
+            packet.Write(targetId);
+            packet.Write(senderId);
+            packet.Write(damage.HP);
+            packet.Write(damage.SP);
+            packet.Write(damage.MP);
+            client.Send(packet);
+        }
+
+        public void SendMobMirrorDamage(IWorldClient client, int senderId, int targetId, Damage damage)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MOB_SKILL_MIRROR);
+            packet.Write(targetId);
+            packet.Write(senderId);
+            packet.Write(damage.HP);
+            packet.Write(damage.SP);
+            packet.Write(damage.MP);
+            client.Send(packet);
+        }
         #endregion
 
         #region NPC

@@ -451,16 +451,34 @@ namespace Imgeneus.World.Game.Skills
                     {
                         // First apply skill.
                         PerformSkill(skill, target, t, skillOwner, attackResult, n);
-                        if (n == 0 && (target == t || target is null))
-                            OnUsedSkill?.Invoke(_ownerId, target, skill, attackResult);
 
                         // Second decrease hp.
-                        if (attackResult.Damage.HP > 0)
-                            t.HealthManager.DecreaseHP(attackResult.Damage.HP, skillOwner);
-                        if (attackResult.Damage.SP > 0)
-                            t.HealthManager.CurrentSP -= attackResult.Damage.SP;
-                        if (attackResult.Damage.MP > 0)
-                            t.HealthManager.CurrentMP -= attackResult.Damage.MP;
+                        if (t.HealthManager.ReflectPhysicDamage && (skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack))
+                        {
+                            if (n == 0 && (target == t || target is null))
+                                OnUsedSkill?.Invoke(_ownerId, target, skill, new AttackResult());
+
+                            _healthManager.InvokeMirrowDamage(attackResult.Damage, t);
+                        }
+                        else if (t.HealthManager.ReflectMagicDamage && skill.TypeAttack == TypeAttack.MagicAttack)
+                        {
+                            if (n == 0 && (target == t || target is null))
+                                OnUsedSkill?.Invoke(_ownerId, target, skill, new AttackResult());
+
+                            _healthManager.InvokeMirrowDamage(attackResult.Damage, t);
+                        }
+                        else
+                        {
+                            if (n == 0 && (target == t || target is null))
+                                OnUsedSkill?.Invoke(_ownerId, target, skill, attackResult);
+
+                            if (attackResult.Damage.HP > 0)
+                                t.HealthManager.DecreaseHP(attackResult.Damage.HP, skillOwner);
+                            if (attackResult.Damage.SP > 0)
+                                t.HealthManager.CurrentSP -= attackResult.Damage.SP;
+                            if (attackResult.Damage.MP > 0)
+                                t.HealthManager.CurrentMP -= attackResult.Damage.MP;
+                        }
                     }
                     catch (NotImplementedException)
                     {
@@ -548,6 +566,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.EnergyBackhole:
                 case TypeDetail.BlockMagicAttack:
                 case TypeDetail.EtainShield:
+                case TypeDetail.DamageReflection:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

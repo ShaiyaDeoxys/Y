@@ -288,5 +288,25 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.Single(character.BuffsManager.ActiveBuffs); // Panic won't be added.
         }
+
+        [Fact]
+        [Description("MagicMirror should mirrow magic damage.")]
+        public void MagicMirrorTest()
+        {
+            var character1 = CreateCharacter();
+            var character2 = CreateCharacter();
+
+            character1.HealthManager.FullRecover();
+            character2.HealthManager.FullRecover();
+
+            Assert.Equal(character1.HealthManager.MaxHP, character1.HealthManager.CurrentHP);
+            Assert.Equal(character2.HealthManager.MaxHP, character2.HealthManager.CurrentHP);
+
+            character1.SkillsManager.UseSkill(new Skill(MagicMirror, 0, 0), character1);
+            character2.SkillsManager.UseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character2, character1);
+
+            Assert.Equal(character1.HealthManager.MaxHP, character1.HealthManager.CurrentHP);
+            Assert.True(character2.HealthManager.MaxHP > character2.HealthManager.CurrentHP);
+        }
     }
 }

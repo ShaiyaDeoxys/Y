@@ -245,7 +245,13 @@ namespace Imgeneus.World.Game.Attack
                                              _statsManager.MaxMagicAttack);
 
             OnAttack?.Invoke(_ownerId, Target, result); // Event should go first, otherwise AI manager will clear target and it will be null.
-            Target.HealthManager.DecreaseHP(result.Damage.HP, sender);
+
+            if (!Target.HealthManager.ReflectPhysicDamage)
+                Target.HealthManager.DecreaseHP(result.Damage.HP, sender);
+            else
+            {
+                _healthManager.InvokeMirrowDamage(result.Damage, Target);
+            }
 
             // In AI manager, if target is killed, it's cleared via setting to null.
             // That's why after decreasing HP we must check if target is still presented, otherwise null exception is thrown.
