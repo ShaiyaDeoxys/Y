@@ -329,7 +329,6 @@ namespace Imgeneus.World.Game.Buffs
             OnPeriodicalDamage?.Invoke(this, new AttackResult(AttackSuccess.Normal, new Damage(PeriodicalHP, PeriodicalSP, PeriodicalMP)));
         }
 
-
         #endregion
 
         public static Buff FromDbCharacterActiveBuff(DbCharacterActiveBuff buff, DbSkill dbSkill)

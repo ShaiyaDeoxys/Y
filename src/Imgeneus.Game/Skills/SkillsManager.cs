@@ -295,12 +295,12 @@ namespace Imgeneus.World.Game.Skills
 
             if (target.CountryProvider.Country == _countryProvider.Country && skill.TargetType != TargetType.Caster && skill.TargetType != TargetType.EnemiesNearCaster)
             {
-                if (target is Character)
+                if (target is Character targetCharacter)
                 {
-                    if (((Character)target).DuelManager.OpponentId != 0)
+                    if (targetCharacter.DuelManager.IsStarted)
                     {
                         // Target is player himself, e.g. healing himself.
-                        if (target.Id == _ownerId && (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff || skill.Type == TypeDetail.PeriodicalHeal))
+                        if (target.Id == _ownerId && skill.IsForAlly)
                         {
                             success = AttackSuccess.Normal;
                             return true;
@@ -315,7 +315,7 @@ namespace Imgeneus.World.Game.Skills
                     // Can not attack its' own faction.
                     else
                     {
-                        if (skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.Buff && skill.Type != TypeDetail.PeriodicalHeal)
+                        if (!skill.IsForAlly)
                         {
                             success = AttackSuccess.WrongTarget;
                             return false;
@@ -328,7 +328,7 @@ namespace Imgeneus.World.Game.Skills
                     return false;
                 }
             }
-            else if (target.CountryProvider.Country != _countryProvider.Country && (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff || skill.Type == TypeDetail.PeriodicalHeal))
+            else if (target.CountryProvider.Country != _countryProvider.Country && skill.IsForAlly)
             {
                 success = AttackSuccess.WrongTarget;
                 return false;

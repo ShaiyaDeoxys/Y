@@ -23,7 +23,8 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.BuffsManager.AddBuff(new Skill(Panic_Lvl1, 0, 0), null);
             Assert.Single(character.BuffsManager.ActiveBuffs);
 
-            character.SkillsManager.UsedDispelSkill(new Skill(Dispel, 0, 0), character);
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(Dispel, 0, 0), character, out var _));
+            character.SkillsManager.UseSkill(new Skill(Dispel, 0, 0), character);
             Assert.Empty(character.BuffsManager.ActiveBuffs);
         }
 
@@ -407,6 +408,8 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             character1.DuelManager.OpponentId = priest.Id;
             priest.DuelManager.OpponentId = character1.Id;
+            character1.DuelManager.Start();
+            priest.DuelManager.Start();
 
             var canUse = priest.SkillsManager.CanUseSkill(new Skill(Healing, 0, 0), character1, out var result);
             Assert.False(canUse);

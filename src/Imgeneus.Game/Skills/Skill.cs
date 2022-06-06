@@ -62,6 +62,11 @@ namespace Imgeneus.Game.Skills
         public TypeDetail Type { get => _dbSkill.TypeDetail; }
 
         /// <summary>
+        /// Skill is meant for allies?
+        /// </summary>
+        public bool IsForAlly { get => _dbSkill.TypeDetail == TypeDetail.Healing || _dbSkill.TypeDetail == TypeDetail.Buff || _dbSkill.TypeDetail == TypeDetail.PeriodicalHeal || _dbSkill.TypeDetail == TypeDetail.Dispel; }
+
+        /// <summary>
         /// To what target this skill can be applied.
         /// </summary>
         public TargetType TargetType { get => _dbSkill.TargetType; }

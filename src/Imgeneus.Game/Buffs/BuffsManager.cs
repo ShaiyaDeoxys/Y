@@ -48,9 +48,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly ICastProtectionManager _castProtectionManager;
         private readonly IMovementManager _movementManager;
         private readonly IMapProvider _mapProvider;
+        private readonly IGameWorld _gameWorld;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IMapProvider mapProvider)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IMapProvider mapProvider, IGameWorld gameWorld)
         {
             _logger = logger;
             _database = database;
@@ -69,7 +70,7 @@ namespace Imgeneus.World.Game.Buffs
             _castProtectionManager = castProtectionManager;
             _movementManager = movementManager;
             _mapProvider = mapProvider;
-
+            _gameWorld = gameWorld;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
             _attackManager.OnStartAttack += CancelStealth;
@@ -1055,10 +1056,10 @@ namespace Imgeneus.World.Game.Buffs
             if (_mapProvider.Map is null)
                 return;
 
-            var enemies = _mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(buff.BuffCreator, _movementManager.PosX, _movementManager.PosZ, buff.PeriodicalDamageRange);
+            var enemies = _mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(_gameWorld.Players[_ownerId], _movementManager.PosX, _movementManager.PosZ, buff.PeriodicalDamageRange);
             foreach (var enemy in enemies)
             {
-                enemy.HealthManager.DecreaseHP(result.Damage.HP, buff.BuffCreator);
+                enemy.HealthManager.DecreaseHP(result.Damage.HP, _gameWorld.Players[_ownerId]);
                 enemy.HealthManager.CurrentSP -= result.Damage.SP;
                 enemy.HealthManager.CurrentMP -= result.Damage.MP;
 
