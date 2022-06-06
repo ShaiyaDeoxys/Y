@@ -210,6 +210,10 @@ namespace Imgeneus.World.Game.Health
             set
             {
                 _extraHP = value;
+
+                if (CurrentHP > MaxHP)
+                    CurrentHP = MaxHP;
+
                 OnMaxHPChanged?.Invoke(_ownerId, MaxHP);
             }
         }
@@ -221,6 +225,10 @@ namespace Imgeneus.World.Game.Health
             set
             {
                 _extraSP = value;
+
+                if (CurrentSP > MaxSP)
+                    CurrentSP = MaxSP;
+
                 OnMaxSPChanged?.Invoke(_ownerId, MaxSP);
             }
         }
@@ -232,6 +240,10 @@ namespace Imgeneus.World.Game.Health
             set
             {
                 _extraMP = value;
+
+                if (CurrentMP > MaxMP)
+                    CurrentMP = MaxMP;
+
                 OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
             }
         }

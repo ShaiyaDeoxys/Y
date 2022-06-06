@@ -19,7 +19,7 @@ namespace Imgeneus.World.Tests.ItemTests
             Assert.Equal(0, item.Luc);
             Assert.Equal(0, item.Wis);
             Assert.Equal(1800, item.HP);
-            Assert.Equal(0, item.MP);
+            Assert.Equal(50, item.MP);
             Assert.Equal(600, item.SP);
 
             item.ComposedStr = 1;
@@ -39,7 +39,7 @@ namespace Imgeneus.World.Tests.ItemTests
             Assert.Equal(5, item.Luc);
             Assert.Equal(6, item.Wis);
             Assert.Equal(1900, item.HP);
-            Assert.Equal(200, item.MP);
+            Assert.Equal(250, item.MP);
             Assert.Equal(900, item.SP);
         }
 

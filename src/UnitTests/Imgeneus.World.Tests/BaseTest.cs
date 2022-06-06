@@ -1038,6 +1038,7 @@ namespace Imgeneus.World.Tests
             ConstDex = 30,
             ConstRec = 30,
             ConstHP = 1800,
+            ConstMP = 50,
             ConstSP = 600,
             Slot = 6,
             Quality = 1200,
