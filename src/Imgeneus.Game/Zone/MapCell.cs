@@ -168,7 +168,11 @@ namespace Imgeneus.World.Game.Zone
         public IEnumerable<IKillable> GetEnemies(IKiller sender, float x, float z, byte range)
         {
             IEnumerable<IKillable> mobs = sender is Mob ? new List<IKillable>() : GetAllMobs(true).Where(m => !m.HealthManager.IsDead && m.HealthManager.IsAttackable && m.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, m.PosX, z, m.PosZ) <= range);
-            IEnumerable<IKillable> chars = GetAllPlayers(true).Where(p => !p.HealthManager.IsDead && p.HealthManager.IsAttackable && p.CountryProvider.Country != sender.CountryProvider.Country && MathExtensions.Distance(x, p.PosX, z, p.PosZ) <= range);
+            IEnumerable<IKillable> chars = GetAllPlayers(true)
+                                           .Where(p => !p.HealthManager.IsDead &&
+                                                        p.HealthManager.IsAttackable &&
+                                                        (p.CountryProvider.Country != sender.CountryProvider.Country || (sender is Character senderPlayer && senderPlayer.DuelManager.IsStarted && p.Id == senderPlayer.DuelManager.OpponentId)) &&
+                                                        MathExtensions.Distance(x, p.PosX, z, p.PosZ) <= range);
 
             return mobs.Concat(chars);
         }
@@ -214,6 +218,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMirrowDamage += Character_OnMirrowDamage;
             character.HealthManager.OnRecover += Character_OnRecover;
             character.BuffsManager.OnSkillKeep += Character_OnSkillKeep;
+            character.BuffsManager.OnPeriodicalDamage += Character_OnPeriodicalDamage;
             character.ShapeManager.OnShapeChange += Character_OnShapeChange;
             character.ShapeManager.OnTranformated += Character_OnTranformated;
             character.HealthManager.OnRebirthed += Character_OnRebirthed;
@@ -250,6 +255,7 @@ namespace Imgeneus.World.Game.Zone
             character.HealthManager.OnMirrowDamage -= Character_OnMirrowDamage;
             character.HealthManager.OnRecover -= Character_OnRecover;
             character.BuffsManager.OnSkillKeep -= Character_OnSkillKeep;
+            character.BuffsManager.OnPeriodicalDamage -= Character_OnPeriodicalDamage;
             character.ShapeManager.OnShapeChange -= Character_OnShapeChange;
             character.ShapeManager.OnTranformated -= Character_OnTranformated;
             character.HealthManager.OnRebirthed -= Character_OnRebirthed;
@@ -420,7 +426,13 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnSkillKeep(int senderId, Buff buff, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendSkillKeep(player.GameSession.Client, senderId, buff.SkillId, buff.SkillLevel, result);
+                Map.PacketFactory.SendSkillKeep(player.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel, result);
+        }
+
+        private void Character_OnPeriodicalDamage(int senderId, IKillable target, Skill skill, AttackResult result)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendUsedRangeSkill(player.GameSession.Client, senderId, target, skill, result);
         }
 
         private void Character_OnShapeChange(int senderId, ShapeEnum shape, int param1, int param2)
@@ -746,7 +758,7 @@ namespace Imgeneus.World.Game.Zone
         private void Mob_OnSkillKeep(int senderId, Buff buff, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMobSkillKeep(player.GameSession.Client, senderId, buff.SkillId, buff.SkillLevel, result);
+                Map.PacketFactory.SendMobSkillKeep(player.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel, result);
         }
 
         private void Mob_OnMirrowDamage(int senderId, int targetId, Damage damage)

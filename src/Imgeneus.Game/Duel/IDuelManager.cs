@@ -62,6 +62,11 @@ namespace Imgeneus.World.Game.Duel
         event Action OnStart;
 
         /// <summary>
+        /// Is duel in progress?
+        /// </summary>
+        bool IsStarted { get; }
+
+        /// <summary>
         /// Starts duel.
         /// </summary>
         void Start();

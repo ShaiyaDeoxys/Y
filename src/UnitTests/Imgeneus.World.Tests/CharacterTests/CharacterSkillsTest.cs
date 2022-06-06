@@ -445,5 +445,44 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.False(canUse);
             Assert.Equal(AttackSuccess.WrongTarget, result);
         }
+
+        [Fact]
+        [Description("Frost Barrier can make damage to enemy nearby.")]
+        public async void FrostBarrierTest()
+        {
+            var map = testMap;
+
+            var priest = CreateCharacter(map);
+            var character1 = CreateCharacter(map, country: Fraction.Dark);
+
+            Assert.False(character1.HealthManager.IsDead);
+
+            priest.SkillsManager.UseSkill(new Skill(FrostBarrier, 0, 0), priest);
+
+            await Task.Delay(1100); // wait ~1 sec untill Frost Barrier work.
+
+            Assert.True(character1.HealthManager.IsDead);
+        }
+
+        [Fact]
+        [Description("Frost Barrier can make damage to duel opponent nearby.")]
+        public async void FrostBarrierDuelTest()
+        {
+            var map = testMap;
+
+            var priest = CreateCharacter(map);
+            var character1 = CreateCharacter(map);
+
+            Assert.False(character1.HealthManager.IsDead);
+
+            priest.DuelManager.OpponentId = character1.Id;
+            priest.DuelManager.Start();
+
+            priest.SkillsManager.UseSkill(new Skill(FrostBarrier, 0, 0), priest);
+
+            await Task.Delay(1100); // wait ~1 sec untill Frost Barrier work.
+
+            Assert.True(character1.HealthManager.IsDead);
+        }
     }
 }

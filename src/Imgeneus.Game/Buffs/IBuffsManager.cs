@@ -26,17 +26,22 @@ namespace Imgeneus.World.Game.Buffs
         /// <summary>
         /// Event, that is fired, when buff is added.
         /// </summary>
-        public event Action<int, Buff> OnBuffAdded;
+        event Action<int, Buff> OnBuffAdded;
 
         /// <summary>
         /// Event, that is fired, when buff is removed.
         /// </summary>
-        public event Action<int, Buff> OnBuffRemoved;
+        event Action<int, Buff> OnBuffRemoved;
 
         /// <summary>
         /// Skill or buff that is called peridically, e.g. periodical healing.
         /// </summary>
-        public event Action<int, Buff, AttackResult> OnSkillKeep;
+        event Action<int, Buff, AttackResult> OnSkillKeep;
+
+        /// <summary>
+        /// Buff, that makes damage within X meters.
+        /// </summary>
+        event Action<int, IKillable, Skill, AttackResult> OnPeriodicalDamage;
 
         /// <summary>
         /// Updates collection of buffs.
@@ -44,7 +49,7 @@ namespace Imgeneus.World.Game.Buffs
         /// <param name="skill">skill, that client sends</param>
         /// <param name="creator">buff creator</param>
         /// <returns>Newly added or updated active buff</returns>
-        public Buff AddBuff(Skill skill, IKiller creator);
+        Buff AddBuff(Skill skill, IKiller creator);
 
         #endregion
 

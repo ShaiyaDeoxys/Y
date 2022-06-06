@@ -149,6 +149,8 @@ namespace Imgeneus.World.Game.Duel
             Start();
         }
 
+        public bool IsStarted { get; private set; }
+
         public event Action OnStart;
         public void Start()
         {
@@ -156,6 +158,8 @@ namespace Imgeneus.World.Game.Duel
             _healthManager.OnGotDamage += HealthManager_OnGotDamage;
             _healthManager.OnDead += HealthManager_OnDead;
             _teleportationManager.OnTeleporting += TeleportationManager_OnTeleporting;
+
+            IsStarted = true;
 
             OnStart?.Invoke();
         }
@@ -205,6 +209,7 @@ namespace Imgeneus.World.Game.Duel
 
             OpponentId = 0;
             IsApproved = false;
+            IsStarted = false;
         }
 
         #endregion
@@ -220,24 +225,27 @@ namespace Imgeneus.World.Game.Duel
 
             _gameWorld.Players.TryGetValue(OpponentId, out var opponent);
 
-            foreach (var itemPair in _tradeManager.Request.TradeItems)
+            if (_tradeManager.Request != null)
             {
-                if (itemPair.Key.CharacterId == _ownerId)
+                foreach (var itemPair in _tradeManager.Request.TradeItems)
                 {
-                    var item = _inventoryManager.RemoveItem(itemPair.Value);
-                    _mapProvider.Map.AddItem(new MapItem(item, opponent, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ));
+                    if (itemPair.Key.CharacterId == _ownerId)
+                    {
+                        var item = _inventoryManager.RemoveItem(itemPair.Value);
+                        _mapProvider.Map.AddItem(new MapItem(item, opponent, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ));
+                    }
                 }
-            }
 
-            _tradeManager.Request.TradeMoney.TryGetValue(_ownerId, out var gold);
-            if (gold > 0)
-            {
-                var money = new Item((int)gold);
-                _mapProvider.Map.AddItem(new MapItem(money, opponent, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ));
+                _tradeManager.Request.TradeMoney.TryGetValue(_ownerId, out var gold);
+                if (gold > 0)
+                {
+                    var money = new Item((int)gold);
+                    _mapProvider.Map.AddItem(new MapItem(money, opponent, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ));
 
-                var looser = _gameWorld.Players[_ownerId];
-                looser.InventoryManager.Gold -= gold;
-                looser.SendGoldUpdate();
+                    var looser = _gameWorld.Players[_ownerId];
+                    looser.InventoryManager.Gold -= gold;
+                    looser.SendGoldUpdate();
+                }
             }
 
             opponent.DuelManager.Win();

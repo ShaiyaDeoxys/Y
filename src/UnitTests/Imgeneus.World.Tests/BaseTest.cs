@@ -146,7 +146,7 @@ namespace Imgeneus.World.Tests
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
             var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
             var castProtectionManager = new CastProtectionManager(new Mock<ILogger<CastProtectionManager>>().Object, movementManager, partyManager, packetFactoryMock.Object, new Mock<IGameSession>().Object, mapProvider);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager, castProtectionManager, movementManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager, castProtectionManager, movementManager, mapProvider);
 
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, teleportManager);
             skillsManager.Init(_characterId, new List<Skill>());
@@ -244,7 +244,7 @@ namespace Imgeneus.World.Tests
             attackManager.AlwaysHit = true;
 
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null, null, movementManager);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null, null, movementManager, mapProvider);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, null);
             var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, definitionsPreloader.Object, speedManager);
 
@@ -503,7 +503,8 @@ namespace Imgeneus.World.Tests
                     { (775, 1), EtainsEmbrace },
                     { (776, 1), MagicMirror },
                     { (779, 1), PersistBarrier },
-                    { (785, 1), Healing }
+                    { (785, 1), Healing },
+                    { (364, 1), FrostBarrier }
                 });
 
             databaseMock
@@ -978,6 +979,18 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             HealHP = 50
+        };
+
+        protected DbSkill FrostBarrier = new DbSkill()
+        {
+            SkillId = 364,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.FireThorn,
+            TargetType = TargetType.Caster,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            DamageHP = 85,
+            ApplyRange = 3
         };
 
         #endregion

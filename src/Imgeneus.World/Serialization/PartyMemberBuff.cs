@@ -17,8 +17,8 @@ namespace Imgeneus.World.Serialization
 
         public PartyMemberBuff(Buff buff)
         {
-            SkillId = buff.SkillId;
-            SkillLevel = buff.SkillLevel;
+            SkillId = buff.Skill.SkillId;
+            SkillLevel = buff.Skill.SkillLevel;
             CountDownInSeconds = buff.CountDownInSeconds;
         }
     }

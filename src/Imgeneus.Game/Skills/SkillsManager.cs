@@ -264,14 +264,14 @@ namespace Imgeneus.World.Game.Skills
             }
 
             if ((skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack) &&
-                _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Silence))
+                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Sleep || b.Skill.StateType == StateType.Stun || b.Skill.StateType == StateType.Silence))
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;
             }
 
             if (skill.TypeAttack == TypeAttack.MagicAttack &&
-                _buffsManager.ActiveBuffs.Any(b => b.StateType == StateType.Sleep || b.StateType == StateType.Stun || b.StateType == StateType.Darkness))
+                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Sleep || b.Skill.StateType == StateType.Stun || b.Skill.StateType == StateType.Darkness))
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;
@@ -506,6 +506,11 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.DamageReflection:
                 case TypeDetail.PersistBarrier:
                     target.BuffsManager.AddBuff(skill, skillOwner);
+                    break;
+
+                case TypeDetail.FireThorn:
+                    target.BuffsManager.AddBuff(skill, skillOwner);
+                    attackResult = new AttackResult();
                     break;
 
                 case TypeDetail.Healing:

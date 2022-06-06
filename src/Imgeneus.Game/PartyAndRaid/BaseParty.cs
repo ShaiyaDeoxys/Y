@@ -171,7 +171,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         private void Member_OnAddedBuff(int senderId, Buff buff)
         {
             foreach (var member in Members)
-                SendAddBuff(member.GameSession.Client, senderId, buff.SkillId, buff.SkillLevel);
+                SendAddBuff(member.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         private void Member_OnRemovedBuff(int senderId, Buff buff)
         {
             foreach (var member in Members)
-                SendRemoveBuff(member.GameSession.Client, senderId, buff.SkillId, buff.SkillLevel);
+                SendRemoveBuff(member.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel);
         }
 
         /// <summary>

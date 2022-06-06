@@ -1463,8 +1463,8 @@ namespace Imgeneus.World.Packets
                 packet.WriteByte(1);
             }
             packet.Write(targetId);
-            packet.Write(buff.SkillId);
-            packet.Write(buff.SkillLevel);
+            packet.Write(buff.Skill.SkillId);
+            packet.Write(buff.Skill.SkillLevel);
 
             client.Send(packet);
         }
@@ -1481,8 +1481,8 @@ namespace Imgeneus.World.Packets
                 packet.WriteByte(1);
             }
             packet.Write(targetId);
-            packet.Write(buff.SkillId);
-            packet.Write(buff.SkillLevel);
+            packet.Write(buff.Skill.SkillId);
+            packet.Write(buff.Skill.SkillLevel);
 
             client.Send(packet);
         }

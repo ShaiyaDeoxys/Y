@@ -22,7 +22,7 @@ namespace Imgeneus.World.Game.Player
 
         private void SendQuestCountUpdate(short questId, byte index, byte count) => _packetFactory.SendQuestCountUpdate(GameSession.Client, questId, index, count);
 
-        private void SendAddBuff(int senderId, Buff buff) => _packetFactory.SendAddBuff(GameSession.Client, buff.Id, buff.SkillId, buff.SkillLevel, buff.CountDownInSeconds);
+        private void SendAddBuff(int senderId, Buff buff) => _packetFactory.SendAddBuff(GameSession.Client, buff.Id, buff.Skill.SkillId, buff.Skill.SkillLevel, buff.CountDownInSeconds);
 
         private void SendRemoveBuff(int senderId, Buff buff) => _packetFactory.SendRemoveBuff(GameSession.Client, buff.Id);
 

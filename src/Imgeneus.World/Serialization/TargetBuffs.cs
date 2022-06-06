@@ -52,8 +52,8 @@ namespace Imgeneus.World.Serialization
 
         public TargetBuff(Buff buff)
         {
-            SkillId = buff.SkillId;
-            SkillLevel = buff.SkillLevel;
+            SkillId = buff.Skill.SkillId;
+            SkillLevel = buff.Skill.SkillLevel;
             CountDownInSeconds = buff.CountDownInSeconds;
         }
     }

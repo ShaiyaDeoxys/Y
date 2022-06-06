@@ -13,27 +13,15 @@ namespace Imgeneus.World.Game.Buffs
     {
         private static uint Counter = 1;
 
-        private readonly Skill _skill;
-
         public uint Id { get; private set; }
 
         private object SyncObj = new object();
 
         public int CountDownInSeconds { get => (int)ResetTime.Subtract(DateTime.UtcNow).TotalSeconds; }
 
-        public ushort SkillId => _skill.SkillId;
+        public Skill Skill { get; init; }
 
-        public byte SkillLevel => _skill.SkillLevel;
-
-        public StateType StateType => _skill.StateType;
-
-        public bool IsPassive => _skill.IsPassive;
-
-        public bool ShouldClearAfterDeath => _skill.ShouldClearAfterDeath;
-
-        public bool CanBeActivatedAndDisactivated => _skill.CanBeActivated;
-
-        public byte LimitHP => _skill.LimitHP;
+        public bool CanBeActivatedAndDisactivated => Skill.CanBeActivated;
 
         /// <summary>
         /// Who has created this buff.
@@ -47,13 +35,13 @@ namespace Imgeneus.World.Game.Buffs
                 Id = Counter++;
             }
 
-            _skill = skill;
-
+            Skill = skill;
             BuffCreator = maker;
 
             _resetTimer.Elapsed += ResetTimer_Elapsed;
             _periodicalHealTimer.Elapsed += PeriodicalHealTimer_Elapsed;
             _periodicalDebuffTimer.Elapsed += PeriodicalDebuffTimer_Elapsed;
+            _periodicalDamageTimer.Elapsed += PeriodicalDamageTimer_Elapsed;
         }
 
         #region IsDebuff
@@ -65,7 +53,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                switch (_skill.Type)
+                switch (Skill.Type)
                 {
                     case TypeDetail.EnergyDrain:
                     case TypeDetail.PeriodicalDebuff:
@@ -94,7 +82,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                return _skill.Type == TypeDetail.ElementalProtection;
+                return Skill.Type == TypeDetail.ElementalProtection;
             }
         }
 
@@ -105,7 +93,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                return _skill.Type == TypeDetail.ElementalAttack;
+                return Skill.Type == TypeDetail.ElementalAttack;
             }
         }
 
@@ -116,7 +104,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                return _skill.Type == TypeDetail.Untouchable;
+                return Skill.Type == TypeDetail.Untouchable;
             }
         }
 
@@ -127,7 +115,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                return _skill.Type == TypeDetail.Stealth;
+                return Skill.Type == TypeDetail.Stealth;
             }
         }
 
@@ -138,7 +126,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                return _skill.Type == TypeDetail.BlockMagicAttack;
+                return Skill.Type == TypeDetail.BlockMagicAttack;
             }
         }
 
@@ -149,7 +137,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                return _skill.Type == TypeDetail.PersistBarrier;
+                return Skill.Type == TypeDetail.PersistBarrier;
             }
         }
 
@@ -160,7 +148,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             get
             {
-                return _skill.Type == TypeDetail.PersistBarrier;
+                return Skill.Type == TypeDetail.PersistBarrier;
             }
         }
 
@@ -208,10 +196,15 @@ namespace Imgeneus.World.Game.Buffs
         {
             _resetTimer.Elapsed -= ResetTimer_Elapsed;
             _resetTimer.Stop();
+
             _periodicalHealTimer.Elapsed -= PeriodicalHealTimer_Elapsed;
             _periodicalHealTimer.Stop();
+
             _periodicalDebuffTimer.Elapsed -= PeriodicalDebuffTimer_Elapsed;
             _periodicalDebuffTimer.Stop();
+
+            _periodicalDamageTimer.Elapsed -= PeriodicalDamageTimer_Elapsed;
+            _periodicalDamageTimer.Stop();
 
             OnReset?.Invoke(this);
         }
@@ -288,6 +281,54 @@ namespace Imgeneus.World.Game.Buffs
         {
             _periodicalDebuffTimer.Start();
         }
+
+        #endregion
+
+        #region Periodical damage
+
+        /// <summary>
+        /// HP damage, that is made within X meters.
+        /// </summary>
+        public ushort PeriodicalHP;
+
+        /// <summary>
+        /// SP damage, that is made within X meters.
+        /// </summary>
+        public ushort PeriodicalSP;
+
+        /// <summary>
+        /// MP damage, that is made within X meters.
+        /// </summary>
+        public ushort PeriodicalMP;
+
+        /// <summary>
+        /// X meters, where periodical damage is made.
+        /// </summary>
+        public byte PeriodicalDamageRange;
+
+        /// <summary>
+        /// Timer, that is called when it's time to make periodical damage in some area.
+        /// </summary>
+        private readonly Timer _periodicalDamageTimer = new Timer(1000);
+
+        /// <summary>
+        /// Starts periodical damage within X meters.
+        /// </summary>
+        public void StartPeriodicalDamage()
+        {
+            _periodicalDamageTimer.Start();
+        }
+
+        /// <summary>
+        /// Event, that is fired, when it's time to make periodical damage.
+        /// </summary>
+        public event Action<Buff, AttackResult> OnPeriodicalDamage;
+
+        private void PeriodicalDamageTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            OnPeriodicalDamage?.Invoke(this, new AttackResult(AttackSuccess.Normal, new Damage(PeriodicalHP, PeriodicalSP, PeriodicalMP)));
+        }
+
 
         #endregion
 

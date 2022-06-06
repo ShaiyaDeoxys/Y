@@ -16,6 +16,7 @@ using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Warehouse;
+using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using MvvmHelpers;
 using Parsec.Shaiya.Skill;
@@ -46,9 +47,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IShapeManager _shapeManager;
         private readonly ICastProtectionManager _castProtectionManager;
         private readonly IMovementManager _movementManager;
+        private readonly IMapProvider _mapProvider;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IMapProvider mapProvider)
         {
             _logger = logger;
             _database = database;
@@ -66,6 +68,8 @@ namespace Imgeneus.World.Game.Buffs
             _shapeManager = shapeManager;
             _castProtectionManager = castProtectionManager;
             _movementManager = movementManager;
+            _mapProvider = mapProvider;
+
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
             _attackManager.OnStartAttack += CancelStealth;
@@ -113,8 +117,8 @@ namespace Imgeneus.World.Game.Buffs
                 var dbBuff = new DbCharacterActiveBuff()
                 {
                     CharacterId = _ownerId,
-                    SkillId = b.SkillId,
-                    SkillLevel = b.SkillLevel,
+                    SkillId = b.Skill.SkillId,
+                    SkillLevel = b.Skill.SkillLevel,
                     ResetTime = b.ResetTime
                 };
                 _database.ActiveBuffs.Add(dbBuff);
@@ -233,11 +237,11 @@ namespace Imgeneus.World.Game.Buffs
 
             if (skill.IsPassive)
             {
-                buff = PassiveBuffs.FirstOrDefault(b => b.SkillId == skill.SkillId);
+                buff = PassiveBuffs.FirstOrDefault(b => b.Skill.SkillId == skill.SkillId);
             }
             else
             {
-                buff = ActiveBuffs.FirstOrDefault(b => b.SkillId == skill.SkillId);
+                buff = ActiveBuffs.FirstOrDefault(b => b.Skill.SkillId == skill.SkillId);
             }
 
             if (buff != null) // We already have such buff. Try to update reset time.
@@ -245,7 +249,7 @@ namespace Imgeneus.World.Game.Buffs
                 if (buff.IsDebuff && _untouchableManager.BlockDebuffs)
                     return null;
 
-                if (buff.SkillLevel > skill.SkillLevel)
+                if (buff.Skill.SkillLevel > skill.SkillLevel)
                 {
                     // Do nothing, if target already has higher lvl buff.
                     return buff;
@@ -253,14 +257,14 @@ namespace Imgeneus.World.Game.Buffs
                 else
                 {
                     // If buffs are the same level, we should only update reset time.
-                    if (buff.SkillLevel == skill.SkillLevel)
+                    if (buff.Skill.SkillLevel == skill.SkillLevel)
                     {
                         if (!skill.CanBeActivated)
                         {
                             buff.ResetTime = resetTime;
 
                             // Send update of buff.
-                            if (!buff.IsPassive)
+                            if (!buff.Skill.IsPassive)
                                 OnBuffAdded?.Invoke(_ownerId, buff);
                         }
                         else
@@ -273,10 +277,10 @@ namespace Imgeneus.World.Game.Buffs
                         }
                     }
 
-                    if (buff.SkillLevel < skill.SkillLevel)
+                    if (buff.Skill.SkillLevel < skill.SkillLevel)
                     {
                         // Remove old buff.
-                        if (buff.IsPassive)
+                        if (buff.Skill.IsPassive)
                             buff.CancelBuff();
                         else
                             buff.CancelBuff();
@@ -325,7 +329,7 @@ namespace Imgeneus.World.Game.Buffs
         /// </summary>
         protected void ApplyBuffSkill(Buff buff)
         {
-            var skill = _definitionsPreloder.Skills[(buff.SkillId, buff.SkillLevel)];
+            var skill = _definitionsPreloder.Skills[(buff.Skill.SkillId, buff.Skill.SkillLevel)];
             switch (skill.TypeDetail)
             {
                 case TypeDetail.Buff:
@@ -427,7 +431,7 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.Stealth:
                     _stealthManager.IsStealth = true;
 
-                    var sprinterBuff = ActiveBuffs.FirstOrDefault(b => b.SkillId == 681 || b.SkillId == 114); // 114 (old ep) 681 (new ep) are unique numbers for sprinter buff.
+                    var sprinterBuff = ActiveBuffs.FirstOrDefault(b => b.Skill.SkillId == 681 || b.Skill.SkillId == 114); // 114 (old ep) 681 (new ep) are unique numbers for sprinter buff.
                     if (sprinterBuff != null)
                         sprinterBuff.CancelBuff();
                     break;
@@ -508,6 +512,15 @@ namespace Imgeneus.World.Game.Buffs
                     _castProtectionManager.ProtectCastingSkill = (skill.SkillId, skill.SkillLevel);
                     break;
 
+                case TypeDetail.FireThorn:
+                    buff.PeriodicalHP = skill.DamageHP;
+                    buff.PeriodicalSP = skill.DamageSP;
+                    buff.PeriodicalMP = skill.DamageMP;
+                    buff.PeriodicalDamageRange = skill.ApplyRange;
+                    buff.OnPeriodicalDamage += Buff_OnPeriodicalDamage;
+                    buff.StartPeriodicalDamage();
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -520,7 +533,7 @@ namespace Imgeneus.World.Game.Buffs
         /// </summary>
         protected void RelieveBuffSkill(Buff buff)
         {
-            var skill = _definitionsPreloder.Skills[(buff.SkillId, buff.SkillLevel)];
+            var skill = _definitionsPreloder.Skills[(buff.Skill.SkillId, buff.Skill.SkillLevel)];
             switch (skill.TypeDetail)
             {
                 case TypeDetail.Buff:
@@ -597,7 +610,7 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Immobilize:
-                    _speedManager.Immobilize = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Immobilize);
+                    _speedManager.Immobilize = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.Skill.SkillId, b.Skill.SkillLevel)].TypeDetail == TypeDetail.Immobilize);
                     break;
 
                 case TypeDetail.Sleep:
@@ -605,13 +618,13 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.PreventAttack:
                     _attackManager.IsAbleToAttack = ActiveBuffs.Any(b =>
                     {
-                        var dbSkill = _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)];
+                        var dbSkill = _definitionsPreloder.Skills[(b.Skill.SkillId, b.Skill.SkillLevel)];
                         return dbSkill.TypeDetail == TypeDetail.Sleep || dbSkill.TypeDetail == TypeDetail.Stun || dbSkill.TypeDetail == TypeDetail.PreventAttack;
                     });
                     break;
 
                 case TypeDetail.Stealth:
-                    _stealthManager.IsStealth = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)].TypeDetail == TypeDetail.Stealth);
+                    _stealthManager.IsStealth = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.Skill.SkillId, b.Skill.SkillLevel)].TypeDetail == TypeDetail.Stealth);
                     break;
 
                 case TypeDetail.WeaponMastery:
@@ -679,6 +692,10 @@ namespace Imgeneus.World.Game.Buffs
                     _castProtectionManager.ProtectAlliesCasting = false;
                     _castProtectionManager.ProtectCastingRange = 0;
                     _castProtectionManager.ProtectCastingSkill = (0, 0);
+                    break;
+
+                case TypeDetail.FireThorn:
+                    buff.OnPeriodicalDamage -= Buff_OnPeriodicalDamage;
                     break;
 
                 default:
@@ -1031,13 +1048,31 @@ namespace Imgeneus.World.Game.Buffs
                 _healthManager.RaiseHitpointsChange();
         }
 
+        public event Action<int, IKillable, Skill, AttackResult> OnPeriodicalDamage;
+
+        private void Buff_OnPeriodicalDamage(Buff buff, AttackResult result)
+        {
+            if (_mapProvider.Map is null)
+                return;
+
+            var enemies = _mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(buff.BuffCreator, _movementManager.PosX, _movementManager.PosZ, buff.PeriodicalDamageRange);
+            foreach (var enemy in enemies)
+            {
+                enemy.HealthManager.DecreaseHP(result.Damage.HP, buff.BuffCreator);
+                enemy.HealthManager.CurrentSP -= result.Damage.SP;
+                enemy.HealthManager.CurrentMP -= result.Damage.MP;
+
+                OnPeriodicalDamage?.Invoke(_ownerId, enemy, buff.Skill, result);
+            }
+        }
+
         #endregion
 
         #region Clear buffs on some condition
 
         private void HealthManager_OnDead(int senderId, IKiller killer)
         {
-            var buffs = ActiveBuffs.Where(b => b.ShouldClearAfterDeath).ToList();
+            var buffs = ActiveBuffs.Where(b => b.Skill.ShouldClearAfterDeath).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
         }
