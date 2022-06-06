@@ -212,7 +212,10 @@ namespace Imgeneus.World.Game.Health
                 _extraHP = value;
 
                 if (CurrentHP > MaxHP)
+                {
                     CurrentHP = MaxHP;
+                    RaiseHitpointsChange();
+                }
 
                 OnMaxHPChanged?.Invoke(_ownerId, MaxHP);
             }
@@ -227,7 +230,10 @@ namespace Imgeneus.World.Game.Health
                 _extraSP = value;
 
                 if (CurrentSP > MaxSP)
+                {
                     CurrentSP = MaxSP;
+                    RaiseHitpointsChange();
+                }
 
                 OnMaxSPChanged?.Invoke(_ownerId, MaxSP);
             }
@@ -242,7 +248,10 @@ namespace Imgeneus.World.Game.Health
                 _extraMP = value;
 
                 if (CurrentMP > MaxMP)
+                {
                     CurrentMP = MaxMP;
+                    RaiseHitpointsChange();
+                }
 
                 OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
             }
