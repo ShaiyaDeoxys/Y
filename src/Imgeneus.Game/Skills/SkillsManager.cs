@@ -375,10 +375,13 @@ namespace Imgeneus.World.Game.Skills
 
                     try
                     {
-                        // First apply skill.
+                        // First cancel those buufs, that are canceled, when any skill is used.
+                        CancelBuffs();
+
+                        // Second apply skill.
                         PerformSkill(skill, target, t, skillOwner, attackResult, n);
 
-                        // Second decrease hp.
+                        // Third decrease hp.
                         if (t.HealthManager.ReflectPhysicDamage && (skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack))
                         {
                             if (n == 0 && (target == t || target is null))
@@ -567,6 +570,13 @@ namespace Imgeneus.World.Game.Skills
         #region Helpers
 
         public DateTime? ChargeUsedLastTime { get; private set; } = null;
+
+        private void CancelBuffs()
+        {
+            var buffs = _buffsManager.ActiveBuffs.Where(b => b.IsCanceledWhenUsingSkill).ToList();
+            foreach (var b in buffs)
+                b.CancelBuff();
+        }
 
         #endregion
     }

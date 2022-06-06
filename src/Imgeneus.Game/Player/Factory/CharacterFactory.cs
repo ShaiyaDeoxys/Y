@@ -82,6 +82,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IWarehouseManager _warehouseManager;
         private readonly IShopManager _shopManager;
         private readonly ISkillCastingManager _skillCastingManager;
+        private readonly ICastProtectionManager _castProtectionManager;
         private readonly IGamePacketFactory _packetFactory;
         private readonly UserManager<DbUser> _userManager;
 
@@ -123,6 +124,7 @@ namespace Imgeneus.World.Game.Player
                                 IWarehouseManager warehouseManager,
                                 IShopManager shopManager,
                                 ISkillCastingManager skillCastingManager,
+                                ICastProtectionManager castProtectionManager,
                                 IGamePacketFactory packetFactory,
                                 UserManager<DbUser> userManager)
         {
@@ -164,6 +166,7 @@ namespace Imgeneus.World.Game.Player
             _warehouseManager = warehouseManager;
             _shopManager = shopManager;
             _skillCastingManager = skillCastingManager;
+            _castProtectionManager = castProtectionManager;
             _packetFactory = packetFactory;
             _userManager = userManager;
         }
@@ -263,6 +266,8 @@ namespace Imgeneus.World.Game.Player
 
             _skillCastingManager.Init(dbCharacter.Id);
 
+            _castProtectionManager.Init(dbCharacter.Id);
+
             if (dbCharacter.GuildId != null)
             {
                 var guild = await _database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId);
@@ -316,6 +321,7 @@ namespace Imgeneus.World.Game.Player
                                         _warehouseManager,
                                         _shopManager,
                                         _skillCastingManager,
+                                        _castProtectionManager,
                                         _gameSession,
                                         _packetFactory);
 

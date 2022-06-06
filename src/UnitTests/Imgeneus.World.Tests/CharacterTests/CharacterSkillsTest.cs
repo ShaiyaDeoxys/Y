@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Inventory;
 using Parsec.Shaiya.Skill;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Xunit;
 using Element = Imgeneus.Database.Constants.Element;
 
@@ -307,6 +308,62 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.Equal(character1.HealthManager.MaxHP, character1.HealthManager.CurrentHP);
             Assert.True(character2.HealthManager.MaxHP > character2.HealthManager.CurrentHP);
+        }
+
+        [Fact]
+        [Description("PersistBarrier should stop, when player is moving.")]
+        public void PersistBarrierShouldStopWhenMovingTest()
+        {
+            var character1 = CreateCharacter();
+            character1.HealthManager.FullRecover();
+            character1.SkillsManager.UseSkill(new Skill(PersistBarrier, 0, 0), character1);
+
+            Assert.NotEmpty(character1.BuffsManager.ActiveBuffs);
+
+            character1.MovementManager.PosX += 1;
+            character1.MovementManager.RaisePositionChanged();
+
+            Assert.Empty(character1.BuffsManager.ActiveBuffs);
+        }
+
+        [Fact]
+        [Description("PersistBarrier should stop, when player has not enought mana.")]
+        public async void PersistBarrierShouldStopWhenMPTest()
+        {
+            var character1 = CreateCharacter();
+            character1.HealthManager.IncreaseHP(100);
+            character1.HealthManager.CurrentMP = 15;
+            character1.HealthManager.CurrentSP = 100;
+
+            character1.SkillsManager.UseSkill(new Skill(PersistBarrier, 0, 0), character1);
+
+            Assert.NotEmpty(character1.BuffsManager.ActiveBuffs);
+
+            await Task.Delay(1100); // Wait ~ 1 sec
+
+            Assert.Equal(1, character1.HealthManager.CurrentMP); // 7% from 200 is 14. 15 - 14 == 1 
+
+            await Task.Delay(1100); // Wait ~ 1 sec
+
+            Assert.Empty(character1.BuffsManager.ActiveBuffs); // Not enough mana, should cancel buff.
+        }
+
+        [Fact]
+        [Description("PersistBarrier should stop, when player used any other skill.")]
+        public void PersistBarrierShouldStopWhenUseOtherSkillTest()
+        {
+            var character1 = CreateCharacter();
+            character1.HealthManager.IncreaseHP(100);
+            character1.HealthManager.CurrentMP = 15;
+            character1.HealthManager.CurrentSP = 100;
+
+            character1.SkillsManager.UseSkill(new Skill(PersistBarrier, 0, 0), character1);
+
+            Assert.NotEmpty(character1.BuffsManager.ActiveBuffs);
+
+            character1.SkillsManager.UseSkill(new Skill(Dispel, 0, 0), character1);
+
+            Assert.Empty(character1.BuffsManager.ActiveBuffs);
         }
     }
 }

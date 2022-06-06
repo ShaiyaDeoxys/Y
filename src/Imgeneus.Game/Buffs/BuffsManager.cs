@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -43,9 +44,11 @@ namespace Imgeneus.World.Game.Buffs
         private readonly ITeleportationManager _teleportationManager;
         private readonly IWarehouseManager _warehouseManager;
         private readonly IShapeManager _shapeManager;
+        private readonly ICastProtectionManager _castProtectionManager;
+        private readonly IMovementManager _movementManager;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager)
         {
             _logger = logger;
             _database = database;
@@ -61,10 +64,13 @@ namespace Imgeneus.World.Game.Buffs
             _teleportationManager = teleportationManager;
             _warehouseManager = warehouseManager;
             _shapeManager = shapeManager;
+            _castProtectionManager = castProtectionManager;
+            _movementManager = movementManager;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.HP_Changed += HealthManager_HP_Changed;
             _attackManager.OnStartAttack += CancelStealth;
             _untouchableManager.OnBlockedMagicAttacksChanged += UntouchableManager_OnBlockedMagicAttacksChanged;
+            _movementManager.OnMove += MovementManager_OnMove;
 
             ActiveBuffs.CollectionChanged += ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged += PassiveBuffs_CollectionChanged;
@@ -132,6 +138,7 @@ namespace Imgeneus.World.Game.Buffs
             _healthManager.HP_Changed -= HealthManager_HP_Changed;
             _attackManager.OnStartAttack -= CancelStealth;
             _untouchableManager.OnBlockedMagicAttacksChanged -= UntouchableManager_OnBlockedMagicAttacksChanged;
+            _movementManager.OnMove -= MovementManager_OnMove;
         }
 
         #endregion
@@ -496,7 +503,9 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.PersistBarrier:
                     ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
-                    
+                    _castProtectionManager.ProtectAlliesCasting = true;
+                    _castProtectionManager.ProtectCastingRange = skill.ApplyRange;
+                    _castProtectionManager.ProtectCastingSkill = (skill.SkillId, skill.SkillLevel);
                     break;
 
                 default:
@@ -667,7 +676,9 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.PersistBarrier:
                     ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
-
+                    _castProtectionManager.ProtectAlliesCasting = false;
+                    _castProtectionManager.ProtectCastingRange = 0;
+                    _castProtectionManager.ProtectCastingSkill = (0, 0);
                     break;
 
                 default:
@@ -913,6 +924,21 @@ namespace Imgeneus.World.Game.Buffs
                     }
                     return;
 
+                case AbilityType.SacrificeMPPercent:
+                    if (addAbility)
+                    {
+                        buff.TimeMPDamage = abilityValue;
+                        buff.TimeDamageType = TimeDamageType.Percent;
+                        buff.OnPeriodicalDebuff += Buff_OnPeriodicalDebuff;
+                        buff.RepeatTime = skill.KeepTime;
+                        buff.StartPeriodicalDebuff();
+                    }
+                    else
+                    {
+                        buff.OnPeriodicalDebuff -= Buff_OnPeriodicalDebuff;
+                    }
+                    return;
+
                 case AbilityType.SacrificeStr:
                 case AbilityType.SacrificeDex:
                 case AbilityType.SacrificeRec:
@@ -988,8 +1014,11 @@ namespace Imgeneus.World.Game.Buffs
                     Convert.ToUInt16(_healthManager.MaxMP * debuffResult.Damage.MP * 1.0 / 100));
             }
 
-            if (buff.CanBeActivatedAndDisactivated && _healthManager.CurrentHP <= damage.HP)
+            if (buff.CanBeActivatedAndDisactivated && (_healthManager.CurrentHP <= damage.HP || _healthManager.CurrentMP <= damage.MP || _healthManager.CurrentSP <= damage.SP))
+            {
+                buff.CancelBuff();
                 return;
+            }
 
             if (!buff.CanBeActivatedAndDisactivated)
                 OnSkillKeep?.Invoke(_ownerId, buff, new AttackResult(AttackSuccess.Normal, damage));
@@ -1037,6 +1066,13 @@ namespace Imgeneus.World.Game.Buffs
                 if (buff != null)
                     buff.CancelBuff();
             }
+        }
+
+        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        {
+            var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenMoving).ToList();
+            foreach (var b in buffs)
+                b.CancelBuff();
         }
 
         #endregion

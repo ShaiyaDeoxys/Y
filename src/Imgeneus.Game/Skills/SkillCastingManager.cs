@@ -1,7 +1,9 @@
 ﻿using Imgeneus.World.Game;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Skills;
+using Imgeneus.World.Game.Teleport;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Timers;
@@ -12,21 +14,30 @@ namespace Imgeneus.Game.Skills
     {
         private readonly ILogger<SkillCastingManager> _logger;
         private readonly IMovementManager _movementManager;
+        private readonly ITeleportationManager _teleportationManager;
         private readonly IHealthManager _healthManager;
         private readonly ISkillsManager _skillsManager;
+        private readonly IBuffsManager _buffsManager;
         private readonly IGameWorld _gameWorld;
+        private readonly ICastProtectionManager _castProtectionManager;
         private int _ownerId;
 
-        public SkillCastingManager(ILogger<SkillCastingManager> logger, IMovementManager movementManager, IHealthManager healthManager, ISkillsManager skillsManager, IGameWorld gameWorld)
+        public SkillCastingManager(ILogger<SkillCastingManager> logger, IMovementManager movementManager, ITeleportationManager teleportationManager, IHealthManager healthManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IGameWorld gameWorld, ICastProtectionManager castProtectionManager)
         {
             _logger = logger;
             _movementManager = movementManager;
+            _teleportationManager = teleportationManager;
             _healthManager = healthManager;
             _skillsManager = skillsManager;
+            _buffsManager = buffsManager;
             _gameWorld = gameWorld;
+            _castProtectionManager = castProtectionManager;
+
             _castTimer.Elapsed += CastTimer_Elapsed;
             _movementManager.OnMove += MovementManager_OnMove;
             _healthManager.OnGotDamage += HealthManager_OnGotDamage;
+            _buffsManager.OnBuffAdded += BuffsManager_OnBuffAdded;
+            _teleportationManager.OnTeleporting += TeleportationManager_OnTeleporting;
 
 #if DEBUG
             _logger.LogDebug("SkillCastingManager {hashcode} created", GetHashCode());
@@ -52,19 +63,18 @@ namespace Imgeneus.Game.Skills
             _castTimer.Elapsed -= CastTimer_Elapsed;
             _movementManager.OnMove -= MovementManager_OnMove;
             _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
+            _buffsManager.OnBuffAdded -= BuffsManager_OnBuffAdded;
+            _teleportationManager.OnTeleporting -= TeleportationManager_OnTeleporting;
         }
 
         #endregion
 
-            /// <summary>
-            /// The timer, that is starting skill after cast time.
-            /// </summary>
+        /// <summary>
+        /// The timer, that is starting skill after cast time.
+        /// </summary>
         private Timer _castTimer = new Timer();
 
-        /// <summary>
-        /// Skill, that player tries to cast.
-        /// </summary>
-        private Skill _skillInCast;
+        public Skill SkillInCast { get; private set; }
 
         /// <summary>
         /// Target for which we are casting spell.
@@ -81,7 +91,7 @@ namespace Imgeneus.Game.Skills
             if (!_skillsManager.CanUseSkill(skill, target, out var success))
                 return;
 
-            _skillInCast = skill;
+            SkillInCast = skill;
             _targetInCast = target;
             _castTimer.Interval = skill.CastTime;
             _castTimer.Start();
@@ -94,10 +104,10 @@ namespace Imgeneus.Game.Skills
         private void CastTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             _castTimer.Stop();
-            if (_skillsManager.CanUseSkill(_skillInCast, _targetInCast, out var success))
-                _skillsManager.UseSkill(_skillInCast, _gameWorld.Players[_ownerId], _targetInCast);
+            if (_skillsManager.CanUseSkill(SkillInCast, _targetInCast, out var success))
+                _skillsManager.UseSkill(SkillInCast, _gameWorld.Players[_ownerId], _targetInCast);
 
-            _skillInCast = null;
+            SkillInCast = null;
             _targetInCast = null;
         }
 
@@ -106,17 +116,33 @@ namespace Imgeneus.Game.Skills
             CancelCasting();
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker)
+        private void TeleportationManager_OnTeleporting(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
         {
             CancelCasting();
+        }
+
+        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker)
+        {
+            if (_castProtectionManager.IsCastProtected)
+                return;
+
+            CancelCasting();
+        }
+
+        private void BuffsManager_OnBuffAdded(int senderId, Buff buff)
+        {
+            if (_castProtectionManager.IsCastProtected)
+                return;
+
+            if (buff.IsDebuff)
+                CancelCasting();
         }
 
         public void CancelCasting()
         {
             _castTimer.Stop();
-            _skillInCast = null;
+            SkillInCast = null;
             _targetInCast = null;
         }
-
     }
 }

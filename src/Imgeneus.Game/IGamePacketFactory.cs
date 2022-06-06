@@ -63,8 +63,8 @@ namespace Imgeneus.World.Packets
         void SendLearnedNewSkill(IWorldClient client, bool ok, Skill skill);
         void SendLearnedSkills(IWorldClient client, Character character);
         void SendActiveBuffs(IWorldClient client, ICollection<Buff> activeBuffs);
-        void SendAddBuff(IWorldClient client, Buff buff);
-        void SendRemoveBuff(IWorldClient client, Buff buff);
+        void SendAddBuff(IWorldClient client, uint id, ushort skillId, byte skillLevel, int countdown);
+        void SendRemoveBuff(IWorldClient client, uint id);
         void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
         void SendCurrentHitpoints(IWorldClient client, int hp, int mp, int sp);
         #endregion

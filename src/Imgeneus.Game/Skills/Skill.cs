@@ -196,7 +196,27 @@ namespace Imgeneus.Game.Skills
                 _dbSkill.AbilityType7 == AbilityType.SacrificeHPPercent ||
                 _dbSkill.AbilityType8 == AbilityType.SacrificeHPPercent ||
                 _dbSkill.AbilityType9 == AbilityType.SacrificeHPPercent ||
-                _dbSkill.AbilityType10 == AbilityType.SacrificeHPPercent;
+                _dbSkill.AbilityType10 == AbilityType.SacrificeHPPercent ||
+                _dbSkill.AbilityType1 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType2 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType3 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType4 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType5 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType6 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType7 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType8 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType9 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType10 == AbilityType.SacrificeMPPercent ||
+                _dbSkill.AbilityType1 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType2 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType3 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType4 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType5 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType6 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType7 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType8 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType9 == AbilityType.SacrificeSPPercent ||
+                _dbSkill.AbilityType10 == AbilityType.SacrificeSPPercent;
         }
 
         /// <summary>

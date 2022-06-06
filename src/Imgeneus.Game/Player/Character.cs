@@ -69,6 +69,7 @@ namespace Imgeneus.World.Game.Player
         public IWarehouseManager WarehouseManager { get; private set; }
         public IShopManager ShopManager { get; private set; }
         public ISkillCastingManager SkillCastingManager { get; private set; }
+        public ICastProtectionManager CastProtectionManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -104,6 +105,7 @@ namespace Imgeneus.World.Game.Player
                          IWarehouseManager warehouseManager,
                          IShopManager shopManager,
                          ISkillCastingManager skillCastingManager,
+                         ICastProtectionManager castProtectionManager,
                          IGameSession gameSession,
                          IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
@@ -132,6 +134,7 @@ namespace Imgeneus.World.Game.Player
             WarehouseManager = warehouseManager;
             ShopManager = shopManager;
             SkillCastingManager = skillCastingManager;
+            CastProtectionManager = castProtectionManager;
             GameSession = gameSession;
 
             HealthManager.MP_SP_Used += SendUseMPSP;
@@ -272,6 +275,7 @@ namespace Imgeneus.World.Game.Player
             IWarehouseManager warehouseManager,
             IShopManager shopManager,
             ISkillCastingManager skillCastingManager,
+            ICastProtectionManager castProtectionManager,
             IGameSession gameSession,
             IGamePacketFactory packetFactory)
         {
@@ -308,6 +312,7 @@ namespace Imgeneus.World.Game.Player
                                           warehouseManager,
                                           shopManager,
                                           skillCastingManager,
+                                          castProtectionManager,
                                           gameSession,
                                           packetFactory)
             {

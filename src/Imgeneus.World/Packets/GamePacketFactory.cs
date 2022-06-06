@@ -259,17 +259,17 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendAddBuff(IWorldClient client, Buff buff)
+        public void SendAddBuff(IWorldClient client, uint id, ushort skillId, byte skillLevel, int countdown)
         {
             using var packet = new ImgeneusPacket(PacketType.BUFF_ADD);
-            packet.Write(new SerializedActiveBuff(buff).Serialize());
+            packet.Write(new SerializedActiveBuff(id, skillId, skillLevel, countdown).Serialize());
             client.Send(packet);
         }
 
-        public void SendRemoveBuff(IWorldClient client, Buff buff)
+        public void SendRemoveBuff(IWorldClient client, uint id)
         {
             using var packet = new ImgeneusPacket(PacketType.BUFF_REMOVE);
-            packet.Write(buff.Id);
+            packet.Write(id);
             client.Send(packet);
         }
 

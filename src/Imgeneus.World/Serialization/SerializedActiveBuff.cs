@@ -18,12 +18,12 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(3)]
         public int CountDownInSeconds;
 
-        public SerializedActiveBuff(Buff buff)
+        public SerializedActiveBuff(uint id, ushort skillId, byte skillLevel, int countDownInSeconds)
         {
-            Id = buff.Id;
-            SkillId = buff.SkillId;
-            SkillLevel = buff.SkillLevel;
-            CountDownInSeconds = buff.CountDownInSeconds;
+            Id = id;
+            SkillId = skillId;
+            SkillLevel = skillLevel;
+            CountDownInSeconds = countDownInSeconds;
         }
     }
 }

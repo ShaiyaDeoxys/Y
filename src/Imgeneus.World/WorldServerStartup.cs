@@ -153,6 +153,7 @@ namespace Imgeneus.World
             services.AddScoped<IAIManager, AIManager>();
             services.AddScoped<IShopManager, ShopManager>();
             services.AddScoped<ISkillCastingManager, SkillCastingManager>();
+            services.AddScoped<ICastProtectionManager, CastProtectionManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

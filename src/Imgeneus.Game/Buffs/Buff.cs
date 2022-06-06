@@ -142,6 +142,28 @@ namespace Imgeneus.World.Game.Buffs
             }
         }
 
+        /// <summary>
+        /// Buff should be canceled, when player is moving?
+        /// </summary>
+        public bool IsCanceledWhenMoving
+        {
+            get
+            {
+                return _skill.Type == TypeDetail.PersistBarrier;
+            }
+        }
+
+        /// <summary>
+        /// Buff should be canceled, when player used any other skill?
+        /// </summary>
+        public bool IsCanceledWhenUsingSkill
+        {
+            get
+            {
+                return _skill.Type == TypeDetail.PersistBarrier;
+            }
+        }
+
         #endregion
 
         #region Buff reset

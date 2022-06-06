@@ -17,7 +17,7 @@ namespace Imgeneus.World.Serialization
 
         public CharacterActiveBuffs(ICollection<Buff> buffs)
         {
-            Buffs = buffs.Select(b => new SerializedActiveBuff(b)).ToList();
+            Buffs = buffs.Select(b => new SerializedActiveBuff(b.Id, b.SkillId, b.SkillLevel, b.CountDownInSeconds)).ToList();
         }
     }
 }
