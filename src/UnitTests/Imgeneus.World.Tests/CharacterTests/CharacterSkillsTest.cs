@@ -365,5 +365,85 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.Empty(character1.BuffsManager.ActiveBuffs);
         }
+
+        [Fact]
+        [Description("Healing should increase HP.")]
+        public void HealingTest()
+        {
+            var character1 = CreateCharacter();
+            var priest = CreateCharacter();
+            priest.StatsManager.TrySetStats(wis: 1);
+
+            Assert.Equal(0, character1.HealthManager.CurrentHP);
+
+            var result = new AttackResult();
+
+            priest.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult res) => result = res;
+            priest.SkillsManager.UseSkill(new Skill(Healing, 0, 0), priest, character1);
+
+            Assert.Equal(54, character1.HealthManager.CurrentHP);
+            Assert.Equal(AttackSuccess.Normal, result.Success);
+            Assert.Equal(54, result.Damage.HP);
+        }
+
+        [Fact]
+        [Description("Healing Can not be used on opposite faction.")]
+        public void HealingCanNotUseOnOppositeFactionTest()
+        {
+            var character1 = CreateCharacter(country: Fraction.Dark);
+            var priest = CreateCharacter();
+
+            var canUse = priest.SkillsManager.CanUseSkill(new Skill(Healing, 0, 0), character1, out var result);
+            Assert.False(canUse);
+            Assert.Equal(AttackSuccess.WrongTarget, result);
+        }
+
+        [Fact]
+        [Description("Healing Can not be used on duel opponent.")]
+        public void HealingCanNotUseOnDuelOpponentTest()
+        {
+            var character1 = CreateCharacter();
+            var priest = CreateCharacter();
+
+            character1.DuelManager.OpponentId = priest.Id;
+            priest.DuelManager.OpponentId = character1.Id;
+
+            var canUse = priest.SkillsManager.CanUseSkill(new Skill(Healing, 0, 0), character1, out var result);
+            Assert.False(canUse);
+            Assert.Equal(AttackSuccess.WrongTarget, result);
+        }
+
+        [Fact]
+        [Description("Healing can be used on self.")]
+        public void HealingCanBeUsedSelfTest()
+        {
+            var priest = CreateCharacter();
+            var canUse = priest.SkillsManager.CanUseSkill(new Skill(Healing, 0, 0), priest, out var result);
+            Assert.True(canUse);
+        }
+
+        [Fact]
+        [Description("Healing can be used on self during duel.")]
+        public void HealingCanBeUsedSelfDuringDuelTest()
+        {
+            var priest = CreateCharacter();
+            priest.DuelManager.OpponentId = 1;
+
+            var canUse = priest.SkillsManager.CanUseSkill(new Skill(Healing, 0, 0), priest, out var result);
+            Assert.True(canUse);
+        }
+
+        [Fact]
+        [Description("Healing can not be used on dead player.")]
+        public void HealingCanNotBeUsedOnDeadPlayerTest()
+        {
+            var priest = CreateCharacter();
+            var character1 = CreateCharacter();
+
+            character1.HealthManager.DecreaseHP(1, CreateCharacter());
+            var canUse = priest.SkillsManager.CanUseSkill(new Skill(Healing, 0, 0), character1, out var result);
+            Assert.False(canUse);
+            Assert.Equal(AttackSuccess.WrongTarget, result);
+        }
     }
 }

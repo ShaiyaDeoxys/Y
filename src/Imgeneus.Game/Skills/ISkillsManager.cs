@@ -78,7 +78,7 @@ namespace Imgeneus.World.Game.Skills
         /// <param name="skillOwner">who performes skill</param>
         /// <param name="attackResult">result after performing skill</param>
         /// <param name="n">How many times this skill was called, used in multi skills.</param>
-        void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, AttackResult attackResult, int n = 0);
+        void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, ref AttackResult attackResult, int n = 0);
 
         /// <summary>
         /// Clears skills and adds skill points.

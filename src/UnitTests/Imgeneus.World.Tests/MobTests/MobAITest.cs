@@ -48,7 +48,8 @@ namespace Imgeneus.World.Tests.MobTests
             var mob = CreateMob(CrypticImmortal.Id, map);
 
             var character = CreateCharacter();
-            character.SkillsManager.PerformSkill(new Skill(Stealth, 0, 0), character, character, character, new AttackResult());
+            var res = new AttackResult();
+            character.SkillsManager.PerformSkill(new Skill(Stealth, 0, 0), character, character, character, ref res);
 
             map.LoadPlayer(character);
             map.AddMob(mob);

@@ -1,4 +1,5 @@
-﻿using Imgeneus.Game.Skills;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.Game.Skills;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.PartyAndRaid;
@@ -16,7 +17,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
         public void MoveStopsCastTest()
         {
             var character1 = CreateCharacter();
-            var character2 = CreateCharacter();
+            var character2 = CreateCharacter(country: Fraction.Dark);
             var skillWasCasted = false;
 
             character1.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
@@ -38,7 +39,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
             var character1 = CreateCharacter();
             character1.HealthManager.FullRecover();
 
-            var character2 = CreateCharacter();
+            var character2 = CreateCharacter(country: Fraction.Dark);
             character2.HealthManager.FullRecover();
             character2.StatsManager.WeaponMinAttack = 1;
             character2.StatsManager.WeaponMaxAttack = 1;
@@ -66,7 +67,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
             character1.StatsManager.WeaponMinAttack = 1;
             character1.StatsManager.WeaponMaxAttack = 1;
 
-            var character2 = CreateCharacter();
+            var character2 = CreateCharacter(country: Fraction.Dark);
             character2.HealthManager.FullRecover();
 
             var skillWasCasted = false;
@@ -89,7 +90,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
             var character1 = CreateCharacter(map);
             character1.HealthManager.FullRecover();
 
-            var character2 = CreateCharacter(map);
+            var character2 = CreateCharacter(map, country: Fraction.Dark);
             character2.HealthManager.FullRecover();
             character2.StatsManager.WeaponMinAttack = 1;
             character2.StatsManager.WeaponMaxAttack = 1;

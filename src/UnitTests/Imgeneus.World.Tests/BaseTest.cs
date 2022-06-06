@@ -149,6 +149,7 @@ namespace Imgeneus.World.Tests
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager, castProtectionManager, movementManager);
 
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, teleportManager);
+            skillsManager.Init(_characterId, new List<Skill>());
             var skillCastingManager = new SkillCastingManager(new Mock<ILogger<SkillCastingManager>>().Object, movementManager, teleportManager, healthManager, skillsManager, buffsManager, gameWorldMock.Object, castProtectionManager);
             skillCastingManager.Init(_characterId);
             var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager);
@@ -163,6 +164,8 @@ namespace Imgeneus.World.Tests
             var tradeManager = new TradeManager(new Mock<ILogger<TradeManager>>().Object, gameWorldMock.Object, inventoryManager);
             var friendsManager = new FriendsManager(new Mock<ILogger<FriendsManager>>().Object, databaseMock.Object, gameWorldMock.Object);
             var duelManager = new DuelManager(new Mock<ILogger<DuelManager>>().Object, gameWorldMock.Object, tradeManager, movementManager, healthManager, killsManager, mapProvider, inventoryManager, teleportManager);
+            duelManager.Init(_characterId);
+
             var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, inventoryManager);
             var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, levelingManager);
             var shopManager = new ShopManager(new Mock<ILogger<ShopManager>>().Object, inventoryManager, mapProvider);
@@ -499,7 +502,8 @@ namespace Imgeneus.World.Tests
                     { (772, 1), MagicVeil },
                     { (775, 1), EtainsEmbrace },
                     { (776, 1), MagicMirror },
-                    { (779, 1), PersistBarrier }
+                    { (779, 1), PersistBarrier },
+                    { (785, 1), Healing }
                 });
 
             databaseMock
@@ -963,6 +967,17 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             ApplyRange = 4,
             KeepTime = 1
+        };
+
+        protected DbSkill Healing = new DbSkill()
+        {
+            SkillId = 785,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Healing,
+            TargetType = TargetType.SelectedEnemy,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            HealHP = 50
         };
 
         #endregion

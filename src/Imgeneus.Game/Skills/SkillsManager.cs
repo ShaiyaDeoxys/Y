@@ -1,8 +1,6 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database;
-using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
-using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
@@ -12,7 +10,6 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
-using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
@@ -26,8 +23,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
-using Timer = System.Timers.Timer;
 
 namespace Imgeneus.World.Game.Skills
 {
@@ -302,14 +297,22 @@ namespace Imgeneus.World.Game.Skills
             {
                 if (target is Character)
                 {
-                    if (((Character)target).DuelManager.OpponentId == _ownerId)
+                    if (((Character)target).DuelManager.OpponentId != 0)
                     {
-                        if (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff || skill.Type == TypeDetail.PeriodicalHeal)
+                        // Target is player himself, e.g. healing himself.
+                        if (target.Id == _ownerId && (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff || skill.Type == TypeDetail.PeriodicalHeal))
+                        {
+                            success = AttackSuccess.Normal;
+                            return true;
+                        }
+                        // Target is opponent.
+                        else
                         {
                             success = AttackSuccess.WrongTarget;
                             return false;
                         }
                     }
+                    // Can not attack its' own faction.
                     else
                     {
                         if (skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.Buff && skill.Type != TypeDetail.PeriodicalHeal)
@@ -324,6 +327,11 @@ namespace Imgeneus.World.Game.Skills
                     success = AttackSuccess.WrongTarget;
                     return false;
                 }
+            }
+            else if (target.CountryProvider.Country != _countryProvider.Country && (skill.Type == TypeDetail.Healing || skill.Type == TypeDetail.Buff || skill.Type == TypeDetail.PeriodicalHeal))
+            {
+                success = AttackSuccess.WrongTarget;
+                return false;
             }
 
             success = AttackSuccess.Normal;
@@ -379,7 +387,7 @@ namespace Imgeneus.World.Game.Skills
                         CancelBuffs();
 
                         // Second apply skill.
-                        PerformSkill(skill, target, t, skillOwner, attackResult, n);
+                        PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
 
                         // Third decrease hp.
                         if (t.HealthManager.ReflectPhysicDamage && (skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack))
@@ -401,11 +409,11 @@ namespace Imgeneus.World.Game.Skills
                             if (n == 0 && (target == t || target is null))
                                 OnUsedSkill?.Invoke(_ownerId, target, skill, attackResult);
 
-                            if (attackResult.Damage.HP > 0)
+                            if (attackResult.Damage.HP > 0 && skill.Type != TypeDetail.Healing)
                                 t.HealthManager.DecreaseHP(attackResult.Damage.HP, skillOwner);
-                            if (attackResult.Damage.SP > 0)
+                            if (attackResult.Damage.SP > 0 && skill.Type != TypeDetail.Healing)
                                 t.HealthManager.CurrentSP -= attackResult.Damage.SP;
-                            if (attackResult.Damage.MP > 0)
+                            if (attackResult.Damage.MP > 0 && skill.Type != TypeDetail.Healing)
                                 t.HealthManager.CurrentMP -= attackResult.Damage.MP;
                         }
                     }
@@ -474,7 +482,7 @@ namespace Imgeneus.World.Game.Skills
             return targets;
         }
 
-        public void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, AttackResult attackResult, int n = 0)
+        public void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, ref AttackResult attackResult, int n = 0)
         {
             switch (skill.Type)
             {
