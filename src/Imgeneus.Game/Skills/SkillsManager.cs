@@ -553,6 +553,16 @@ namespace Imgeneus.World.Game.Skills
             var healHP = _statsManager.TotalWis * 4 + skill.HealHP;
             var healSP = skill.HealSP;
             var healMP = skill.HealMP;
+
+            if (target.HealthManager.CurrentHP + healHP > target.HealthManager.MaxHP)
+                healHP = target.HealthManager.MaxHP - target.HealthManager.CurrentHP;
+
+            if (target.HealthManager.CurrentSP + healSP > target.HealthManager.MaxSP)
+                healSP = (ushort)(target.HealthManager.MaxSP - target.HealthManager.CurrentSP);
+
+            if (target.HealthManager.CurrentMP + healHP > target.HealthManager.MaxMP)
+                healMP = (ushort)(target.HealthManager.MaxMP - target.HealthManager.CurrentMP);
+
             AttackResult result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)healHP, healSP, healMP));
 
             target.HealthManager.IncreaseHP(healHP);
