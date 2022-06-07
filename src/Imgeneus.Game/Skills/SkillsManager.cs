@@ -248,7 +248,7 @@ namespace Imgeneus.World.Game.Skills
 
         public bool CanUseSkill(Skill skill, IKillable target, out AttackSuccess success)
         {
-            if (_shapeManager.Shape == ShapeEnum.Fox || _shapeManager.Shape == ShapeEnum.Wolf || _shapeManager.Shape == ShapeEnum.Knight)
+            if (_shapeManager.Shape == ShapeEnum.Fox || _shapeManager.Shape == ShapeEnum.Wolf || _shapeManager.Shape == ShapeEnum.Knight || _shapeManager.Shape == ShapeEnum.Pig)
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;

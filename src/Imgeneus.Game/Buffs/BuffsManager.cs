@@ -72,7 +72,7 @@ namespace Imgeneus.World.Game.Buffs
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
             _healthManager.OnDead += HealthManager_OnDead;
-            _healthManager.HP_Changed += HealthManager_HP_Changed;
+            _healthManager.OnGotDamage += HealthManager_OnGotDamage;
             _attackManager.OnStartAttack += CancelStealth;
             _untouchableManager.OnBlockedMagicAttacksChanged += UntouchableManager_OnBlockedMagicAttacksChanged;
             _movementManager.OnMove += MovementManager_OnMove;
@@ -140,7 +140,7 @@ namespace Imgeneus.World.Game.Buffs
             ActiveBuffs.CollectionChanged -= ActiveBuffs_CollectionChanged;
             PassiveBuffs.CollectionChanged -= PassiveBuffs_CollectionChanged;
             _healthManager.OnDead -= HealthManager_OnDead;
-            _healthManager.HP_Changed -= HealthManager_HP_Changed;
+            _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
             _attackManager.OnStartAttack -= CancelStealth;
             _untouchableManager.OnBlockedMagicAttacksChanged -= UntouchableManager_OnBlockedMagicAttacksChanged;
             _movementManager.OnMove -= MovementManager_OnMove;
@@ -527,7 +527,10 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Evolution:
-                    _shapeManager.MonsterLevel = skill.SkillLevel;
+                    if (skill.TypeEffect == TypeEffect.Buff)
+                        _shapeManager.MonsterLevel = skill.SkillLevel;
+                    else
+                        _shapeManager.MonsterLevel = 4;
                     break;
 
                 default:
@@ -1090,9 +1093,9 @@ namespace Imgeneus.World.Game.Buffs
                 b.CancelBuff();
         }
 
-        private void HealthManager_HP_Changed(int senderId, HitpointArgs args)
+        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker)
         {
-            var buffs = ActiveBuffs.Where(b => b.IsStealth).ToList();
+            var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenDamage).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
         }

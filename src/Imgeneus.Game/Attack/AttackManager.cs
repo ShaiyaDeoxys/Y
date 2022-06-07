@@ -170,6 +170,12 @@ namespace Imgeneus.World.Game.Attack
 
         public bool CanAttack(byte skillNumber, IKillable target, out AttackSuccess success)
         {
+            if (_shapeManager.Shape == ShapeEnum.Pig)
+            {
+                success = AttackSuccess.CanNotAttack;
+                return false;
+            }
+
             if (!IsWeaponAvailable)
             {
                 success = AttackSuccess.WrongEquipment;

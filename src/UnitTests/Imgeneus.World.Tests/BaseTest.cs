@@ -509,7 +509,8 @@ namespace Imgeneus.World.Tests
                     { (364, 1), FrostBarrier },
                     { (792, 1), Resurrection },
                     { (777, 1), Hypnosis },
-                    { (793, 1), Evolution }
+                    { (793, 1), Evolution },
+                    { (794, 1), Polymorph }
                 });
 
             databaseMock
@@ -613,7 +614,8 @@ namespace Imgeneus.World.Tests
             KeepTime = 5,
             DamageType = DamageType.PlusExtraDamage,
             TargetType = TargetType.SelectedEnemy,
-            ReadyTime = 5
+            ReadyTime = 5,
+            TypeEffect = TypeEffect.Debuff
         };
 
         protected DbSkill AttributeRemove = new DbSkill()
@@ -892,7 +894,8 @@ namespace Imgeneus.World.Tests
             DamageHP = 285,
             TargetType = TargetType.EnemiesNearTarget,
             TypeAttack = TypeAttack.PhysicalAttack,
-            NeedWeapon6 = 1
+            NeedWeapon6 = 1,
+            TypeEffect = TypeEffect.BasicDamage
         };
 
         protected DbSkill Eraser = new DbSkill()
@@ -1019,7 +1022,10 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             DamageType = DamageType.FixedDamage,
-            TypeAttack = TypeAttack.MagicAttack
+            TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.Debuff,
+            StateType = StateType.Sleep,
+            KeepTime = 8
         };
 
         protected DbSkill Evolution = new DbSkill()
@@ -1031,7 +1037,21 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             DamageType = DamageType.FixedDamage,
-            TypeAttack = TypeAttack.MagicAttack
+            TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.Buff
+        };
+
+        protected DbSkill Polymorph = new DbSkill()
+        {
+            SkillId = 794,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Evolution,
+            TargetType = TargetType.SelectedEnemy,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.Debuff
         };
 
         #endregion

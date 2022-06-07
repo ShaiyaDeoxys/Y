@@ -332,7 +332,7 @@ namespace Imgeneus.World.Tests.CharacterTests
 
         [Fact]
         [Description("PersistBarrier should stop, when player has not enought mana.")]
-        public async void PersistBarrierShouldStopWhenMPTest()
+        public async Task PersistBarrierShouldStopWhenMPTest()
         {
             var character1 = CreateCharacter();
             character1.HealthManager.IncreaseHP(100);
@@ -553,6 +553,28 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(character.SpeedManager.Immobilize);
         }
 
+
+        [Fact]
+        [Description("Hypnosis should stop, when got damage.")]
+        public void HypnosisStopOnDamageTest()
+        {
+            var priest = CreateCharacter();
+            priest.StatsManager.WeaponMinAttack = 1;
+            priest.StatsManager.WeaponMaxAttack = 1;
+
+            var character = CreateCharacter(country: Fraction.Dark);
+            character.HealthManager.FullRecover();
+
+            priest.SkillsManager.UseSkill(new Skill(Hypnosis, 0, 0), priest, character);
+
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+
+            priest.AttackManager.Target = character;
+            priest.AttackManager.AutoAttack(priest);
+
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
+        }
+
         [Fact]
         [Description("Evolution changes shape and player can not use any skill.")]
         public void EvolutionTest()
@@ -576,6 +598,42 @@ namespace Imgeneus.World.Tests.CharacterTests
             var priest = CreateCharacter();
             var character = CreateCharacter(country: Fraction.Dark);
             Assert.False(priest.SkillsManager.CanUseSkill(new Skill(Evolution, 0, 0), character, out var _));
+        }
+
+        [Fact]
+        [Description("Polymorph transforms into pig and pig can not attack or use skills.")]
+        public void PolymorphTest()
+        {
+            var priest = CreateCharacter();
+            var character = CreateCharacter(country: Fraction.Dark);
+
+            Assert.True(priest.SkillsManager.CanUseSkill(new Skill(Polymorph, 0, 0), character, out var _));
+            priest.SkillsManager.UseSkill(new Skill(Polymorph, 0, 0), priest, character);
+
+            Assert.Equal(ShapeEnum.Pig, character.ShapeManager.Shape);
+            Assert.False(character.SkillsManager.CanUseSkill(new Skill(Leadership, 0, 0), character, out var _));
+            Assert.False(character.AttackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, priest, out var _));
+        }
+
+        [Fact]
+        [Description("Polymorph should stop, when get damage.")]
+        public void PolymorphStopsOnDamageTest()
+        {
+            var priest = CreateCharacter();
+            priest.StatsManager.WeaponMinAttack = 1;
+            priest.StatsManager.WeaponMaxAttack = 1;
+
+            var character = CreateCharacter(country: Fraction.Dark);
+            character.HealthManager.FullRecover();
+
+            priest.SkillsManager.UseSkill(new Skill(Polymorph, 0, 0), priest, character);
+
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+
+            priest.AttackManager.Target = character;
+            priest.AttackManager.AutoAttack(priest);
+
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
         }
     }
 }

@@ -69,6 +69,9 @@ namespace Imgeneus.World.Game.Shape
 
                         case 3:
                             return ShapeEnum.Knight;
+
+                        case 4:
+                            return ShapeEnum.Pig;
                     }
                 }
 

@@ -152,6 +152,19 @@ namespace Imgeneus.World.Game.Buffs
             }
         }
 
+        /// <summary>
+        /// Buff should be canceled, when player gets damage?
+        /// </summary>
+        public bool IsCanceledWhenDamage
+        {
+            get
+            {
+                return Skill.Type == TypeDetail.Stealth ||
+                       Skill.StateType == StateType.Sleep || 
+                       (Skill.Type == TypeDetail.Evolution && Skill.TypeEffect == TypeEffect.Debuff);
+            }
+        }
+
         #endregion
 
         #region Buff reset

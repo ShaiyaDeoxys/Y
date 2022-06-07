@@ -28,7 +28,7 @@ namespace Imgeneus.GameDefinitions
             SkillPoint = (byte)record.Point;
             TypeShow = record.TypeShow;
             TypeAttack = record.TypeAttack;
-            TypeEffect = (byte)record.TypeEffect;
+            TypeEffect = record.TypeEffect;
             TypeDetail = record.TypeDetail;
             NeedWeapon1 = (byte)record.NeedWeapon1;
             NeedWeapon2 = (byte)record.NeedWeapon2;
@@ -182,9 +182,9 @@ namespace Imgeneus.GameDefinitions
         public TypeAttack TypeAttack { get; set; }
 
         /// <summary>
-        /// TODO: ?
+        /// Additional effect description.
         /// </summary>
-        public byte TypeEffect { get; set; }
+        public TypeEffect TypeEffect { get; set; }
 
         /// <summary>
         /// Type detail describes what skill does.
