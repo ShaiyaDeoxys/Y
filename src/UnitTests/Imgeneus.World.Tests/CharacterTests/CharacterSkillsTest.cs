@@ -635,5 +635,22 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.Empty(character.BuffsManager.ActiveBuffs);
         }
+
+        [Fact]
+        [Description("Detection finds player in stealth.")]
+        public void DetectionTest()
+        {
+            var map = testMap;
+            var priest = CreateCharacter(map);
+            var character = CreateCharacter(map, country: Fraction.Dark);
+
+            character.SkillsManager.UseSkill(new Skill(Stealth, 0, 0), character);
+            Assert.True(character.StealthManager.IsStealth);
+
+            Assert.True(priest.SkillsManager.CanUseSkill(new Skill(Detection, 0, 0), null, out var _));
+            priest.SkillsManager.UseSkill(new Skill(Detection, 0, 0), priest);
+
+            Assert.False(character.StealthManager.IsStealth);
+        }
     }
 }

@@ -151,7 +151,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="country">light, dark or both</param>
         /// <param name="includeDead">include dead players or not</param>
         /// <param name="includeNeighborCells">include players from neighbor cells, usually true</param>
-        public IEnumerable<IKillable> GetPlayers(float x, float z, byte range, CountryType country = CountryType.None, bool includeDead = false, bool includeNeighborCells = true)
+        public IEnumerable<Character> GetPlayers(float x, float z, byte range, CountryType country = CountryType.None, bool includeDead = false, bool includeNeighborCells = true)
         {
             var myPlayers = Players.Values.Where(
                      p => (includeDead || !p.HealthManager.IsDead) && // filter by death

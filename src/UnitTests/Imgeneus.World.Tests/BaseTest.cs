@@ -510,7 +510,8 @@ namespace Imgeneus.World.Tests
                     { (792, 1), Resurrection },
                     { (777, 1), Hypnosis },
                     { (793, 1), Evolution },
-                    { (794, 1), Polymorph }
+                    { (794, 1), Polymorph },
+                    { (791, 1), Detection }
                 });
 
             databaseMock
@@ -1052,6 +1053,19 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.MagicAttack,
             TypeEffect = TypeEffect.Debuff
+        };
+
+        protected DbSkill Detection = new DbSkill()
+        {
+            SkillId = 791,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Detection,
+            TargetType = TargetType.Caster,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.MagicAttack,
+            ApplyRange = 10
         };
 
         #endregion

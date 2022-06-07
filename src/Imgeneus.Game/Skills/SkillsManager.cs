@@ -565,6 +565,16 @@ namespace Imgeneus.World.Game.Skills
                     target.HealthManager.Rebirth();
                     break;
 
+                case TypeDetail.Detection:
+                    var playerInStealth = _mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(_movementManager.PosX, _movementManager.PosZ, skill.ApplyRange, _countryProvider.EnemyPlayersFraction).FirstOrDefault(x => x.StealthManager.IsStealth);
+                    if (playerInStealth is not null)
+                    {
+                        var buff = playerInStealth.BuffsManager.ActiveBuffs.FirstOrDefault(x => x.IsStealth);
+                        if (buff is not null)
+                            buff.CancelBuff();
+                    }
+                    break;
+
                 default:
                     throw new NotImplementedException("Not implemented skill type.");
             }
