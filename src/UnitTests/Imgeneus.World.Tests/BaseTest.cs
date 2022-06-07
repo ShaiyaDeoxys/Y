@@ -139,17 +139,18 @@ namespace Imgeneus.World.Tests
             var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager);
             teleportManager.Init(_characterId, new List<DbCharacterSavePositions>());
 
-            var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager);
-            attackManager.AlwaysHit = true;
-
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
             var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
+
+            var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, shapeManager);
+            attackManager.AlwaysHit = true;
+            
             var castProtectionManager = new CastProtectionManager(new Mock<ILogger<CastProtectionManager>>().Object, movementManager, partyManager, packetFactoryMock.Object, new Mock<IGameSession>().Object, mapProvider);
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager, castProtectionManager, movementManager, mapProvider, gameWorldMock.Object);
             buffsManager.Init(_characterId);
 
-            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, teleportManager, movementManager);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, teleportManager, movementManager, shapeManager);
             skillsManager.Init(_characterId, new List<Skill>());
             var skillCastingManager = new SkillCastingManager(new Mock<ILogger<SkillCastingManager>>().Object, movementManager, teleportManager, healthManager, skillsManager, buffsManager, gameWorldMock.Object, castProtectionManager);
             skillCastingManager.Init(_characterId);
@@ -241,12 +242,12 @@ namespace Imgeneus.World.Tests
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, new Mock<IShapeManager>().Object);
             attackManager.AlwaysHit = true;
 
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null, null, movementManager, mapProvider, gameWorldMock.Object);
-            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, null, movementManager);
+            var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, null, movementManager, new Mock<IShapeManager>().Object);
             var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, definitionsPreloader.Object, speedManager);
 
             var mob = new Mob(
@@ -507,7 +508,8 @@ namespace Imgeneus.World.Tests
                     { (785, 1), Healing },
                     { (364, 1), FrostBarrier },
                     { (792, 1), Resurrection },
-                    { (777, 1), Hypnosis }
+                    { (777, 1), Hypnosis },
+                    { (793, 1), Evolution }
                 });
 
             databaseMock
@@ -1013,6 +1015,18 @@ namespace Imgeneus.World.Tests
             SkillId = 777,
             SkillLevel = 1,
             TypeDetail = TypeDetail.Stun,
+            TargetType = TargetType.SelectedEnemy,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.MagicAttack
+        };
+
+        protected DbSkill Evolution = new DbSkill()
+        {
+            SkillId = 793,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Evolution,
             TargetType = TargetType.SelectedEnemy,
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,

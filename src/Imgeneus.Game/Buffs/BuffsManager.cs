@@ -526,6 +526,10 @@ namespace Imgeneus.World.Game.Buffs
                     buff.StartPeriodicalDamage();
                     break;
 
+                case TypeDetail.Evolution:
+                    _shapeManager.MonsterLevel = skill.SkillLevel;
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -701,6 +705,10 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.FireThorn:
                     buff.OnPeriodicalDamage -= Buff_OnPeriodicalDamage;
+                    break;
+
+                case TypeDetail.Evolution:
+                    _shapeManager.MonsterLevel = 0;
                     break;
 
                 default:

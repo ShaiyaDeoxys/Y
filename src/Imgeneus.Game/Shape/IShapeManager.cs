@@ -25,5 +25,10 @@ namespace Imgeneus.World.Game.Shape
         /// Event, that is fired, when tranform forms changes.
         /// </summary>
         event Action<int, bool> OnTranformated;
+
+        /// <summary>
+        /// Monster shape level. Fox is 1, Wolf is 2, Knight is 3.
+        /// </summary>
+        byte MonsterLevel { get; set; }
     }
 }

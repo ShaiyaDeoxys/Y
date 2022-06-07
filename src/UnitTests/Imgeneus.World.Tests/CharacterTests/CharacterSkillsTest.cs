@@ -5,6 +5,7 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Speed;
 using Parsec.Shaiya.Skill;
 using System.ComponentModel;
@@ -550,6 +551,31 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.Equal(MoveSpeed.CanNotMove, character.SpeedManager.TotalMoveSpeed);
             Assert.True(character.SpeedManager.Immobilize);
+        }
+
+        [Fact]
+        [Description("Evolution changes shape and player can not use any skill.")]
+        public void EvolutionTest()
+        {
+            var priest = CreateCharacter();
+            var character = CreateCharacter();
+
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(Leadership, 0, 0), null, out var _));
+
+            Assert.True(priest.SkillsManager.CanUseSkill(new Skill(Evolution, 0, 0), character, out var _));
+            priest.SkillsManager.UseSkill(new Skill(Evolution, 0, 0), priest, character);
+
+            Assert.Equal(ShapeEnum.Fox, character.ShapeManager.Shape);
+            Assert.False(character.SkillsManager.CanUseSkill(new Skill(Leadership, 0, 0), null, out var _));
+        }
+
+        [Fact]
+        [Description("Evolution can not be used on opposite country.")]
+        public void EvolutionCanNotBeUsedOnOppositeCountryTest()
+        {
+            var priest = CreateCharacter();
+            var character = CreateCharacter(country: Fraction.Dark);
+            Assert.False(priest.SkillsManager.CanUseSkill(new Skill(Evolution, 0, 0), character, out var _));
         }
     }
 }

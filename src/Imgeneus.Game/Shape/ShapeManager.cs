@@ -57,6 +57,21 @@ namespace Imgeneus.World.Game.Shape
                 if (_stealthManager.IsStealth)
                     return ShapeEnum.Stealth;
 
+                if (MonsterLevel > 0)
+                {
+                    switch (MonsterLevel)
+                    {
+                        case 1:
+                            return ShapeEnum.Fox;
+
+                        case 2:
+                            return ShapeEnum.Wolf;
+
+                        case 3:
+                            return ShapeEnum.Knight;
+                    }
+                }
+
                 if (_vehicleManager.IsOnVehicle)
                 {
                     var value1 = (byte)_vehicleManager.Mount.Grow >= 2 ? 15 : 14;
@@ -88,6 +103,17 @@ namespace Imgeneus.World.Game.Shape
             {
                 _isTranformated = value;
                 OnTranformated?.Invoke(_ownerId, _isTranformated);
+            }
+        }
+
+        private byte _monsterLevel;
+        public byte MonsterLevel
+        {
+            get => _monsterLevel;
+            set
+            {
+                _monsterLevel = value;
+                OnShapeChange?.Invoke(_ownerId, Shape, 0, 0);
             }
         }
 

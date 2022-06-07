@@ -8,6 +8,7 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -15,7 +16,6 @@ using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.Skill;
 using System;
-using System.Collections.Generic;
 using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Game.Attack
@@ -30,9 +30,10 @@ namespace Imgeneus.World.Game.Attack
         private readonly ISpeedManager _speedManager;
         private readonly IStealthManager _stealthManager;
         private readonly IHealthManager _healthManager;
+        private readonly IShapeManager _shapeManager;
         private int _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager)
+        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager, IShapeManager shapeManager)
         {
             _logger = logger;
             _statsManager = statsManager;
@@ -42,6 +43,7 @@ namespace Imgeneus.World.Game.Attack
             _speedManager = speedManager;
             _stealthManager = stealthManager;
             _healthManager = healthManager;
+            _shapeManager = shapeManager;
 
 #if DEBUG
             _logger.LogDebug("AttackManager {hashcode} created", GetHashCode());
@@ -451,7 +453,11 @@ namespace Imgeneus.World.Game.Attack
             var elementFactor = GetElementFactor(element, target.ElementProvider.DefenceElement);
             damage = damage * elementFactor;
 
-            // Third, calculate if critical damage should be added.
+            // Third, monster shape adds additional damage.
+            if (_shapeManager.MonsterLevel > 1)
+                damage = damage * _shapeManager.MonsterLevel;
+
+            // Fourth, calculate if critical damage should be added.
             var criticalDamage = false;
             if (new Random().Next(1, 101) < CriticalSuccessRate(target))
             {

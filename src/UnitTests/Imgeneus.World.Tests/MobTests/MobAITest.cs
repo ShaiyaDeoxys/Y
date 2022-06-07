@@ -58,6 +58,21 @@ namespace Imgeneus.World.Tests.MobTests
         }
 
         [Fact]
+        public void MobWontSeePlayerInMonsterShape()
+        {
+            var map = testMap;
+            var mob = CreateMob(CrypticImmortal.Id, map);
+
+            var character = CreateCharacter();
+            character.SkillsManager.UseSkill(new Skill(Evolution, 0, 0), character, character);
+
+            map.LoadPlayer(character);
+            map.AddMob(mob);
+
+            Assert.False(mob.AIManager.TryGetEnemy());
+        }
+
+        [Fact]
         public void MobCanNotMoveIfImmobilized()
         {
             var map = testMap;

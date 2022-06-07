@@ -13,6 +13,7 @@ using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
@@ -44,9 +45,10 @@ namespace Imgeneus.World.Game.Skills
         private readonly IMapProvider _mapProvider;
         private readonly ITeleportationManager _teleportationManager;
         private readonly IMovementManager _movementManager;
+        private readonly IShapeManager _shapeManager;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager)
+        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IShapeManager shapeManager)
         {
             _logger = logger;
             _definitionsPreloder = definitionsPreloder;
@@ -63,6 +65,7 @@ namespace Imgeneus.World.Game.Skills
             _mapProvider = mapProvider;
             _teleportationManager = teleportationManager;
             _movementManager = movementManager;
+            _shapeManager = shapeManager;
             _levelProvider.OnLevelUp += OnLevelUp;
 
 #if DEBUG
@@ -245,6 +248,11 @@ namespace Imgeneus.World.Game.Skills
 
         public bool CanUseSkill(Skill skill, IKillable target, out AttackSuccess success)
         {
+            if (_shapeManager.Shape == ShapeEnum.Fox || _shapeManager.Shape == ShapeEnum.Wolf || _shapeManager.Shape == ShapeEnum.Knight)
+            {
+                success = AttackSuccess.CanNotAttack;
+                return false;
+            }
 
             if (!skill.RequiredWeapons.Contains(_statsManager.WeaponType) && skill.RequiredWeapons.Count != 0)
             {
@@ -513,6 +521,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.EtainShield:
                 case TypeDetail.DamageReflection:
                 case TypeDetail.PersistBarrier:
+                case TypeDetail.Evolution:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

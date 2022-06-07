@@ -9,6 +9,7 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
@@ -503,7 +504,7 @@ namespace Imgeneus.World.Game.AI
             var anyVisibleEnemy = enemies.Any(x =>
             {
                 if (x is Character character)
-                    return character.StealthManager.IsStealth == false;
+                    return character.StealthManager.IsStealth == false && character.ShapeManager.Shape != ShapeEnum.Fox && character.ShapeManager.Shape != ShapeEnum.Wolf && character.ShapeManager.Shape != ShapeEnum.Knight && character.ShapeManager.Shape != ShapeEnum.Chicken && character.ShapeManager.Shape != ShapeEnum.Dog && character.ShapeManager.Shape != ShapeEnum.Horse;
 
                 return true;
             });
