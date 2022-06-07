@@ -487,5 +487,50 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.True(character1.HealthManager.IsDead);
         }
+
+        [Fact]
+        [Description("Resurrection should resurrect.")]
+        public void ResurrectionTest()
+        {
+            var priest = CreateCharacter();
+            var character = CreateCharacter();
+
+            character.HealthManager.DecreaseHP(1, CreateCharacter());
+
+            Assert.True(character.HealthManager.IsDead);
+            Assert.Equal(0, character.HealthManager.CurrentHP);
+
+            Assert.True(priest.SkillsManager.CanUseSkill(new Skill(Resurrection, 0, 0), character, out var _));
+            priest.SkillsManager.UseSkill(new Skill(Resurrection, 0, 0), priest, character);
+
+            Assert.False(character.HealthManager.IsDead);
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+        }
+
+        [Fact]
+        [Description("Resurrection can not be used on not-dead player.")]
+        public void ResurrectionCanNotBeUsedOnNonDeadTest()
+        {
+            var priest = CreateCharacter();
+            var character = CreateCharacter();
+
+            Assert.False(character.HealthManager.IsDead);
+            Assert.False(priest.SkillsManager.CanUseSkill(new Skill(Resurrection, 0, 0), character, out var _));
+        }
+
+        [Fact]
+        [Description("Resurrection can not be used on opposite country.")]
+        public void ResurrectionCanNotBeUsedOnOppositeCountryTest()
+        {
+            var priest = CreateCharacter();
+            var character = CreateCharacter(country: Fraction.Dark);
+
+            character.HealthManager.DecreaseHP(1, CreateCharacter());
+
+            Assert.True(character.HealthManager.IsDead);
+            Assert.Equal(0, character.HealthManager.CurrentHP);
+
+            Assert.False(priest.SkillsManager.CanUseSkill(new Skill(Resurrection, 0, 0), character, out var _));
+        }
     }
 }

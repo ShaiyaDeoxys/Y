@@ -64,7 +64,7 @@ namespace Imgeneus.Game.Skills
         /// <summary>
         /// Skill is meant for allies?
         /// </summary>
-        public bool IsForAlly { get => _dbSkill.TypeDetail == TypeDetail.Healing || _dbSkill.TypeDetail == TypeDetail.Buff || _dbSkill.TypeDetail == TypeDetail.PeriodicalHeal || _dbSkill.TypeDetail == TypeDetail.Dispel; }
+        public bool IsForAlly { get => _dbSkill.TypeDetail == TypeDetail.Healing || _dbSkill.TypeDetail == TypeDetail.Buff || _dbSkill.TypeDetail == TypeDetail.PeriodicalHeal || _dbSkill.TypeDetail == TypeDetail.Dispel || _dbSkill.TypeDetail == TypeDetail.Resurrection; }
 
         /// <summary>
         /// To what target this skill can be applied.

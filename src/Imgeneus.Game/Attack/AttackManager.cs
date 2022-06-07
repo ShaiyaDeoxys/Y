@@ -190,7 +190,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (target is not null && (target.HealthManager.IsDead || !target.HealthManager.IsAttackable))
+            if (target is not null && (target.HealthManager.IsDead || !target.HealthManager.IsAttackable) && skillNumber == IAttackManager.AUTO_ATTACK_NUMBER)
             {
                 success = AttackSuccess.WrongTarget;
                 return false;

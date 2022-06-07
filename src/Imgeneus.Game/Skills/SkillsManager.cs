@@ -10,6 +10,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Stats;
@@ -42,10 +43,10 @@ namespace Imgeneus.World.Game.Skills
         private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IMapProvider _mapProvider;
         private readonly ITeleportationManager _teleportationManager;
-
+        private readonly IMovementManager _movementManager;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager)
+        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager)
         {
             _logger = logger;
             _definitionsPreloder = definitionsPreloder;
@@ -61,7 +62,7 @@ namespace Imgeneus.World.Game.Skills
             _additionalInfoManager = additionalInfoManager;
             _mapProvider = mapProvider;
             _teleportationManager = teleportationManager;
-
+            _movementManager = movementManager;
             _levelProvider.OnLevelUp += OnLevelUp;
 
 #if DEBUG
@@ -281,7 +282,13 @@ namespace Imgeneus.World.Game.Skills
                  skill.TargetType == TargetType.AnyEnemy ||
                  skill.TargetType == TargetType.EnemiesNearTarget)
                     &&
-                (target is null || target.HealthManager.IsDead))
+                (target is null || target.HealthManager.IsDead && skill.Type != TypeDetail.Resurrection))
+            {
+                success = AttackSuccess.WrongTarget;
+                return false;
+            }
+
+            if (target is not null && skill.Type == TypeDetail.Resurrection && !target.HealthManager.IsDead)
             {
                 success = AttackSuccess.WrongTarget;
                 return false;
@@ -539,6 +546,13 @@ namespace Imgeneus.World.Game.Skills
 
                 case TypeDetail.Eraser:
                     _healthManager.DecreaseHP(_healthManager.MaxHP, skillOwner);
+                    break;
+
+                case TypeDetail.Resurrection:
+                    target.MovementManager.PosX = _movementManager.PosX;
+                    target.MovementManager.PosY = _movementManager.PosY;
+                    target.MovementManager.PosZ = _movementManager.PosZ;
+                    target.HealthManager.Rebirth();
                     break;
 
                 default:
