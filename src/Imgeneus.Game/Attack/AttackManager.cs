@@ -166,8 +166,6 @@ namespace Imgeneus.World.Game.Attack
 
         public bool IsShieldAvailable { get; set; } = true;
 
-        public bool IsAbleToAttack { get; set; } = true;
-
         public bool CanAttack(byte skillNumber, IKillable target, out AttackSuccess success)
         {
             if (!IsWeaponAvailable)
@@ -202,7 +200,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && !IsAbleToAttack)
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && !_speedManager.IsAbleToAttack)
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;

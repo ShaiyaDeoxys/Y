@@ -425,8 +425,12 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.Sleep:
                 case TypeDetail.Stun:
+                    _speedManager.Immobilize = true;
+                    _speedManager.IsAbleToAttack = false;
+                    break;
+
                 case TypeDetail.PreventAttack:
-                    _attackManager.IsAbleToAttack = false;
+                    _speedManager.IsAbleToAttack = false;
                     break;
 
                 case TypeDetail.Stealth:
@@ -611,21 +615,21 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Immobilize:
-                    _speedManager.Immobilize = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.Skill.SkillId, b.Skill.SkillLevel)].TypeDetail == TypeDetail.Immobilize);
+                    _speedManager.Immobilize = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
                     break;
 
                 case TypeDetail.Sleep:
                 case TypeDetail.Stun:
+                    _speedManager.IsAbleToAttack = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
+                    _speedManager.Immobilize = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
+                    break;
+
                 case TypeDetail.PreventAttack:
-                    _attackManager.IsAbleToAttack = ActiveBuffs.Any(b =>
-                    {
-                        var dbSkill = _definitionsPreloder.Skills[(b.Skill.SkillId, b.Skill.SkillLevel)];
-                        return dbSkill.TypeDetail == TypeDetail.Sleep || dbSkill.TypeDetail == TypeDetail.Stun || dbSkill.TypeDetail == TypeDetail.PreventAttack;
-                    });
+                    _speedManager.IsAbleToAttack = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
                     break;
 
                 case TypeDetail.Stealth:
-                    _stealthManager.IsStealth = ActiveBuffs.Any(b => _definitionsPreloder.Skills[(b.Skill.SkillId, b.Skill.SkillLevel)].TypeDetail == TypeDetail.Stealth);
+                    _stealthManager.IsStealth = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Stealth);
                     break;
 
                 case TypeDetail.WeaponMastery:

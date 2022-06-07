@@ -506,7 +506,8 @@ namespace Imgeneus.World.Tests
                     { (779, 1), PersistBarrier },
                     { (785, 1), Healing },
                     { (364, 1), FrostBarrier },
-                    { (792, 1), Resurrection }
+                    { (792, 1), Resurrection },
+                    { (777, 1), Hypnosis }
                 });
 
             databaseMock
@@ -1000,6 +1001,18 @@ namespace Imgeneus.World.Tests
             SkillId = 792,
             SkillLevel = 1,
             TypeDetail = TypeDetail.Resurrection,
+            TargetType = TargetType.SelectedEnemy,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.MagicAttack
+        };
+
+        protected DbSkill Hypnosis = new DbSkill()
+        {
+            SkillId = 777,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Stun,
             TargetType = TargetType.SelectedEnemy,
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,

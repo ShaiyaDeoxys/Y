@@ -11,6 +11,7 @@
         ABitFast,
         Fast,
         VeryFast,
-        ExteremelyFast
+        ExteremelyFast,
+        CanNotAttack = 255
     }
 }

@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Player;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ namespace Imgeneus.World.Game.Speed
     public class SpeedManager : ISpeedManager
     {
         private readonly ILogger<SpeedManager> _logger;
-
         protected int _ownerId;
 
         public SpeedManager(ILogger<SpeedManager> logger)
@@ -37,6 +37,9 @@ namespace Imgeneus.World.Game.Speed
 
         #region Attack speed
 
+        private bool _isAbleToAttack = true;
+        public bool IsAbleToAttack { get => _isAbleToAttack; set { _isAbleToAttack = value; RaiseMoveAndAttackSpeed(); } }
+
         public Dictionary<byte, byte> WeaponSpeedPassiveSkillModificator { get; init; } = new Dictionary<byte, byte>();
 
         private int _constAttackSpeed = 0;
@@ -49,6 +52,8 @@ namespace Imgeneus.World.Game.Speed
         {
             get
             {
+                if (!IsAbleToAttack)
+                    return AttackSpeed.CanNotAttack;
 
                 if (ConstAttackSpeed == 0)
                     return AttackSpeed.None;

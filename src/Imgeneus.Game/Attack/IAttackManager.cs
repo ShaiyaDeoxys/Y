@@ -70,11 +70,6 @@ namespace Imgeneus.World.Game.Attack
         event Action OnStartAttack;
 
         /// <summary>
-        /// Is it possible to make attack?
-        /// </summary>
-        bool IsAbleToAttack { get; set; }
-
-        /// <summary>
         /// Event, that is fired, when melee attack.
         /// </summary>
         event Action<int, IKillable, AttackResult> OnAttack;

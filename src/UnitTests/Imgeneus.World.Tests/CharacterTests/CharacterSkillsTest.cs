@@ -4,6 +4,8 @@ using Imgeneus.Game.Skills;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Speed;
 using Parsec.Shaiya.Skill;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -531,6 +533,23 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(0, character.HealthManager.CurrentHP);
 
             Assert.False(priest.SkillsManager.CanUseSkill(new Skill(Resurrection, 0, 0), character, out var _));
+        }
+
+        [Fact]
+        [Description("Hypnosis immobilizes and prevents attack.")]
+        public void HypnosisTest()
+        {
+            var priest = CreateCharacter();
+            var character = CreateCharacter(country: Fraction.Dark);
+
+            Assert.True(priest.SkillsManager.CanUseSkill(new Skill(Hypnosis, 0, 0), character, out var _));
+            priest.SkillsManager.UseSkill(new Skill(Hypnosis, 0, 0), priest, character);
+
+            Assert.Equal(AttackSpeed.CanNotAttack, character.SpeedManager.TotalAttackSpeed);
+            Assert.False(character.SpeedManager.IsAbleToAttack);
+
+            Assert.Equal(MoveSpeed.CanNotMove, character.SpeedManager.TotalMoveSpeed);
+            Assert.True(character.SpeedManager.Immobilize);
         }
     }
 }

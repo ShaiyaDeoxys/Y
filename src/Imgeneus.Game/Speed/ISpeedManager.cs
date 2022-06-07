@@ -14,6 +14,11 @@ namespace Imgeneus.World.Game.Speed
         #region Attack
 
         /// <summary>
+        /// Is it possible to make attack?
+        /// </summary>
+        bool IsAbleToAttack { get; set; }
+
+        /// <summary>
         /// Attack speed.
         /// </summary>
         AttackSpeed TotalAttackSpeed { get; }
@@ -59,7 +64,7 @@ namespace Imgeneus.World.Game.Speed
 
         #endregion
 
-            #region Events
+        #region Events
 
             /// <summary>
             /// Event, that is fired, when attack or move speed changes.
