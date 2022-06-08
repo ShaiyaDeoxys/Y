@@ -511,7 +511,8 @@ namespace Imgeneus.World.Tests
                     { (777, 1), Hypnosis },
                     { (793, 1), Evolution },
                     { (794, 1), Polymorph },
-                    { (791, 1), Detection }
+                    { (791, 1), Detection },
+                    { (786, 1), HealingPrayer }
                 });
 
             databaseMock
@@ -1066,6 +1067,21 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.MagicAttack,
             ApplyRange = 10
+        };
+
+        protected DbSkill HealingPrayer = new DbSkill()
+        {
+            SkillId = 786,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Healing,
+            TargetType = TargetType.AlliesButCaster,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.MagicAttack,
+            ApplyRange = 10,
+            HealHP = 80,
+            TypeEffect = TypeEffect.HealingDispel
         };
 
         #endregion

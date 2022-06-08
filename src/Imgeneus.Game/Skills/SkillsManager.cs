@@ -302,7 +302,7 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.AlliesNearCaster))
+            if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.AlliesNearCaster || skill.TargetType == TargetType.AlliesButCaster))
             {
                 success = AttackSuccess.Normal;
                 return true;
@@ -422,7 +422,7 @@ namespace Imgeneus.World.Game.Skills
                         else
                         {
                             if (n == 0 && (target == t || target is null))
-                                OnUsedSkill?.Invoke(_ownerId, target, skill, attackResult);
+                                OnUsedSkill?.Invoke(_ownerId, target, skill, target is null ? new AttackResult() : attackResult);
 
                             if (attackResult.Damage.HP > 0 && skill.Type != TypeDetail.Healing)
                                 t.HealthManager.DecreaseHP(attackResult.Damage.HP, skillOwner);
@@ -488,6 +488,16 @@ namespace Imgeneus.World.Game.Skills
 
                 case TargetType.AlliesNearCaster:
                     targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetPlayers(skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange, country: skillOwner.CountryProvider.Country));
+                    break;
+
+                case TargetType.AlliesButCaster:
+                    var owner = skillOwner as Character;
+                    if (owner.PartyManager.HasParty)
+                    {
+                        var partyMembers = owner.PartyManager.Party.GetShortMembersList(owner);
+                        var nearMembers = partyMembers.Where(m => m != owner && m.Map == owner.Map && MathExtensions.Distance(owner.PosX, m.PosX, owner.PosZ, m.PosZ) < skill.ApplyRange);
+                        targets.AddRange(nearMembers);
+                    }
                     break;
 
                 default:

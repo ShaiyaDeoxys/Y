@@ -4,6 +4,7 @@ using Imgeneus.Game.Skills;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Speed;
@@ -652,5 +653,41 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.False(character.StealthManager.IsStealth);
         }
+
+        [Fact]
+        [Description("HealingPrayer heals party members.")]
+        public void HealingPrayerTest()
+        {
+            var map = testMap;
+            var priest = CreateCharacter(map);
+            var character = CreateCharacter(map);
+
+            var party = new Party(packetFactoryMock.Object);
+            priest.PartyManager.Party = party;
+            character.PartyManager.Party = party;
+
+            var usedSkill = false;
+            var usedRangeSkill = false;
+
+            priest.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult result) =>
+            {
+                if (target is null && result.Damage.HP == 0)
+                    usedSkill = true;
+            };
+
+            priest.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable target, Skill skill, AttackResult result) =>
+            {
+                if (target == character)
+                    usedRangeSkill = true;
+            };
+
+            Assert.True(priest.SkillsManager.CanUseSkill(new Skill(HealingPrayer, 0, 0), null, out var _));
+            priest.SkillsManager.UseSkill(new Skill(HealingPrayer, 0, 0), priest);
+
+            Assert.True(usedSkill);
+            Assert.True(usedRangeSkill);
+            Assert.True(character.HealthManager.CurrentHP > 0);
+        }
+
     }
 }
