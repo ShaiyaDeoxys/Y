@@ -393,6 +393,7 @@ namespace Imgeneus.World.Packets
         void SendWorldDay(IWorldClient client);
         void SendRunMode(IWorldClient client, MoveMotion motion);
         void SendAccountPoints(IWorldClient client, uint points);
+        void SendScoutingInfo(IWorldClient client, Element defenceElement, ushort level, Mode grow);
         #endregion
     }
 }

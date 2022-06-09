@@ -12,12 +12,14 @@ using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
+using Imgeneus.World.Packets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.Skill;
@@ -47,9 +49,11 @@ namespace Imgeneus.World.Game.Skills
         private readonly ITeleportationManager _teleportationManager;
         private readonly IMovementManager _movementManager;
         private readonly IShapeManager _shapeManager;
+        private readonly IPartyManager _partyManager;
+        private readonly IGamePacketFactory _packetFactory;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IShapeManager shapeManager)
+        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IShapeManager shapeManager, IPartyManager partyManager, IGamePacketFactory packetFactory)
         {
             _logger = logger;
             _definitionsPreloder = definitionsPreloder;
@@ -67,6 +71,8 @@ namespace Imgeneus.World.Game.Skills
             _teleportationManager = teleportationManager;
             _movementManager = movementManager;
             _shapeManager = shapeManager;
+            _partyManager = partyManager;
+            _packetFactory = packetFactory;
             _levelProvider.OnLevelUp += OnLevelUp;
 
 #if DEBUG
@@ -608,6 +614,18 @@ namespace Imgeneus.World.Game.Skills
                         if (buff is not null)
                             buff.CancelBuff();
                     }
+                    break;
+
+                case TypeDetail.Scouting:
+                    var members = new List<Character>();
+                    if (_partyManager.HasParty)
+                        members.AddRange(_partyManager.Party.GetShortMembersList((Character)skillOwner).Where(x => x.AttackManager.Target == target));
+
+                    if (!members.Contains(skillOwner))
+                        members.Add((Character)skillOwner);
+
+                    foreach (var member in members)
+                        _packetFactory.SendScoutingInfo(member.GameSession.Client, target.ElementProvider.DefenceElement, target.LevelProvider.Level, ((Character)target).AdditionalInfoManager.Grow);
                     break;
 
                 default:

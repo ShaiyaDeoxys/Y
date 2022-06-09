@@ -2643,6 +2643,15 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendScoutingInfo(IWorldClient client, Element defenceElement, ushort level, Mode grow)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SCOUTING_INFO);
+            packet.Write((int)defenceElement);
+            packet.Write(level);
+            packet.Write((byte)grow);
+            client.Send(packet);
+        }
+
         #endregion
     }
 }

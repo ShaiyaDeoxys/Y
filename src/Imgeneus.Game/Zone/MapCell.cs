@@ -14,6 +14,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Speed;
 using Parsec.Shaiya.NpcQuest;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -337,6 +338,13 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         private void Character_OnUsedSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
+            if (skill.Type == TypeDetail.Scouting)
+            {
+                var player = GetPlayer(senderId);
+                Map.PacketFactory.SendCharacterUsedSkill(player.GameSession.Client, senderId, target, skill, attackResult);
+                return;
+            }
+
             foreach (var player in GetAllPlayers(true))
             {
                 Map.PacketFactory.SendCharacterUsedSkill(player.GameSession.Client, senderId, target, skill, attackResult);
