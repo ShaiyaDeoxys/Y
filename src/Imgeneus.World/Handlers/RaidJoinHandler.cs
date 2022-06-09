@@ -33,7 +33,7 @@ namespace Imgeneus.World.Handlers
                 return;
             }
 
-            var raidMember = _gameWorld.Players.Values.FirstOrDefault(m => m.Name == packet.CharacterName);
+            var raidMember = _gameWorld.Players.Values.FirstOrDefault(m => m.AdditionalInfoManager.Name == packet.CharacterName);
             if (raidMember is null || raidMember.CountryProvider.Country != _countryProvider.Country || !(raidMember.PartyManager.Party is Raid))
                 _packetFactory.SendPartyError(client, PartyErrorType.RaidNotFound);
             else

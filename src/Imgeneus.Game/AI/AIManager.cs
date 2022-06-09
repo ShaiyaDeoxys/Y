@@ -504,7 +504,15 @@ namespace Imgeneus.World.Game.AI
             var anyVisibleEnemy = enemies.Any(x =>
             {
                 if (x is Character character)
-                    return character.StealthManager.IsStealth == false && character.ShapeManager.Shape != ShapeEnum.Fox && character.ShapeManager.Shape != ShapeEnum.Wolf && character.ShapeManager.Shape != ShapeEnum.Knight && character.ShapeManager.Shape != ShapeEnum.Chicken && character.ShapeManager.Shape != ShapeEnum.Dog && character.ShapeManager.Shape != ShapeEnum.Horse;
+                    return character.StealthManager.IsStealth == false &&
+                           character.ShapeManager.Shape != ShapeEnum.Fox &&
+                           character.ShapeManager.Shape != ShapeEnum.Wolf &&
+                           character.ShapeManager.Shape != ShapeEnum.Knight &&
+                           character.ShapeManager.Shape != ShapeEnum.Chicken &&
+                           character.ShapeManager.Shape != ShapeEnum.Dog &&
+                           character.ShapeManager.Shape != ShapeEnum.Horse &&
+                           character.ShapeManager.Shape != ShapeEnum.Pig &&
+                           character.ShapeManager.Shape != ShapeEnum.Mob;
 
                 return true;
             });

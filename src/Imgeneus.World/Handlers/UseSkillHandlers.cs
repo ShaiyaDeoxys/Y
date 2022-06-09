@@ -50,7 +50,7 @@ namespace Imgeneus.World.Handlers
                 return;
 
             var target = _mapProvider.Map.GetMob(player.CellId, packet.TargetId);
-            if (target is null)
+            if (target is null && packet.TargetId != -1)
                 return;
 
             UseSkill(client, packet.Number, player, target);

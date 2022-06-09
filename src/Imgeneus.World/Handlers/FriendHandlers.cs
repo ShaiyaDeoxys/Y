@@ -32,12 +32,12 @@ namespace Imgeneus.World.Handlers
             if (requester is null)
                 return;
 
-            var responser = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.CharacterName).Value;
+            var responser = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.CharacterName).Value;
             if (responser is null || responser.CountryProvider.Country != _countryProvider.Country)
                 return;
 
             responser.FriendsManager.LastRequester = requester;
-            _packetFactory.SendFriendRequest(responser.GameSession.Client, requester.Name);
+            _packetFactory.SendFriendRequest(responser.GameSession.Client, requester.AdditionalInfoManager.Name);
         }
 
         [HandlerAction(PacketType.FRIEND_RESPONSE)]

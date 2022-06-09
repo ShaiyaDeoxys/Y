@@ -231,6 +231,7 @@ namespace Imgeneus.World.Game.Zone
             character.TeleportationManager.OnCastingTeleport += Character_OnItemCasting;
             character.ShopManager.OnShopStarted += Character_OnShopStarted;
             character.ShopManager.OnShopFinished += Character_OnShopFinished;
+            character.AdditionalInfoManager.OnNameChange += Character_OnNameChange;
         }
 
         /// <summary>
@@ -268,6 +269,7 @@ namespace Imgeneus.World.Game.Zone
             character.TeleportationManager.OnCastingTeleport -= Character_OnItemCasting;
             character.ShopManager.OnShopStarted -= Character_OnShopStarted;
             character.ShopManager.OnShopFinished -= Character_OnShopFinished;
+            character.AdditionalInfoManager.OnNameChange -= Character_OnNameChange;
         }
 
         #region Character listeners
@@ -438,7 +440,15 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnShapeChange(int senderId, ShapeEnum shape, int param1, int param2)
         {
             foreach (var player in GetAllPlayers(true))
+            {
                 Map.PacketFactory.SendShapeUpdate(player.GameSession.Client, senderId, shape, param1, param2);
+
+                if (shape == ShapeEnum.OppositeCountryCharacter)
+                    Map.PacketFactory.SendCharacterShape(player.GameSession.Client, senderId, Map.GameWorld.Players[param1]);
+
+                if (shape == ShapeEnum.None)
+                    Map.PacketFactory.SendCharacterShape(player.GameSession.Client, senderId, Map.GameWorld.Players[senderId]);
+            }
         }
 
         private void Character_OnUsedRangeSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
@@ -537,6 +547,14 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendTransformation(p.GameSession.Client, senderId, isTransformed);
+        }
+
+        private void Character_OnNameChange(int senderId)
+        {
+            var player = Map.GameWorld.Players[senderId];
+
+            foreach (var p in GetAllPlayers(true))
+                Map.PacketFactory.SendCharacterShape(p.GameSession.Client, senderId, player);
         }
 
         #endregion

@@ -91,18 +91,28 @@ namespace Imgeneus.World.Tests
         protected Mock<IItemEnchantConfiguration> enchantConfig = new Mock<IItemEnchantConfiguration>();
         protected Mock<IItemCreateConfiguration> itemCreateConfig = new Mock<IItemCreateConfiguration>();
 
-        protected Map testMap => new Map(
-                    Map.TEST_MAP_ID,
-                    new MapDefinition(),
-                    new Svmap() { MapSize = 100, CellSize = 100 },
-                    new List<ObeliskConfiguration>(),
-                    mapLoggerMock.Object,
-                    packetFactoryMock.Object,
-                    databasePreloader.Object,
-                    mobFactoryMock.Object,
-                    npcFactoryMock.Object,
-                    obeliskFactoryMock.Object,
-                    timeMock.Object);
+        protected Map testMap
+        {
+            get
+            {
+                var map = new Map(
+                        Map.TEST_MAP_ID,
+                        new MapDefinition(),
+                        new Svmap() { MapSize = 100, CellSize = 100 },
+                        new List<ObeliskConfiguration>(),
+                        mapLoggerMock.Object,
+                        packetFactoryMock.Object,
+                        databasePreloader.Object,
+                        mobFactoryMock.Object,
+                        npcFactoryMock.Object,
+                        obeliskFactoryMock.Object,
+                        timeMock.Object);
+
+                map.GameWorld = gameWorldMock.Object;
+
+                return map;
+            }
+        }
 
         private int _characterId;
         protected Character CreateCharacter(Map map = null, Fraction country = Fraction.Light, GuildConfiguration guildConfiguration = null, GuildHouseConfiguration guildHouseConfiguration = null, CharacterProfession profession = CharacterProfession.Fighter)
@@ -118,7 +128,7 @@ namespace Imgeneus.World.Tests
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
             var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
             var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
-            additionalInfoManager.Init(_characterId, Race.Human, profession, 0, 0, 0, Gender.Man, Mode.Ultimate, 0);
+            additionalInfoManager.Init(_characterId, Race.Human, profession, 0, 0, 0, Gender.Man, Mode.Ultimate, 0, string.Empty);
 
             var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object);
 
@@ -141,13 +151,14 @@ namespace Imgeneus.World.Tests
 
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);
             var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
+            shapeManager.Init(_characterId);
 
             var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, shapeManager);
             attackManager.AlwaysHit = true;
-            
+
             var castProtectionManager = new CastProtectionManager(new Mock<ILogger<CastProtectionManager>>().Object, movementManager, partyManager, packetFactoryMock.Object, new Mock<IGameSession>().Object, mapProvider);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager, castProtectionManager, movementManager, mapProvider, gameWorldMock.Object);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager, attackManager, teleportManager, warehouseManager, shapeManager, castProtectionManager, movementManager, additionalInfoManager, mapProvider, gameWorldMock.Object);
             buffsManager.Init(_characterId);
 
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, teleportManager, movementManager, shapeManager);
@@ -246,7 +257,7 @@ namespace Imgeneus.World.Tests
             attackManager.AlwaysHit = true;
 
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
-            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null, null, movementManager, mapProvider, gameWorldMock.Object);
+            var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null, null, movementManager, null, mapProvider, gameWorldMock.Object);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, null, movementManager, new Mock<IShapeManager>().Object);
             var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, definitionsPreloader.Object, speedManager);
 
@@ -512,7 +523,9 @@ namespace Imgeneus.World.Tests
                     { (793, 1), Evolution },
                     { (794, 1), Polymorph },
                     { (791, 1), Detection },
-                    { (786, 1), HealingPrayer }
+                    { (786, 1), HealingPrayer },
+                    { (677, 1), TransformationAssassin },
+                    { (680, 1), Disguise }
                 });
 
             databaseMock
@@ -1040,7 +1053,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.MagicAttack,
-            TypeEffect = TypeEffect.Buff
+            TypeEffect = TypeEffect.Buff,
+            UsedByPriest = 1
         };
 
         protected DbSkill Polymorph = new DbSkill()
@@ -1053,7 +1067,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.MagicAttack,
-            TypeEffect = TypeEffect.Debuff
+            TypeEffect = TypeEffect.Debuff,
+            UsedByPriest = 1
         };
 
         protected DbSkill Detection = new DbSkill()
@@ -1082,6 +1097,32 @@ namespace Imgeneus.World.Tests
             ApplyRange = 10,
             HealHP = 80,
             TypeEffect = TypeEffect.HealingDispel
+        };
+
+        protected DbSkill TransformationAssassin = new DbSkill()
+        {
+            SkillId = 677,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Evolution,
+            TargetType = TargetType.Caster,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.Buff,
+            UsedByRanger = 1
+        };
+
+        protected DbSkill Disguise = new DbSkill()
+        {
+            SkillId = 680,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Evolution,
+            TargetType = TargetType.Caster,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.Buff,
+            UsedByRanger = 1
         };
 
         #endregion

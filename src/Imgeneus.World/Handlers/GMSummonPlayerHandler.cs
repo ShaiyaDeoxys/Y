@@ -31,7 +31,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.Name).Value;
+            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.Name).Value;
             var ok = Handle(player, packet.MapId, packet.X, 10, packet.Z);
 
             if (ok)
@@ -46,7 +46,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.Name).Value;
+            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.Name).Value;
             var ok = Handle(player, packet.MapId, packet.X, 10, packet.Z);
 
             if (ok)
@@ -61,7 +61,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.Name).Value;
+            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.Name).Value;
             var ok = Handle(player, _mapProvider.Map.Id, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);
 
             if (ok)
@@ -76,7 +76,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.Name).Value;
+            var player = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.Name).Value;
             var ok = Handle(player, _mapProvider.Map.Id, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);
 
             if (ok)

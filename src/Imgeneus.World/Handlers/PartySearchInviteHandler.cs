@@ -22,7 +22,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.PARTY_SEARCH_INVITE)]
         public void Handle(WorldClient client, PartySearchInvitePacket packet)
         {
-            var requestedPlayer = _mapProvider.Map.PartySearchers.FirstOrDefault(p => p.Name == packet.Name);
+            var requestedPlayer = _mapProvider.Map.PartySearchers.FirstOrDefault(p => p.AdditionalInfoManager.Name == packet.Name);
             if (requestedPlayer != null && !requestedPlayer.PartyManager.HasParty)
             {
                 requestedPlayer.PartyManager.InviterId = _gameSession.CharId;

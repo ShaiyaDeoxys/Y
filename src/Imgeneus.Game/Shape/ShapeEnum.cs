@@ -30,6 +30,9 @@
         Snowboard3 = 32,
         VehicleCustom2 = 34,
 
+        OppositeCountryCharacter = 100,
+        Mob = 102, // Specific mob, requires mob id.
+
         /// <summary>
         /// New vehicles, that are using model id instead of formula with Grow & Range.
         /// </summary>

@@ -36,7 +36,7 @@ namespace Imgeneus.World.Handlers
             // Send map values.
             _packetFactory.SendWeather(client, _mapProvider.Map);
             _packetFactory.SendObelisks(client, _mapProvider.Map.Obelisks.Values);
-            _packetFactory.SendCharacterShape(client, _gameWorld.Players[_gameSession.CharId]); // Should fix the issue with dye color, when first connection.
+            _packetFactory.SendCharacterShape(client, _gameSession.CharId, _gameWorld.Players[_gameSession.CharId]); // Should fix the issue with dye color, when first connection.
 
             if (_mapProvider.Map is GuildHouseMap)
                 _packetFactory.SendGuildWarehouseItems(client, await _warehouseManager.GetGuildItems());

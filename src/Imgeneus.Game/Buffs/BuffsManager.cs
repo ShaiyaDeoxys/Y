@@ -4,6 +4,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
+using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
@@ -47,11 +48,12 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IShapeManager _shapeManager;
         private readonly ICastProtectionManager _castProtectionManager;
         private readonly IMovementManager _movementManager;
+        private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IMapProvider _mapProvider;
         private readonly IGameWorld _gameWorld;
         private int _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IMapProvider mapProvider, IGameWorld gameWorld)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, IGameWorld gameWorld)
         {
             _logger = logger;
             _database = database;
@@ -69,11 +71,12 @@ namespace Imgeneus.World.Game.Buffs
             _shapeManager = shapeManager;
             _castProtectionManager = castProtectionManager;
             _movementManager = movementManager;
+            _additionalInfoManager = additionalInfoManager;
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.OnGotDamage += HealthManager_OnGotDamage;
-            _attackManager.OnStartAttack += CancelStealth;
+            _attackManager.OnStartAttack += AttackManager_OnStartAttack;
             _untouchableManager.OnBlockedMagicAttacksChanged += UntouchableManager_OnBlockedMagicAttacksChanged;
             _movementManager.OnMove += MovementManager_OnMove;
 
@@ -141,7 +144,7 @@ namespace Imgeneus.World.Game.Buffs
             PassiveBuffs.CollectionChanged -= PassiveBuffs_CollectionChanged;
             _healthManager.OnDead -= HealthManager_OnDead;
             _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
-            _attackManager.OnStartAttack -= CancelStealth;
+            _attackManager.OnStartAttack -= AttackManager_OnStartAttack;
             _untouchableManager.OnBlockedMagicAttacksChanged -= UntouchableManager_OnBlockedMagicAttacksChanged;
             _movementManager.OnMove -= MovementManager_OnMove;
         }
@@ -527,10 +530,33 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Evolution:
-                    if (skill.TypeEffect == TypeEffect.Buff)
-                        _shapeManager.MonsterLevel = skill.SkillLevel;
-                    else
-                        _shapeManager.MonsterLevel = 4;
+                    if (skill.UsedByPriest == 1)
+                    {
+                        if (skill.TypeEffect == TypeEffect.Buff)
+                            _shapeManager.MonsterLevel = (ShapeEnum)(9 + skill.SkillLevel);
+                        else
+                            _shapeManager.MonsterLevel = ShapeEnum.Pig;
+                    }
+                    else if (buff.Skill.IsUsedByRanger)
+                    {
+                        if (buff.Skill.SkillId == 107 || buff.Skill.SkillId == 680)
+                        {
+                            _shapeManager.CharacterId = buff.Skill.CharacterId == _ownerId ? 0 : buff.Skill.CharacterId;
+                            _shapeManager.IsOppositeCountry = true;
+                            break;
+                        }
+
+                        if (buff.Skill.MobShape == 0)
+                            _shapeManager.MonsterLevel = (ShapeEnum)(3 + skill.SkillLevel);
+                        else
+                        {
+                            _shapeManager.MobId = buff.Skill.MobShape;
+                            _shapeManager.MonsterLevel = ShapeEnum.Mob;
+                            _additionalInfoManager.FakeName = string.Empty;
+                            _additionalInfoManager.FakeGuildName = string.Empty;
+                            _additionalInfoManager.RaiseNameChange();
+                        }
+                    }
                     break;
 
                 default:
@@ -711,7 +737,25 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Evolution:
-                    _shapeManager.MonsterLevel = 0;
+                    if (skill.UsedByPriest == 1)
+                        _shapeManager.MonsterLevel = 0;
+                    else if (buff.Skill.IsUsedByRanger)
+                    {
+                        if (buff.Skill.SkillId == 107 || buff.Skill.SkillId == 680)
+                        {
+                            _shapeManager.CharacterId = 0;
+                            _shapeManager.IsOppositeCountry = false;
+                            break;
+                        }
+                        else
+                        {
+                            _shapeManager.MobId = 0;
+                            _shapeManager.MonsterLevel = ShapeEnum.None;
+                            _additionalInfoManager.FakeName = null;
+                            _additionalInfoManager.FakeGuildName = null;
+                            _additionalInfoManager.RaiseNameChange();
+                        }
+                    }
                     break;
 
                 default:
@@ -1100,13 +1144,11 @@ namespace Imgeneus.World.Game.Buffs
                 b.CancelBuff();
         }
 
-        private void CancelStealth()
+        private void AttackManager_OnStartAttack()
         {
-            if (_stealthManager.IsStealth && !_stealthManager.IsAdminStealth)
-            {
-                var stealthBuff = ActiveBuffs.FirstOrDefault(b => b.IsStealth);
-                stealthBuff.CancelBuff();
-            }
+            var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenAttack).ToList();
+            foreach (var b in buffs)
+                b.CancelBuff();
         }
 
         private void UntouchableManager_OnBlockedMagicAttacksChanged(byte blockedAttacksLeft)

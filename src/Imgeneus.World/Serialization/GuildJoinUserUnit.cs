@@ -24,7 +24,7 @@ namespace Imgeneus.World.Serialization
             Id = character.Id;
             Level = character.LevelProvider.Level;
             Job = character.AdditionalInfoManager.Class;
-            Name = character.Name;
+            Name = character.AdditionalInfoManager.Name;
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Imgeneus.World.Game.Notice
         // TODO: Implement notice timer with time interval
         public bool TrySendPlayerNotice(string message, string targetPlayer, short timeInterval = 0)
         {
-            var target = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == targetPlayer);
+            var target = _gameWorld.Players.Values.FirstOrDefault(p => p.AdditionalInfoManager.Name == targetPlayer);
 
             if (target == null)
                 return false;

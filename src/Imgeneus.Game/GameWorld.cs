@@ -69,6 +69,7 @@ namespace Imgeneus.World.Game
                 if (mapDefinition.CreateType == CreateType.Default)
                 {
                     var map = _mapFactory.CreateMap(mapDefinition.Id, mapDefinition, config, _mapsLoader.GetObelisks(mapDefinition.Id));
+                    map.GameWorld = this;
                     if (Maps.TryAdd(mapDefinition.Id, map))
                         _logger.LogInformation("Map {id} was successfully loaded.", map.Id);
                 }

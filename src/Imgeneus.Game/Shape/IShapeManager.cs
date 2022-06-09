@@ -29,6 +29,21 @@ namespace Imgeneus.World.Game.Shape
         /// <summary>
         /// Monster shape level. Fox is 1, Wolf is 2, Knight is 3.
         /// </summary>
-        byte MonsterLevel { get; set; }
+        ShapeEnum MonsterLevel { get; set; }
+
+        /// <summary>
+        /// Specific monster shape.
+        /// </summary>
+        ushort MobId { get; set; }
+
+        /// <summary>
+        /// Transformed to opposite country character.
+        /// </summary>
+        bool IsOppositeCountry { get; set; }
+
+        /// <summary>
+        /// Opposite country character.
+        /// </summary>
+        int CharacterId { get; set; }
     }
 }

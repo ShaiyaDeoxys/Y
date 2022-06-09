@@ -316,8 +316,7 @@ namespace Imgeneus.World.Game.Player
                                           gameSession,
                                           packetFactory)
             {
-                Id = dbCharacter.Id,
-                Name = dbCharacter.Name
+                Id = dbCharacter.Id
             };
 
             character.QuickItems = dbCharacter.QuickItems;

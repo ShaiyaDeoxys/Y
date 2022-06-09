@@ -38,11 +38,11 @@ namespace Imgeneus.World.Game.Chat
                     break;
 
                 case MessageType.Whisper:
-                    var target = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == targetName);
+                    var target = _gameWorld.Players.Values.FirstOrDefault(p => p.AdditionalInfoManager.Name == targetName);
                     if (target != null && target.Id != sender.Id && target.CountryProvider.Country == sender.CountryProvider.Country)
                     {
-                        _packetFactory.SendWhisper(sender.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
-                        _packetFactory.SendWhisper(target.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
+                        _packetFactory.SendWhisper(sender.GameSession.Client, sender.AdditionalInfoManager.Name, message, sender.GameSession.IsAdmin);
+                        _packetFactory.SendWhisper(target.GameSession.Client, sender.AdditionalInfoManager.Name, message, sender.GameSession.IsAdmin);
                     }
                     break;
 
@@ -60,7 +60,7 @@ namespace Imgeneus.World.Game.Chat
                     var mapPlayers = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 0, sender.CountryProvider.Country, true).Cast<Character>();
                     foreach (var player in mapPlayers)
                     {
-                        _packetFactory.SendMap(player.GameSession.Client, sender.Name, message);
+                        _packetFactory.SendMap(player.GameSession.Client, sender.AdditionalInfoManager.Name, message);
                     }
                     break;
 
@@ -70,7 +70,7 @@ namespace Imgeneus.World.Game.Chat
                         var worldPlayers = _gameWorld.Players.Values.Where(p => p.CountryProvider.Country == sender.CountryProvider.Country);
                         foreach (var player in worldPlayers)
                         {
-                            _packetFactory.SendWorld(player.GameSession.Client, sender.Name, message);
+                            _packetFactory.SendWorld(player.GameSession.Client, sender.AdditionalInfoManager.Name, message);
                         }
                     }
                     break;
@@ -79,7 +79,7 @@ namespace Imgeneus.World.Game.Chat
                     var allPlayers = _gameWorld.Players.Values;
                     foreach (var player in allPlayers)
                     {
-                        _packetFactory.SendMessageToServer(player.GameSession.Client, sender.Name, message);
+                        _packetFactory.SendMessageToServer(player.GameSession.Client, sender.AdditionalInfoManager.Name, message);
                     }
                     break;
 
@@ -92,7 +92,7 @@ namespace Imgeneus.World.Game.Chat
                                 continue;
 
                             var player = _gameWorld.Players[guildMember.Id];
-                            _packetFactory.SendGuild(player.GameSession.Client, sender.Name, message, sender.GameSession.IsAdmin);
+                            _packetFactory.SendGuild(player.GameSession.Client, sender.AdditionalInfoManager.Name, message, sender.GameSession.IsAdmin);
                         }
                     }
 

@@ -8,7 +8,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
 {
     public interface IAdditionalInfoManager : ISessionedService
     {
-        void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points);
+        void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points, string name);
 
         Race Race { get; set; }
         CharacterProfession Class { get; set; }
@@ -45,5 +45,30 @@ namespace Imgeneus.World.Game.AdditionalInfo
         /// <param name="size">new size</param>
         /// <param name="sex">new sex</param>
         Task ChangeAppearance(byte hair, byte face, byte size, byte sex);
+
+        /// <summary>
+        /// Character name.
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
+        /// Character's not real name.
+        /// </summary>
+        string FakeName { get; set; }
+
+        /// <summary>
+        /// Character's not real guild name.
+        /// </summary>
+        string FakeGuildName { get; set; }
+
+        /// <summary>
+        /// Raises event, that sends full character shape change.
+        /// </summary>
+        void RaiseNameChange();
+
+        /// <summary>
+        /// Event is fired when <see cref="FakeName"/> or <see cref="FakeGuildName"/> changed.
+        /// </summary>
+        event Action<int> OnNameChange;
     }
 }

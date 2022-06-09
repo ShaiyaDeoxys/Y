@@ -58,22 +58,13 @@ namespace Imgeneus.World.Game.Shape
                     return ShapeEnum.Stealth;
 
                 if (MonsterLevel > 0)
-                {
-                    switch (MonsterLevel)
-                    {
-                        case 1:
-                            return ShapeEnum.Fox;
+                    return MonsterLevel;
 
-                        case 2:
-                            return ShapeEnum.Wolf;
-
-                        case 3:
-                            return ShapeEnum.Knight;
-
-                        case 4:
-                            return ShapeEnum.Pig;
-                    }
-                }
+                if (IsOppositeCountry)
+                    if (CharacterId != 0)
+                        return ShapeEnum.OppositeCountryCharacter;
+                    else
+                        return ShapeEnum.OppositeCountry;
 
                 if (_vehicleManager.IsOnVehicle)
                 {
@@ -109,17 +100,33 @@ namespace Imgeneus.World.Game.Shape
             }
         }
 
-        private byte _monsterLevel;
-        public byte MonsterLevel
+        private ShapeEnum _monsterLevel;
+        public ShapeEnum MonsterLevel
         {
             get => _monsterLevel;
             set
             {
                 _monsterLevel = value;
-                OnShapeChange?.Invoke(_ownerId, Shape, 0, 0);
+                OnShapeChange?.Invoke(_ownerId, Shape, MobId, 0);
             }
         }
 
+        public ushort MobId { get; set; }
+
         public event Action<int, bool> OnTranformated;
+
+
+        private bool _isOppositeCountry;
+        public bool IsOppositeCountry
+        {
+            get => _isOppositeCountry;
+            set
+            {
+                _isOppositeCountry = value;
+                OnShapeChange?.Invoke(_ownerId, Shape, CharacterId, 0);
+            }
+        }
+
+        public int CharacterId { get; set; }
     }
 }

@@ -226,7 +226,7 @@ namespace Imgeneus.World.Game.Player
                                autoWis: dbCharacter.AutoWis,
                                autoLuc: dbCharacter.AutoLuc);
 
-            _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender, dbCharacter.Mode, dbCharacter.User.Points);
+            _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender, dbCharacter.Mode, dbCharacter.User.Points, dbCharacter.Name);
 
             _levelingManager.Init(dbCharacter.Id, dbCharacter.Exp);
 
@@ -285,7 +285,10 @@ namespace Imgeneus.World.Game.Player
             _shopManager.Init(dbCharacter.Id);
 
             _stealthManager.Init(dbCharacter.Id);
+
+#if !DEBUG
             _stealthManager.IsAdminStealth = isAdmin;
+#endif
 
             var player = Character.FromDbCharacter(dbCharacter,
                                         _characterLogger,

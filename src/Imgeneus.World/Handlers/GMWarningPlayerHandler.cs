@@ -21,7 +21,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GM_WARNING_PLAYER)]
         public void HandleNoticeWorld(WorldClient client, GMWarningPacket packet)
         {
-            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.Name).Value;
+            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.Name).Value;
 
             if (target == null)
             {

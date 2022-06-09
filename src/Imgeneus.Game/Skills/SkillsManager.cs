@@ -10,6 +10,7 @@ using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
+using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
@@ -308,6 +309,18 @@ namespace Imgeneus.World.Game.Skills
                 return true;
             }
 
+            if (target is Mob && (skill.Type == TypeDetail.Evolution && skill.SkillId == 77 || skill.SkillId == 677)) // Transform into mob.
+            {
+                success = AttackSuccess.Normal;
+                return true;
+            }
+
+            if (target is Character && target.CountryProvider.Country != _countryProvider.Country && (skill.Type == TypeDetail.Evolution && skill.SkillId == 107 || skill.SkillId == 680)) // Disguise into opposite country.
+            {
+                success = AttackSuccess.Normal;
+                return true;
+            }
+
             if (target.CountryProvider.Country == _countryProvider.Country && skill.TargetType != TargetType.Caster && skill.TargetType != TargetType.EnemiesNearCaster)
             {
                 if (target is Character targetCharacter)
@@ -531,7 +544,19 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.EtainShield:
                 case TypeDetail.DamageReflection:
                 case TypeDetail.PersistBarrier:
+                    target.BuffsManager.AddBuff(skill, skillOwner);
+                    break;
+
                 case TypeDetail.Evolution:
+                    if (skill.IsUsedByRanger && (skill.SkillId == 77 || skill.SkillId == 677))
+                        if (initialTarget is Mob mob)
+                            skill.MobShape = mob.MobId;
+                        else
+                            skill.MobShape = 0;
+
+                    if (skill.IsUsedByRanger && (skill.SkillId == 107 || skill.SkillId == 680) && initialTarget is Character)
+                        skill.CharacterId = initialTarget.Id;
+
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
@@ -640,7 +665,7 @@ namespace Imgeneus.World.Game.Skills
 
         private void CancelBuffs()
         {
-            var buffs = _buffsManager.ActiveBuffs.Where(b => b.IsCanceledWhenUsingSkill).ToList();
+            var buffs = _buffsManager.ActiveBuffs.Where(b => b.IsCanceledWhenAttack).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
         }

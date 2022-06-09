@@ -37,7 +37,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
 
         #region Init & Clear
 
-        public void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points)
+        public void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points, string name)
         {
             _ownerId = ownerId;
 
@@ -49,6 +49,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
             Gender = gender;
             Grow = grow;
             Points = points;
+            Name = name;
         }
 
         public async Task Clear()
@@ -139,6 +140,22 @@ namespace Imgeneus.World.Game.AdditionalInfo
         #region Points
 
         public uint Points { get; set; }
+
+        #endregion
+
+        #region Name
+
+        public string Name { get; set; } = "";
+
+        public string FakeName { get; set; }
+        public string FakeGuildName { get; set; }
+
+        public event Action<int> OnNameChange;
+
+        public void RaiseNameChange()
+        {
+            OnNameChange?.Invoke(_ownerId);
+        }
 
         #endregion
     }

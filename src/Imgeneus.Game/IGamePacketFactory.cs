@@ -96,7 +96,7 @@ namespace Imgeneus.World.Packets
         void SendCharacterMotion(IWorldClient client, int characterId, Motion motion);
         void SendCharacterMoves(IWorldClient client, int senderId, float x, float y, float z, ushort a, MoveMotion motion);
         void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot);
-        void SendCharacterShape(IWorldClient client, Character character);
+        void SendCharacterShape(IWorldClient client, int characterId, Character character);
         void SendShapeUpdate(IWorldClient client, int senderId, ShapeEnum shape, int? param1 = null, int? param2 = null);
         void SendMaxHitpoints(IWorldClient client, int characterId, HitpointType type, int value);
         void SendRecoverCharacter(IWorldClient client, int characterId, int hp, int mp, int sp);

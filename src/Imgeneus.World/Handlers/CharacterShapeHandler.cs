@@ -24,7 +24,7 @@ namespace Imgeneus.World.Handlers
             if (character is null)
                 return;
 
-            _packetFactory.SendCharacterShape(client, character);
+            _packetFactory.SendCharacterShape(client, character.Id, character);
         }
     }
 }

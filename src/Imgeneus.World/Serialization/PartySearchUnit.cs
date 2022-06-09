@@ -13,14 +13,14 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(1)]
         public CharacterProfession Job;
 
-        [FieldOrder(2)]
-        public byte[] Name;
+        [FieldOrder(2), FieldLength(21)]
+        public string Name;
 
         public PartySearchUnit(Character character)
         {
             Level = (byte)character.LevelProvider.Level;
             Job = character.AdditionalInfoManager.Class;
-            Name = character.NameAsByteArray;
+            Name = character.AdditionalInfoManager.Name;
         }
     }
 }

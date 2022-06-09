@@ -142,13 +142,14 @@ namespace Imgeneus.World.Game.Buffs
         }
 
         /// <summary>
-        /// Buff should be canceled, when player used any other skill?
+        /// Buff should be canceled, when player used any other skill or autoattack?
         /// </summary>
-        public bool IsCanceledWhenUsingSkill
+        public bool IsCanceledWhenAttack
         {
             get
             {
-                return Skill.Type == TypeDetail.PersistBarrier;
+                return Skill.Type == TypeDetail.PersistBarrier ||
+                       Skill.Type == TypeDetail.Evolution && Skill.IsUsedByRanger; // Transformation & Disguise
             }
         }
 
@@ -161,7 +162,8 @@ namespace Imgeneus.World.Game.Buffs
             {
                 return Skill.Type == TypeDetail.Stealth ||
                        Skill.StateType == StateType.Sleep || 
-                       (Skill.Type == TypeDetail.Evolution && Skill.TypeEffect == TypeEffect.Debuff);
+                       (Skill.Type == TypeDetail.Evolution && Skill.TypeEffect == TypeEffect.Debuff) ||
+                       (Skill.Type == TypeDetail.Evolution && Skill.IsUsedByRanger);
             }
         }
 

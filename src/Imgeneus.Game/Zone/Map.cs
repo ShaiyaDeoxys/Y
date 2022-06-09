@@ -45,6 +45,8 @@ namespace Imgeneus.World.Game.Zone
 
         public IGamePacketFactory PacketFactory { get => _packetFactory; }
 
+        public IGameWorld GameWorld { get; set; }
+
         /// <summary>
         /// Map id.
         /// </summary>

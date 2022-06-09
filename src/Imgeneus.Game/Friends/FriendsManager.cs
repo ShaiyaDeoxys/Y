@@ -84,7 +84,7 @@ namespace Imgeneus.World.Game.Friends
             _database.Friends.Add(new DbCharacterFriend(_ownerId, character.Id));
             await _database.SaveChangesAsync();
 
-            var friend = new Friend(character.Id, character.Name, character.AdditionalInfoManager.Class, true);
+            var friend = new Friend(character.Id, character.AdditionalInfoManager.Name, character.AdditionalInfoManager.Class, true);
             Friends.TryAdd(friend.Id, friend);
 
             return friend;

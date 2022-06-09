@@ -44,7 +44,7 @@ namespace Imgeneus.World.Handlers
             var (attribute, attributeValue, player) = packet;
 
             // TODO: This should get player from player dictionary when implemented
-            var targetPlayer = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == player);
+            var targetPlayer = _gameWorld.Players.Values.FirstOrDefault(p => p.AdditionalInfoManager.Name == player);
 
             if (targetPlayer is null)
             {

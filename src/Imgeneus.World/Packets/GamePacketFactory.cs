@@ -487,27 +487,39 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterShape(IWorldClient client, Character character)
+        public void SendCharacterShape(IWorldClient client, int id, Character character)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE);
+            packet.Write(id);
             packet.Write(new CharacterShape(character).Serialize());
             client.Send(packet);
         }
 
         public void SendShapeUpdate(IWorldClient client, int senderId, ShapeEnum shape, int? param1 = null, int? param2 = null)
         {
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE_UPDATE);
-            packet.Write(senderId);
-            packet.Write((byte)shape);
-
-            // Only for ep 8. Type & TypeId for new mounts.
-            if (param1 != null && param2 != null)
+            if (shape != ShapeEnum.Mob)
             {
-                packet.Write((int)param1);
-                packet.Write((int)param2);
-            }
+                using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE_UPDATE);
+                packet.Write(senderId);
+                packet.Write((byte)shape);
 
-            client.Send(packet);
+                // Only for ep 8. Type & TypeId for new mounts.
+                if (param1 != null && param2 != null)
+                {
+                    packet.Write((int)param1);
+                    packet.Write((int)param2);
+                }
+
+                client.Send(packet);
+            }
+            else
+            {
+                using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE_UPDATE_MOB);
+                packet.Write(senderId);
+                packet.Write((byte)shape);
+                packet.Write((ushort)param1); // Mob id.
+                client.Send(packet);
+            }
         }
 
         public void SendMaxHitpoints(IWorldClient client, int characterId, HitpointType type, int value)
@@ -598,10 +610,13 @@ namespace Imgeneus.World.Packets
 
             SendAttackAndMovementSpeed(client, character.Id, character.SpeedManager.TotalAttackSpeed, character.SpeedManager.TotalMoveSpeed);
 
-            SendCharacterShape(client, character); // Fix for admin in stealth + dye.
+            SendCharacterShape(client, character.Id, character); // Fix for admin in stealth + dye.
 
             if (character.ShapeManager.Shape != ShapeEnum.None)
-                SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.TypeId);
+                if (character.ShapeManager.Shape != ShapeEnum.Mob)
+                    SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.TypeId);
+                else
+                    SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.ShapeManager.MobId);
 
             if (character.ShapeManager.IsTranformated)
                 SendTransformation(client, character.Id, character.ShapeManager.IsTranformated);
@@ -2525,7 +2540,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendUseShopItemCountChanged(IWorldClient client, byte slot, byte count) 
+        public void SendUseShopItemCountChanged(IWorldClient client, byte slot, byte count)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_USE_SHOP_ITEM_COUNT);
             packet.Write(slot);

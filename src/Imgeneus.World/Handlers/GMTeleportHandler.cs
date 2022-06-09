@@ -90,7 +90,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            var player = _gameWorld.Players.Values.FirstOrDefault(p => p.Name == packet.Name);
+            var player = _gameWorld.Players.Values.FirstOrDefault(p => p.AdditionalInfoManager.Name == packet.Name);
             if (player is null)
                 _packetFactory.SendGmCommandError(client, PacketType.GM_TELEPORT_TO_PLAYER);
             else

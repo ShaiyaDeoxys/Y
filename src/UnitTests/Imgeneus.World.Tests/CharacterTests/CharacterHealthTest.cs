@@ -11,7 +11,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
         [Description("Current HP can not be more that max HP.")]
         public void CurrentHPNotMoreThanMaxHPTest()
         {
-            var character = CreateCharacter();
+            var character = CreateCharacter(testMap);
             character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
             character.InventoryManager.MoveItem(1, 0, 0, 1);
 

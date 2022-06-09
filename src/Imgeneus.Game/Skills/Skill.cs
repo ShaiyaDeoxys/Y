@@ -67,6 +67,21 @@ namespace Imgeneus.Game.Skills
         public bool IsForAlly { get => _dbSkill.TypeEffect == TypeEffect.HealingDispel || _dbSkill.TypeEffect == TypeEffect.Buff || _dbSkill.TypeEffect == TypeEffect.BuffNoss || _dbSkill.TypeDetail == TypeDetail.Resurrection; }
 
         /// <summary>
+        /// Skill is made for rangers?
+        /// </summary>
+        public bool IsUsedByRanger { get => _dbSkill.UsedByRanger == 1; }
+
+        /// <summary>
+        /// To what mob are we going to transform?
+        /// </summary>
+        public ushort MobShape { get; set; }
+
+        /// <summary>
+        /// To which character are we going to transform?
+        /// </summary>
+        public int CharacterId { get; set; }
+
+        /// <summary>
         /// To what target this skill can be applied.
         /// </summary>
         public TargetType TargetType { get => _dbSkill.TargetType; }

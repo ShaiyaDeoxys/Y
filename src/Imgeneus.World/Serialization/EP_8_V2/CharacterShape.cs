@@ -10,77 +10,73 @@ namespace Imgeneus.World.Serialization.EP_8_V2
     public class CharacterShape : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharId { get; }
-
-        [FieldOrder(1)]
         public bool IsDead { get; }
 
-        [FieldOrder(2)]
+        [FieldOrder(1)]
         public Motion Motion { get; }
 
-        [FieldOrder(3)]
+        [FieldOrder(2)]
         public CountryType Country { get; }
 
-        [FieldOrder(4)]
+        [FieldOrder(3)]
         public Race Race { get; }
 
-        [FieldOrder(5)]
+        [FieldOrder(4)]
         public byte Hair { get; }
 
-        [FieldOrder(6)]
+        [FieldOrder(5)]
         public byte Face { get; }
 
-        [FieldOrder(7)]
+        [FieldOrder(6)]
         public byte Height { get; }
 
-        [FieldOrder(8)]
+        [FieldOrder(7)]
         public CharacterProfession Class { get; }
 
-        [FieldOrder(9)]
+        [FieldOrder(8)]
         public Gender Gender { get; }
 
-        [FieldOrder(10)]
+        [FieldOrder(9)]
         public byte PartyDefinition { get; }
 
-        [FieldOrder(11)]
+        [FieldOrder(10)]
         public Mode Mode { get; }
 
-        [FieldOrder(12)]
+        [FieldOrder(11)]
         public int Kills { get; }
 
-        [FieldOrder(13)]
+        [FieldOrder(12)]
         public EquipmentItem[] EquipmentItems { get; } = new EquipmentItem[17];
 
-        [FieldOrder(14)]
+        [FieldOrder(13)]
         public byte[] UnknownBytes3 { get; } = new byte[9];
 
-        [FieldOrder(15)]
+        [FieldOrder(14)]
         public bool[] EquipmentItemHasColor { get; } = new bool[17];
 
-        [FieldOrder(16)]
+        [FieldOrder(15)]
         public int UnknownInt { get; }
 
-        [FieldOrder(17)]
+        [FieldOrder(16)]
         public DyeColorSerialized[] EquipmentItemColor { get; } = new DyeColorSerialized[17];
 
-        [FieldOrder(18)]
+        [FieldOrder(17)]
         public byte[] UnknownBytes2 { get; } = new byte[451];
 
-        [FieldOrder(19)]
-        public byte[] Name;
+        [FieldOrder(18), FieldLength(21)]
+        public string Name;
+
+        [FieldOrder(19), FieldLength(21)]
+        public string Name2;
 
         [FieldOrder(20)]
-        public byte[] Name2;
-
-        [FieldOrder(21)]
         public byte[] UnknownBytes4 = new byte[29];
 
-        [FieldOrder(22)]
+        [FieldOrder(21)]
         public byte[] GuildName = new byte[25];
 
         public CharacterShape(Character character)
         {
-            CharId = character.Id;
             IsDead = character.HealthManager.IsDead;
             Motion = character.Motion;
             Country = character.CountryProvider.Country;
@@ -92,8 +88,8 @@ namespace Imgeneus.World.Serialization.EP_8_V2
             Gender = character.AdditionalInfoManager.Gender;
             Mode = character.AdditionalInfoManager.Grow;
             Kills = character.KillsManager.Kills;
-            Name = character.NameAsByteArray;
-            Name2 = character.NameAsByteArray; // not sure why, but server definitely sends name twice
+            Name = character.AdditionalInfoManager.Name;
+            Name2 = character.AdditionalInfoManager.Name; // not sure why, but server definitely sends name twice
 
             for (byte i = 0; i < 17; i++)
             {

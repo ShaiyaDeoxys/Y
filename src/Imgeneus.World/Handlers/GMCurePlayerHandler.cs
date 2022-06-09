@@ -24,7 +24,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.Name).Value;
+            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.Name).Value;
 
             if (target == null)
             {
@@ -43,7 +43,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.Name == packet.Name).Value;
+            var target = _gameWorld.Players.FirstOrDefault(p => p.Value.AdditionalInfoManager.Name == packet.Name).Value;
 
             if (target == null)
             {

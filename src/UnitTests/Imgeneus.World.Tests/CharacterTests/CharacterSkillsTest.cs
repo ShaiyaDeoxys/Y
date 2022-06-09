@@ -689,5 +689,57 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(character.HealthManager.CurrentHP > 0);
         }
 
+        [Fact]
+        [Description("TransformationAssassin should turn into chicken if no mob is selected.")]
+        public void TransformationAssassinIntoChickenTest()
+        {
+            var character = CreateCharacter();
+
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(TransformationAssassin, 0, 0), character, out var _));
+            character.SkillsManager.UseSkill(new Skill(TransformationAssassin, 0, 0), character);
+
+            Assert.Equal(ShapeEnum.Chicken, character.ShapeManager.Shape);
+        }
+
+        [Fact]
+        [Description("TransformationAssassin should turn into mob if mob is selected.")]
+        public void TransformationAssassinIntoMobTest()
+        {
+            var map = testMap;
+            var character = CreateCharacter(map);
+            var mob = CreateMob(Wolf.Id, map);
+
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(TransformationAssassin, 0, 0), mob, out var _));
+            character.SkillsManager.UseSkill(new Skill(TransformationAssassin, 0, 0), character, mob);
+
+            Assert.Equal(ShapeEnum.Mob, character.ShapeManager.Shape);
+            Assert.Equal(mob.MobId, character.ShapeManager.MobId);
+        }
+
+        [Fact]
+        [Description("Disguise should turn into opposite faction.")]
+        public void DisguiseTest()
+        {
+            var character = CreateCharacter();
+
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(Disguise, 0, 0), character, out var _));
+            character.SkillsManager.UseSkill(new Skill(Disguise, 0, 0), character);
+
+            Assert.Equal(ShapeEnum.OppositeCountry, character.ShapeManager.Shape);
+        }
+
+        [Fact]
+        [Description("Disguise should turn into opposite faction character if character is selected.")]
+        public void DisguiseIntoCharacterTest()
+        {
+            var character = CreateCharacter();
+            var character2 = CreateCharacter(country: Fraction.Dark);
+
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(Disguise, 0, 0), character2, out var _));
+            character.SkillsManager.UseSkill(new Skill(Disguise, 0, 0), character, character2);
+
+            Assert.Equal(ShapeEnum.OppositeCountryCharacter, character.ShapeManager.Shape);
+            Assert.Equal(character2.Id, character.ShapeManager.CharacterId);
+        }
     }
 }

@@ -16,6 +16,7 @@ using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.Skill;
 using System;
+using System.Linq;
 using Element = Imgeneus.Database.Constants.Element;
 
 namespace Imgeneus.World.Game.Attack
@@ -460,8 +461,10 @@ namespace Imgeneus.World.Game.Attack
             damage = damage * elementFactor;
 
             // Third, monster shape adds additional damage.
-            if (_shapeManager.MonsterLevel > 1)
-                damage = damage * _shapeManager.MonsterLevel;
+            if (_shapeManager.Shape == ShapeEnum.Wolf)
+                damage = damage * 1.2; // + 20%
+            if (_shapeManager.Shape == ShapeEnum.Knight)
+                damage = damage * 1.4; // + 40%
 
             // Fourth, calculate if critical damage should be added.
             var criticalDamage = false;

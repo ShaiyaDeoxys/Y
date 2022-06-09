@@ -38,7 +38,7 @@ else
                 {
                     <tr class="character-row" @onclick="@(() => @RedirectToPlayerPage(@player))">
                         <td>@player.Id</td>
-                        <td>@player.Name</td>
+                        <td>@player.AdditionalInfoManager.Name</td>
                         <td>@player.AdditionalInfoManager.Class</td>
                         <td>@player.MapProvider.NextMapId</td>
                         <td>@player.MovementManager.PosX</td>
