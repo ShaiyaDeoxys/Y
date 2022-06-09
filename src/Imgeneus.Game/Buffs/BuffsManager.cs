@@ -390,6 +390,8 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Transformation:
+                    CancelSprinter();
+
                     ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
                     ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true, buff, skill);
                     ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true, buff, skill);
@@ -438,10 +440,7 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.Stealth:
                     _stealthManager.IsStealth = true;
-
-                    var sprinterBuff = ActiveBuffs.FirstOrDefault(b => b.Skill.SkillId == 681 || b.Skill.SkillId == 114); // 114 (old ep) 681 (new ep) are unique numbers for sprinter buff.
-                    if (sprinterBuff != null)
-                        sprinterBuff.CancelBuff();
+                    CancelSprinter();
                     break;
 
                 case TypeDetail.WeaponMastery:
@@ -530,6 +529,8 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Evolution:
+                    CancelSprinter();
+
                     if (skill.UsedByPriest == 1)
                     {
                         if (skill.TypeEffect == TypeEffect.Buff)
@@ -1166,6 +1167,13 @@ namespace Imgeneus.World.Game.Buffs
             var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenMoving).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
+        }
+
+        private void CancelSprinter()
+        {
+            var sprinterBuff = ActiveBuffs.FirstOrDefault(b => b.Skill.SkillId == 681 || b.Skill.SkillId == 114); // 114 (old ep) 681 (new ep) are unique numbers for sprinter buff.
+            if (sprinterBuff != null)
+                sprinterBuff.CancelBuff();
         }
 
         #endregion
