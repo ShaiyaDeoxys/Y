@@ -550,6 +550,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.EtainShield:
                 case TypeDetail.DamageReflection:
                 case TypeDetail.PersistBarrier:
+                case TypeDetail.MentalStormConfusion:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
