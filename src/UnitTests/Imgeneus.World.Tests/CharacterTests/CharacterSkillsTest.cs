@@ -817,10 +817,28 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             var skillUsed = false;
             character.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => skillUsed = true;
-            
+
             character.SkillsManager.UseSkill(new Skill(DisruptionStun, 0, 0), character);
 
             Assert.True(skillUsed);
+        }
+
+        [Fact]
+        [Description("PotentialForce is activated, when hp is < 10%.")]
+        public void PotentialForceTest()
+        {
+            var character = CreateCharacter();
+            character.HealthManager.FullRecover();
+
+            Assert.Equal(0, character.StatsManager.TotalResistance);
+
+            character.SkillsManager.TryLearnNewSkill(PotentialForce.SkillId, PotentialForce.SkillLevel);
+            Assert.Single(character.BuffsManager.PassiveBuffs);
+            Assert.Empty(character.BuffsManager.ActiveBuffs);
+
+            character.HealthManager.DecreaseHP(90, CreateCharacter());
+            Assert.Equal(PotentialForce.AbilityValue1, character.StatsManager.TotalResistance);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
         }
     }
 }

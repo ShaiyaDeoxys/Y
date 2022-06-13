@@ -560,6 +560,25 @@ namespace Imgeneus.World.Game.Buffs
                     }
                     break;
 
+                case TypeDetail.PotentialDefence:
+                    if (PassiveBuffs.Contains(buff))
+                        PontentialDefenceHpPercent = skill.LimitHP;
+
+                    if (ActiveBuffs.Contains(buff))
+                    {
+                        ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
+                        ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true, buff, skill);
+                        ApplyAbility(skill.AbilityType3, skill.AbilityValue3, true, buff, skill);
+                        ApplyAbility(skill.AbilityType4, skill.AbilityValue4, true, buff, skill);
+                        ApplyAbility(skill.AbilityType5, skill.AbilityValue5, true, buff, skill);
+                        ApplyAbility(skill.AbilityType6, skill.AbilityValue6, true, buff, skill);
+                        ApplyAbility(skill.AbilityType7, skill.AbilityValue7, true, buff, skill);
+                        ApplyAbility(skill.AbilityType8, skill.AbilityValue8, true, buff, skill);
+                        ApplyAbility(skill.AbilityType9, skill.AbilityValue9, true, buff, skill);
+                        ApplyAbility(skill.AbilityType10, skill.AbilityValue10, true, buff, skill);
+                    }
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -756,6 +775,25 @@ namespace Imgeneus.World.Game.Buffs
                             _additionalInfoManager.FakeGuildName = null;
                             _additionalInfoManager.RaiseNameChange();
                         }
+                    }
+                    break;
+
+                case TypeDetail.PotentialDefence:
+                    if (!PassiveBuffs.Any(x => x.Skill.Type == TypeDetail.PotentialDefence))
+                        PontentialDefenceHpPercent = 0;
+
+                    if (!ActiveBuffs.Contains(buff))
+                    {
+                        ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
+                        ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false, buff, skill);
+                        ApplyAbility(skill.AbilityType3, skill.AbilityValue3, false, buff, skill);
+                        ApplyAbility(skill.AbilityType4, skill.AbilityValue4, false, buff, skill);
+                        ApplyAbility(skill.AbilityType5, skill.AbilityValue5, false, buff, skill);
+                        ApplyAbility(skill.AbilityType6, skill.AbilityValue6, false, buff, skill);
+                        ApplyAbility(skill.AbilityType7, skill.AbilityValue7, false, buff, skill);
+                        ApplyAbility(skill.AbilityType8, skill.AbilityValue8, false, buff, skill);
+                        ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false, buff, skill);
+                        ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false, buff, skill);
                     }
                     break;
 
@@ -1131,6 +1169,16 @@ namespace Imgeneus.World.Game.Buffs
 
         #region Clear buffs on some condition
 
+        /// <summary>
+        /// When pontential defence buff will be activated?
+        /// </summary>
+        public ushort PontentialDefenceHpPercent { get; private set; }
+
+        /// <summary>
+        /// When pontential defence buff was last used?
+        /// </summary>
+        public DateTime LastPontentialDefence { get; private set; }
+
         private void HealthManager_OnDead(int senderId, IKiller killer)
         {
             var buffs = ActiveBuffs.Where(b => b.Skill.ShouldClearAfterDeath).ToList();
@@ -1143,6 +1191,21 @@ namespace Imgeneus.World.Game.Buffs
             var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenDamage).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
+
+            if (PontentialDefenceHpPercent > 0)
+                if (_healthManager.CurrentHP * 100 / _healthManager.MaxHP <= PontentialDefenceHpPercent &&
+                    DateTime.UtcNow.Subtract(LastPontentialDefence).TotalMinutes > 3)
+                {
+                    var buff = PassiveBuffs.FirstOrDefault(x => x.Skill.Type == TypeDetail.PotentialDefence);
+                    if (buff is null)
+                        return;
+
+                    var copy = new Buff(null, new Skill(_definitionsPreloder.Skills[(buff.Skill.SkillId, buff.Skill.SkillLevel)], 0, 0));
+                    copy.ResetTime = DateTime.UtcNow.AddSeconds(30);
+
+                    ActiveBuffs.Add(copy);
+                    LastPontentialDefence = DateTime.UtcNow;
+                }
         }
 
         private void AttackManager_OnStartAttack()

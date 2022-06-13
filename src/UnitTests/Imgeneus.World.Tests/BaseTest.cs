@@ -530,7 +530,8 @@ namespace Imgeneus.World.Tests
                     { (693, 1), StunSlam },
                     { (701, 1), DeathTouch },
                     { (692, 1), PhantomAssault },
-                    { (696, 1), DisruptionStun }
+                    { (696, 1), DisruptionStun },
+                    { (717, 1), PotentialForce }
                 });
 
             databaseMock
@@ -1197,6 +1198,17 @@ namespace Imgeneus.World.Tests
             TargetType = TargetType.EnemiesNearCaster,
             ApplyRange = 2,
             KeepTime = 2
+        };
+
+        protected DbSkill PotentialForce = new DbSkill()
+        {
+            SkillId = 717,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.PotentialDefence,
+            TypeAttack = TypeAttack.Passive,
+            AbilityType1 = AbilityType.MagicResistance,
+            AbilityValue1 = 20,
+            LimitHP = 10
         };
 
         #endregion
