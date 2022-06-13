@@ -529,7 +529,8 @@ namespace Imgeneus.World.Tests
                     { (702, 1), Misfortune },
                     { (693, 1), StunSlam },
                     { (701, 1), DeathTouch },
-                    { (692, 1), PhantomAssault }
+                    { (692, 1), PhantomAssault },
+                    { (696, 1), DisruptionStun }
                 });
 
             databaseMock
@@ -1181,6 +1182,19 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.PlusExtraDamage,
             StateType = StateType.Sleep,
             TargetType = TargetType.EnemiesNearTarget,
+            ApplyRange = 2,
+            KeepTime = 2
+        };
+
+        protected DbSkill DisruptionStun = new DbSkill()
+        {
+            SkillId = 696,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Stun,
+            TypeAttack = TypeAttack.PhysicalAttack,
+            DamageType = DamageType.PlusExtraDamage,
+            StateType = StateType.Stun,
+            TargetType = TargetType.EnemiesNearCaster,
             ApplyRange = 2,
             KeepTime = 2
         };

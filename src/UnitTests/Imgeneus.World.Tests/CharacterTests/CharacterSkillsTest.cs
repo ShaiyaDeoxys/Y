@@ -807,5 +807,20 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(character.HealthManager.CurrentHP < character.HealthManager.MaxHP);
             Assert.NotEmpty(character.BuffsManager.ActiveBuffs);
         }
+
+        [Fact]
+        [Description("DisruptionStun is used even if there are no enemies.")]
+        public void DisruptionStunTest()
+        {
+            var map = testMap;
+            var character = CreateCharacter(map);
+
+            var skillUsed = false;
+            character.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => skillUsed = true;
+            
+            character.SkillsManager.UseSkill(new Skill(DisruptionStun, 0, 0), character);
+
+            Assert.True(skillUsed);
+        }
     }
 }

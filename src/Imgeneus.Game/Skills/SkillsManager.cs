@@ -416,6 +416,8 @@ namespace Imgeneus.World.Game.Skills
             do
             {
                 var targets = GetTargets(skill, skillOwner, target);
+                if (targets.Count == 0)
+                    OnUsedSkill?.Invoke(_ownerId, target, skill, new AttackResult());
 
                 foreach (var t in targets)
                 {
@@ -480,7 +482,7 @@ namespace Imgeneus.World.Game.Skills
             while (n < skill.MultiAttack);
         }
 
-        private IEnumerable<IKillable> GetTargets(Skill skill, IKiller skillOwner, IKillable target)
+        private IList<IKillable> GetTargets(Skill skill, IKiller skillOwner, IKillable target)
         {
             var targets = new List<IKillable>();
             switch (skill.TargetType)
