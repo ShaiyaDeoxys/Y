@@ -741,5 +741,25 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(ShapeEnum.OppositeCountryCharacter, character.ShapeManager.Shape);
             Assert.Equal(character2.Id, character.ShapeManager.CharacterId);
         }
+
+        [Fact]
+        [Description("Misfortune should decrease luc and dex.")]
+        public void MisfortuneTest()
+        {
+            var character = CreateCharacter();
+            character.StatsManager.ExtraDex = 50;
+            character.StatsManager.ExtraLuc = 50;
+
+            Assert.Equal(50, character.StatsManager.TotalDex);
+            Assert.Equal(50, character.StatsManager.TotalLuc);
+
+            var character2 = CreateCharacter(country: Fraction.Dark);
+            Assert.True(character2.SkillsManager.CanUseSkill(new Skill(Misfortune, 0, 0), character, out var _));
+
+            character2.SkillsManager.UseSkill(new Skill(Misfortune, 0, 0), character2, character);
+
+            Assert.Equal(0, character.StatsManager.TotalDex);
+            Assert.Equal(0, character.StatsManager.TotalLuc);
+        }
     }
 }

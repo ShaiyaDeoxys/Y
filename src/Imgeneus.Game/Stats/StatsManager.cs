@@ -181,7 +181,9 @@ namespace Imgeneus.World.Game.Stats
                     increaseBySacrificing += SacrificedLuc;
                 }
 
-                return Strength + ExtraStr - SacrificedStr + increaseBySacrificing;
+                var total = Strength + ExtraStr - SacrificedStr + increaseBySacrificing;
+
+                return total > 0 ? total : 0;
             }
         }
 
@@ -199,7 +201,8 @@ namespace Imgeneus.World.Game.Stats
                     increaseBySacrificing += SacrificedLuc;
                 }
 
-                return Dexterity + ExtraDex - SacrificedDex + increaseBySacrificing;
+                var total = Dexterity + ExtraDex - SacrificedDex + increaseBySacrificing;
+                return total > 0 ? total : 0;
             }
         }
         public int TotalRec
@@ -216,7 +219,8 @@ namespace Imgeneus.World.Game.Stats
                     increaseBySacrificing += SacrificedLuc;
                 }
 
-                return Reaction + ExtraRec - SacrificedRec + increaseBySacrificing;
+                var total = Reaction + ExtraRec - SacrificedRec + increaseBySacrificing;
+                return total > 0 ? total : 0;
             }
         }
         public int TotalInt
@@ -233,7 +237,8 @@ namespace Imgeneus.World.Game.Stats
                     increaseBySacrificing += SacrificedLuc;
                 }
 
-                return Intelligence + ExtraInt - SacrificedInt + increaseBySacrificing;
+                var total = Intelligence + ExtraInt - SacrificedInt + increaseBySacrificing;
+                return total > 0 ? total : 0;
             }
         }
         public int TotalWis
@@ -250,7 +255,8 @@ namespace Imgeneus.World.Game.Stats
                     increaseBySacrificing += SacrificedLuc;
                 }
 
-                return Wisdom + ExtraWis - SacrificedWis + increaseBySacrificing;
+                var total = Wisdom + ExtraWis - SacrificedWis + increaseBySacrificing;
+                return total > 0 ? total : 0;
             }
         }
 
@@ -268,12 +274,29 @@ namespace Imgeneus.World.Game.Stats
                     increaseBySacrificing += SacrificedWis;
                 }
 
-                return Luck + ExtraLuc - SacrificedLuc + increaseBySacrificing;
+                var total = Luck + ExtraLuc - SacrificedLuc + increaseBySacrificing;
+                return total > 0 ? total : 0;
             }
         }
 
-        public int TotalDefense => _def + Reaction + ExtraRec + ExtraDefense;
-        public int TotalResistance => _res + Wisdom + ExtraWis + ExtraResistance;
+        public int TotalDefense
+        {
+            get
+            {
+                var total = _def + Reaction + ExtraRec + ExtraDefense;
+                return total > 0 ? total : 0;
+            }
+        }
+
+        public int TotalResistance
+        {
+            get
+            {
+                var total = _res + Wisdom + ExtraWis + ExtraResistance;
+                return total > 0 ? total : 0;
+            }
+        }
+
         #endregion
 
         #region Auto stats

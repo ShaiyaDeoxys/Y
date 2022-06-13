@@ -525,7 +525,8 @@ namespace Imgeneus.World.Tests
                     { (791, 1), Detection },
                     { (786, 1), HealingPrayer },
                     { (677, 1), TransformationAssassin },
-                    { (680, 1), Disguise }
+                    { (680, 1), Disguise },
+                    { (702, 1), Misfortune }
                 });
 
             databaseMock
@@ -1125,9 +1126,26 @@ namespace Imgeneus.World.Tests
             UsedByRanger = 1
         };
 
+        protected DbSkill Misfortune = new DbSkill()
+        {
+            SkillId = 702,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.SubtractingDebuff,
+            TargetType = TargetType.SelectedEnemy,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.Debuff,
+            StateType = StateType.Misfortunate,
+            AbilityType1 = AbilityType.Luc,
+            AbilityValue1 = 166,
+            AbilityType2 = AbilityType.Dex,
+            AbilityValue2 = 166,
+        };
+
         #endregion
 
-        #region Items
+            #region Items
 
         protected DbItem WaterArmor = new DbItem()
         {
