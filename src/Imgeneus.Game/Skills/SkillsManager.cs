@@ -273,6 +273,12 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
+            if (skill.PrevSkillId > 0)
+            {
+                success = AttackSuccess.PreviousSkillRequired;
+                return false;
+            }
+
             if (_healthManager.CurrentMP < skill.NeedMP || _healthManager.CurrentSP < skill.NeedSP)
             {
                 success = AttackSuccess.NotEnoughMPSP;

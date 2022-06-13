@@ -419,7 +419,7 @@ namespace Imgeneus.World.Game.Buffs
                     buff.TimeHPDamage = skill.TimeDamageHP;
                     buff.TimeMPDamage = skill.TimeDamageMP;
                     buff.TimeSPDamage = skill.TimeDamageSP;
-                    buff.TimeDamageType = skill.TimeDamageType;
+                    buff.TimeDamageType = skill.TimeDamageType > 0 ? TimeDamageType.Percent : TimeDamageType.None;
                     buff.OnPeriodicalDebuff += Buff_OnPeriodicalDebuff;
                     buff.StartPeriodicalDebuff();
                     break;

@@ -257,6 +257,11 @@ namespace Imgeneus.Game.Skills
         public ushort NeedMP { get => _dbSkill.MP; }
 
         /// <summary>
+        /// Previous skill id.
+        /// </summary>
+        public ushort PrevSkillId { get => _dbSkill.PreviousSkillId; }
+
+        /// <summary>
         /// Needs 1 Handed Sword.
         /// </summary>
         public bool NeedWeapon1 { get => _dbSkill.NeedWeapon1 == 1; }
