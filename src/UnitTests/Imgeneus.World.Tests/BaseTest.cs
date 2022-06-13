@@ -531,7 +531,8 @@ namespace Imgeneus.World.Tests
                     { (701, 1), DeathTouch },
                     { (692, 1), PhantomAssault },
                     { (696, 1), DisruptionStun },
-                    { (717, 1), PotentialForce }
+                    { (717, 1), PotentialForce },
+                    { (742, 1), Diversion }
                 });
 
             databaseMock
@@ -1209,6 +1210,17 @@ namespace Imgeneus.World.Tests
             AbilityType1 = AbilityType.MagicResistance,
             AbilityValue1 = 20,
             LimitHP = 10
+        };
+
+        protected DbSkill Diversion = new DbSkill()
+        {
+            SkillId = 742,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Healing,
+            TypeAttack = TypeAttack.MagicAttack,
+            HealMP = 180,
+            SP = 9,
+            TargetType = TargetType.Caster
         };
 
         #endregion

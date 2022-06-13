@@ -840,5 +840,25 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(PotentialForce.AbilityValue1, character.StatsManager.TotalResistance);
             Assert.Single(character.BuffsManager.ActiveBuffs);
         }
+
+        [Fact]
+        [Description("Diversion should restore MP.")]
+        public void DiversionTest()
+        {
+            var character = CreateCharacter();
+            character.HealthManager.CurrentMP = 10;
+            character.HealthManager.CurrentSP = 9;
+
+            var usedSkill = false;
+            character.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            {
+                usedSkill = res.Damage.HP == 0 && res.Damage.MP == Diversion.HealMP;
+            };
+
+            character.SkillsManager.UseSkill(new Skill(Diversion, 0, 0), character);
+
+            Assert.Equal(190, character.HealthManager.CurrentMP);
+            Assert.Equal(0, character.HealthManager.CurrentSP);
+        }
     }
 }

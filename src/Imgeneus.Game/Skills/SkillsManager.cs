@@ -469,7 +469,7 @@ namespace Imgeneus.World.Game.Skills
                         PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
 
                         if (n == 0 && (target == t || target is null))
-                            OnUsedSkill?.Invoke(_ownerId, target, skill, target is null || reflectedDamage ? new AttackResult() : attackResult);
+                            OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.AlliesButCaster || reflectedDamage ? new AttackResult() : attackResult);
                     }
                     catch (NotImplementedException)
                     {
@@ -663,7 +663,7 @@ namespace Imgeneus.World.Game.Skills
         /// </summary>
         public AttackResult UsedHealingSkill(Skill skill, IKillable target)
         {
-            var healHP = _statsManager.TotalWis * 4 + skill.HealHP;
+            var healHP = skill.HealHP > 0 ? _statsManager.TotalWis * 4 + skill.HealHP : 0;
             var healSP = skill.HealSP;
             var healMP = skill.HealMP;
 
