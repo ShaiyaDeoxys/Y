@@ -790,5 +790,22 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.Equal(35, character.HealthManager.CurrentHP);
         }
+
+        [Fact]
+        [Description("PhantomAssault should make damage and sleep debuff.")]
+        public void PhantomAssaultTest()
+        {
+            var map = testMap;
+            var character = CreateCharacter(map);
+            character.HealthManager.FullRecover();
+
+            var character2 = CreateCharacter(map, country: Fraction.Dark);
+            character2.StatsManager.WeaponMinAttack = 1;
+            character2.StatsManager.WeaponMaxAttack = 1;
+            character2.SkillsManager.UseSkill(new Skill(PhantomAssault, 0, 0), character2, character);
+
+            Assert.True(character.HealthManager.CurrentHP < character.HealthManager.MaxHP);
+            Assert.NotEmpty(character.BuffsManager.ActiveBuffs);
+        }
     }
 }

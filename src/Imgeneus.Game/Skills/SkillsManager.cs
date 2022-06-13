@@ -441,36 +441,33 @@ namespace Imgeneus.World.Game.Skills
                         // First cancel those buufs, that are canceled, when any skill is used.
                         CancelBuffs();
 
-                        // Second apply skill.
-                        PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
-
-                        // Third decrease hp.
+                        var reflectedDamage = false;
+                        // Second decrease hp.
                         if (t.HealthManager.ReflectPhysicDamage && (skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack))
                         {
-                            if (n == 0 && (target == t || target is null))
-                                OnUsedSkill?.Invoke(_ownerId, target, skill, new AttackResult());
-
+                            reflectedDamage = true;
                             _healthManager.InvokeMirrowDamage(attackResult.Damage, t);
                         }
                         else if (t.HealthManager.ReflectMagicDamage && skill.TypeAttack == TypeAttack.MagicAttack)
                         {
-                            if (n == 0 && (target == t || target is null))
-                                OnUsedSkill?.Invoke(_ownerId, target, skill, new AttackResult());
-
+                            reflectedDamage = true;
                             _healthManager.InvokeMirrowDamage(attackResult.Damage, t);
                         }
                         else
                         {
-                            if (n == 0 && (target == t || target is null))
-                                OnUsedSkill?.Invoke(_ownerId, target, skill, target is null ? new AttackResult() : attackResult);
-
-                            if (attackResult.Damage.HP > 0 && skill.Type != TypeDetail.Healing)
+                            if (attackResult.Damage.HP > 0 && skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.FireThorn)
                                 t.HealthManager.DecreaseHP(attackResult.Damage.HP, skillOwner);
-                            if (attackResult.Damage.SP > 0 && skill.Type != TypeDetail.Healing)
+                            if (attackResult.Damage.SP > 0 && skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.FireThorn)
                                 t.HealthManager.CurrentSP -= attackResult.Damage.SP;
-                            if (attackResult.Damage.MP > 0 && skill.Type != TypeDetail.Healing)
+                            if (attackResult.Damage.MP > 0 && skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.FireThorn)
                                 t.HealthManager.CurrentMP -= attackResult.Damage.MP;
                         }
+
+                        // Third apply skill.
+                        PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
+
+                        if (n == 0 && (target == t || target is null))
+                            OnUsedSkill?.Invoke(_ownerId, target, skill, target is null || reflectedDamage ? new AttackResult() : attackResult);
                     }
                     catch (NotImplementedException)
                     {
@@ -686,7 +683,7 @@ namespace Imgeneus.World.Game.Skills
             return result;
         }
 
-        public AttackResult UsedDispelSkill(Skill skill, IKillable target)
+        private AttackResult UsedDispelSkill(Skill skill, IKillable target)
         {
             var debuffs = target.BuffsManager.ActiveBuffs.Where(b => b.IsDebuff).ToList();
             foreach (var debuff in debuffs)

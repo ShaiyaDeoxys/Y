@@ -91,11 +91,6 @@ namespace Imgeneus.World.Game.Skills
         event Action OnResetSkills;
 
         /// <summary>
-        /// Clears debuffs.
-        /// </summary>
-        AttackResult UsedDispelSkill(Skill skill, IKillable target);
-
-        /// <summary>
         /// When "Charge" skill was used the last time?
         /// </summary>
         DateTime? ChargeUsedLastTime { get; }
