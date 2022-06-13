@@ -776,5 +776,19 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.False(character.SkillsManager.CanUseSkill(new Skill(Leadership, 0, 0), null, out var _));
         }
+
+        [Fact]
+        [Description("DeathTouch should damage 65% of HP.")]
+        public void DeathTouchTest()
+        {
+            var character = CreateCharacter();
+            character.HealthManager.FullRecover();
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+
+            var character2 = CreateCharacter();
+            character2.SkillsManager.UseSkill(new Skill(DeathTouch, 0, 0), character2, character);
+
+            Assert.Equal(35, character.HealthManager.CurrentHP);
+        }
     }
 }

@@ -394,6 +394,9 @@ namespace Imgeneus.World.Game.Attack
                 case DamageType.Eraser:
                     return new AttackResult(AttackSuccess.Normal, new Damage((ushort)(_healthManager.CurrentHP * 2), 0, 0));
 
+                case DamageType.HPPercentDamage:
+                    return new AttackResult(AttackSuccess.Normal, new Damage((ushort)(target.HealthManager.MaxHP * skill.DamageHP / 100), 0, 0));
+
                 default:
                     throw new NotImplementedException("Not implemented damage type.");
             }

@@ -527,7 +527,8 @@ namespace Imgeneus.World.Tests
                     { (677, 1), TransformationAssassin },
                     { (680, 1), Disguise },
                     { (702, 1), Misfortune },
-                    { (693, 1), StunSlam }
+                    { (693, 1), StunSlam },
+                    { (701, 1), DeathTouch }
                 });
 
             databaseMock
@@ -1155,6 +1156,19 @@ namespace Imgeneus.World.Tests
             TypeAttack = TypeAttack.PhysicalAttack,
             TypeEffect = TypeEffect.Debuff,
             StateType = StateType.Stun
+        };
+
+        protected DbSkill DeathTouch = new DbSkill()
+        {
+            SkillId = 701,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.UniqueHitAttack,
+            TargetType = TargetType.SelectedEnemy,
+            SuccessType = SuccessType.SuccessBasedOnValue,
+            SuccessValue = 100,
+            TypeAttack = TypeAttack.PhysicalAttack,
+            DamageType = DamageType.HPPercentDamage,
+            DamageHP = 65
         };
 
         #endregion
