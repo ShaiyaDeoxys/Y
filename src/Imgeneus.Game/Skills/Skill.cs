@@ -262,6 +262,11 @@ namespace Imgeneus.Game.Skills
         public ushort PrevSkillId { get => _dbSkill.PreviousSkillId; }
 
         /// <summary>
+        /// This skill required stealth shape?
+        /// </summary>
+        public bool IsUsedFromStealth { get => _dbSkill.SkillId == 700 || _dbSkill.SkillId == 697 || _dbSkill.SkillId == 309 || _dbSkill.SkillId == 310; } // "Shadow Stab" or "Shadow Sleep"
+
+        /// <summary>
         /// Needs 1 Handed Sword.
         /// </summary>
         public bool NeedWeapon1 { get => _dbSkill.NeedWeapon1 == 1; }

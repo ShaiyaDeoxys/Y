@@ -149,7 +149,8 @@ namespace Imgeneus.World.Game.Buffs
             get
             {
                 return Skill.Type == TypeDetail.PersistBarrier ||
-                       Skill.Type == TypeDetail.Evolution && Skill.IsUsedByRanger; // Transformation & Disguise
+                       Skill.Type == TypeDetail.Evolution && Skill.IsUsedByRanger || // Transformation & Disguise
+                       Skill.Type == TypeDetail.Stealth; 
             }
         }
 

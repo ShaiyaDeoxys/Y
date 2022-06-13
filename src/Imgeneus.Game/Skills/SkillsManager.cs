@@ -261,6 +261,12 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
+            if (skill.IsUsedFromStealth && _shapeManager.Shape != ShapeEnum.Stealth)
+            {
+                success = AttackSuccess.CanNotAttack;
+                return false;
+            }
+
             if (!skill.RequiredWeapons.Contains(_statsManager.WeaponType) && skill.RequiredWeapons.Count != 0)
             {
                 success = AttackSuccess.WrongEquipment;
