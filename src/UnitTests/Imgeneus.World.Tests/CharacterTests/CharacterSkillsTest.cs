@@ -761,5 +761,20 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(0, character.StatsManager.TotalDex);
             Assert.Equal(0, character.StatsManager.TotalLuc);
         }
+
+        [Fact]
+        [Description("StunSlam should prevent any attack.")]
+        public void StunSlamTest()
+        {
+            var character = CreateCharacter();
+            character.HealthManager.FullRecover();
+
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(Leadership, 0, 0), null, out var _));
+
+            var character2 = CreateCharacter();
+            character2.SkillsManager.UseSkill(new Skill(StunSlam, 0, 0), character2, character);
+
+            Assert.False(character.SkillsManager.CanUseSkill(new Skill(Leadership, 0, 0), null, out var _));
+        }
     }
 }

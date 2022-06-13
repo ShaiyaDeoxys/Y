@@ -649,17 +649,17 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Immobilize:
-                    _speedManager.Immobilize = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
+                    _speedManager.Immobilize = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
                     break;
 
                 case TypeDetail.Sleep:
                 case TypeDetail.Stun:
-                    _speedManager.IsAbleToAttack = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
-                    _speedManager.Immobilize = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
+                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
+                    _speedManager.Immobilize = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
                     break;
 
                 case TypeDetail.PreventAttack:
-                    _speedManager.IsAbleToAttack = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
+                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
                     break;
 
                 case TypeDetail.Stealth:

@@ -16,6 +16,7 @@ using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Player.Config;
 using Imgeneus.World.Game.Shape;
+using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Teleport;
 using Imgeneus.World.Game.Zone;
@@ -49,11 +50,12 @@ namespace Imgeneus.World.Game.Skills
         private readonly ITeleportationManager _teleportationManager;
         private readonly IMovementManager _movementManager;
         private readonly IShapeManager _shapeManager;
+        private readonly ISpeedManager _speedManager;
         private readonly IPartyManager _partyManager;
         private readonly IGamePacketFactory _packetFactory;
         private int _ownerId;
 
-        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IShapeManager shapeManager, IPartyManager partyManager, IGamePacketFactory packetFactory)
+        public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IShapeManager shapeManager, ISpeedManager speedManager, IPartyManager partyManager, IGamePacketFactory packetFactory)
         {
             _logger = logger;
             _definitionsPreloder = definitionsPreloder;
@@ -71,6 +73,7 @@ namespace Imgeneus.World.Game.Skills
             _teleportationManager = teleportationManager;
             _movementManager = movementManager;
             _shapeManager = shapeManager;
+            _speedManager = speedManager;
             _partyManager = partyManager;
             _packetFactory = packetFactory;
             _levelProvider.OnLevelUp += OnLevelUp;
@@ -291,15 +294,21 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
+            if (!_speedManager.IsAbleToAttack)
+            {
+                success = AttackSuccess.CanNotAttack;
+                return false;
+            }
+
             if ((skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack) &&
-                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Sleep || b.Skill.StateType == StateType.Stun || b.Skill.StateType == StateType.Silence))
+                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Silence))
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;
             }
 
             if (skill.TypeAttack == TypeAttack.MagicAttack &&
-                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Sleep || b.Skill.StateType == StateType.Stun || b.Skill.StateType == StateType.Darkness))
+                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Darkness))
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;
