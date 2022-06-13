@@ -56,7 +56,10 @@ namespace Imgeneus.World.Handlers
         {
             var target = _mapProvider.Map.GetPlayer(packet.TargetId);
             if (target != null)
+            {
+                _attackManager.Target = target;
                 _packetFactory.SendCurrentBuffs(client, target);
+            }
         }
 
         [HandlerAction(PacketType.TARGET_GET_MOB_BUFFS)]
@@ -64,7 +67,10 @@ namespace Imgeneus.World.Handlers
         {
             var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.CharId].CellId, packet.TargetId);
             if (target != null)
+            {
+                _attackManager.Target = target;
                 _packetFactory.SendCurrentBuffs(client, target);
+            }
         }
 
         [HandlerAction(PacketType.TARGET_MOB_GET_STATE)]
@@ -73,6 +79,7 @@ namespace Imgeneus.World.Handlers
             var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.CharId].CellId, packet.MobId);
             if (target != null)
             {
+                _attackManager.Target = target;
                 _packetFactory.SendMobPosition(client, target.Id, target.MovementManager.PosX, target.MovementManager.PosZ, target.MovementManager.MoveMotion);
                 _packetFactory.SendMobState(client, target);
             }
