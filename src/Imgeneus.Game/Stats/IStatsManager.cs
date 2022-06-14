@@ -244,6 +244,11 @@ namespace Imgeneus.World.Game.Stats
         bool IncreaseLucBySacrificing { get; set; }
 
         /// <summary>
+        /// % for magic defence.
+        /// </summary>
+        int ResistancePersent { get; set; }
+
+        /// <summary>
         /// Saves autostats to db.
         /// </summary>
         Task<bool> TrySetAutoStats(byte str, byte dex, byte rec, byte intl, byte wis, byte luc);

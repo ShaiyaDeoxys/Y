@@ -1087,6 +1087,10 @@ namespace Imgeneus.World.Game.Buffs
                     _statsManager.IncreaseLucBySacrificing = addAbility;
                     break;
 
+                case AbilityType.IncreaseMagicDefenceByPersent:
+                    _statsManager.ResistancePersent = addAbility ? abilityValue : 0;
+                    break;
+
                 default:
                     throw new NotImplementedException($"Not implemented ability type {abilityType}");
             }

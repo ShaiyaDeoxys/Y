@@ -293,6 +293,9 @@ namespace Imgeneus.World.Game.Stats
             get
             {
                 var total = _res + Wisdom + ExtraWis + ExtraResistance;
+                if (ResistancePersent > 0)
+                    total = total + total * ResistancePersent / 100;
+
                 return total > 0 ? total : 0;
             }
         }
@@ -384,6 +387,12 @@ namespace Imgeneus.World.Game.Stats
         public bool IncreaseWisBySacrificing { get; set; }
 
         public bool IncreaseLucBySacrificing { get; set; }
+
+        #endregion
+
+        #region % increase
+
+        public int ResistancePersent { get; set; }
 
         #endregion
 
