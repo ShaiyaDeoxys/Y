@@ -374,6 +374,7 @@ namespace Imgeneus.World.Game.Inventory
                     _elementProvider.ConstAttackElement = _weapon.Element;
 
                     _attackManager.IsWeaponAvailable = true;
+                    _attackManager.WeaponAttackRange = _weapon.AttackRange;
                     _statsManager.WeaponType = _weapon.Type;
                 }
                 else
@@ -383,6 +384,7 @@ namespace Imgeneus.World.Game.Inventory
                     _elementProvider.ConstAttackElement = Element.None;
 
                     _attackManager.IsWeaponAvailable = false;
+                    _attackManager.WeaponAttackRange = 0;
                     _statsManager.WeaponType = 0;
                 }
 

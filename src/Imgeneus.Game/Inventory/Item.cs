@@ -651,6 +651,14 @@ namespace Imgeneus.World.Game.Inventory
             }
         }
 
+        public ushort AttackRange
+        {
+            get
+            {
+                return _dbItem.Range;
+            }
+        }
+
         /// <summary>
         /// Special effect like teleport/cure/summon etc.
         /// </summary>

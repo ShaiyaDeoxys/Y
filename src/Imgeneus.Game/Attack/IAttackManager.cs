@@ -92,5 +92,15 @@ namespace Imgeneus.World.Game.Attack
         /// Calculates element multiplier based on attack and defence elements.
         /// </summary>
         double GetElementFactor(Element attackElement, Element defenceElement);
+
+        /// <summary>
+        /// Attack range gained from the weapon.
+        /// </summary>
+        ushort WeaponAttackRange { get; set; }
+
+        /// <summary>
+        /// Additional attack range gained from buffs.
+        /// </summary>
+        ushort ExtraAttackRange { get; set; }
     }
 }

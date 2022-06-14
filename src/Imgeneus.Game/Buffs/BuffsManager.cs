@@ -1124,6 +1124,10 @@ namespace Imgeneus.World.Game.Buffs
                     _castProtectionManager.ReduceCastingTime = addAbility;
                     break;
 
+                case AbilityType.AttackRange:
+                    _attackManager.ExtraAttackRange = addAbility ? abilityValue : (ushort)0;
+                    break;
+
                 default:
                     throw new NotImplementedException($"Not implemented ability type {abilityType}");
             }

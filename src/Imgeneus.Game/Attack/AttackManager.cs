@@ -1,4 +1,5 @@
-﻿using Imgeneus.Database.Constants;
+﻿using Imgeneus.Core.Extensions;
+using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Buffs;
@@ -7,6 +8,7 @@ using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Monster;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Skills;
@@ -32,9 +34,10 @@ namespace Imgeneus.World.Game.Attack
         private readonly IStealthManager _stealthManager;
         private readonly IHealthManager _healthManager;
         private readonly IShapeManager _shapeManager;
+        private readonly IMovementManager _movementManager;
         private int _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager, IShapeManager shapeManager)
+        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager, IShapeManager shapeManager, IMovementManager movementManager)
         {
             _logger = logger;
             _statsManager = statsManager;
@@ -45,6 +48,7 @@ namespace Imgeneus.World.Game.Attack
             _stealthManager = stealthManager;
             _healthManager = healthManager;
             _shapeManager = shapeManager;
+            _movementManager = movementManager;
 
 #if DEBUG
             _logger.LogDebug("AttackManager {hashcode} created", GetHashCode());
@@ -212,6 +216,12 @@ namespace Imgeneus.World.Game.Attack
             if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && !_speedManager.IsAbleToAttack)
             {
                 success = AttackSuccess.CanNotAttack;
+                return false;
+            }
+
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ) > WeaponAttackRange + 1 + ExtraAttackRange)
+            {
+                success = AttackSuccess.InsufficientRange;
                 return false;
             }
 
@@ -718,5 +728,8 @@ namespace Imgeneus.World.Game.Attack
 
             return 1;
         }
+
+        public ushort WeaponAttackRange { get; set; }
+        public ushort ExtraAttackRange { get; set; }
     }
 }

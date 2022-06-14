@@ -189,6 +189,11 @@ namespace Imgeneus.Game.Skills
         public byte ApplyRange { get => _dbSkill.ApplyRange; }
 
         /// <summary>
+        /// How many meters are needed in order to use skill.
+        /// </summary>
+        public byte AttackRange { get => _dbSkill.AttackRange; }
+
+        /// <summary>
         /// Skill damage will be multiplied by this number.
         /// </summary>
         public byte MultiAttack { get => _dbSkill.MultiAttack; }

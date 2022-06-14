@@ -330,6 +330,12 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
+            if (skill.AttackRange > 0 && (skill.TargetType == TargetType.SelectedEnemy || skill.TargetType == TargetType.EnemiesNearTarget) && MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ) > skill.AttackRange + 1 + _attackManager.ExtraAttackRange)
+            {
+                success = AttackSuccess.InsufficientRange;
+                return false;
+            }
+
             if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.AlliesNearCaster || skill.TargetType == TargetType.AlliesButCaster))
             {
                 success = AttackSuccess.Normal;
