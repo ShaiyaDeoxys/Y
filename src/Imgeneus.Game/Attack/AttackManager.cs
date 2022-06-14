@@ -404,6 +404,18 @@ namespace Imgeneus.World.Game.Attack
                         result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)(target.HealthManager.MaxHP * skill.DamageHP / 100), 0, 0));
                         break;
 
+                    case DamageType.DamageCoefficient:
+                        result = CalculateDamage(target,
+                                               skill.TypeAttack,
+                                               element,
+                                               minAttack,
+                                               maxAttack,
+                                               minMagicAttack,
+                                               maxMagicAttack,
+                                               skill);
+                        result.Damage.HP *= skill.DamageHP;
+                        break;
+
                     default:
                         throw new NotImplementedException("Not implemented damage type.");
                 }
