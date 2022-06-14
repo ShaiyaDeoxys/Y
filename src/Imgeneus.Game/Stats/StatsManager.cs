@@ -284,6 +284,9 @@ namespace Imgeneus.World.Game.Stats
             get
             {
                 var total = _def + Reaction + ExtraRec + ExtraDefense;
+                if (total > 0 && DefencePersent > 0)
+                    total = total + total * DefencePersent / 100;
+
                 return total > 0 ? total : 0;
             }
         }
@@ -293,7 +296,7 @@ namespace Imgeneus.World.Game.Stats
             get
             {
                 var total = _res + Wisdom + ExtraWis + ExtraResistance;
-                if (ResistancePersent > 0)
+                if (total > 0 && ResistancePersent > 0)
                     total = total + total * ResistancePersent / 100;
 
                 return total > 0 ? total : 0;
@@ -391,6 +394,8 @@ namespace Imgeneus.World.Game.Stats
         #endregion
 
         #region % increase
+
+        public int DefencePersent { get; set; }
 
         public int ResistancePersent { get; set; }
 

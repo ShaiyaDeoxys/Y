@@ -1087,6 +1087,10 @@ namespace Imgeneus.World.Game.Buffs
                     _statsManager.IncreaseLucBySacrificing = addAbility;
                     break;
 
+                case AbilityType.IncreasePhysicalDefenceByPersent:
+                    _statsManager.DefencePersent = addAbility ? abilityValue : 0;
+                    break;
+
                 case AbilityType.IncreaseMagicDefenceByPersent:
                     _statsManager.ResistancePersent = addAbility ? abilityValue : 0;
                     break;

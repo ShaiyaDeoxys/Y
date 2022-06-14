@@ -244,6 +244,11 @@ namespace Imgeneus.World.Game.Stats
         bool IncreaseLucBySacrificing { get; set; }
 
         /// <summary>
+        /// % for physical defence.
+        /// </summary>
+        int DefencePersent { get; set; }
+
+        /// <summary>
         /// % for magic defence.
         /// </summary>
         int ResistancePersent { get; set; }
