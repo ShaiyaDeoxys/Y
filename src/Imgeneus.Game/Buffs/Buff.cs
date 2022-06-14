@@ -42,6 +42,7 @@ namespace Imgeneus.World.Game.Buffs
             _periodicalHealTimer.Elapsed += PeriodicalHealTimer_Elapsed;
             _periodicalDebuffTimer.Elapsed += PeriodicalDebuffTimer_Elapsed;
             _periodicalDamageTimer.Elapsed += PeriodicalDamageTimer_Elapsed;
+            _deathTouchTimer.Elapsed += DeathTouchTimer_Elapsed;
         }
 
         #region IsDebuff
@@ -222,6 +223,9 @@ namespace Imgeneus.World.Game.Buffs
             _periodicalDamageTimer.Elapsed -= PeriodicalDamageTimer_Elapsed;
             _periodicalDamageTimer.Stop();
 
+            _deathTouchTimer.Elapsed -= DeathTouchTimer_Elapsed;
+            _deathTouchTimer.Stop();
+
             OnReset?.Invoke(this);
         }
 
@@ -343,6 +347,32 @@ namespace Imgeneus.World.Game.Buffs
         private void PeriodicalDamageTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             OnPeriodicalDamage?.Invoke(this, new AttackResult(AttackSuccess.Normal, new Damage(PeriodicalHP, PeriodicalSP, PeriodicalMP)));
+        }
+
+        #endregion
+
+        #region Death touch
+
+        private readonly Timer _deathTouchTimer = new Timer(1000) { AutoReset = false };
+
+        public int DeathThouchTime
+        {
+            set
+            {
+                _deathTouchTimer.Interval = value * 1000 - 1200;
+            }
+        }
+
+        public void StartDeathThouchTimer()
+        {
+            _deathTouchTimer.Start();
+        }
+
+        public event Action<Buff> OnDeathTouch;
+
+        private void DeathTouchTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            OnDeathTouch?.Invoke(this);
         }
 
         #endregion

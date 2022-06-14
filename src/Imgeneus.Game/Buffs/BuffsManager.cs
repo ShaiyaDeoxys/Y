@@ -589,6 +589,12 @@ namespace Imgeneus.World.Game.Buffs
                         _healthManager.UseSPInsteadOfHP = true;
                     break;
 
+                case TypeDetail.DeathTouch:
+                    buff.DeathThouchTime = skill.KeepTime;
+                    buff.OnDeathTouch += Buff_OnDeathTouch;
+                    buff.StartDeathThouchTimer();
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -810,6 +816,10 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.HealthAssistant:
                     _healthManager.UseSPInsteadOfHP = false;
                     _healthManager.UseMPInsteadOfHP = false;
+                    break;
+
+                case TypeDetail.DeathTouch:
+                    buff.OnDeathTouch -= Buff_OnDeathTouch;
                     break;
 
                 default:
@@ -1190,6 +1200,11 @@ namespace Imgeneus.World.Game.Buffs
 
                 OnPeriodicalDamage?.Invoke(_ownerId, enemy, buff.Skill, result);
             }
+        }
+
+        private void Buff_OnDeathTouch(Buff buff)
+        {
+            _healthManager.DecreaseHP(_healthManager.CurrentHP, buff.BuffCreator);
         }
 
         #endregion

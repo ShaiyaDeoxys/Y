@@ -572,6 +572,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.PersistBarrier:
                 case TypeDetail.MentalStormConfusion:
                 case TypeDetail.HealthAssistant:
+                case TypeDetail.DeathTouch:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
