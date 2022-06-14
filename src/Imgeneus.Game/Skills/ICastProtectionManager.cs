@@ -25,5 +25,10 @@ namespace Imgeneus.Game.Skills
         /// Skill info, that will protect casting.
         /// </summary>
         (ushort SkillId, byte SkillLevel) ProtectCastingSkill { get; set; }
+
+        /// <summary>
+        /// Reduces casting time.
+        /// </summary>
+        bool ReduceCastingTime { get; set; }
     }
 }

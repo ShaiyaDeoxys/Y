@@ -1091,6 +1091,10 @@ namespace Imgeneus.World.Game.Buffs
                     _statsManager.ResistancePersent = addAbility ? abilityValue : 0;
                     break;
 
+                case AbilityType.ReduceCastingTime:
+                    _castProtectionManager.ReduceCastingTime = addAbility;
+                    break;
+
                 default:
                     throw new NotImplementedException($"Not implemented ability type {abilityType}");
             }

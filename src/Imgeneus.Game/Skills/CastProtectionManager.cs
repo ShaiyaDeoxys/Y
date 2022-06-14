@@ -127,5 +127,7 @@ namespace Imgeneus.Game.Skills
         }
 
         #endregion
+
+        public bool ReduceCastingTime { get; set; }
     }
 }

@@ -93,7 +93,7 @@ namespace Imgeneus.Game.Skills
 
             SkillInCast = skill;
             _targetInCast = target;
-            _castTimer.Interval = skill.CastTime;
+            _castTimer.Interval = _castProtectionManager.ReduceCastingTime ? skill.CastTime / 2 : skill.CastTime;
             _castTimer.Start();
             OnSkillCastStarted?.Invoke(_ownerId, _targetInCast, skill);
         }
