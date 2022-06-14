@@ -532,7 +532,8 @@ namespace Imgeneus.World.Tests
                     { (692, 1), PhantomAssault },
                     { (696, 1), DisruptionStun },
                     { (717, 1), PotentialForce },
-                    { (742, 1), Diversion }
+                    { (742, 1), Diversion },
+                    { (741, 2), UltimateBarrier }
                 });
 
             databaseMock
@@ -892,6 +893,7 @@ namespace Imgeneus.World.Tests
             SkillId = 630,
             SkillLevel = 1,
             TypeDetail = TypeDetail.UniqueHitAttack,
+            TypeAttack = TypeAttack.PhysicalAttack,
             DamageType = DamageType.PlusExtraDamage,
             DamageHP = 235,
             DamageSP = 47
@@ -1221,6 +1223,17 @@ namespace Imgeneus.World.Tests
             HealMP = 180,
             SP = 9,
             TargetType = TargetType.Caster
+        };
+
+        protected DbSkill UltimateBarrier = new DbSkill()
+        {
+            SkillId = 741,
+            SkillLevel = 2,
+            TypeDetail = TypeDetail.HealthAssistant,
+            TypeEffect = TypeEffect.Buff,
+            TargetType = TargetType.Caster,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.MagicAttack
         };
 
         #endregion

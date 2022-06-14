@@ -214,5 +214,15 @@ namespace Imgeneus.World.Game.Health
         /// Event, that is fired when mirror damage comes.
         /// </summary>
         event Action<int, int, Damage> OnMirrowDamage;
+
+        /// <summary>
+        /// Use MP before HP.
+        /// </summary>
+        bool UseMPInsteadOfHP { get; set; }
+
+        /// <summary>
+        /// Use SP before HP.
+        /// </summary>
+        bool UseSPInsteadOfHP { get; set; }
     }
 }

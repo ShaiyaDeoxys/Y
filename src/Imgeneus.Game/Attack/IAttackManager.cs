@@ -77,12 +77,7 @@ namespace Imgeneus.World.Game.Attack
         /// <summary>
         /// Calculates attack result based on skill type and target.
         /// </summary>
-        AttackResult CalculateAttackResult(Skill skill, IKillable target, Element element, int minAttack, int maxAttack, int minMagicAttack, int maxMagicAttack);
-
-        /// <summary>
-        /// Calculates damage based on player stats and target stats.
-        /// </summary>
-        AttackResult CalculateDamage(IKillable target, TypeAttack typeAttack, Element attackElement, int minAttack, int maxAttack, int minMagicAttack, int maxMagicAttack, Skill skill = null);
+        AttackResult CalculateAttackResult(IKillable target, Element element, int minAttack, int maxAttack, int minMagicAttack, int maxMagicAttack, Skill skill = null);
 
         /// <summary>
         /// The calculation of the attack success.

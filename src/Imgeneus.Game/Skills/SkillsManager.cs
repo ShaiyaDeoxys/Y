@@ -436,7 +436,7 @@ namespace Imgeneus.World.Game.Skills
                         continue;
                     }
 
-                    var attackResult = _attackManager.CalculateAttackResult(skill, t, _elementProvider.AttackElement, _statsManager.MinAttack, _statsManager.MaxAttack, _statsManager.MinMagicAttack, _statsManager.MaxMagicAttack);
+                    var attackResult = _attackManager.CalculateAttackResult(t, _elementProvider.AttackElement, _statsManager.MinAttack, _statsManager.MaxAttack, _statsManager.MinMagicAttack, _statsManager.MaxMagicAttack, skill);
 
                     try
                     {
@@ -571,6 +571,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.DamageReflection:
                 case TypeDetail.PersistBarrier:
                 case TypeDetail.MentalStormConfusion:
+                case TypeDetail.HealthAssistant:
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

@@ -245,12 +245,12 @@ namespace Imgeneus.World.Game.Attack
                 return;
             }
 
-            result = CalculateDamage(Target, typeAttack,
-                                             _elementManager.AttackElement,
-                                             _statsManager.MinAttack,
-                                             _statsManager.MaxAttack,
-                                             _statsManager.MinMagicAttack,
-                                             _statsManager.MaxMagicAttack);
+            result = CalculateAttackResult(Target,
+                                           _elementManager.AttackElement,
+                                           _statsManager.MinAttack,
+                                           _statsManager.MaxAttack,
+                                           _statsManager.MinMagicAttack,
+                                           _statsManager.MaxMagicAttack);
 
             OnAttack?.Invoke(_ownerId, Target, result); // Event should go first, otherwise AI manager will clear target and it will be null.
 
@@ -374,35 +374,82 @@ namespace Imgeneus.World.Game.Attack
             return true;
         }
 
-        public AttackResult CalculateAttackResult(Skill skill, IKillable target, Element element, int minAttack, int maxAttack, int minMagicAttack, int maxMagicAttack)
+        public AttackResult CalculateAttackResult(IKillable target, Element element, int minAttack, int maxAttack, int minMagicAttack, int maxMagicAttack, Skill skill = null)
         {
-            switch (skill.DamageType)
+            AttackResult result;
+            if (skill is not null)
             {
-                case DamageType.FixedDamage:
-                    return new AttackResult(AttackSuccess.Normal, new Damage(skill.DamageHP, skill.DamageMP, skill.DamageSP));
+                switch (skill.DamageType)
+                {
+                    case DamageType.FixedDamage:
+                        result = new AttackResult(AttackSuccess.Normal, new Damage(skill.DamageHP, skill.DamageMP, skill.DamageSP));
+                        break;
 
-                case DamageType.PlusExtraDamage:
-                    return CalculateDamage(target,
-                                           skill.TypeAttack,
-                                           element,
-                                           minAttack,
-                                           maxAttack,
-                                           minMagicAttack,
-                                           maxMagicAttack,
-                                           skill);
+                    case DamageType.PlusExtraDamage:
+                        result = CalculateDamage(target,
+                                               skill.TypeAttack,
+                                               element,
+                                               minAttack,
+                                               maxAttack,
+                                               minMagicAttack,
+                                               maxMagicAttack,
+                                               skill);
+                        break;
 
-                case DamageType.Eraser:
-                    return new AttackResult(AttackSuccess.Normal, new Damage((ushort)(_healthManager.CurrentHP * 2), 0, 0));
+                    case DamageType.Eraser:
+                        result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)(_healthManager.CurrentHP * 2), 0, 0));
+                        break;
 
-                case DamageType.HPPercentDamage:
-                    return new AttackResult(AttackSuccess.Normal, new Damage((ushort)(target.HealthManager.MaxHP * skill.DamageHP / 100), 0, 0));
+                    case DamageType.HPPercentDamage:
+                        result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)(target.HealthManager.MaxHP * skill.DamageHP / 100), 0, 0));
+                        break;
 
-                default:
-                    throw new NotImplementedException("Not implemented damage type.");
+                    default:
+                        throw new NotImplementedException("Not implemented damage type.");
+                }
             }
+            else
+                result = CalculateDamage(target,
+                                         TypeAttack.PhysicalAttack,
+                                         element,
+                                         minAttack,
+                                         maxAttack,
+                                         minMagicAttack,
+                                         maxMagicAttack);
+
+
+            if (target.HealthManager.UseSPInsteadOfHP)
+            {
+                if (target.HealthManager.CurrentSP > result.Damage.HP)
+                {
+                    result.Damage.SP = result.Damage.HP;
+                    result.Damage.HP = 0;
+                }
+                else
+                {
+                    result.Damage.HP = (ushort)(result.Damage.HP - target.HealthManager.CurrentSP);
+                    result.Damage.SP = (ushort)target.HealthManager.CurrentSP;
+                }
+            }
+
+            if (target.HealthManager.UseMPInsteadOfHP)
+            {
+                if (target.HealthManager.CurrentMP > result.Damage.HP)
+                {
+                    result.Damage.MP = result.Damage.HP;
+                    result.Damage.HP = 0;
+                }
+                else
+                {
+                    result.Damage.HP = (ushort)(result.Damage.HP - target.HealthManager.CurrentMP);
+                    result.Damage.MP = (ushort)target.HealthManager.CurrentMP;
+                }
+            }
+
+            return result;
         }
 
-        public AttackResult CalculateDamage(
+        private AttackResult CalculateDamage(
             IKillable target,
             TypeAttack typeAttack,
             Element attackElement,

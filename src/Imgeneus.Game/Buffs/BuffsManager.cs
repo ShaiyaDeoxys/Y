@@ -579,6 +579,16 @@ namespace Imgeneus.World.Game.Buffs
                     }
                     break;
 
+                case TypeDetail.HealthAssistant:
+                    if (skill.SkillLevel > 1)
+                    {
+                        _healthManager.UseSPInsteadOfHP = true;
+                        _healthManager.UseMPInsteadOfHP = true;
+                    }
+                    else
+                        _healthManager.UseSPInsteadOfHP = true;
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -795,6 +805,11 @@ namespace Imgeneus.World.Game.Buffs
                         ApplyAbility(skill.AbilityType9, skill.AbilityValue9, false, buff, skill);
                         ApplyAbility(skill.AbilityType10, skill.AbilityValue10, false, buff, skill);
                     }
+                    break;
+
+                case TypeDetail.HealthAssistant:
+                    _healthManager.UseSPInsteadOfHP = false;
+                    _healthManager.UseMPInsteadOfHP = false;
                     break;
 
                 default:

@@ -485,6 +485,14 @@ namespace Imgeneus.World.Game.Health
 
         #endregion
 
+        #region Use instead of HP
+
+        public bool UseMPInsteadOfHP { get; set; }
+
+        public bool UseSPInsteadOfHP { get; set; }
+
+        #endregion
+
         public event Action<int, HitpointArgs> HP_Changed;
 
         public event Action<int, HitpointArgs> MP_Changed;

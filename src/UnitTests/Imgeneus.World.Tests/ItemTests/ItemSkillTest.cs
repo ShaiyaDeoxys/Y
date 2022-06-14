@@ -36,7 +36,7 @@ namespace Imgeneus.World.Tests.ItemTests
             var character = CreateCharacter();
             var character2 = CreateCharacter();
 
-            var damage = (character2 as IKiller).AttackManager.CalculateDamage(character, TypeAttack.PhysicalAttack, Element.None, 100, 100, 0, 0, null);
+            var damage = (character2 as IKiller).AttackManager.CalculateAttackResult(character, Element.None, 100, 100, 0, 0, null);
             Assert.Equal(150, damage.Damage.HP);
             Assert.Equal(0, damage.Absorb);
 
@@ -48,7 +48,7 @@ namespace Imgeneus.World.Tests.ItemTests
 
             Assert.Equal(20, character.Absorption);
 
-            damage = (character2 as IKiller).AttackManager.CalculateDamage(character, TypeAttack.PhysicalAttack, Element.None, 100, 100, 0, 0, null);
+            damage = (character2 as IKiller).AttackManager.CalculateAttackResult(character, Element.None, 100, 100, 0, 0, null);
             Assert.Equal(130, damage.Damage.HP);
             Assert.Equal(20, damage.Absorb);
         }

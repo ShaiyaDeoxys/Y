@@ -107,7 +107,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             var character1 = CreateCharacter();
             var character2 = CreateCharacter();
 
-            var result = character1.AttackManager.CalculateDamage(character2, TypeAttack.PhysicalAttack, Element.None, 1, 5, 0, 0, new Skill(WildRage, 0, 0));
+            var result = character1.AttackManager.CalculateAttackResult(character2, Element.None, 1, 5, 0, 0, new Skill(WildRage, 0, 0));
             Assert.True(result.Damage.HP > WildRage.DamageHP);
             Assert.Equal(result.Damage.SP, WildRage.DamageSP);
         }
@@ -193,7 +193,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.HealthManager.FullRecover();
             Assert.Equal(character.HealthManager.MaxHP, character.HealthManager.CurrentHP);
 
-            var result = character.AttackManager.CalculateAttackResult(new Skill(Eraser, 0, 0), character2, Element.None, 0, 0, 0, 0);
+            var result = character.AttackManager.CalculateAttackResult(character2, Element.None, 0, 0, 0, 0, new Skill(Eraser, 0, 0));
             Assert.Equal(character.HealthManager.CurrentHP * 2, result.Damage.HP);
 
             character.SkillsManager.UseSkill(new Skill(Eraser, 0, 0), character, character2);
@@ -859,6 +859,54 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.Equal(190, character.HealthManager.CurrentMP);
             Assert.Equal(0, character.HealthManager.CurrentSP);
+        }
+
+        [Fact]
+        [Description("UltimateBarrier should first decrease sp, after that mp, after that hp.")]
+        public void UltimateBarrierTest()
+        {
+            var character = CreateCharacter();
+            character.HealthManager.FullRecover();
+
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+            Assert.Equal(200, character.HealthManager.CurrentMP);
+            Assert.Equal(300, character.HealthManager.CurrentSP);
+
+            var character2 = CreateCharacter();
+            character2.StatsManager.WeaponMinAttack = 100;
+            character2.StatsManager.WeaponMaxAttack = 100;
+
+            character.SkillsManager.UseSkill(new Skill(UltimateBarrier, 0, 0), character);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+
+            character2.AttackManager.Target = character;
+            character2.AttackManager.AutoAttack(character2); // Damage is 150.
+
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+            Assert.Equal(200, character.HealthManager.CurrentMP);
+            Assert.Equal(150, character.HealthManager.CurrentSP);
+
+            character2.AttackManager.Target = character;
+            character2.AttackManager.AutoAttack(character2); // Damage is 150.
+
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+            Assert.Equal(200, character.HealthManager.CurrentMP);
+            Assert.Equal(0, character.HealthManager.CurrentSP);
+
+            character2.AttackManager.Target = character;
+            character2.AttackManager.AutoAttack(character2); // Damage is 150.
+
+            Assert.Equal(100, character.HealthManager.CurrentHP);
+            Assert.Equal(50, character.HealthManager.CurrentMP);
+            Assert.Equal(0, character.HealthManager.CurrentSP);
+
+            character2.AttackManager.Target = character;
+            character2.AttackManager.AutoAttack(character2); // Damage is 150.
+
+            Assert.Equal(0, character.HealthManager.CurrentHP);
+            Assert.Equal(0, character.HealthManager.CurrentMP);
+            Assert.Equal(0, character.HealthManager.CurrentSP);
+            Assert.True(character.HealthManager.IsDead);
         }
     }
 }
