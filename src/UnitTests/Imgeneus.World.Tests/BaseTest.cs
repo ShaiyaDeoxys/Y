@@ -704,6 +704,7 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             TypeDetail = TypeDetail.Dispel,
             TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.HealingDispel
         };
 
         protected DbSkill Skill_HealthRemedy_Level1 = new DbSkill()
@@ -799,7 +800,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             TypeDetail = TypeDetail.Stealth,
             SuccessType = SuccessType.SuccessBasedOnValue,
-            TargetType = TargetType.Caster
+            TargetType = TargetType.Caster,
+            TypeEffect = TypeEffect.Buff
         };
 
         protected DbSkill SpeedRemedy_Lvl1 = new DbSkill()
@@ -996,6 +998,7 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             TypeDetail = TypeDetail.PersistBarrier,
             TargetType = TargetType.Caster,
+            TypeEffect = TypeEffect.Buff,
             AbilityType1 = AbilityType.SacrificeMPPercent,
             AbilityValue1 = 7,
             DamageType = DamageType.FixedDamage,

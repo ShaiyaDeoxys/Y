@@ -446,19 +446,30 @@ namespace Imgeneus.World.Game.Skills
 
                     try
                     {
-                        // First cancel those buufs, that are canceled, when any skill is used.
+                        // Cancel those buffs, that are canceled, when any skill is used.
                         CancelBuffs();
 
-                        var reflectedDamage = false;
-                        // Second decrease hp.
-                        if (t.HealthManager.ReflectPhysicDamage && (skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack))
+                        // Apply skill.
+                        PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
+
+                        var reflectedDamage = (t.HealthManager.ReflectPhysicDamage && (skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack))
+                                              ||
+                                              (t.HealthManager.ReflectMagicDamage && skill.TypeAttack == TypeAttack.MagicAttack);
+
+                        // OnUsedSkill should go before OnUsedRangeSkill, because "Rapid Shot" was working incorrect.
+                        if (n == 0 && (target == t || target is null))
+                            OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.AlliesButCaster || reflectedDamage || skill.MultiAttack > 0 ? new AttackResult() : attackResult);
+
+                        if (target != t)
+                            if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
+                                OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
+
+                        if (skill.MultiAttack > 1)
+                            OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
+
+                        // Decrease hp should go after OnUsedRangeSkill, otherwise mob death animation won't play.
+                        if (reflectedDamage)
                         {
-                            reflectedDamage = true;
-                            _healthManager.InvokeMirrowDamage(attackResult.Damage, t);
-                        }
-                        else if (t.HealthManager.ReflectMagicDamage && skill.TypeAttack == TypeAttack.MagicAttack)
-                        {
-                            reflectedDamage = true;
                             _healthManager.InvokeMirrowDamage(attackResult.Damage, t);
                         }
                         else
@@ -489,19 +500,8 @@ namespace Imgeneus.World.Game.Skills
                             }
                         }
 
-                        // Third apply skill.
-                        PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
-
-                        // OnUsedSkill should go before OnUsedRangeSkill, because "Rapid Shot" was working incorrect.
-                        if (n == 0 && (target == t || target is null))
-                            OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.AlliesButCaster || reflectedDamage || skill.MultiAttack > 0 ? new AttackResult() : attackResult);
-
-                        if (target != t)
-                            if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
-                                OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
-
-                        if (skill.MultiAttack > 1)
-                            OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
+                        if (skill.TypeEffect == TypeEffect.Buff || skill.TypeEffect == TypeEffect.BuffNoss || skill.TypeEffect == TypeEffect.Debuff)
+                            t.BuffsManager.AddBuff(skill, skillOwner);
                     }
                     catch (NotImplementedException)
                     {
@@ -578,7 +578,7 @@ namespace Imgeneus.World.Game.Skills
             return targets;
         }
 
-        public void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, ref AttackResult attackResult, int n = 0)
+        private void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, ref AttackResult attackResult, int n = 0)
         {
             switch (skill.Type)
             {
@@ -604,12 +604,10 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.MentalStormConfusion:
                 case TypeDetail.HealthAssistant:
                 case TypeDetail.DeathTouch:
-                    target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
                 case TypeDetail.PeriodicalDebuff:
                     skill.InitialDamage = attackResult.Damage.HP;
-                    target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
                 case TypeDetail.Evolution:
@@ -626,7 +624,6 @@ namespace Imgeneus.World.Game.Skills
                     break;
 
                 case TypeDetail.FireThorn:
-                    target.BuffsManager.AddBuff(skill, skillOwner);
                     attackResult = new AttackResult();
                     break;
 
@@ -646,7 +643,6 @@ namespace Imgeneus.World.Game.Skills
 
                 case TypeDetail.PassiveDefence:
                 case TypeDetail.WeaponMastery:
-                    target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 
                 case TypeDetail.TownPortal:

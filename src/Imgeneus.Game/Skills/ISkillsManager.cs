@@ -70,17 +70,6 @@ namespace Imgeneus.World.Game.Skills
         void UseSkill(Skill skill, IKiller skillOwner, IKillable target = null);
 
         /// <summary>
-        /// Performs side effect of skill.
-        /// </summary>
-        /// <param name="skill">skill</param>
-        /// <param name="initialTarget">target, that was initially selected</param>
-        /// <param name="target">current target, usually is the same as initialTarget, but if it's AoE (area of effect) skill, then can be different from initial target</param>
-        /// <param name="skillOwner">who performes skill</param>
-        /// <param name="attackResult">result after performing skill</param>
-        /// <param name="n">How many times this skill was called, used in multi skills.</param>
-        void PerformSkill(Skill skill, IKillable initialTarget, IKillable target, IKiller skillOwner, ref AttackResult attackResult, int n = 0);
-
-        /// <summary>
         /// Clears skills and adds skill points.
         /// </summary>
         bool ResetSkills();

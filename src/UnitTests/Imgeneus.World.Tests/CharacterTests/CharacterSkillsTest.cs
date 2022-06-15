@@ -151,7 +151,7 @@ namespace Imgeneus.World.Tests.CharacterTests
         }
 
         [Fact]
-        [Description("Nettle Sting should generate as many range attacks as many targets it got.")]
+        [Description("Nettle Sting should generate as many range attacks as many targets it got AND range attacks should be sent before death event, otherwise mobs won't play death animation.")]
         public void NettleStingTest()
         {
             var map = testMap;
@@ -160,22 +160,38 @@ namespace Imgeneus.World.Tests.CharacterTests
             var character3 = CreateCharacter(map: map, country: Fraction.Dark);
             var character4 = CreateCharacter(map: map, country: Fraction.Dark);
 
+            var character3OnDead = false;
+            var onDeadWasCalledAfterOnRange = false;
             var numberOfRangeAttacks = 0;
-            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfRangeAttacks++;
+            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            {
+                numberOfRangeAttacks++;
+                if (killable == character3)
+                    onDeadWasCalledAfterOnRange = character3OnDead == false;
+            };
 
             var numberOfUsedSkill = 0;
             character1.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfUsedSkill++;
 
-            character1.StatsManager.WeaponMinAttack = 1;
-            character1.StatsManager.WeaponMaxAttack = 1;
+            character1.StatsManager.WeaponMinAttack = 100;
+            character1.StatsManager.WeaponMaxAttack = 100;
 
             var character2GotDamage = false;
             var character3GotDamage = false;
             var character4GotDamage = false;
 
             character2.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character2GotDamage = true;
+            character2.HealthManager.FullRecover();
+
             character3.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character3GotDamage = true;
+            character3.HealthManager.OnDead += (int senderId, IKiller character1) =>
+            {
+                character3OnDead = true;
+            };
+            character3.HealthManager.FullRecover();
+
             character4.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character4GotDamage = true;
+            character4.HealthManager.FullRecover();
 
             character1.SkillsManager.UseSkill(new Skill(NettleSting, 0, 0), character1, character2);
 
@@ -184,6 +200,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(character2GotDamage);
             Assert.True(character3GotDamage);
             Assert.True(character4GotDamage);
+            Assert.True(onDeadWasCalledAfterOnRange);
         }
 
         [Fact]
