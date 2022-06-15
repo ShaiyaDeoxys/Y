@@ -1,4 +1,5 @@
-﻿using Imgeneus.Database.Constants;
+﻿using Imgeneus.Core.Extensions;
+using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Game.Skills;
 using Imgeneus.World.Game;
@@ -9,6 +10,7 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Speed;
 using Parsec.Shaiya.Skill;
+using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Xunit;
@@ -907,6 +909,27 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(0, character.HealthManager.CurrentMP);
             Assert.Equal(0, character.HealthManager.CurrentSP);
             Assert.True(character.HealthManager.IsDead);
+        }
+
+        [Fact]
+        [Description("LongRange should increase attack range.")]
+        public void LongRangeTest()
+        {
+            var character = CreateCharacter();
+            var character2 = CreateCharacter(country: Fraction.Dark);
+
+            character2.MovementManager.PosX = 25;
+            character2.MovementManager.PosZ = 25;
+
+            var distance = MathExtensions.Distance(character.MovementManager.PosX, character2.MovementManager.PosX, character.MovementManager.PosZ, character2.MovementManager.PosZ);
+            Assert.Equal(35, Math.Round(distance));
+
+            Assert.False(character.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character2, out var res));
+            Assert.Equal(AttackSuccess.InsufficientRange, res);
+
+            character.SkillsManager.UseSkill(new Skill(LongRange, 0, 0), character);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character2, out var _));
         }
     }
 }

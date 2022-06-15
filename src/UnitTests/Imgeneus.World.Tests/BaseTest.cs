@@ -533,7 +533,8 @@ namespace Imgeneus.World.Tests
                     { (696, 1), DisruptionStun },
                     { (717, 1), PotentialForce },
                     { (742, 1), Diversion },
-                    { (741, 2), UltimateBarrier }
+                    { (741, 2), UltimateBarrier },
+                    { (710, 1), LongRange }
                 });
 
             databaseMock
@@ -638,7 +639,8 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.PlusExtraDamage,
             TargetType = TargetType.SelectedEnemy,
             ReadyTime = 5,
-            TypeEffect = TypeEffect.Debuff
+            TypeEffect = TypeEffect.Debuff,
+            AttackRange = 30
         };
 
         protected DbSkill AttributeRemove = new DbSkill()
@@ -1234,6 +1236,19 @@ namespace Imgeneus.World.Tests
             TargetType = TargetType.Caster,
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.MagicAttack
+        };
+
+        protected DbSkill LongRange = new DbSkill()
+        {
+            SkillId = 710,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Buff,
+            TypeEffect = TypeEffect.Buff,
+            TargetType = TargetType.Caster,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.Passive,
+            AbilityType1 = AbilityType.AttackRange,
+            AbilityValue1 = 6
         };
 
         #endregion
