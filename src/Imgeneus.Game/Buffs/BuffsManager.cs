@@ -1139,21 +1139,36 @@ namespace Imgeneus.World.Game.Buffs
 
             if (_healthManager.CurrentHP != _healthManager.MaxHP && healResult.Damage.HP != 0)
             {
+                if (healResult.Damage.HP + _healthManager.CurrentHP > _healthManager.MaxHP)
+                    healResult.Damage.HP = (ushort)(_healthManager.MaxHP - _healthManager.CurrentHP);
+
                 _healthManager.IncreaseHP(healResult.Damage.HP);
                 healedSomething = true;
             }
+            else
+                healResult.Damage.HP = 0;
 
             if (_healthManager.CurrentMP != _healthManager.MaxMP && healResult.Damage.MP != 0)
             {
+                if (healResult.Damage.MP + _healthManager.CurrentMP > _healthManager.MaxMP)
+                    healResult.Damage.MP = (ushort)(_healthManager.MaxMP - _healthManager.CurrentMP);
+
                 _healthManager.CurrentMP += healResult.Damage.MP;
                 healedSomething = true;
             }
+            else
+                healResult.Damage.MP = 0;
 
             if (_healthManager.CurrentSP != _healthManager.MaxSP && healResult.Damage.SP != 0)
             {
+                if (healResult.Damage.SP + _healthManager.CurrentSP > _healthManager.MaxSP)
+                    healResult.Damage.SP = (ushort)(_healthManager.MaxSP - _healthManager.CurrentSP);
+
                 _healthManager.CurrentSP += healResult.Damage.SP;
                 healedSomething = true;
             }
+            else
+                healResult.Damage.SP = 0;
 
             if (healedSomething)
                 OnSkillKeep?.Invoke(_ownerId, buff, healResult);
