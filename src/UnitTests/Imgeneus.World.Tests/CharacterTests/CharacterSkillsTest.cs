@@ -119,14 +119,35 @@ namespace Imgeneus.World.Tests.CharacterTests
         public void DeadlyStrikeTest()
         {
             var character1 = CreateCharacter();
-            var character2 = CreateCharacter();
+            character1.StatsManager.WeaponMinAttack = 2;
+            character1.StatsManager.WeaponMaxAttack = 2;
 
+            var character2 = CreateCharacter();
+            character2.HealthManager.FullRecover();
+
+            var usedSkillGoesFirst = false;
+            var numberOfUsedSkill = 0;
             var numberOfRangeAttacks = 0;
-            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfRangeAttacks++;
+            var allDamage = 0;
+            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            {
+                numberOfUsedSkill++;
+                allDamage += res.Damage.HP;
+                usedSkillGoesFirst = numberOfRangeAttacks == 0;
+            };
+            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            {
+                numberOfRangeAttacks++;
+                allDamage += res.Damage.HP;
+            };
 
             character1.SkillsManager.UseSkill(new Skill(DeadlyStrike, 0, 0), character1, character2);
 
+            Assert.True(usedSkillGoesFirst);
+            Assert.Equal(1, numberOfUsedSkill);
             Assert.Equal(2, numberOfRangeAttacks);
+            Assert.Equal(6, allDamage);
+            Assert.Equal(94, character2.HealthManager.CurrentHP);
         }
 
         [Fact]

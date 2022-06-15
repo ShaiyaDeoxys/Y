@@ -474,8 +474,16 @@ namespace Imgeneus.World.Game.Skills
                         // Third apply skill.
                         PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
 
+                        // OnUsedSkill should go before OnUsedRangeSkill, because "Rapid Shot" was working incorrect.
                         if (n == 0 && (target == t || target is null))
-                            OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.AlliesButCaster || reflectedDamage ? new AttackResult() : attackResult);
+                            OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.AlliesButCaster || reflectedDamage || skill.MultiAttack > 0 ? new AttackResult() : attackResult);
+
+                        if (target != t)
+                            if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
+                                OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
+
+                        if (skill.MultiAttack > 1)
+                            OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
                     }
                     catch (NotImplementedException)
                     {
@@ -660,10 +668,6 @@ namespace Imgeneus.World.Game.Skills
                 default:
                     throw new NotImplementedException("Not implemented skill type.");
             }
-
-            if (initialTarget != target)
-                if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
-                    OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
         }
 
         /// <summary>

@@ -906,8 +906,9 @@ namespace Imgeneus.World.Tests
             SkillId = 627,
             SkillLevel = 1,
             TypeDetail = TypeDetail.MultipleHitsAttack,
+            TargetType = TargetType.SelectedEnemy,
+            TypeAttack = TypeAttack.PhysicalAttack,
             DamageType = DamageType.PlusExtraDamage,
-            DamageHP = 50,
             MultiAttack = 2
         };
 
