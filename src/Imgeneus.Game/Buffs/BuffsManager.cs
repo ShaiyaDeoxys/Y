@@ -266,6 +266,7 @@ namespace Imgeneus.World.Game.Buffs
                         if (!skill.CanBeActivated)
                         {
                             buff.ResetTime = resetTime;
+                            buff.InitialDamage = skill.InitialDamage;
 
                             // Send update of buff.
                             if (!buff.Skill.IsPassive)
@@ -292,7 +293,8 @@ namespace Imgeneus.World.Game.Buffs
                         // Create new one with a higher level.
                         buff = new Buff(creator, skill)
                         {
-                            ResetTime = resetTime
+                            ResetTime = resetTime,
+                            InitialDamage = skill.InitialDamage
                         };
                         if (skill.IsPassive)
                             PassiveBuffs.Add(buff);
@@ -306,7 +308,8 @@ namespace Imgeneus.World.Game.Buffs
                 // It's a new buff.
                 buff = new Buff(creator, skill)
                 {
-                    ResetTime = resetTime
+                    ResetTime = resetTime,
+                    InitialDamage = skill.InitialDamage
                 };
 
                 if (buff.IsDebuff && _untouchableManager.BlockDebuffs)
@@ -419,7 +422,10 @@ namespace Imgeneus.World.Game.Buffs
                     buff.TimeHPDamage = skill.TimeDamageHP;
                     buff.TimeMPDamage = skill.TimeDamageMP;
                     buff.TimeSPDamage = skill.TimeDamageSP;
-                    buff.TimeDamageType = skill.TimeDamageType > 0 ? TimeDamageType.Percent : TimeDamageType.None;
+                    buff.TimeDamageType = skill.TimeDamageType > 0 ?
+                                              skill.TimeDamageType == TimeDamageType.DoublePrevious ? TimeDamageType.DoublePrevious : TimeDamageType.Percent
+                                              :
+                                              TimeDamageType.None;
                     buff.OnPeriodicalDebuff += Buff_OnPeriodicalDebuff;
                     buff.StartPeriodicalDebuff();
                     break;
@@ -1184,6 +1190,18 @@ namespace Imgeneus.World.Game.Buffs
                     Convert.ToUInt16(_healthManager.MaxHP * debuffResult.Damage.HP * 1.0 / 100),
                     Convert.ToUInt16(_healthManager.MaxSP * debuffResult.Damage.SP * 1.0 / 100),
                     Convert.ToUInt16(_healthManager.MaxMP * debuffResult.Damage.MP * 1.0 / 100));
+            }
+
+            if (buff.TimeDamageType == TimeDamageType.DoublePrevious)
+            {
+                if (buff.DamageCounter == 0)
+                    damage = new Damage(debuffResult.Damage.HP, 0, 0);
+                else
+                {
+                    buff.InitialDamage = (ushort)Math.Round(buff.InitialDamage * 1.2);
+                    damage = new Damage(buff.InitialDamage, 0, 0);
+                }
+                buff.DamageCounter++;
             }
 
             if (buff.CanBeActivatedAndDisactivated && (_healthManager.CurrentHP <= damage.HP || _healthManager.CurrentMP <= damage.MP || _healthManager.CurrentSP <= damage.SP))

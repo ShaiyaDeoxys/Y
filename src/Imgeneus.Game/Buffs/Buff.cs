@@ -284,6 +284,10 @@ namespace Imgeneus.World.Game.Buffs
 
         public TimeDamageType TimeDamageType;
 
+        public ushort InitialDamage;
+
+        public byte DamageCounter;
+
         public int RepeatTime
         {
             set

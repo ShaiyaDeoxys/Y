@@ -567,7 +567,6 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.Buff:
                 case TypeDetail.SubtractingDebuff:
                 case TypeDetail.PeriodicalHeal:
-                case TypeDetail.PeriodicalDebuff:
                 case TypeDetail.PreventAttack:
                 case TypeDetail.Immobilize:
                 case TypeDetail.RemoveAttribute:
@@ -587,6 +586,11 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.MentalStormConfusion:
                 case TypeDetail.HealthAssistant:
                 case TypeDetail.DeathTouch:
+                    target.BuffsManager.AddBuff(skill, skillOwner);
+                    break;
+
+                case TypeDetail.PeriodicalDebuff:
+                    skill.InitialDamage = attackResult.Damage.HP;
                     target.BuffsManager.AddBuff(skill, skillOwner);
                     break;
 

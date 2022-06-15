@@ -449,5 +449,11 @@ namespace Imgeneus.Game.Skills
         /// Needs Shield.
         /// </summary>
         public bool NeedShield { get => _dbSkill.NeedShield == 1; }
+
+
+        /// <summary>
+        /// Workaround for "Deadly Poison".
+        /// </summary>
+        public ushort InitialDamage { get; set; }
     }
 }
