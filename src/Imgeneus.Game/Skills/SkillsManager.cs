@@ -421,7 +421,7 @@ namespace Imgeneus.World.Game.Skills
             int n = 0;
             do
             {
-                var targets = GetTargets(skill, skillOwner, target);
+                var targets = GetTargets(skill, skillOwner, target).OrderByDescending(x => x == target).ToList();
                 if (targets.Count == 0)
                     OnUsedSkill?.Invoke(_ownerId, target, skill, new AttackResult());
 
@@ -458,14 +458,13 @@ namespace Imgeneus.World.Game.Skills
 
                         // OnUsedSkill should go before OnUsedRangeSkill, because "Rapid Shot" was working incorrect.
                         if (n == 0 && (target == t || target is null))
-                            OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.AlliesButCaster || reflectedDamage || skill.MultiAttack > 0 ? new AttackResult() : attackResult);
+                            OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster || reflectedDamage || skill.MultiAttack > 0 ? new AttackResult() : attackResult);
 
-                        if (target != t)
-                            if (skill.MultiAttack > 1 || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
-                                OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
+                        if (skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
+                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
 
-                        if (skill.MultiAttack > 1)
-                            OnUsedRangeSkill?.Invoke(_ownerId, target, skill, attackResult);
+                        if (skill.MultiAttack > 1 && skill.TargetType == TargetType.SelectedEnemy)
+                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
 
                         // Decrease hp should go after OnUsedRangeSkill, otherwise mob death animation won't play.
                         if (reflectedDamage)

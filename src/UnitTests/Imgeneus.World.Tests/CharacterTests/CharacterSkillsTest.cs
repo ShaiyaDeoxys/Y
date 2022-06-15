@@ -195,7 +195,7 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             character1.SkillsManager.UseSkill(new Skill(NettleSting, 0, 0), character1, character2);
 
-            Assert.Equal(2, numberOfRangeAttacks);
+            Assert.Equal(3, numberOfRangeAttacks);
             Assert.Equal(1, numberOfUsedSkill);
             Assert.True(character2GotDamage);
             Assert.True(character3GotDamage);
