@@ -228,15 +228,16 @@ namespace Imgeneus.World.Game.Player
 
             _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender, dbCharacter.Mode, dbCharacter.User.Points, dbCharacter.Name);
 
-            _levelingManager.Init(dbCharacter.Id, dbCharacter.Exp);
-
-            _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints, profession: dbCharacter.Class);
-
-            _skillsManager.Init(dbCharacter.Id, dbCharacter.Skills.Select(s => new Skill(_definitionsPreloder.Skills[(s.SkillId, s.SkillLevel)], s.Number, 0)), dbCharacter.SkillPoint);
-
             _buffsManager.Init(dbCharacter.Id, dbCharacter.ActiveBuffs);
 
             _inventoryManager.Init(dbCharacter.Id, dbCharacter.Items, dbCharacter.Gold);
+
+            _levelingManager.Init(dbCharacter.Id, dbCharacter.Exp);
+
+            _skillsManager.Init(dbCharacter.Id, dbCharacter.Skills.Select(s => new Skill(_definitionsPreloder.Skills[(s.SkillId, s.SkillLevel)], s.Number, 0)), dbCharacter.SkillPoint);
+
+            // Pay attention! Init health manager after inventory and stats, so that HP won't go lower, when loading from db.
+            _healthManager.Init(dbCharacter.Id, dbCharacter.HealthPoints, dbCharacter.StaminaPoints, dbCharacter.ManaPoints);
 
             _attackManager.Init(dbCharacter.Id);
 

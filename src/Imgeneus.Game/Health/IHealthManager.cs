@@ -10,7 +10,7 @@ namespace Imgeneus.World.Game.Health
     /// </summary>
     public interface IHealthManager : ISessionedService, IDisposable
     {
-        void Init(int ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null, CharacterProfession? profession = null);
+        void Init(int ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null);
 
         /// <summary>
         /// Max health.
@@ -41,11 +41,6 @@ namespace Imgeneus.World.Game.Health
         /// Event, that is fired, when max mp changes.
         /// </summary>
         event Action<int, int> OnMaxMPChanged;
-
-        /// <summary>
-        /// Only for players.
-        /// </summary>
-        CharacterProfession? Class { get; }
 
         /// <summary>
         /// Health points based on level.

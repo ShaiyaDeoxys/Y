@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
+using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Player.Config;
@@ -18,16 +19,17 @@ namespace Imgeneus.World.Game.Health
         private readonly ILevelProvider _levelProvider;
         private readonly ICharacterConfiguration _characterConfiguration;
         private readonly IDatabase _database;
+        private readonly IAdditionalInfoManager _additionalInfoManager;
         private int _ownerId;
 
-        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration, IDatabase database)
+        public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration, IDatabase database, IAdditionalInfoManager additionalInfoManager)
         {
             _logger = logger;
             _statsManager = statsManager;
             _levelProvider = levelProvider;
             _characterConfiguration = characterConfiguration;
             _database = database;
-
+            _additionalInfoManager = additionalInfoManager;
             _statsManager.OnRecUpdate += StatsManager_OnRecUpdate;
             _statsManager.OnDexUpdate += StatsManager_OnDexUpdate;
             _statsManager.OnWisUpdate += StatsManager_OnWisUpdate;
@@ -48,11 +50,9 @@ namespace Imgeneus.World.Game.Health
 
         #region Init & Clear
 
-        public void Init(int id, int currentHP, int currentSP, int currentMP, int? constHP, int? constSP, int? constMP, CharacterProfession? profession)
+        public void Init(int id, int currentHP, int currentSP, int currentMP, int? constHP, int? constSP, int? constMP)
         {
             _ownerId = id;
-
-            Class = profession;
 
             _constHP = constHP;
             _constMP = constMP;
@@ -61,10 +61,6 @@ namespace Imgeneus.World.Game.Health
             CurrentHP = currentHP;
             CurrentSP = currentSP;
             CurrentMP = currentMP;
-
-            ExtraHP = 0;
-            ExtraSP = 0;
-            ExtraMP = 0;
         }
 
         public async Task Clear()
@@ -78,6 +74,10 @@ namespace Imgeneus.World.Game.Health
             character.StaminaPoints = (ushort)CurrentSP;
 
             await _database.SaveChangesAsync();
+
+            ExtraHP = 0;
+            ExtraSP = 0;
+            ExtraMP = 0;
         }
 
         public void Dispose()
@@ -270,8 +270,6 @@ namespace Imgeneus.World.Game.Health
 
         #region Consts
 
-        public CharacterProfession? Class { get; private set; }
-
         private int? _constHP;
         public int ConstHP
         {
@@ -281,7 +279,7 @@ namespace Imgeneus.World.Game.Health
                     return _constHP.Value;
 
                 var level = _levelProvider.Level <= 60 ? _levelProvider.Level : 60;
-                var index = (level - 1) * 6 + (byte)Class;
+                var index = (level - 1) * 6 + (byte)_additionalInfoManager.Class;
                 var constHP = _characterConfiguration.GetConfig(index).HP;
 
                 return constHP;
@@ -300,7 +298,7 @@ namespace Imgeneus.World.Game.Health
                     return _constSP.Value;
 
                 var level = _levelProvider.Level <= 60 ? _levelProvider.Level : 60;
-                var index = (level - 1) * 6 + (byte)Class;
+                var index = (level - 1) * 6 + (byte)_additionalInfoManager.Class;
                 var constSP = _characterConfiguration.GetConfig(index).SP;
 
                 return constSP;
@@ -320,7 +318,7 @@ namespace Imgeneus.World.Game.Health
                     return _constMP.Value;
 
                 var level = _levelProvider.Level <= 60 ? _levelProvider.Level : 60;
-                var index = (level - 1) * 6 + (byte)Class;
+                var index = (level - 1) * 6 + (byte)_additionalInfoManager.Class;
                 var constMP = _characterConfiguration.GetConfig(index).MP;
 
                 return constMP;

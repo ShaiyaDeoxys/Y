@@ -603,6 +603,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.MentalStormConfusion:
                 case TypeDetail.HealthAssistant:
                 case TypeDetail.DeathTouch:
+                case TypeDetail.SoulMenace:
                     break;
 
                 case TypeDetail.PeriodicalDebuff:
