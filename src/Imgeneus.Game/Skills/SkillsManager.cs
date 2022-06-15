@@ -464,11 +464,29 @@ namespace Imgeneus.World.Game.Skills
                         else
                         {
                             if (attackResult.Damage.HP > 0 && skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.FireThorn)
+                            {
+                                if (t.HealthManager.CurrentHP < attackResult.Damage.HP)
+                                {
+                                    attackResult.Damage.HP = (ushort)t.HealthManager.CurrentHP;
+                                }
                                 t.HealthManager.DecreaseHP(attackResult.Damage.HP, skillOwner);
+                            }
                             if (attackResult.Damage.SP > 0 && skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.FireThorn)
+                            {
+                                if (t.HealthManager.CurrentSP < attackResult.Damage.SP)
+                                {
+                                    attackResult.Damage.SP = (ushort)t.HealthManager.CurrentSP;
+                                }
                                 t.HealthManager.CurrentSP -= attackResult.Damage.SP;
+                            }
                             if (attackResult.Damage.MP > 0 && skill.Type != TypeDetail.Healing && skill.Type != TypeDetail.FireThorn)
+                            {
+                                if (t.HealthManager.CurrentMP < attackResult.Damage.MP)
+                                {
+                                    attackResult.Damage.MP = (ushort)t.HealthManager.CurrentMP;
+                                }
                                 t.HealthManager.CurrentMP -= attackResult.Damage.MP;
+                            }
                         }
 
                         // Third apply skill.

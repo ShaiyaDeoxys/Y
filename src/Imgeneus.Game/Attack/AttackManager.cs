@@ -563,9 +563,9 @@ namespace Imgeneus.World.Game.Attack
             }
 
             if (criticalDamage)
-                return new AttackResult(AttackSuccess.Critical, new Damage(Convert.ToUInt16(damage), skill is null ? (ushort)0 : skill.DamageSP, skill is null ? (ushort)0 : skill.DamageMP), absorb);
+                return new AttackResult(AttackSuccess.Critical, new Damage(Convert.ToUInt16(damage), skill is null ? (ushort)0 : (ushort)(skill.DamageSP + skill.AddDamageSP), skill is null ? (ushort)0 : (ushort)(skill.DamageMP + skill.AddDamageMP)), absorb);
             else
-                return new AttackResult(AttackSuccess.Normal, new Damage(Convert.ToUInt16(damage), skill is null ? (ushort)0 : skill.DamageSP, skill is null ? (ushort)0 : skill.DamageMP), absorb);
+                return new AttackResult(AttackSuccess.Normal, new Damage(Convert.ToUInt16(damage), skill is null ? (ushort)0 : (ushort)(skill.DamageSP + skill.AddDamageSP), skill is null ? (ushort)0 : (ushort)(skill.DamageMP + skill.AddDamageMP)), absorb);
         }
 
         /// <summary>

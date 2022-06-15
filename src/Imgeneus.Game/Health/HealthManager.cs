@@ -112,6 +112,9 @@ namespace Imgeneus.World.Game.Health
                 if (value > MaxHP)
                     value = MaxHP;
 
+                if (value < 0)
+                    value = 0;
+
                 var oldHP = _currentHP;
                 _currentHP = value;
                 if (_currentHP <= 0)
@@ -163,6 +166,9 @@ namespace Imgeneus.World.Game.Health
                 if (value > MaxSP)
                     value = MaxSP;
 
+                if (value < 0)
+                    value = 0;
+
                 var args = new HitpointArgs(_currentSP, value);
                 _currentSP = value;
                 SP_Changed?.Invoke(_ownerId, args);
@@ -180,6 +186,9 @@ namespace Imgeneus.World.Game.Health
 
                 if (value > MaxMP)
                     value = MaxMP;
+
+                if (value < 0)
+                    value = 0;
 
                 var args = new HitpointArgs(_currentMP, value);
                 _currentMP = value;
