@@ -461,10 +461,10 @@ namespace Imgeneus.World.Game.Skills
                             OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster || reflectedDamage || skill.MultiAttack > 0 ? new AttackResult() : attackResult);
 
                         if (skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
-                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
+                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, reflectedDamage ? new AttackResult() : attackResult);
 
                         if (skill.MultiAttack > 1 && skill.TargetType == TargetType.SelectedEnemy)
-                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, attackResult);
+                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, reflectedDamage ? new AttackResult() : attackResult);
 
                         // Decrease hp should go after OnUsedRangeSkill, otherwise mob death animation won't play.
                         if (reflectedDamage)
