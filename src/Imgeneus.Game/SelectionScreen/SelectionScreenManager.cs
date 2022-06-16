@@ -55,6 +55,7 @@ namespace Imgeneus.World.SelectionScreen
             var characters = await _database.Characters
                                         .AsNoTracking()
                                         .Include(c => c.Items)
+                                        .Include(x => x.User)
                                         .Where(u => u.UserId == userId)
                                         .ToListAsync();
 

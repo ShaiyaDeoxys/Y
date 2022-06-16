@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Configurations>Debug;Release;EP8_V1;EP8_V2;SHAIYA_US</Configurations>
+    <Configurations>Debug;Release;EP8_V1;EP8_V2;SHAIYA_US;SHAIYA_US_DEBUG</Configurations>
     <Platforms>AnyCPU</Platforms>
 	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>

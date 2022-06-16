@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;SHAIYA_US_DEBUG</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
