@@ -426,6 +426,17 @@ namespace Imgeneus.World.Game.Attack
                         result.Damage.HP *= skill.DamageHP;
                         break;
 
+                    case DamageType.RecDamagePlusExtra:
+                        result = CalculateDamage(target,
+                                               skill.TypeAttack,
+                                               element,
+                                               _statsManager.TotalRec,
+                                               _statsManager.TotalRec,
+                                               _statsManager.TotalRec,
+                                               _statsManager.TotalRec,
+                                               skill);
+                        break;
+
                     default:
                         throw new NotImplementedException("Not implemented damage type.");
                 }
