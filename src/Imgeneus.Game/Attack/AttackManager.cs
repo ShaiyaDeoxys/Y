@@ -346,7 +346,7 @@ namespace Imgeneus.World.Game.Attack
 
                 case TypeAttack.MagicAttack:
                     levelDifference = ((target.LevelProvider.Level - _levelProvider.Level - 2) * 100 + target.LevelProvider.Level) / (target.LevelProvider.Level + _levelProvider.Level) * 1.1;
-                    var fxDef = levelDifference + target.StatsManager.MagicEvasionChance;
+                    var fxDef = Math.Abs(levelDifference) + target.StatsManager.MagicEvasionChance;
                     if (fxDef >= 1)
                     {
                         if (fxDef > 70)
@@ -435,6 +435,18 @@ namespace Imgeneus.World.Game.Attack
                                                _statsManager.TotalRec,
                                                _statsManager.TotalRec,
                                                skill);
+                        break;
+
+                    case DamageType.RecDamageCoefficient:
+                        result = CalculateDamage(target,
+                                               skill.TypeAttack,
+                                               element,
+                                               _statsManager.TotalRec,
+                                               _statsManager.TotalRec,
+                                               _statsManager.TotalRec,
+                                               _statsManager.TotalRec,
+                                               skill);
+                        result.Damage.HP *= skill.DamageHP;
                         break;
 
                     default:
