@@ -354,6 +354,11 @@ namespace Imgeneus.World.Game.Stats
         Dictionary<byte, byte> WeaponAttackPassiveSkillModificator { get; }
 
         /// <summary>
+        /// Passive shield power up.
+        /// </summary>
+        byte ShieldDefencePassiveSkillModificator { get; set; }
+
+        /// <summary>
         /// Min attack from weapon.
         /// </summary>
         int WeaponMinAttack { get; set; }

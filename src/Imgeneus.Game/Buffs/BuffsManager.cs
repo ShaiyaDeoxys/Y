@@ -477,6 +477,11 @@ namespace Imgeneus.World.Game.Buffs
                     }
                     break;
 
+                case TypeDetail.ShieldMastery:
+                    _statsManager.ShieldDefencePassiveSkillModificator = skill.Weaponvalue;
+                    _statsManager.RaiseAdditionalStatsUpdate();
+                    break;
+
                 case TypeDetail.RemoveAttribute:
                     _elementProvider.IsRemoveElement = true;
                     break;
@@ -732,6 +737,11 @@ namespace Imgeneus.World.Game.Buffs
                         _statsManager.WeaponAttackPassiveSkillModificator.Remove(skill.Weapon2);
                         _statsManager.RaiseAdditionalStatsUpdate();
                     }
+                    break;
+
+                case TypeDetail.ShieldMastery:
+                    _statsManager.ShieldDefencePassiveSkillModificator = 0;
+                    _statsManager.RaiseAdditionalStatsUpdate();
                     break;
 
                 case TypeDetail.RemoveAttribute:

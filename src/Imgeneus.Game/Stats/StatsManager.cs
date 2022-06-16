@@ -164,6 +164,8 @@ namespace Imgeneus.World.Game.Stats
         public int ExtraPhysicalAttackPower { get; set; }
         public int ExtraMagicAttackPower { get; set; }
 
+        public byte ShieldDefencePassiveSkillModificator { get; set; }
+
         #endregion
 
         #region Total
@@ -283,7 +285,7 @@ namespace Imgeneus.World.Game.Stats
         {
             get
             {
-                var total = _def + Reaction + ExtraRec + ExtraDefense;
+                var total = _def + Reaction + ExtraRec + ExtraDefense + ShieldDefencePassiveSkillModificator;
                 if (total > 0 && DefencePersent > 0)
                     total = total + total * DefencePersent / 100;
 
