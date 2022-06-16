@@ -437,12 +437,15 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.Sleep:
                 case TypeDetail.Stun:
                     _speedManager.Immobilize = true;
-                    _speedManager.IsAbleToAttack = false;
+                    _speedManager.IsAbleToPhysicalAttack = false;
+                    _speedManager.IsAbleToMagicAttack = false;
                     break;
 
                 case TypeDetail.PreventAttack:
                     if (skill.StateType == StateType.Silence)
-                        _speedManager.IsAbleToAttack = false;
+                        _speedManager.IsAbleToPhysicalAttack = false;
+                    if (skill.StateType == StateType.Darkness)
+                        _speedManager.IsAbleToMagicAttack = false;
                     break;
 
                 case TypeDetail.Stealth:
@@ -701,12 +704,14 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.Sleep:
                 case TypeDetail.Stun:
-                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Silence);
+                    _speedManager.IsAbleToPhysicalAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Silence);
+                    _speedManager.IsAbleToMagicAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Darkness);
                     _speedManager.Immobilize = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
                     break;
 
                 case TypeDetail.PreventAttack:
-                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Silence);
+                    _speedManager.IsAbleToPhysicalAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Silence);
+                    _speedManager.IsAbleToMagicAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Darkness);
                     break;
 
                 case TypeDetail.Stealth:

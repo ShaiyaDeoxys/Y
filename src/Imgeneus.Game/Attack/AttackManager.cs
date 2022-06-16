@@ -213,7 +213,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && !_speedManager.IsAbleToAttack)
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && !_speedManager.IsAbleToPhysicalAttack)
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;

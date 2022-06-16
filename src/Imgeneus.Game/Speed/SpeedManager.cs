@@ -37,8 +37,11 @@ namespace Imgeneus.World.Game.Speed
 
         #region Attack speed
 
-        private bool _isAbleToAttack = true;
-        public bool IsAbleToAttack { get => _isAbleToAttack; set { _isAbleToAttack = value; RaiseMoveAndAttackSpeed(); } }
+        private bool _isAbleToPhysicalAttack = true;
+        public bool IsAbleToPhysicalAttack { get => _isAbleToPhysicalAttack; set { _isAbleToPhysicalAttack = value; RaiseMoveAndAttackSpeed(); } }
+
+        private bool _isAbleToMagicAttack = true;
+        public bool IsAbleToMagicAttack { get => _isAbleToMagicAttack; set { _isAbleToMagicAttack = value; RaiseMoveAndAttackSpeed(); } }
 
         public Dictionary<byte, byte> WeaponSpeedPassiveSkillModificator { get; init; } = new Dictionary<byte, byte>();
 
@@ -52,7 +55,7 @@ namespace Imgeneus.World.Game.Speed
         {
             get
             {
-                if (!IsAbleToAttack)
+                if (!IsAbleToPhysicalAttack)
                     return AttackSpeed.CanNotAttack;
 
                 if (ConstAttackSpeed == 0)

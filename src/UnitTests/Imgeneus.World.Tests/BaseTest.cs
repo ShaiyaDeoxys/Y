@@ -536,7 +536,8 @@ namespace Imgeneus.World.Tests
                     { (741, 2), UltimateBarrier },
                     { (710, 1), LongRange },
                     { (661, 1), HealthDrain },
-                    { (664, 1), SilencingBlow }
+                    { (664, 1), SilencingBlow },
+                    { (665, 1), BlindingBlow }
                 });
 
             databaseMock
@@ -1279,6 +1280,18 @@ namespace Imgeneus.World.Tests
             TypeAttack = TypeAttack.PhysicalAttack,
             TargetType = TargetType.EnemiesNearTarget,
             StateType = StateType.Darkness
+        };
+
+        protected DbSkill BlindingBlow = new DbSkill()
+        {
+            SkillId = 665,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.PreventAttack,
+            TypeEffect = TypeEffect.Debuff,
+            DamageType = DamageType.PlusExtraDamage,
+            TypeAttack = TypeAttack.PhysicalAttack,
+            TargetType = TargetType.EnemiesNearTarget,
+            StateType = StateType.Silence
         };
 
         #endregion

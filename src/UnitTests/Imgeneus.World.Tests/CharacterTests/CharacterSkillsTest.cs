@@ -588,7 +588,8 @@ namespace Imgeneus.World.Tests.CharacterTests
             priest.SkillsManager.UseSkill(new Skill(Hypnosis, 0, 0), priest, character);
 
             Assert.Equal(AttackSpeed.CanNotAttack, character.SpeedManager.TotalAttackSpeed);
-            Assert.False(character.SpeedManager.IsAbleToAttack);
+            Assert.False(character.SpeedManager.IsAbleToPhysicalAttack);
+            Assert.False(character.SpeedManager.IsAbleToMagicAttack);
 
             Assert.Equal(MoveSpeed.CanNotMove, character.SpeedManager.TotalMoveSpeed);
             Assert.True(character.SpeedManager.Immobilize);
@@ -988,7 +989,7 @@ namespace Imgeneus.World.Tests.CharacterTests
         }
 
         [Fact]
-        [Description("SilencingBlow should prevent magic attack and don't prevent physic attack..")]
+        [Description("SilencingBlow should prevent magic attack and don't prevent physic attack.")]
         public void SilencingBlowTest()
         {
             var map = testMap;
@@ -1004,6 +1005,25 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.False(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));
             Assert.True(character2.AttackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, character, out var _));
+        }
+
+        [Fact]
+        [Description("BlindingBlow should prevent physic attack and don't prevent magic attack.")]
+        public void BlindingBlowTest()
+        {
+            var map = testMap;
+            var character = CreateCharacter(map);
+            var character2 = CreateCharacter(map, country: Fraction.Dark);
+            character2.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character2.InventoryManager.MoveItem(1, 0, 0, 5);
+
+            Assert.True(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));
+            Assert.True(character2.AttackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, character, out var _));
+
+            character.SkillsManager.UseSkill(new Skill(BlindingBlow, 0, 0), character, character2);
+
+            Assert.True(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));
+            Assert.False(character2.AttackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, character, out var _));
         }
     }
 }

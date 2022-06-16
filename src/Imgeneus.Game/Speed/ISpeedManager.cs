@@ -14,9 +14,14 @@ namespace Imgeneus.World.Game.Speed
         #region Attack
 
         /// <summary>
-        /// Is it possible to make attack?
+        /// Is it possible to make physical attack.
         /// </summary>
-        bool IsAbleToAttack { get; set; }
+        bool IsAbleToPhysicalAttack { get; set; }
+
+        /// <summary>
+        /// Is it possible to make magic attack.
+        /// </summary>
+        bool IsAbleToMagicAttack { get; set; }
 
         /// <summary>
         /// Attack speed.

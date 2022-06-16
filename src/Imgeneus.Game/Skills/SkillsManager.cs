@@ -294,21 +294,21 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
-            if (!_speedManager.IsAbleToAttack)
+            if (!_speedManager.IsAbleToPhysicalAttack && !_speedManager.IsAbleToMagicAttack)
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;
             }
 
             if ((skill.TypeAttack == TypeAttack.PhysicalAttack || skill.TypeAttack == TypeAttack.ShootingAttack) &&
-                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Silence))
+                !_speedManager.IsAbleToPhysicalAttack)
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;
             }
 
             if (skill.TypeAttack == TypeAttack.MagicAttack &&
-                _buffsManager.ActiveBuffs.Any(b => b.Skill.StateType == StateType.Darkness))
+                !_speedManager.IsAbleToMagicAttack)
             {
                 success = AttackSuccess.CanNotAttack;
                 return false;
