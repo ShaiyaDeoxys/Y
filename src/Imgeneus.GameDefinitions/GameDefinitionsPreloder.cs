@@ -70,9 +70,21 @@ namespace Imgeneus.GameDefinitions
         private void PreloadSkills()
         {
             var skills = Reader.ReadFromFile<DBSkillData>("config/SData/DBSkillData.SData");
-            for (var i = 1; i <= skills.Records.Count; i++)
+            for (var i = 0; i < skills.Records.Count; i++)
             {
                 var skill = skills.Records[i];
+                if (skill.SkillId < 0 || skill.SkillId > ushort.MaxValue)
+                {
+                    _logger.LogWarning("Skill id is incorrect {id}", skill.SkillId);
+                    continue;
+                }
+
+                if (skill.SkillLevel < 0 || skill.SkillLevel > byte.MaxValue)
+                {
+                    _logger.LogWarning("Skill level is incorrect {level}", skill.SkillLevel);
+                    continue;
+                }
+
                 Skills.Add(((ushort)skill.SkillId, (byte)skill.SkillLevel), new DbSkill(skill));
             }
         }
