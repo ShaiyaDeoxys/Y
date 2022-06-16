@@ -986,5 +986,24 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Equal(78, character.HealthManager.CurrentHP);
             Assert.Equal(32, character2.HealthManager.CurrentHP);
         }
+
+        [Fact]
+        [Description("SilencingBlow should prevent magic attack and don't prevent physic attack..")]
+        public void SilencingBlowTest()
+        {
+            var map = testMap;
+            var character = CreateCharacter(map);
+            var character2 = CreateCharacter(map, country: Fraction.Dark);
+            character2.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character2.InventoryManager.MoveItem(1, 0, 0, 5);
+
+            Assert.True(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));
+            Assert.True(character2.AttackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, character, out var _));
+
+            character.SkillsManager.UseSkill(new Skill(SilencingBlow, 0, 0), character, character2);
+
+            Assert.False(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));
+            Assert.True(character2.AttackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, character, out var _));
+        }
     }
 }

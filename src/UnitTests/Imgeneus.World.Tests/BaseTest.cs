@@ -406,7 +406,7 @@ namespace Imgeneus.World.Tests
                     { (100, 65), TeleportationStone },
                     { (100, 72), BlueDragonCharm },
                     { (100, 78), BoxWithApples },
-                    { (100, 75), DoubleWarehouse }
+                    { (100, 75), DoubleWarehouse },
                 });
 
             databasePreloader
@@ -535,7 +535,8 @@ namespace Imgeneus.World.Tests
                     { (742, 1), Diversion },
                     { (741, 2), UltimateBarrier },
                     { (710, 1), LongRange },
-                    { (661, 1), HealthDrain }
+                    { (661, 1), HealthDrain },
+                    { (664, 1), SilencingBlow }
                 });
 
             databaseMock
@@ -1266,6 +1267,18 @@ namespace Imgeneus.World.Tests
             TypeAttack = TypeAttack.PhysicalAttack,
             TargetType = TargetType.SelectedEnemy,
             DamageHP = 68
+        };
+
+        protected DbSkill SilencingBlow = new DbSkill()
+        {
+            SkillId = 664,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.PreventAttack,
+            TypeEffect = TypeEffect.Debuff,
+            DamageType = DamageType.PlusExtraDamage,
+            TypeAttack = TypeAttack.PhysicalAttack,
+            TargetType = TargetType.EnemiesNearTarget,
+            StateType = StateType.Darkness
         };
 
         #endregion

@@ -441,7 +441,8 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.PreventAttack:
-                    _speedManager.IsAbleToAttack = false;
+                    if (skill.StateType == StateType.Silence)
+                        _speedManager.IsAbleToAttack = false;
                     break;
 
                 case TypeDetail.Stealth:
@@ -700,12 +701,12 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.Sleep:
                 case TypeDetail.Stun:
-                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
+                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Silence);
                     _speedManager.Immobilize = ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Immobilize);
                     break;
 
                 case TypeDetail.PreventAttack:
-                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.Type == TypeDetail.PreventAttack);
+                    _speedManager.IsAbleToAttack = !ActiveBuffs.Any(b => b.Skill.Type == TypeDetail.Sleep || b.Skill.Type == TypeDetail.Stun || b.Skill.StateType == StateType.Silence);
                     break;
 
                 case TypeDetail.Stealth:
