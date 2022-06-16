@@ -29,7 +29,7 @@ namespace Imgeneus.World.Serialization
             Alpha = a;
             R = r;
 
-#if SHAIYA_US || DEBUG
+#if SHAIYA_US || DEBUG || SHAIYA_US_DEBUG
             if (r < 20) // Pay attention in shaiya us there is bug, that saturation is saved as red color.
                 r = s;
 #endif

@@ -27,7 +27,7 @@ namespace Imgeneus.World.Game.Notice
 
             foreach (var player in worldPlayers)
             {
-#if SHAIYA_US
+#if SHAIYA_US || SHAIYA_US_DEBUG
                 SendNoticeToPlayer(player, PacketType.GM_SHAIYA_US_NOTICE_WORLD, message);
 #else
                 SendNoticeToPlayer(player, PacketType.NOTICE_WORLD, message);
@@ -104,7 +104,7 @@ namespace Imgeneus.World.Game.Notice
 
             packet.WriteByte((byte)message.Length);
 
-#if EP8_V2 || SHAIYA_US
+#if EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG
             packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);

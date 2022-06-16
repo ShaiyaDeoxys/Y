@@ -215,7 +215,7 @@ namespace Imgeneus.World.Packets
 
         public void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue)
         {
-#if SHAIYA_US || DEBUG
+#if SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
             using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_ATTRIBUTE_SET);
 #else
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTRIBUTE_SET);
@@ -329,7 +329,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.INVENTORY_MOVE_ITEM);
 
-#if EP8_V2 || SHAIYA_US || DEBUG
+#if EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
             packet.Write(0); // Unknown int in V2.
 #endif
             packet.Write(new MovedItem(sourceItem).Serialize());
@@ -1826,7 +1826,7 @@ namespace Imgeneus.World.Packets
 
             packet.WriteByte((byte)message.Length);
 
-#if (EP8_V2 || SHAIYA_US || DEBUG)
+#if (EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
             packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);
@@ -1850,7 +1850,7 @@ namespace Imgeneus.World.Packets
 
             packet.WriteByte((byte)message.Length);
 
-#if (EP8_V2 || SHAIYA_US || DEBUG)
+#if (EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
             packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);
@@ -2479,7 +2479,7 @@ namespace Imgeneus.World.Packets
             packet.Write(true); // Is open?
             packet.WriteByte((byte)(shopName.Length + 1));
 
-#if (EP8_V2 || SHAIYA_US || DEBUG)
+#if (EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
             packet.WriteString(shopName, shopName.Length + 1, Encoding.Unicode);
 #else
             packet.WriteString(shopName, shopName.Length + 1);
@@ -2596,7 +2596,7 @@ namespace Imgeneus.World.Packets
 
         public void SendGmSummon(IWorldClient client, int senderId, ushort mapId, float x, float y, float z)
         {
-#if DEBUG || SHAIYA_US
+#if DEBUG || SHAIYA_US || SHAIYA_US_DEBUG
             using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_SUMMON_PLAYER);
 #else
             using var packet = new ImgeneusPacket(PacketType.GM_SUMMON_PLAYER);

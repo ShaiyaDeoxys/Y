@@ -29,6 +29,11 @@ namespace Imgeneus.World.Game.Inventory
         /// </summary>
         public const byte GEM_ITEM_TYPE = 30;
 
+        /// <summary>
+        /// 30 type always starts quest.
+        /// </summary>
+        public const byte START_QUEST_ITEM_TYPE = 29;
+
         public byte Bag;
         public byte Slot;
         public byte Type;

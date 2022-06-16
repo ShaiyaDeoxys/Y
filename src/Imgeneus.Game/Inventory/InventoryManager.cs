@@ -1065,6 +1065,9 @@ namespace Imgeneus.World.Game.Inventory
 
         public bool CanUseItem(Item item)
         {
+            if (item.Type == Item.START_QUEST_ITEM_TYPE)
+                return true;
+
             if (item.Special == SpecialEffect.None && item.HP == 0 && item.MP == 0 && item.SP == 0 && item.SkillId == 0)
                 return false;
 
@@ -1215,6 +1218,9 @@ namespace Imgeneus.World.Game.Inventory
                             ok = true;
                         }
                     }
+
+                    if (item.Type == Item.START_QUEST_ITEM_TYPE)
+                        ok = true;
 
                     break;
 

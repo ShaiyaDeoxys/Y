@@ -121,7 +121,7 @@ namespace Imgeneus.World.Game.Quests
                 if (npcQuestGiver is null || !npcQuestGiver.StartQuestIds.Contains(questId))
                 {
                     _logger.LogWarning("Trying to start unknown quest {id} at npc {npcId}", questId, npcId);
-                    return false;
+                    //return false;
                 }
             }
 

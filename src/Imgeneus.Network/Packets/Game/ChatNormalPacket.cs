@@ -14,7 +14,7 @@ namespace Imgeneus.Network.Packets.Game
 #endif
             var messageLength = packetStream.Read<byte>();
 
-#if (EP8_V2 || SHAIYA_US || DEBUG)
+#if (EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
             Message = packetStream.ReadString(messageLength, Encoding.Unicode);
 #else
             Message = packetStream.ReadString(messageLength);
