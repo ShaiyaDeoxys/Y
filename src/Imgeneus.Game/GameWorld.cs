@@ -65,6 +65,8 @@ namespace Imgeneus.World.Game
             foreach (var mapDefinition in _mapDefinitions.Maps)
             {
                 var config = _mapsLoader.LoadMapConfiguration(mapDefinition.Id);
+                if (config is null)
+                    continue;
 
                 if (mapDefinition.CreateType == CreateType.Default)
                 {

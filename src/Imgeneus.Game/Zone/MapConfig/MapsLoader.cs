@@ -62,7 +62,7 @@ namespace Imgeneus.World.Game.Zone.MapConfig
                 if (!File.Exists(mapFile))
                 {
                     _logger.LogError($"Configuration for map {mapId} is not found.");
-                    return new Svmap();
+                    return null;
                 }
 
                 var config = Reader.ReadFromFile<Svmap>(mapFile); ;
