@@ -461,10 +461,10 @@ namespace Imgeneus.World.Game.Skills
                             OnUsedSkill?.Invoke(_ownerId, target, skill, skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster || reflectedDamage || skill.MultiAttack > 0 ? new AttackResult() : attackResult);
 
                         if (skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.EnemiesNearTarget || skill.TargetType == TargetType.AlliesButCaster || skill.TargetType == TargetType.AlliesNearCaster)
-                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, reflectedDamage ? new AttackResult() : attackResult);
+                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, reflectedDamage ? new AttackResult() { Success = AttackSuccess.Miss } : attackResult);
 
                         if (skill.MultiAttack > 1 && skill.TargetType == TargetType.SelectedEnemy)
-                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, reflectedDamage ? new AttackResult() : attackResult);
+                            OnUsedRangeSkill?.Invoke(_ownerId, t, skill, reflectedDamage ? new AttackResult() { Success = AttackSuccess.Miss } : attackResult);
 
                         // Decrease hp should go after OnUsedRangeSkill, otherwise mob death animation won't play.
                         if (reflectedDamage)
@@ -681,6 +681,13 @@ namespace Imgeneus.World.Game.Skills
 
                     foreach (var member in members)
                         _packetFactory.SendScoutingInfo(member.GameSession.Client, target.ElementProvider.DefenceElement, target.LevelProvider.Level, ((Character)target).AdditionalInfoManager.Grow);
+                    break;
+
+                case TypeDetail.EnergyDrain:
+                    _healthManager.IncreaseHP(attackResult.Damage.HP);
+                    _healthManager.CurrentMP += attackResult.Damage.MP;
+                    _healthManager.CurrentSP += attackResult.Damage.SP;
+                    _healthManager.RaiseHitpointsChange();
                     break;
 
                 default:

@@ -969,5 +969,22 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Single(character.BuffsManager.ActiveBuffs);
             Assert.True(character.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character2, out var _));
         }
+
+        [Fact]
+        [Description("HealthDrain should heal HP based on damage made.")]
+        public void HealthDrainTest()
+        {
+            var character = CreateCharacter();
+            character.HealthManager.IncreaseHP(10);
+
+            var character2 = CreateCharacter(country: Fraction.Dark);
+            character2.HealthManager.FullRecover();
+
+            Assert.True(character.SkillsManager.CanUseSkill(new Skill(HealthDrain, 0, 0), character2, out var _));
+            character.SkillsManager.UseSkill(new Skill(HealthDrain, 0, 0), character, character2);
+
+            Assert.Equal(78, character.HealthManager.CurrentHP);
+            Assert.Equal(32, character2.HealthManager.CurrentHP);
+        }
     }
 }

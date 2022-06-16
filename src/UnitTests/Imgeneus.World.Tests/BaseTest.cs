@@ -534,7 +534,8 @@ namespace Imgeneus.World.Tests
                     { (717, 1), PotentialForce },
                     { (742, 1), Diversion },
                     { (741, 2), UltimateBarrier },
-                    { (710, 1), LongRange }
+                    { (710, 1), LongRange },
+                    { (661, 1), HealthDrain }
                 });
 
             databaseMock
@@ -1253,6 +1254,18 @@ namespace Imgeneus.World.Tests
             TypeAttack = TypeAttack.Passive,
             AbilityType1 = AbilityType.AttackRange,
             AbilityValue1 = 6
+        };
+
+        protected DbSkill HealthDrain = new DbSkill()
+        {
+            SkillId = 661,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.EnergyDrain,
+            TypeEffect = TypeEffect.BasicDamage,
+            DamageType = DamageType.FixedDamage,
+            TypeAttack = TypeAttack.PhysicalAttack,
+            TargetType = TargetType.SelectedEnemy,
+            DamageHP = 68
         };
 
         #endregion
