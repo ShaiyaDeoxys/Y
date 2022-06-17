@@ -52,28 +52,7 @@ namespace Imgeneus.World.Game.Buffs
         /// </summary>
         public bool IsDebuff
         {
-            get
-            {
-                switch (Skill.Type)
-                {
-                    case TypeDetail.EnergyDrain:
-                    case TypeDetail.PeriodicalDebuff:
-                    case TypeDetail.SubtractingDebuff:
-                    case TypeDetail.DeathTouch:
-                    case TypeDetail.Stun:
-                    case TypeDetail.Immobilize:
-                    case TypeDetail.Sleep:
-                    case TypeDetail.PreventAttack:
-                    case TypeDetail.RemoveAttribute:
-                    case TypeDetail.EnergyBackhole:
-                    case TypeDetail.MentalStormConfusion:
-                    case TypeDetail.SoulMenace:
-                    case TypeDetail.MentalStormDistortion:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
+            get => Skill.TypeEffect == TypeEffect.Debuff;
         }
 
         /// <summary>

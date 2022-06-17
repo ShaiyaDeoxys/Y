@@ -3,6 +3,7 @@ using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Session;
 using MvvmHelpers;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Generic;
 
@@ -60,6 +61,15 @@ namespace Imgeneus.World.Game.Buffs
         /// Don't update it directly, use instead "AddPassiveBuff".
         /// </summary>
         ObservableRangeCollection<Buff> PassiveBuffs { get; }
+
+        #endregion
+
+        #region Resistance
+
+        /// <summary>
+        /// Resistance to debuffs.
+        /// </summary>
+        public IList<StateType> DebuffResistances { get; }
 
         #endregion
     }

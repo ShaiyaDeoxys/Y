@@ -107,20 +107,79 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public ushort Magic { get; set; }
 
+        /// <summary>
+        /// Resist sleep.
+        /// </summary>
         public byte ResistState1 { get; set; }
+
+        /// <summary>
+        /// Resist stun.
+        /// </summary>
         public byte ResistState2 { get; set; }
+
+        /// <summary>
+        /// Resist silent.
+        /// </summary>
         public byte ResistState3 { get; set; }
+
+        /// <summary>
+        /// Resist darkness.
+        /// </summary>
         public byte ResistState4 { get; set; }
+
+        /// <summary>
+        /// Resist immobilize.
+        /// </summary>
         public byte ResistState5 { get; set; }
+
+        /// <summary>
+        /// Resist slow.
+        /// </summary>
         public byte ResistState6 { get; set; }
+
+        /// <summary>
+        /// Resist dying.
+        /// </summary>
         public byte ResistState7 { get; set; }
+
+        /// <summary>
+        /// Resist death.
+        /// </summary>
         public byte ResistState8 { get; set; }
+
+        /// <summary>
+        /// Resist poison.
+        /// </summary>
         public byte ResistState9 { get; set; }
+
+        /// <summary>
+        /// Resist illeness.
+        /// </summary>
         public byte ResistState10 { get; set; }
+
+        /// <summary>
+        /// Resist delusion.
+        /// </summary>
         public byte ResistState11 { get; set; }
+
+        /// <summary>
+        /// Resist doom.
+        /// </summary>
         public byte ResistState12 { get; set; }
+
+        /// <summary>
+        /// Resist fear.
+        /// </summary>
         public byte ResistState13 { get; set; }
+
+        /// <summary>
+        /// Resist dull.
+        /// </summary>
         public byte ResistState14 { get; set; }
+
+        /// <summary>
+        /// Resist bad luck.
+        /// </summary>
         public byte ResistState15 { get; set; }
 
         public byte ResistSkill1 { get; set; }

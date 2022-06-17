@@ -237,6 +237,9 @@ namespace Imgeneus.World.Game.Buffs
 
         public Buff AddBuff(Skill skill, IKiller creator)
         {
+            if (skill.TypeEffect == TypeEffect.Debuff && DebuffResistances.Contains(skill.StateType))
+                return null;
+
             var resetTime = skill.KeepTime == 0 || skill.CanBeActivated ? DateTime.UtcNow.AddDays(10) : DateTime.UtcNow.AddSeconds(skill.KeepTime);
             Buff buff;
 
@@ -1340,6 +1343,12 @@ namespace Imgeneus.World.Game.Buffs
             if (sprinterBuff != null)
                 sprinterBuff.CancelBuff();
         }
+
+        #endregion
+
+        #region Resistances
+
+        public IList<StateType> DebuffResistances { get; init; } = new List<StateType>();
 
         #endregion
     }

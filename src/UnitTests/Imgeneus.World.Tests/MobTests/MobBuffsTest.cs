@@ -23,5 +23,18 @@ namespace Imgeneus.World.Tests.MobTests
             Assert.Single(mob.BuffsManager.ActiveBuffs);
             Assert.NotNull(buff);
         }
+
+        [Fact]
+        [Description("Mob can have resistanse to Misfortune.")]
+        public void MobCanHaveDebuffResistance()
+        {
+            var map = testMap;
+            var mob = CreateMob(Wolf.Id, map);
+            var character = CreateCharacter(map);
+
+            character.SkillsManager.UseSkill(new Skill(Misfortune, 0, 0), character, mob);
+
+            Assert.Empty(mob.BuffsManager.ActiveBuffs); // Wolf has resistanse to Misfortune
+        }
     }
 }

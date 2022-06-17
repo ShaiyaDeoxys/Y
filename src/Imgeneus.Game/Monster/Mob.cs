@@ -19,6 +19,7 @@ using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Skill;
 using System;
 
 namespace Imgeneus.World.Game.Monster
@@ -99,6 +100,8 @@ namespace Imgeneus.World.Game.Monster
             LevelProvider.Init(Id, _dbMob.Level);
             HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
             BuffsManager.Init(Id);
+            InitDebuffResistances();
+
             CountryProvider.Init(Id, _dbMob.Fraction);
             SpeedManager.Init(Id);
             AttackManager.Init(Id);
@@ -134,6 +137,40 @@ namespace Imgeneus.World.Game.Monster
                            attackTime1: _dbMob.AttackTime1,
                            attackTime2: _dbMob.AttackTime2,
                            attackTime3: _dbMob.AttackTime3);
+        }
+
+        private void InitDebuffResistances()
+        {
+            if (_dbMob.ResistState1 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.Sleep);
+            if (_dbMob.ResistState2 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.Stun);
+            if (_dbMob.ResistState3 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.Darkness);
+            if (_dbMob.ResistState4 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.Silence);
+            if (_dbMob.ResistState5 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.Immobilize);
+            if (_dbMob.ResistState6 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.Slow);
+            if (_dbMob.ResistState7 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.FlatDamage);
+            if (_dbMob.ResistState8 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.DeathTouch);
+            if (_dbMob.ResistState9 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.HPDamageOverTime);
+            if (_dbMob.ResistState10 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.SPDamageOverTime);
+            if (_dbMob.ResistState11 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.MPDamageOverTime);
+            if (_dbMob.ResistState12 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.MentalSmasher);
+            if (_dbMob.ResistState13 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.LowerAttackOrDefence);
+            if (_dbMob.ResistState14 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.DexDecrease);
+            if (_dbMob.ResistState15 > 0)
+                BuffsManager.DebuffResistances.Add(StateType.Misfortunate);
         }
 
         private void AIManager_OnStateChanged(AIState newState)

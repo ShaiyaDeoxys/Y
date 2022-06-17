@@ -574,7 +574,8 @@ namespace Imgeneus.World.Tests
             ChaseRange = 9,
             ChaseTime = 1800,
             NormalStep = 6,
-            NormalTime = 4000
+            NormalTime = 4000,
+            ResistState15 = 1
         };
 
         protected DbMob CrypticImmortal = new DbMob()
@@ -710,6 +711,7 @@ namespace Imgeneus.World.Tests
             AbilityType1 = AbilityType.PhysicalDefense,
             AbilityValue1 = 119,
             TypeAttack = TypeAttack.MagicAttack,
+            TypeEffect = TypeEffect.Debuff
         };
 
         protected DbSkill Dispel = new DbSkill()
@@ -994,7 +996,8 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             MP = 850,
-            TargetType = TargetType.Caster
+            TargetType = TargetType.Caster,
+            TypeEffect = TypeEffect.Buff
         };
 
         protected DbSkill MagicMirror = new DbSkill()
