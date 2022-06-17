@@ -1025,5 +1025,34 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));
             Assert.False(character2.AttackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, character, out var _));
         }
+
+        [Fact]
+        [Description("Provoke should change mob's target.")]
+        public async void ProvokeTest()
+        {
+            var map = testMap;
+            var character = CreateCharacter(map);
+            character.HealthManager.FullRecover();
+            character.StatsManager.WeaponMinAttack = 100;
+            character.StatsManager.WeaponMaxAttack = 100;
+
+            var character2 = CreateCharacter(map);
+            character2.HealthManager.FullRecover();
+
+            var mob = CreateMob(Wolf.Id, map);
+
+            character.AttackManager.Target = mob;
+            character.AttackManager.AutoAttack(character);
+
+            Assert.Equal(character, mob.AttackManager.Target);
+
+            character2.SkillsManager.UseSkill(new Skill(Provoke, 0, 0), character2, mob);
+
+            Assert.Equal(character2, mob.AttackManager.Target);
+
+            await Task.Delay(1100); // wait ~ 1 sec till Provoke ends, target should return to previous player
+
+            Assert.Equal(character, mob.AttackManager.Target);
+        }
     }
 }

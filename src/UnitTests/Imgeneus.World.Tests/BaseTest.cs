@@ -543,7 +543,8 @@ namespace Imgeneus.World.Tests
                     { (710, 1), LongRange },
                     { (661, 1), HealthDrain },
                     { (664, 1), SilencingBlow },
-                    { (665, 1), BlindingBlow }
+                    { (665, 1), BlindingBlow },
+                    { (305, 1), Provoke }
                 });
 
             databaseMock
@@ -1302,6 +1303,16 @@ namespace Imgeneus.World.Tests
             TypeAttack = TypeAttack.PhysicalAttack,
             TargetType = TargetType.EnemiesNearTarget,
             StateType = StateType.Silence
+        };
+
+        protected DbSkill Provoke = new DbSkill()
+        {
+            SkillId = 305,
+            SkillLevel = 1,
+            TypeDetail = TypeDetail.Provoke,
+            TypeEffect = TypeEffect.Debuff,
+            TargetType = TargetType.SelectedEnemy,
+            KeepTime = 1
         };
 
         #endregion

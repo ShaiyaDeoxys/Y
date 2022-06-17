@@ -605,6 +605,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.DeathTouch:
                 case TypeDetail.SoulMenace:
                 case TypeDetail.MentalImpact:
+                case TypeDetail.Provoke:
                     break;
 
                 case TypeDetail.PeriodicalDebuff:

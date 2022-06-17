@@ -18,12 +18,14 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
+using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
+using Element = Imgeneus.Database.Constants.Element;
 using Timer = System.Timers.Timer;
 
 namespace Imgeneus.World.Game.AI
@@ -94,6 +96,7 @@ namespace Imgeneus.World.Game.AI
             _attackManager.OnTargetChanged += AttackManager_OnTargetChanged;
             _healthManager.OnGotDamage += OnDecreaseHP;
             _buffsManager.OnBuffAdded += OnBuffAdded;
+            _buffsManager.OnBuffRemoved += OnBuffRemoved;
 #if DEBUG
             _logger.LogDebug("AIManager {hashcode} created", GetHashCode());
 #endif
@@ -188,6 +191,7 @@ namespace Imgeneus.World.Game.AI
             _attackManager.OnTargetChanged -= AttackManager_OnTargetChanged;
             _healthManager.OnGotDamage -= OnDecreaseHP;
             _buffsManager.OnBuffAdded -= OnBuffAdded;
+            _buffsManager.OnBuffRemoved -= OnBuffRemoved;
 
             ClearTimers();
             Agro.Clear();
@@ -399,6 +403,8 @@ namespace Imgeneus.World.Game.AI
 
                 if (_target is Character player)
                     player.StealthManager.OnStealthChange += Target_OnStealth;
+
+                SelectActionBasedOnAI();
             }
 
             if (_target is null)
@@ -501,9 +507,8 @@ namespace Imgeneus.World.Game.AI
             if (State != AIState.Idle)
                 return;
 
-            if (TryGetEnemy())
-                SelectActionBasedOnAI();
-            else
+            var ok = TryGetEnemy();
+            if (!ok)
                 _watchTimer.Start();
         }
 
@@ -1077,10 +1082,10 @@ namespace Imgeneus.World.Game.AI
         /// <summary>
         /// Selects target based on agro points.
         /// </summary>
-        public void SelectAgroTarget()
+        public IKillable SelectAgroTarget()
         {
             if (Agro.Count == 0)
-                return;
+                return null;
 
             KeyValuePair<int, int> maxAgro = new();
             foreach (var x in Agro)
@@ -1092,8 +1097,7 @@ namespace Imgeneus.World.Game.AI
                     maxAgro = x;
             }
 
-            _attackManager.Target = _mapProvider.Map.GetPlayer(maxAgro.Key);
-            SelectActionBasedOnAI();
+            return _mapProvider.Map.GetPlayer(maxAgro.Key);
         }
 
         /// <summary>
@@ -1109,20 +1113,40 @@ namespace Imgeneus.World.Game.AI
                         Agro.TryAdd(character.Id, 0);
 
                     Agro[character.Id] += damage / 2 + character.StatsManager.TotalRec * 2;
-                    SelectAgroTarget();
+                    _attackManager.Target = SelectAgroTarget();
                 }
             }
         }
 
         private void OnBuffAdded(int senderId, Buff buff)
         {
-            if (buff.IsDebuff && buff.BuffCreator is Character character)
+            var character = buff.BuffCreator as Character;
+            if (character is null)
+            {
+                _logger.LogError("Mob can not get buffs from not player!");
+                return;
+            }
+
+            if (buff.IsDebuff)
             {
                 if (!Agro.ContainsKey(character.Id))
                     Agro.TryAdd(character.Id, 0);
 
                 Agro[character.Id] += character.StatsManager.TotalRec * 2;
-                SelectAgroTarget();
+                _attackManager.Target = SelectAgroTarget();
+            }
+
+            if (buff.Skill.Type == TypeDetail.Provoke)
+            {
+                _attackManager.Target = character;
+            }
+        }
+
+        private void OnBuffRemoved(int senderId, Buff buff)
+        {
+            if (buff.Skill.Type == TypeDetail.Provoke)
+            {
+                _attackManager.Target = SelectAgroTarget();
             }
         }
 

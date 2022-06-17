@@ -54,7 +54,8 @@ namespace Imgeneus.Game.Skills
             Type != TypeDetail.PeriodicalHeal &&
             Type != TypeDetail.EtainShield &&
             Type != TypeDetail.DamageReflection &&
-            Type != TypeDetail.PersistBarrier;
+            Type != TypeDetail.PersistBarrier &&
+            Type != TypeDetail.Provoke;
 
         /// <summary>
         /// Skill type.

@@ -5,6 +5,7 @@ using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
+using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Elements;
 using Imgeneus.World.Game.Health;
@@ -610,6 +611,9 @@ namespace Imgeneus.World.Game.Buffs
                     buff.StartDeathThouchTimer();
                     break;
 
+                case TypeDetail.Provoke:
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -842,6 +846,9 @@ namespace Imgeneus.World.Game.Buffs
 
                 case TypeDetail.DeathTouch:
                     buff.OnDeathTouch -= Buff_OnDeathTouch;
+                    break;
+
+                case TypeDetail.Provoke:
                     break;
 
                 default:
