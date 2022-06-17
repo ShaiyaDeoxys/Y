@@ -1281,7 +1281,7 @@ namespace Imgeneus.World.Game.Buffs
                 b.CancelBuff();
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker)
+        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker, int damage)
         {
             var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenDamage).ToList();
             foreach (var b in buffs)

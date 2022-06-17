@@ -167,7 +167,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             IsSummoning = false;
         }
 
-        private void CancelSummon(int senderId, IKiller damageMaker)
+        private void CancelSummon(int senderId, IKiller damageMaker, int damage)
         {
             if (Party is not null && Party.SummonRequest is not null)
             {

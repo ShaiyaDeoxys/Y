@@ -130,7 +130,7 @@ namespace Imgeneus.World.Game.Health
             }
         }
 
-        public event Action<int, IKiller> OnGotDamage;
+        public event Action<int, IKiller, int> OnGotDamage;
 
         public void DecreaseHP(int hp, IKiller damageMaker)
         {
@@ -143,7 +143,7 @@ namespace Imgeneus.World.Game.Health
                 DamageMakers.TryAdd(damageMaker, hp);
 
             CurrentHP -= hp;
-            OnGotDamage?.Invoke(_ownerId, damageMaker);
+            OnGotDamage?.Invoke(_ownerId, damageMaker, hp);
         }
 
         public void IncreaseHP(int hp)

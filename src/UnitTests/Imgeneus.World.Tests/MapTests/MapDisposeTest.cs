@@ -33,12 +33,6 @@ namespace Imgeneus.World.Tests.MapTests
             var mob4 = CreateMob(Wolf.Id, map);
             var mob5 = CreateMob(Wolf.Id, map);
 
-            map.AddMob(mob1);
-            map.AddMob(mob2);
-            map.AddMob(mob3);
-            map.AddMob(mob4);
-            map.AddMob(mob5);
-
             Assert.NotNull(map.GetMob(0, mob1.Id));
             Assert.NotNull(map.GetMob(0, mob2.Id));
             Assert.NotNull(map.GetMob(0, mob3.Id));

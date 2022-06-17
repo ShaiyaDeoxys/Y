@@ -13,7 +13,6 @@ namespace Imgeneus.World.Tests
             var mob = CreateMob(1, map);
             var character = CreateCharacter();
 
-            map.AddMob(mob);
             Assert.NotNull(map.GetMob(mob.CellId, mob.Id));
 
             mob.HealthManager.DecreaseHP(mob.HealthManager.CurrentHP, character);

@@ -88,7 +88,6 @@ namespace Imgeneus.World.Game.Monster
                 HealthManager.OnDead += MobRebirth_OnDead;
             }
 
-            HealthManager.OnGotDamage += OnDecreaseHP;
             AIManager.OnStateChanged += AIManager_OnStateChanged;
         }
 
@@ -174,7 +173,6 @@ namespace Imgeneus.World.Game.Monster
         public void Dispose()
         {
             HealthManager.OnDead -= MobRebirth_OnDead;
-            HealthManager.OnGotDamage -= OnDecreaseHP;
             AIManager.OnStateChanged -= AIManager_OnStateChanged;
 
             Scope?.Dispose();

@@ -90,7 +90,7 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Fires event, when there is some damage got from some killer.
         /// </summary>
-        event Action<int, IKiller> OnGotDamage;
+        event Action<int, IKiller, int> OnGotDamage;
 
         /// <summary>
         /// IKiller, that made max damage.

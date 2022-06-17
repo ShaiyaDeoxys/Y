@@ -93,11 +93,6 @@ namespace Imgeneus.World.Tests.PartyTests
             nearbyCharacter.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
             farAwayCharacter.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
 
-            _map.LoadPlayer(killerCharacter);
-            _map.LoadPlayer(nearbyCharacter);
-            _map.LoadPlayer(farAwayCharacter);
-            _map.AddMob(mob);
-
             Assert.Equal((uint)3022800, killerCharacter.LevelingManager.Exp);
             Assert.Equal((uint)3022800, nearbyCharacter.LevelingManager.Exp);
             Assert.Equal((uint)3022800, farAwayCharacter.LevelingManager.Exp);
@@ -151,15 +146,6 @@ namespace Imgeneus.World.Tests.PartyTests
             character5.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
             character6.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
             character7.LevelingManager.TryChangeLevel(mob.LevelProvider.Level);
-
-            _map.LoadPlayer(character1);
-            _map.LoadPlayer(character2);
-            _map.LoadPlayer(character3);
-            _map.LoadPlayer(character4);
-            _map.LoadPlayer(character5);
-            _map.LoadPlayer(character6);
-            _map.LoadPlayer(character7);
-            _map.AddMob(mob);
 
             Assert.Equal((uint)3022800, character1.LevelingManager.Exp);
             Assert.Equal((uint)3022800, character2.LevelingManager.Exp);

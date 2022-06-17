@@ -180,17 +180,17 @@ namespace Imgeneus.World.Tests.CharacterTests
             var character3GotDamage = false;
             var character4GotDamage = false;
 
-            character2.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character2GotDamage = true;
+            character2.HealthManager.OnGotDamage += (int senderId, IKiller character1, int damage) => character2GotDamage = true;
             character2.HealthManager.FullRecover();
 
-            character3.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character3GotDamage = true;
+            character3.HealthManager.OnGotDamage += (int senderId, IKiller character1, int damage) => character3GotDamage = true;
             character3.HealthManager.OnDead += (int senderId, IKiller character1) =>
             {
                 character3OnDead = true;
             };
             character3.HealthManager.FullRecover();
 
-            character4.HealthManager.OnGotDamage += (int senderId, IKiller character1) => character4GotDamage = true;
+            character4.HealthManager.OnGotDamage += (int senderId, IKiller character1, int damage) => character4GotDamage = true;
             character4.HealthManager.FullRecover();
 
             character1.SkillsManager.UseSkill(new Skill(NettleSting, 0, 0), character1, character2);

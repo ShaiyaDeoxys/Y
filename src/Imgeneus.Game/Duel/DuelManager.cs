@@ -290,7 +290,7 @@ namespace Imgeneus.World.Game.Duel
                 Cancel(_ownerId, DuelCancelReason.TooFarAway);
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker)
+        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker, int damage)
         {
             if (damageMaker is Mob || damageMaker.Id != OpponentId)
                 Cancel(_ownerId, DuelCancelReason.MobAttack);

@@ -237,18 +237,21 @@ namespace Imgeneus.World.Tests
         protected Mob CreateMob(ushort mobId, Map map, Fraction country = Fraction.NotSelected)
         {
             _mobId++;
+            var dbMob = databasePreloader.Object.Mobs[mobId];
 
             var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
             countryProvider.Init(0, country);
 
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
             var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
-            levelProvider.Init(_mobId, databasePreloader.Object.Mobs[mobId].Level);
+            levelProvider.Init(_mobId, dbMob.Level);
 
             var levelingManager = new Mock<ILevelingManager>();
             var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
             var statsManager = new StatsManager(new Mock<ILogger<StatsManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object);
             var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, config.Object, databaseMock.Object, null);
+            healthManager.Init(_mobId, dbMob.HP, dbMob.MP, dbMob.SP, dbMob.HP, dbMob.MP, dbMob.SP);
+
             var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
@@ -259,7 +262,7 @@ namespace Imgeneus.World.Tests
 
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null, null, movementManager, null, mapProvider, gameWorldMock.Object);
             var skillsManager = new SkillsManager(new Mock<ILogger<SkillsManager>>().Object, definitionsPreloader.Object, databaseMock.Object, healthManager, attackManager, buffsManager, statsManager, elementProvider, countryProvider, config.Object, levelProvider, additionalInfoManager, mapProvider, null, movementManager, new Mock<IShapeManager>().Object, speedManager, null, packetFactoryMock.Object);
-            var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, definitionsPreloader.Object, speedManager);
+            var aiManager = new AIManager(new Mock<ILogger<AIManager>>().Object, movementManager, countryProvider, attackManager, untouchableManager, mapProvider, skillsManager, statsManager, elementProvider, definitionsPreloader.Object, speedManager, healthManager, buffsManager);
 
             var mob = new Mob(
                 mobId,
@@ -282,6 +285,9 @@ namespace Imgeneus.World.Tests
                 movementManager,
                 untouchableManager,
                 mapProvider);
+
+            if (map != null)
+                map.AddMob(mob);
 
             return mob;
         }
@@ -562,8 +568,12 @@ namespace Imgeneus.World.Tests
             HP = 2765,
             Element = Element.Wind1,
             AttackSpecial3 = MobRespawnTime.TestEnv,
-            NormalTime = 1,
-            Exp = 70
+            Exp = 70,
+            ChaseStep = 9,
+            ChaseRange = 9,
+            ChaseTime = 1800,
+            NormalStep = 6,
+            NormalTime = 4000
         };
 
         protected DbMob CrypticImmortal = new DbMob()

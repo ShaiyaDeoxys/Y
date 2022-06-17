@@ -219,7 +219,7 @@ namespace Imgeneus.World.Game.Teleport
             CastingPosition = (0, 0, 0, 0);
         }
 
-        private void HealthManager_OnGotDamage(int sender, IKiller damageMaker)
+        private void HealthManager_OnGotDamage(int sender, IKiller damageMaker, int damage)
         {
             CancelCasting();
         }

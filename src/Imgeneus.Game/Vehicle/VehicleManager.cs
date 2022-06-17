@@ -149,7 +149,7 @@ namespace Imgeneus.World.Game.Vehicle
             return true;
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker)
+        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker, int damage)
         {
             RemoveVehicle();
         }

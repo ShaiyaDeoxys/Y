@@ -4,8 +4,10 @@ using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Attack;
+using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Player;
@@ -17,6 +19,8 @@ using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
@@ -37,6 +41,8 @@ namespace Imgeneus.World.Game.AI
         private readonly IElementProvider _elementProvider;
         private readonly IGameDefinitionsPreloder _definitionsPreloder;
         private readonly ISpeedManager _speedManager;
+        private readonly IHealthManager _healthManager;
+        private readonly IBuffsManager _buffsManager;
         private int _ownerId;
 
         private IKiller _owner;
@@ -70,7 +76,7 @@ namespace Imgeneus.World.Game.AI
             }
         }
 
-        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IElementProvider elementProvider, IGameDefinitionsPreloder definitionsPreloder, ISpeedManager speedManager)
+        public AIManager(ILogger<AIManager> logger, IMovementManager movementManager, ICountryProvider countryProvider, IAttackManager attackManager, IUntouchableManager untouchableManager, IMapProvider mapProvider, ISkillsManager skillsManager, IStatsManager statsManager, IElementProvider elementProvider, IGameDefinitionsPreloder definitionsPreloder, ISpeedManager speedManager, IHealthManager healthManager, IBuffsManager buffsManager)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -83,8 +89,11 @@ namespace Imgeneus.World.Game.AI
             _elementProvider = elementProvider;
             _definitionsPreloder = definitionsPreloder;
             _speedManager = speedManager;
-
+            _healthManager = healthManager;
+            _buffsManager = buffsManager;
             _attackManager.OnTargetChanged += AttackManager_OnTargetChanged;
+            _healthManager.OnGotDamage += OnDecreaseHP;
+            _buffsManager.OnBuffAdded += OnBuffAdded;
 #if DEBUG
             _logger.LogDebug("AIManager {hashcode} created", GetHashCode());
 #endif
@@ -177,8 +186,11 @@ namespace Imgeneus.World.Game.AI
         public void Dispose()
         {
             _attackManager.OnTargetChanged -= AttackManager_OnTargetChanged;
+            _healthManager.OnGotDamage -= OnDecreaseHP;
+            _buffsManager.OnBuffAdded -= OnBuffAdded;
 
             ClearTimers();
+            Agro.Clear();
         }
 
         #endregion
@@ -300,6 +312,7 @@ namespace Imgeneus.World.Game.AI
                         StartPosX = -1;
                         StartPosZ = -1;
                         _movementManager.MoveMotion = MoveMotion.Walk;
+                        Agro.Clear();
                         break;
 
                     case AIState.Chase:
@@ -1051,6 +1064,67 @@ namespace Imgeneus.World.Game.AI
         /// Delay.
         /// </summary>
         private int AttackTime3;
+
+        #endregion
+
+        #region Target selection
+
+        /// <summary>
+        /// Mob's agro, where key is id of player and value is agro points.
+        /// </summary>
+        public ConcurrentDictionary<int, int> Agro { get; init; } = new();
+
+        /// <summary>
+        /// Selects target based on agro points.
+        /// </summary>
+        public void SelectAgroTarget()
+        {
+            if (Agro.Count == 0)
+                return;
+
+            KeyValuePair<int, int> maxAgro = new();
+            foreach (var x in Agro)
+            {
+                if (maxAgro.Key == 0)
+                    maxAgro = x;
+
+                if (x.Value > maxAgro.Value)
+                    maxAgro = x;
+            }
+
+            _attackManager.Target = _mapProvider.Map.GetPlayer(maxAgro.Key);
+            SelectActionBasedOnAI();
+        }
+
+        /// <summary>
+        /// When user hits mob, it automatically turns on ai.
+        /// </summary>
+        private void OnDecreaseHP(int senderId, IKiller damageMaker, int damage)
+        {
+            if (!_healthManager.IsDead)
+            {
+                if (damageMaker is Character character)
+                {
+                    if (!Agro.ContainsKey(character.Id))
+                        Agro.TryAdd(character.Id, 0);
+
+                    Agro[character.Id] += damage / 2 + character.StatsManager.TotalRec * 2;
+                    SelectAgroTarget();
+                }
+            }
+        }
+
+        private void OnBuffAdded(int senderId, Buff buff)
+        {
+            if (buff.IsDebuff && buff.BuffCreator is Character character)
+            {
+                if (!Agro.ContainsKey(character.Id))
+                    Agro.TryAdd(character.Id, 0);
+
+                Agro[character.Id] += character.StatsManager.TotalRec * 2;
+                SelectAgroTarget();
+            }
+        }
 
         #endregion
     }

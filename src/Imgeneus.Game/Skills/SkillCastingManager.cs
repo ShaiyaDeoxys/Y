@@ -121,7 +121,7 @@ namespace Imgeneus.Game.Skills
             CancelCasting();
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker)
+        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker, int damage)
         {
             if (_castProtectionManager.IsCastProtected)
                 return;
