@@ -100,7 +100,7 @@ namespace Imgeneus.World.Game.Monster
             LevelProvider.Init(Id, _dbMob.Level);
             HealthManager.Init(Id, _dbMob.HP, _dbMob.MP, _dbMob.SP, _dbMob.HP, _dbMob.MP, _dbMob.SP);
             BuffsManager.Init(Id);
-            InitDebuffResistances();
+            InitDebuffAndSkillResistances();
 
             CountryProvider.Init(Id, _dbMob.Fraction);
             SpeedManager.Init(Id);
@@ -139,7 +139,7 @@ namespace Imgeneus.World.Game.Monster
                            attackTime3: _dbMob.AttackTime3);
         }
 
-        private void InitDebuffResistances()
+        private void InitDebuffAndSkillResistances()
         {
             if (_dbMob.ResistState1 > 0)
                 BuffsManager.DebuffResistances.Add(StateType.Sleep);
@@ -171,6 +171,19 @@ namespace Imgeneus.World.Game.Monster
                 BuffsManager.DebuffResistances.Add(StateType.DexDecrease);
             if (_dbMob.ResistState15 > 0)
                 BuffsManager.DebuffResistances.Add(StateType.Misfortunate);
+
+            if (_dbMob.ResistSkill1 > 0)
+                SkillsManager.ResistSkills.Add(_dbMob.ResistSkill1);
+            if (_dbMob.ResistSkill2 > 0)
+                SkillsManager.ResistSkills.Add(_dbMob.ResistSkill2);
+            if (_dbMob.ResistSkill3 > 0)
+                SkillsManager.ResistSkills.Add(_dbMob.ResistSkill3);
+            if (_dbMob.ResistSkill4 > 0)
+                SkillsManager.ResistSkills.Add(_dbMob.ResistSkill4);
+            if (_dbMob.ResistSkill5 > 0)
+                SkillsManager.ResistSkills.Add(_dbMob.ResistSkill5);
+            if (_dbMob.ResistSkill6 > 0)
+                SkillsManager.ResistSkills.Add(_dbMob.ResistSkill6);
         }
 
         private void AIManager_OnStateChanged(AIState newState)

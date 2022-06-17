@@ -83,5 +83,10 @@ namespace Imgeneus.World.Game.Skills
         /// When "Charge" skill was used the last time?
         /// </summary>
         DateTime? ChargeUsedLastTime { get; }
+
+        /// <summary>
+        /// To which skills there is resistanse.
+        /// </summary>
+        IList<ushort> ResistSkills { get; }
     }
 }

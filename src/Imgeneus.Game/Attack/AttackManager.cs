@@ -287,6 +287,9 @@ namespace Imgeneus.World.Game.Attack
             if (AlwaysHit)
                 return true;
 
+            if (skill is not null && target is IKiller skillsOwner && skillsOwner.SkillsManager.ResistSkills.Contains(skill.SkillId))
+                return false;
+
             if (target.UntouchableManager.IsUntouchable)
                 return false;
 

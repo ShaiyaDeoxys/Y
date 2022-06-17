@@ -737,6 +737,12 @@ namespace Imgeneus.World.Game.Skills
 
         #endregion
 
+        #region Resistanse
+
+        public IList<ushort> ResistSkills { get; init; } = new List<ushort>();
+
+        #endregion
+
         #region Helpers
 
         public DateTime? ChargeUsedLastTime { get; private set; } = null;
