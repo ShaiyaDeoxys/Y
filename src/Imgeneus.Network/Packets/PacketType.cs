@@ -17,6 +17,7 @@
         CHARACTER_MAX_HP_MP_SP = 0x051F, // 1311
 
         // Common
+        HEARTBEAT = 0x0003,
         LOGOUT = 0x0107, // 263
         CHARACTER_SKILLS = 0x0108,
         ACCOUNT_FACTION = 0x0109, // 265
@@ -236,16 +237,25 @@
         // Chat
         CHAT_NORMAL_ADMIN = 0xF101, // 61697, -3837
         CHAT_WHISPER_ADMIN = 0xF102, // 61698, -3838
+        CHAT_WORLD_ADMIN = 0xF103, // 61699, -3837
         CHAT_GUILD_ADMIN = 0xF104, //  61700, -3836
         CHAT_PARTY_ADMIN = 0xF105, // 61701, -3835
+        CHAT_SERVER_MANAGER_NT = 0xF106, // 61702, -3834
+        CHAT_SEND_TO_FIND_USER = 0xF107, // 61703, -3833
+        CHAT_SEND_TO = 0xF108, // 61704, -3832
+        CHAT_SEND_TO_END = 0xF109, // 61705, -3831
+        CHAT_RAID_ADMIN = 0xF10A, // 61706, -3830
 
         CHAT_NORMAL = 0x1101, // 4353
         CHAT_WHISPER = 0x1102, // 4354
         CHAT_WORLD = 0x1103, // 4355
         CHAT_GUILD = 0x1104, // 4356
         CHAT_PARTY = 0x1105, // 4357
+        CHAT_USER_DOES_NOT_EXIST = 0x1106, // 4358
+        CHAT_SHOUT = 0x1107, // 4359
         CHAT_MESSAGE_TO_SERVER = 0x1108, // 4360
         CHAT_MAP = 0x1111, // 4369
+        CHAT_RAID = 0x1112, // 4370
 
         // Notice
         NOTICE_ADMINS = 0xF906, // 63750
