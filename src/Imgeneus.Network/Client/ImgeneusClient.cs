@@ -5,6 +5,7 @@ using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sylver.HandlerInvoker.Exceptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -85,6 +86,10 @@ namespace Imgeneus.Network.Client
             catch (ObjectDisposedException)
             {
                 // Packet handler is called after connection is closed. Nothing to do
+            }
+            catch (HandlerActionNotFoundException notFoundException)
+            {
+                _logger.LogWarning(notFoundException.Message);
             }
             catch (Exception exception)
             {
