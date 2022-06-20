@@ -34,6 +34,9 @@ namespace Imgeneus.Login
             services.AddSingleton<ILoginPacketFactory, LoginPacketFactory>();
             services.AddTransient<ICryptoManager, CryptoManager>();
 
+            // Add admin website
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
             services.AddDefaultIdentity<DbUser>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
@@ -52,10 +55,18 @@ namespace Imgeneus.Login
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
+                endpoints.MapBlazorHub();
+                endpoints.MapFallbackToPage("/_Host");
                 endpoints.MapHub<ISHub>("/inter_server");
             });
 
