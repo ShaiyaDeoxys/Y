@@ -74,10 +74,6 @@ namespace Imgeneus.World.Game.Health
             character.StaminaPoints = (ushort)CurrentSP;
 
             await _database.SaveChangesAsync();
-
-            ExtraHP = 0;
-            ExtraSP = 0;
-            ExtraMP = 0;
         }
 
         public void Dispose()
