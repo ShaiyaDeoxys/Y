@@ -1,10 +1,20 @@
 ﻿@page "/"
 
+@inject ILoginServer _loginServer;
+
 <PageTitle>Home</PageTitle>
 
 <h1>Welcome to imgeneus login admin panel!</h1>
 
-<h2>Open TPC connections: </h2>
+<div class="alert alert-secondary" role="alert">
+    Hint: if it's first-time, when you run server, click "Register" link and create the first Super Admin account.
+</div>
+
+<h2>Open TPC connections: @GetNumberOfConnections()</h2>
 
 @code {
+    private int GetNumberOfConnections()
+    {
+        return _loginServer.ConnectedUsers.Count();
+    }
 }
