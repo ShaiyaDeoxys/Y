@@ -1,0 +1,53 @@
+﻿@page "/TcpConnections"
+@attribute [Authorize(Roles = "SuperAdmin, Admin")]
+
+@inject ILoginServer _loginServer;
+
+<PageTitle>TCP connections</PageTitle>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>User id</th>
+            <th>Is connected</th>
+            <th>IP address</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var connection in _connections)
+        {
+             <tr>
+                 <td>@connection.Id</td>
+                 <td>@connection.UserId</td>
+                 <td>@connection.Socket.Connected</td>
+                 <td>@connection.Socket.RemoteEndPoint</td>
+                 <td>
+                     <button type="button" class="btn btn-danger" @onclick="@(() =>Disconnect(@connection))">Disconnect</button>
+                 </td>
+             </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IList<LoginClient> _connections;
+
+    protected override void OnInitialized()
+    {
+        InitTcpConnections();
+
+    }
+
+    private void InitTcpConnections()
+    {
+        _connections = new List<LoginClient>(_loginServer.ConnectedUsers);
+    }
+
+    private void Disconnect(LoginClient client)
+    {
+        client.Socket.Close();
+        _connections.Remove(client);
+    }
+}

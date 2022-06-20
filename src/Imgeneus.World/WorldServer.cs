@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Core.Structures.Configuration;
+using Imgeneus.InterServer.Common;
 using Imgeneus.Network.Server;
 using Imgeneus.World.Game;
 using InterServer.Client;
@@ -36,6 +37,16 @@ namespace Imgeneus.World
             _interClient.OnConnected += SendWorldInfo;
 
             _gameWorld.Init();
+        }
+
+        protected override void OnClientConnected(WorldClient client)
+        {
+            _interClient.Send(new ISMessage(ISMessageType.NUMBER_OF_CONNECTED_PLAYERS_CHANGED, new NumberOfConnectedUsers(_worldConfiguration.Name, (ushort)ConnectedUsers.Count)));
+        }
+
+        protected override void OnClientDisconnected(WorldClient client)
+        {
+            _interClient.Send(new ISMessage(ISMessageType.NUMBER_OF_CONNECTED_PLAYERS_CHANGED, new NumberOfConnectedUsers(_worldConfiguration.Name, (ushort)ConnectedUsers.Count)));
         }
 
         private void SendWorldInfo()

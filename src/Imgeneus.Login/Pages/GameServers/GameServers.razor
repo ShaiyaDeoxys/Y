@@ -1,0 +1,47 @@
+﻿@page "/GameServers"
+
+@attribute [Authorize(Roles = "SuperAdmin, Admin")]
+
+@inject ILoginServer _loginServer;
+
+<PageTitle>Game servers</PageTitle>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Number of connected players</th>
+            <th>Max allowed players</th>
+            <th>IP address</th>
+            <th>State</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var connection in _connections)
+        {
+            <tr>
+                <td>@connection.Id</td>
+                <td>@connection.Name</td>
+                <td>@connection.ConnectedUsers</td>
+                <td>@connection.MaxAllowedUsers</td>
+                <td>@connection.Host[0].@connection.Host[1].@connection.Host[2].@connection.Host[3]</td>
+                <td>@connection.WorldStatus</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<dynamic> _connections;
+
+    protected override void OnInitialized()
+    {
+        InitGameServers();
+    }
+
+    private void InitGameServers()
+    {
+        _connections = _loginServer.GetConnectedWorlds();
+    }
+}

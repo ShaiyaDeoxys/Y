@@ -7,6 +7,7 @@
     {
         WORLD_INFO,
         AES_KEY_REQUEST,
-        AES_KEY_RESPONSE
+        AES_KEY_RESPONSE,
+        NUMBER_OF_CONNECTED_PLAYERS_CHANGED
     }
 }

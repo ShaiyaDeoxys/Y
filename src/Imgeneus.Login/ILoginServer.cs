@@ -42,6 +42,6 @@ namespace Imgeneus.Login
         /// </summary>
         void Start();
 
-        IEnumerable<LoginClient> ConnectedUsers { get; }
+        ICollection<LoginClient> ConnectedUsers { get; }
     }
 }

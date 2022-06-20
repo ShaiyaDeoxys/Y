@@ -19,6 +19,12 @@
                     <span class="oi oi-wifi" aria-hidden="true"></span> TCP connections
                 </NavLink>
             </AuthorizeView>
+
+            <AuthorizeView Roles="SuperAdmin, Admin">
+                <NavLink class="nav-link" href="GameServers" Match="NavLinkMatch.All">
+                    <span class="oi oi-globe" aria-hidden="true"></span> Game worlds
+                </NavLink>
+            </AuthorizeView>
         </div>
     </nav>
 </div>

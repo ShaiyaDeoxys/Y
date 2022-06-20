@@ -10,7 +10,7 @@ namespace Imgeneus.World
         /// </summary>
         void Start();
 
-        IEnumerable<WorldClient> ConnectedUsers { get; }
+        ICollection<WorldClient> ConnectedUsers { get; }
 
         /// <summary>
         /// Disconnect client from server.
