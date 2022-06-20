@@ -120,6 +120,7 @@ namespace Imgeneus.World.Packets
         void SendTransformation(IWorldClient client, int senderId, bool isTransformed);
         void SendCharacterMirrorDamage(IWorldClient client, int senderId, int targetId, Damage damage);
         void SendMobMirrorDamage(IWorldClient client, int senderId, int targetId, Damage damage);
+        void SendTargetHP(IWorldClient client, int targetId, int currentHP);
         #endregion
 
         #region NPC

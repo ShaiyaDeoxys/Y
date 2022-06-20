@@ -87,6 +87,7 @@
         AUTO_STATS_SET = 0x0121, // 289
 
         // Target
+        TARGET_CHARACTER_GET_HP = 0x0301, // 769
         TARGET_SELECT_CHARACTER = 0x0302, // 770
         TARGET_MOB_GET_STATE = 0x0304, // 772
         TARGET_SELECT_MOB = 0x0305, // 773

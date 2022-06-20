@@ -776,6 +776,15 @@ namespace Imgeneus.World.Packets
             packet.Write(damage.MP);
             client.Send(packet);
         }
+
+        public void SendTargetHP(IWorldClient client, int targetId, int currentHP)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TARGET_CHARACTER_GET_HP);
+            packet.Write(targetId);
+            packet.Write(currentHP);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region NPC

@@ -84,5 +84,15 @@ namespace Imgeneus.World.Handlers
                 _packetFactory.SendMobState(client, target);
             }
         }
+
+        [HandlerAction(PacketType.TARGET_CHARACTER_GET_HP)]
+        public void HandleGetMobHP(WorldClient client, TargetPlayerGetHPPacket packet)
+        {
+            var target = _mapProvider.Map.GetPlayer(packet.TargetId);
+            if (target != null)
+            {
+                _packetFactory.SendTargetHP(client, target.Id, target.HealthManager.CurrentHP);
+            }
+        }
     }
 }
