@@ -57,6 +57,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         public Task Clear()
         {
             Party = null;
+            _player = null;
             SetSummonAnswer(false);
 
             return Task.CompletedTask;
