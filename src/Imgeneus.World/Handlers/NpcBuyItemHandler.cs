@@ -32,7 +32,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.NPC_BUY_ITEM)]
         public void Handle(WorldClient client, NpcBuyItemPacket packet)
         {
-            var cellId = _gameWorld.Players[_gameSession.CharId].CellId;
+            var cellId = _gameWorld.Players[_gameSession.Character.Id].CellId;
 
             var npc = _mapProvider.Map.GetNPC(cellId, packet.NpcId);
             if (npc is null || !npc.ContainsProduct(packet.ItemIndex))

@@ -31,7 +31,7 @@ namespace Imgeneus.World.Handlers
             _guildManager.InitCreateRequest(packet.Name, packet.Message);
 
             foreach (var member in _guildManager.CreationRequest.Members)
-                _packetFactory.SendGuildCreateRequest(member.GameSession.Client, _gameSession.CharId, packet.Name, packet.Message);
+                _packetFactory.SendGuildCreateRequest(member.GameSession.Client, _gameSession.Character.Id, packet.Name, packet.Message);
         }
     }
 }

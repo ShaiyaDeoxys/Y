@@ -23,10 +23,10 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.DUEL_REQUEST)]
         public void Handle(WorldClient client, DuelRequestPacket packet)
         {
-            if (!_gameWorld.Players.ContainsKey(_gameSession.CharId) || !_gameWorld.Players.ContainsKey(packet.DuelToWhomId))
+            if (!_gameWorld.Players.ContainsKey(_gameSession.Character.Id) || !_gameWorld.Players.ContainsKey(packet.DuelToWhomId))
                 return;
 
-            var requester = _gameWorld.Players[_gameSession.CharId];
+            var requester = _gameWorld.Players[_gameSession.Character.Id];
             var receiver = _gameWorld.Players[packet.DuelToWhomId];
 
             requester.DuelManager.OpponentId = receiver.Id;

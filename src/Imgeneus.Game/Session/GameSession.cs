@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Packets;
+﻿using Imgeneus.World.Game.Player;
+using Imgeneus.World.Packets;
 using Imgeneus.World.SelectionScreen;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,7 +21,7 @@ namespace Imgeneus.World.Game.Session
         private readonly IGameWorld _gameWorld;
         private readonly ISelectionScreenManager _selectionScreenManager;
 
-        public int CharId { get; set; }
+        public Character Character { get; set; }
 
         public IWorldClient Client { get; set; }
 
@@ -56,7 +57,7 @@ namespace Imgeneus.World.Game.Session
 
         public void StartLogOff(bool quitGame = false)
         {
-            if (IsLoggingOff || CharId == 0)
+            if (IsLoggingOff || Character is null)
                 return;
 
             IsLoggingOff = true;
@@ -74,7 +75,7 @@ namespace Imgeneus.World.Game.Session
         {
             // First, remove player from game world.
             // Because some managers like Guild Manager provide GuildId and player can be found in guild map ONLY if this id is presented.
-            _gameWorld.RemovePlayer(CharId);
+            _gameWorld.RemovePlayer(Character.Id);
 
             try
             {
@@ -83,10 +84,10 @@ namespace Imgeneus.World.Game.Session
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed clear session for {characterId}. Reason: {message}. Stack trace: {trace}", CharId, ex.Message, ex.StackTrace);
+                _logger.LogError("Failed clear session for {characterId}. Reason: {message}. Stack trace: {trace}", Character.Id, ex.Message, ex.StackTrace);
             }
 
-            CharId = 0;
+            Character = null;
             IsLoggingOff = false;
 
             if (_quitGame)

@@ -38,7 +38,7 @@ namespace Imgeneus.World.Handlers
             if (!packet.IsDeclined)
                 _teleportationManager.Teleport(summoner.Map.Id, summoner.PosX, summoner.PosY, summoner.PosZ);
 
-            _packetFactory.SendSummonAnswer(summoner.GameSession.Client, _gameSession.CharId, packet.IsDeclined);
+            _packetFactory.SendSummonAnswer(summoner.GameSession.Client, _gameSession.Character.Id, packet.IsDeclined);
         }
     }
 }

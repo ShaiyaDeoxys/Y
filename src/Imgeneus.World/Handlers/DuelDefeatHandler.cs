@@ -20,7 +20,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.DUEL_CANCEL)]
         public void Handle(WorldClient client, DuelDefeatPacket packet)
         {
-            _duelManager.Cancel(_gameSession.CharId, DuelCancelReason.AdmitDefeat);
+            _duelManager.Cancel(_gameSession.Character.Id, DuelCancelReason.AdmitDefeat);
         }
     }
 }

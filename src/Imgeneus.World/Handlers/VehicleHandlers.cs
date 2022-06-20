@@ -65,8 +65,8 @@ namespace Imgeneus.World.Handlers
                 return;
             }
 
-            player.VehicleManager.VehicleRequesterID = _gameSession.CharId;
-            _packetFactory.SendVehicleRequest(player.GameSession.Client, _gameSession.CharId);
+            player.VehicleManager.VehicleRequesterID = _gameSession.Character.Id;
+            _packetFactory.SendVehicleRequest(player.GameSession.Client, _gameSession.Character.Id);
         }
 
         [HandlerAction(PacketType.VEHICLE_RESPONSE)]

@@ -23,7 +23,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_SKILL_BAR)]
         public async Task Handle(WorldClient client, SkillBarPacket packet)
         {
-            var characterId = _gameSession.CharId;
+            var characterId = _gameSession.Character.Id;
             if (characterId == 0)
                 return;
 

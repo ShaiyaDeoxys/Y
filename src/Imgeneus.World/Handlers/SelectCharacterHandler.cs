@@ -50,12 +50,7 @@ namespace Imgeneus.World.Handlers
                 return;
             }
 
-            var ok = _gameWorld.TryLoadPlayer(character);
-            if (!ok)
-            {
-                _packetFactory.SendCharacterSelected(client, false, 0);
-                return;
-            }
+            _gameSession.Character = character;
 
             _packetFactory.SendCharacterSelected(client, true, character.Id);
 

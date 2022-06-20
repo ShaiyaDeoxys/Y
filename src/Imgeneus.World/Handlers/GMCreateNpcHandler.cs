@@ -72,7 +72,7 @@ namespace Imgeneus.World.Handlers
             npc.Map = _mapProvider.Map;
 
 
-            _mapProvider.Map.AddNPC(_gameWorld.Players[_gameSession.CharId].CellId, npc);
+            _mapProvider.Map.AddNPC(_gameWorld.Players[_gameSession.Character.Id].CellId, npc);
             _packetFactory.SendGmCommandSuccess(client);
         }
     }

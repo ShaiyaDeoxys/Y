@@ -26,7 +26,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.TARGET_SELECT_MOB)]
         public void HandleMobTarget(WorldClient client, MobInTargetPacket packet)
         {
-            var mob = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.CharId].CellId, packet.TargetId);
+            var mob = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.TargetId);
             if (mob is null)
                 return;
 
@@ -65,7 +65,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.TARGET_GET_MOB_BUFFS)]
         public void HandleGetMobBuffs(WorldClient client, TargetMobGetBuffs packet)
         {
-            var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.CharId].CellId, packet.TargetId);
+            var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.TargetId);
             if (target != null)
             {
                 _attackManager.Target = target;
@@ -76,7 +76,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.TARGET_MOB_GET_STATE)]
         public void HandleGetMobState(WorldClient client, TargetGetMobStatePacket packet)
         {
-            var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.CharId].CellId, packet.MobId);
+            var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.MobId);
             if (target != null)
             {
                 _attackManager.Target = target;

@@ -28,7 +28,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.FRIEND_REQUEST)]
         public void HandleFriendRequest(WorldClient client, FriendRequestPacket packet)
         {
-            var requester = _gameWorld.Players[_gameSession.CharId];
+            var requester = _gameWorld.Players[_gameSession.Character.Id];
             if (requester is null)
                 return;
 
@@ -43,7 +43,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.FRIEND_RESPONSE)]
         public async Task HandleFriendResponse(WorldClient client, FriendResponsePacket packet)
         {
-            var responser = _gameWorld.Players[_gameSession.CharId];
+            var responser = _gameWorld.Players[_gameSession.Character.Id];
             if (responser is null)
                 return;
 
@@ -73,7 +73,7 @@ namespace Imgeneus.World.Handlers
                 _gameWorld.Players.TryGetValue(deleted.Id, out var friendPlayer);
                 if (friendPlayer != null)
                 {
-                    deleted = await friendPlayer.FriendsManager.DeleteFriend(_gameSession.CharId);
+                    deleted = await friendPlayer.FriendsManager.DeleteFriend(_gameSession.Character.Id);
 
                     if (deleted is not null)
                         _packetFactory.SendFriendDeleted(friendPlayer.GameSession.Client, deleted.Id);

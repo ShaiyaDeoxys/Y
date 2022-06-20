@@ -40,7 +40,7 @@ namespace Imgeneus.World.Handlers
 
         private void Handle(WorldClient client, GMRemoveNpcPacket packet)
         {
-            var cellId = _gameWorld.Players[_gameSession.CharId].CellId;
+            var cellId = _gameWorld.Players[_gameSession.Character.Id].CellId;
             _mapProvider.Map.RemoveNPC(cellId, packet.Type, packet.TypeId, packet.Count);
 
             _packetFactory.SendGmCommandSuccess(client);

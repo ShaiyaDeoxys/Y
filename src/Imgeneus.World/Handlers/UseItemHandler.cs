@@ -23,7 +23,7 @@ namespace Imgeneus.World.Handlers
         {
             var ok = await _invetoryManager.TryUseItem(packet.Bag, packet.Slot);
             if (!ok)
-                _packetFactory.SendCanNotUseItem(client, _gameSession.CharId);
+                _packetFactory.SendCanNotUseItem(client, _gameSession.Character.Id);
         }
 
         [HandlerAction(PacketType.USE_ITEM_2)]
@@ -31,7 +31,7 @@ namespace Imgeneus.World.Handlers
         {
             var ok = await _invetoryManager.TryUseItem(packet.Bag, packet.Slot, packet.TargetId);
             if (!ok)
-                _packetFactory.SendCanNotUseItem(client, _gameSession.CharId);
+                _packetFactory.SendCanNotUseItem(client, _gameSession.Character.Id);
         }
     }
 }

@@ -60,7 +60,7 @@ namespace Imgeneus.World.Handlers
             }
             else if (packet.Result == 2) // close window was clicked.
             {
-                _duelManager.Cancel(_gameSession.CharId, DuelCancelReason.Other);
+                _duelManager.Cancel(_gameSession.Character.Id, DuelCancelReason.Other);
                 _packetFactory.SendDuelCloseTrade(client, DuelCloseWindowReason.SenderClosedWindow);
                 _packetFactory.SendDuelCloseTrade(opponent.GameSession.Client, DuelCloseWindowReason.OpponentClosedWindow);
             }

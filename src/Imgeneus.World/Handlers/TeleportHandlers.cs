@@ -58,10 +58,10 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_TELEPORT_VIA_NPC)]
         public void HandleNpcTeleport(WorldClient client, CharacterTeleportViaNpcPacket packet)
         {
-            var npc = _mapProvider.Map.GetNPC(_gameWorld.Players[_gameSession.CharId].CellId, packet.NpcId);
+            var npc = _mapProvider.Map.GetNPC(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.NpcId);
             if (npc is null)
             {
-                _logger.LogWarning("Character {Id} is trying to get non-existing npc via teleport packet.", _gameSession.CharId);
+                _logger.LogWarning("Character {Id} is trying to get non-existing npc via teleport packet.", _gameSession.Character.Id);
                 return;
             }
 

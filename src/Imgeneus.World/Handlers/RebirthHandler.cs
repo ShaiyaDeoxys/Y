@@ -55,7 +55,7 @@ namespace Imgeneus.World.Handlers
             // Usual rebirth.
             if (rebirthType == RebirthType.KillSoul)
             {
-                rebirthCoordinate = _mapProvider.Map.GetRebirthMap(_gameWorld.Players[_gameSession.CharId]);
+                rebirthCoordinate = _mapProvider.Map.GetRebirthMap(_gameWorld.Players[_gameSession.Character.Id]);
             }
 
             // Rebirth with rune. Will rebirth at the same place.
@@ -77,7 +77,7 @@ namespace Imgeneus.World.Handlers
                 }
                 else
                 {
-                    rebirthCoordinate = _mapProvider.Map.GetRebirthMap(_gameWorld.Players[_gameSession.CharId]);
+                    rebirthCoordinate = _mapProvider.Map.GetRebirthMap(_gameWorld.Players[_gameSession.Character.Id]);
                 }
             }
 

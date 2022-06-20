@@ -26,10 +26,10 @@ namespace Imgeneus.World.Handlers
             if (_partyManager.Party is not Raid || (!_partyManager.IsPartyLead && !_partyManager.IsPartySubLeader))
                 return;
 
-            if (_gameWorld.Players.TryGetValue(packet.CharacterId, out var requestedPlayer) && _gameSession.CharId != 0)
+            if (_gameWorld.Players.TryGetValue(packet.CharacterId, out var requestedPlayer) && _gameSession.Character.Id != 0)
             {
-                requestedPlayer.PartyManager.InviterId = _gameSession.CharId;
-                _packetFactory.SendRaidInvite(requestedPlayer.GameSession.Client, _gameSession.CharId);
+                requestedPlayer.PartyManager.InviterId = _gameSession.Character.Id;
+                _packetFactory.SendRaidInvite(requestedPlayer.GameSession.Client, _gameSession.Character.Id);
             }
         }
     }

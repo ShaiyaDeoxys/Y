@@ -23,7 +23,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_NORMAL)]
         public void HandleChatNormal(WorldClient client, ChatNormalPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Normal, packet.Message);
@@ -32,7 +32,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_NORMAL_ADMIN)]
         public void HandleGMChatNormal(WorldClient client, ChatNormalPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Normal, packet.Message);
@@ -41,7 +41,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_WHISPER)]
         public void HandleChatWhisper(WorldClient client, ChatWhisperPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Whisper, packet.Message, packet.TargetName);
@@ -50,7 +50,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_WHISPER_ADMIN)]
         public void HandleGMChatWhisper(WorldClient client, ChatWhisperPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Whisper, packet.Message, packet.TargetName);
@@ -59,7 +59,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_PARTY)]
         public void HandleChatParty(WorldClient client, ChatPartyPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Party, packet.Message);
@@ -68,7 +68,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_PARTY_ADMIN)]
         public void HandleGMChatParty(WorldClient client, ChatPartyPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Party, packet.Message);
@@ -77,7 +77,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_MAP)]
         public void HandleChatMap(WorldClient client, ChatMapPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Map, packet.Message);
@@ -86,7 +86,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_WORLD)]
         public void HandleChatWorld(WorldClient client, ChatWorldPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.World, packet.Message);
@@ -95,7 +95,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_GUILD)]
         public void HandleChatGuild(WorldClient client, ChatGuildPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Guild, packet.Message);
@@ -104,7 +104,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAT_GUILD_ADMIN)]
         public void HandleChatGMGuild(WorldClient client, ChatGuildPacket packet)
         {
-            if (!_gameWorld.Players.TryGetValue(_gameSession.CharId, out var sender))
+            if (!_gameWorld.Players.TryGetValue(_gameSession.Character.Id, out var sender))
                 return;
 
             _chatManager.SendMessage(sender, MessageType.Guild, packet.Message);

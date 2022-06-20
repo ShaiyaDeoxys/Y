@@ -29,7 +29,7 @@ namespace Imgeneus.World.Handlers
             }
             else
             {
-                var tradeReceiver = _gameWorld.Players[_gameSession.CharId];
+                var tradeReceiver = _gameWorld.Players[_gameSession.Character.Id];
                 var tradeRequester = _gameWorld.Players[tradeReceiver.TradeManager.PartnerId];
                 if (tradeReceiver is null || tradeRequester is null)
                     return;

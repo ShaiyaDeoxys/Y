@@ -32,7 +32,7 @@ namespace Imgeneus.World.Handlers
             foreach (var member in members)
                 member.PartyManager.Party = raid;
 
-            raid.Leader = _gameWorld.Players[_gameSession.CharId];
+            raid.Leader = _gameWorld.Players[_gameSession.Character.Id];
             foreach (var m in members)
                 _packetFactory.SendRaidCreated(m.GameSession.Client, raid);
         }

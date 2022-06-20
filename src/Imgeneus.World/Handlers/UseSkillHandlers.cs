@@ -33,7 +33,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.USE_CHARACTER_TARGET_SKILL)]
         public void HandleUseSkillOnPlayer(WorldClient client, CharacterSkillAttackPacket packet)
         {
-            var player = _gameWorld.Players[_gameSession.CharId];
+            var player = _gameWorld.Players[_gameSession.Character.Id];
             if (player is null)
                 return;
 
@@ -45,7 +45,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.USE_MOB_TARGET_SKILL)]
         public void HandleUseSkillOnMob(WorldClient client, MobSkillAttackPacket packet)
         {
-            var player = _gameWorld.Players[_gameSession.CharId];
+            var player = _gameWorld.Players[_gameSession.Character.Id];
             if (player is null)
                 return;
 

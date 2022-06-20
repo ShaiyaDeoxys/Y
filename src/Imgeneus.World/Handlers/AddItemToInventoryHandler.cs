@@ -23,7 +23,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.ADD_ITEM)]
         public void Handle(WorldClient client, MapPickUpItemPacket packet)
         {
-            var player = _gameWorld.Players[_gameSession.CharId];
+            var player = _gameWorld.Players[_gameSession.Character.Id];
             var mapItem = player.Map.GetItem(packet.ItemId, player);
             if (mapItem is null)
             {

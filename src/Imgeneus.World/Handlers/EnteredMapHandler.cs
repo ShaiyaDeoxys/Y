@@ -30,13 +30,16 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_ENTERED_MAP)]
         public async Task Handle(WorldClient client, CharacterEnteredMapPacket packet)
         {
-            _gameWorld.LoadPlayerInMap(_gameSession.CharId);
+            if (!_gameWorld.Players.ContainsKey(_gameSession.Character.Id))
+                _gameWorld.TryLoadPlayer(_gameSession.Character);
+
+            _gameWorld.LoadPlayerInMap(_gameSession.Character.Id);
             _teleportationManager.IsTeleporting = false;
 
             // Send map values.
             _packetFactory.SendWeather(client, _mapProvider.Map);
             _packetFactory.SendObelisks(client, _mapProvider.Map.Obelisks.Values);
-            _packetFactory.SendCharacterShape(client, _gameSession.CharId, _gameWorld.Players[_gameSession.CharId]); // Should fix the issue with dye color, when first connection.
+            _packetFactory.SendCharacterShape(client, _gameSession.Character.Id, _gameWorld.Players[_gameSession.Character.Id]); // Should fix the issue with dye color, when first connection.
 
             if (_mapProvider.Map is GuildHouseMap)
                 _packetFactory.SendGuildWarehouseItems(client, await _warehouseManager.GetGuildItems());

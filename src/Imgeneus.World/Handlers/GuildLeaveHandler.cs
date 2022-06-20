@@ -28,7 +28,7 @@ namespace Imgeneus.World.Handlers
             if (!_guildManager.HasGuild)
                 return;
 
-            var ok = await _guildManager.TryRemoveMember(_gameSession.CharId);
+            var ok = await _guildManager.TryRemoveMember(_gameSession.Character.Id);
             if (!ok)
             {
                 _packetFactory.SendGuildMemberLeaveResult(client, false);
@@ -42,18 +42,18 @@ namespace Imgeneus.World.Handlers
 
                 var guildPlayer = _gameWorld.Players[member.Id];
 
-                if (guildPlayer.Id == _gameSession.CharId)
+                if (guildPlayer.Id == _gameSession.Character.Id)
                 {
                     await guildPlayer.GuildManager.Clear();
                 }
                 else
                 {
-                    var temp = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == _gameSession.CharId);
+                    var temp = guildPlayer.GuildManager.GuildMembers.FirstOrDefault(x => x.Id == _gameSession.Character.Id);
 
                     if (temp != null)
                         guildPlayer.GuildManager.GuildMembers.Remove(temp);
 
-                    _packetFactory.SendGuildMemberLeave(guildPlayer.GameSession.Client, _gameSession.CharId);
+                    _packetFactory.SendGuildMemberLeave(guildPlayer.GameSession.Client, _gameSession.Character.Id);
                 }
             }
 

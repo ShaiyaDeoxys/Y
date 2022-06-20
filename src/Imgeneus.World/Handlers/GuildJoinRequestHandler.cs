@@ -24,13 +24,13 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GUILD_JOIN_REQUEST)]
         public async Task Handle(WorldClient client, GuildJoinRequestPacket packet)
         {
-            if (_guildManager.HasGuild || _gameSession.CharId == 0)
+            if (_guildManager.HasGuild || _gameSession.Character.Id == 0)
             {
                 _packetFactory.SendGuildJoinRequest(client, false);
                 return;
             }
 
-            var success = await _guildManager.RequestJoin(packet.GuildId, _gameWorld.Players[_gameSession.CharId]);
+            var success = await _guildManager.RequestJoin(packet.GuildId, _gameWorld.Players[_gameSession.Character.Id]);
             _packetFactory.SendGuildJoinRequest(client, success);
         }
     }

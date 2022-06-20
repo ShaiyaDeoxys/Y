@@ -33,7 +33,7 @@ namespace Imgeneus.World.Handlers
             if (_partyManager.HasParty)
                 return;
 
-            var player = _gameWorld.Players[_gameSession.CharId];
+            var player = _gameWorld.Players[_gameSession.Character.Id];
             _mapProvider.Map.RegisterSearchForParty(player);
 
             _packetFactory.SendRegisteredInPartySearch(client, true);

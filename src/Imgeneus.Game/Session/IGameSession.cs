@@ -1,4 +1,6 @@
-﻿namespace Imgeneus.World.Game.Session
+﻿using Imgeneus.World.Game.Player;
+
+namespace Imgeneus.World.Game.Session
 {
     /// <summary>
     /// Manages game session.
@@ -8,7 +10,7 @@
         /// <summary>
         /// Selected character.
         /// </summary>
-        int CharId { get; set; }
+        Character Character { get; set; }
 
         /// <summary>
         /// Indicator if it's gm game session.

@@ -45,14 +45,14 @@ namespace Imgeneus.World.Handlers
 
             if (_speedManager.Immobilize)
             {
-                _logger.LogWarning("Character {id} is moving during stun. Probably cheating?", _gameSession.CharId);
+                _logger.LogWarning("Character {id} is moving during stun. Probably cheating?", _gameSession.Character.Id);
                 return;
             }
 
             var distance = MathExtensions.Distance(_movementManager.PosX, packet.X, _movementManager.PosZ, packet.Z);
             if ((distance > 6 && !_skillsManager.ChargeUsedLastTime.HasValue) || (distance > 6 && DateTime.UtcNow.Subtract(_skillsManager.ChargeUsedLastTime.Value).TotalSeconds > 2))
             {
-                _logger.LogWarning("Character {id} is moving too fast. Probably cheating?", _gameSession.CharId);
+                _logger.LogWarning("Character {id} is moving too fast. Probably cheating?", _gameSession.Character.Id);
                 return;
             }
 

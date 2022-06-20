@@ -27,9 +27,9 @@ namespace Imgeneus.World.Handlers
             if (opponent is null)
                 return;
 
-            _duelManager.ProcessResponse(_gameSession.CharId, packet.IsDuelApproved ? DuelResponse.Approved : DuelResponse.Rejected);
+            _duelManager.ProcessResponse(_gameSession.Character.Id, packet.IsDuelApproved ? DuelResponse.Approved : DuelResponse.Rejected);
 
-            opponent.DuelManager.ProcessResponse(_gameSession.CharId, packet.IsDuelApproved ? DuelResponse.Approved : DuelResponse.Rejected);
+            opponent.DuelManager.ProcessResponse(_gameSession.Character.Id, packet.IsDuelApproved ? DuelResponse.Approved : DuelResponse.Rejected);
 
             if (packet.IsDuelApproved)
             {

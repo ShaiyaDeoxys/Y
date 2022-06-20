@@ -39,24 +39,24 @@ namespace Imgeneus.World.Handlers
             _attackManager.Target = target;
 
             if (_attackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, target, out var success))
-                _attackManager.AutoAttack(_gameWorld.Players[_gameSession.CharId]);
+                _attackManager.AutoAttack(_gameWorld.Players[_gameSession.Character.Id]);
             else
-                _packetFactory.SendAutoAttackFailed(client, _gameSession.CharId, target, success);
+                _packetFactory.SendAutoAttackFailed(client, _gameSession.Character.Id, target, success);
         }
 
         [HandlerAction(PacketType.CHARACTER_MOB_AUTO_ATTACK)]
         public void HandleAutoAttackOnMob(WorldClient client, MobAutoAttackPacket packet)
         {
-            var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.CharId].CellId, packet.TargetId);
+            var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.TargetId);
             if (target is null)
                 return;
 
             _attackManager.Target = target;
 
             if (_attackManager.CanAttack(255, target, out var success))
-                _attackManager.AutoAttack(_gameWorld.Players[_gameSession.CharId]);
+                _attackManager.AutoAttack(_gameWorld.Players[_gameSession.Character.Id]);
             else if (success != AttackSuccess.TooFastAttack)
-                _packetFactory.SendAutoAttackFailed(client, _gameSession.CharId, target, success);
+                _packetFactory.SendAutoAttackFailed(client, _gameSession.Character.Id, target, success);
         }
     }
 }

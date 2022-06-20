@@ -203,7 +203,6 @@ namespace Imgeneus.World.Game.Player
 
             _levelProvider.Init(dbCharacter.Id, dbCharacter.Level);
 
-            _gameSession.CharId = dbCharacter.Id;
             _gameSession.IsAdmin = isAdmin;
 
             _countryProvider.Init(dbCharacter.Id, dbCharacter.User.Faction);

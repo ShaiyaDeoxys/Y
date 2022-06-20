@@ -37,7 +37,7 @@ namespace Imgeneus.World.Handlers
             if (removedItem is null)
                 return;
 
-            var player = _gameWorld.Players[_gameSession.CharId];
+            var player = _gameWorld.Players[_gameSession.Character.Id];
             player.Map.AddItem(new MapItem(removedItem, player, player.PosX, player.PosY, player.PosZ));
         }
     }

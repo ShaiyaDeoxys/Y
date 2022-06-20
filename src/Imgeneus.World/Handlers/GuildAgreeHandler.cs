@@ -25,10 +25,10 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GUILD_CREATE_AGREE)]
         public async Task Handle(WorldClient client, GuildAgreePacket packet)
         {
-            if (_guildManager.CreationRequest is null || !_guildManager.CreationRequest.Acceptance.ContainsKey(_gameSession.CharId))
+            if (_guildManager.CreationRequest is null || !_guildManager.CreationRequest.Acceptance.ContainsKey(_gameSession.Character.Id))
                 return;
 
-            _guildManager.CreationRequest.Acceptance[_gameSession.CharId] = packet.Ok;
+            _guildManager.CreationRequest.Acceptance[_gameSession.Character.Id] = packet.Ok;
 
             if (!packet.Ok)
             {
