@@ -25,6 +25,13 @@ namespace Imgeneus.World
             _worldConfiguration = worldConfiguration.Value;
             _interClient = interClient;
             _gameWorld = gameWorld;
+
+            _interClient.OnConnected += SendWorldInfo;
+            _interClient.Connect();
+        }
+        protected override void OnBeforeStart()
+        {
+            _gameWorld.Init();
         }
 
         protected override void OnAfterStart()
@@ -33,26 +40,29 @@ namespace Imgeneus.World
                 Options.Host,
                 Options.Port,
                 Options.Backlog);
-            _interClient.Connect();
-            _interClient.OnConnected += SendWorldInfo;
 
-            _gameWorld.Init();
+            _interClient.Send(new ISMessage(ISMessageType.WORLD_STATE, new WorldStateChanged(_worldConfiguration.Name, IsRunning)));
         }
 
         protected override void OnClientConnected(WorldClient client)
         {
-            _interClient.Send(new ISMessage(ISMessageType.NUMBER_OF_CONNECTED_PLAYERS_CHANGED, new NumberOfConnectedUsers(_worldConfiguration.Name, (ushort)ConnectedUsers.Count)));
+            _interClient.Send(new ISMessage(ISMessageType.NUMBER_OF_CONNECTED_PLAYERS, new NumberOfConnectedUsers(_worldConfiguration.Name, (ushort)ConnectedUsers.Count)));
         }
 
         protected override void OnClientDisconnected(WorldClient client)
         {
-            _interClient.Send(new ISMessage(ISMessageType.NUMBER_OF_CONNECTED_PLAYERS_CHANGED, new NumberOfConnectedUsers(_worldConfiguration.Name, (ushort)ConnectedUsers.Count)));
+            _interClient.Send(new ISMessage(ISMessageType.NUMBER_OF_CONNECTED_PLAYERS, new NumberOfConnectedUsers(_worldConfiguration.Name, (ushort)ConnectedUsers.Count)));
         }
 
         private void SendWorldInfo()
         {
             _interClient.OnConnected -= SendWorldInfo;
             _interClient.Send(new ISMessage(ISMessageType.WORLD_INFO, _worldConfiguration));
+        }
+
+        protected override void OnAfterStop()
+        {
+            _interClient.Send(new ISMessage(ISMessageType.WORLD_STATE, new WorldStateChanged(_worldConfiguration.Name, IsRunning)));
         }
     }
 }

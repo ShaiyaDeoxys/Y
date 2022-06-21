@@ -39,6 +39,9 @@ namespace InterServer.Client
         /// <inheritdoc/>
         public async void Connect()
         {
+            if (_connection.State == HubConnectionState.Connected)
+                return;
+
             await _connection.StartAsync();
 
             if (_connection.State == HubConnectionState.Connected)

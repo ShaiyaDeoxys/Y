@@ -1,0 +1,38 @@
+﻿@page "/Settings"
+@attribute [Authorize(Roles = "SuperAdmin, Admin")]
+
+@using Imgeneus.World
+@using Microsoft.AspNetCore.Authorization
+
+@inject IWorldServer _worldServer
+
+
+<PageTitle>Settings</PageTitle>
+
+@if (IsRunning)
+{
+    <span>Server is running.</span>
+    <br/>
+    <button type="button" class="btn btn-danger" @onclick="@Stop">Stop</button>
+}
+else
+{
+    <span>Server is stopped.</span>
+    <br/>
+    <button type="button" class="btn btn-success" @onclick="@Start">Start</button>
+}
+
+@code {
+
+    public bool IsRunning { get =>  _worldServer.IsRunning; }
+
+    public void Start()
+    {
+        _worldServer.Start();
+    }
+
+    public void Stop()
+    {
+        _worldServer.Stop();
+    }
+}

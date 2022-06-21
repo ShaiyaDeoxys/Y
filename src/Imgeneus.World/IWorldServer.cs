@@ -10,6 +10,16 @@ namespace Imgeneus.World
         /// </summary>
         void Start();
 
+        /// <summary>
+        /// Stop server.
+        /// </summary>
+        void Stop();
+
+        /// <summary>
+        /// Is currently running?
+        /// </summary>
+        bool IsRunning { get; }
+
         ICollection<WorldClient> ConnectedUsers { get; }
 
         /// <summary>

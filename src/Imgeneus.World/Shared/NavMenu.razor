@@ -31,6 +31,12 @@
                     <span class="oi oi-wifi" aria-hidden="true"></span> TCP connections
                 </NavLink>
             </AuthorizeView>
+
+            <AuthorizeView Roles="SuperAdmin, Admin">
+                <NavLink class="nav-link" href="Settings" Match="NavLinkMatch.All">
+                    <span class="oi oi-cog" aria-hidden="true"></span> Settings
+                </NavLink>
+            </AuthorizeView>
         </div>
     </nav>
 </div>

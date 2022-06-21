@@ -38,10 +38,17 @@ namespace Imgeneus.World.Game
 
         #region Init
 
+        private bool _initialized;
+
         public void Init()
         {
+            if (_initialized)
+                return;
+
             InitMaps();
             InitGRB();
+
+            _initialized = true;
         }
 
         #endregion

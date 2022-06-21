@@ -22,7 +22,8 @@ namespace InterServer.SignalR
             { ISMessageType.WORLD_INFO, nameof(ISHub.WorldServerConnected) },
             { ISMessageType.AES_KEY_REQUEST, nameof(ISHub.GetAesKey) },
             { ISMessageType.AES_KEY_RESPONSE, nameof(ISClient.OnAesKeyResponse) },
-            { ISMessageType.NUMBER_OF_CONNECTED_PLAYERS_CHANGED, nameof(ISHub.NumberOfConnectedPlayersChanged) }
+            { ISMessageType.NUMBER_OF_CONNECTED_PLAYERS, nameof(ISHub.NumberOfConnectedPlayersChanged) },
+            { ISMessageType.WORLD_STATE, nameof(WorldStateChanged) }
         };
 
         /// <summary>
@@ -60,6 +61,15 @@ namespace InterServer.SignalR
                 return;
 
             serverInfo.ConnectedUsers = payload.NumberOfPlayers;
+        }
+
+        public void WorldStateChanged(WorldStateChanged payload)
+        {
+            var serverInfo = _interServer.WorldServers.FirstOrDefault(x => x.Name == payload.ServerName);
+            if (serverInfo is null)
+                return;
+
+            serverInfo.WorldStatus = payload.IsRunning ? WorldState.Normal : WorldState.Lock;
         }
     }
 }
