@@ -33,6 +33,12 @@
             </AuthorizeView>
 
             <AuthorizeView Roles="SuperAdmin, Admin">
+                <NavLink class="nav-link" href="Logs" Match="NavLinkMatch.All">
+                    <span class="oi oi-justify-left" aria-hidden="true"></span> Logs
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="SuperAdmin, Admin">
                 <NavLink class="nav-link" href="Settings" Match="NavLinkMatch.All">
                     <span class="oi oi-cog" aria-hidden="true"></span> Settings
                 </NavLink>
