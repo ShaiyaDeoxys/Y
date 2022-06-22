@@ -94,7 +94,7 @@ namespace Imgeneus.GameDefinitions
         /// </summary>
         private void PreloadNpcsAndQuests()
         {
-            var npcQuest = Reader.ReadFromFile<NpcQuest>("config/SData/NpcQuest.SData", Format.EP8);
+            var npcQuest = Reader.ReadFromFile<NpcQuest>("config/SData/NpcQuest.SData", Episode.EP8);
 
             foreach (var npc in npcQuest.Merchants)
                 NPCs.Add((npc.Type, npc.TypeId), npc);
