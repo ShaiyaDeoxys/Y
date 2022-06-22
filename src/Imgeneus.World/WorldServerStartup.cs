@@ -6,6 +6,7 @@ using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.Logs;
+using Imgeneus.Monitoring;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
 using Imgeneus.World.Game;
@@ -58,11 +59,13 @@ using InterServer.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sylver.HandlerInvoker;
+using System;
 
 namespace Imgeneus.World
 {
@@ -173,8 +176,16 @@ namespace Imgeneus.World
                 .AddEntityFrameworkStores<DatabaseContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder, RoleManager<DbRole> roleManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder, RoleManager<DbRole> roleManager, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration)
         {
+            loggerFactory.AddProvider(
+                new SignalRLoggerProvider(
+                    new SignalRLoggerConfiguration
+                    {
+                        HubContext = serviceProvider.GetService<IHubContext<MonitoringHub>>(),
+                        LogLevel = configuration.GetValue<LogLevel>("Logging:LogLevel:Monitoring")
+                    }));
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -192,6 +203,7 @@ namespace Imgeneus.World
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapHub<MonitoringHub>(MonitoringHub.HubUrl);
             });
 
 

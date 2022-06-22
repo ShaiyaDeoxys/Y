@@ -344,3 +344,5 @@ healthchecksdb
 /src/Imgeneus.World/imgeneus.logs.db
 /src/Imgeneus.World/config/SData/*.SData
 /src/Imgeneus.World/ScaffoldingReadMe.txt
+/src/Imgeneus.World/*.db-shm
+/src/Imgeneus.World/*.db-wal

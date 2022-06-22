@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\submodules\Sylver.HandlerInvoker\src\Sylver.HandlerInvoker\Sylver.HandlerInvoker.csproj" />
     <ProjectReference Include="..\Imgeneus.Core\Imgeneus.Core.csproj" />
     <ProjectReference Include="..\Imgeneus.InterServer\Imgeneus.InterServer.csproj" />
+    <ProjectReference Include="..\Imgeneus.Monitoring\Imgeneus.Monitoring.csproj" />
     <ProjectReference Include="..\Imgeneus.Network\Imgeneus.Network.csproj" />
   </ItemGroup>
 

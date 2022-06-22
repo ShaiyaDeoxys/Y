@@ -2,16 +2,20 @@ using Imgeneus.Database;
 using Imgeneus.Database.Context;
 using Imgeneus.Database.Entities;
 using Imgeneus.Login.Packets;
+using Imgeneus.Monitoring;
 using Imgeneus.Network.Server;
 using Imgeneus.Network.Server.Crypto;
 using InterServer.Server;
 using InterServer.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Sylver.HandlerInvoker;
+using System;
 
 namespace Imgeneus.Login
 {
@@ -48,8 +52,16 @@ namespace Imgeneus.Login
                 .AddEntityFrameworkStores<DatabaseContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration)
         {
+            loggerFactory.AddProvider(
+                new SignalRLoggerProvider(
+                    new SignalRLoggerConfiguration
+                    {
+                        HubContext = serviceProvider.GetService<IHubContext<MonitoringHub>>(),
+                        LogLevel = configuration.GetValue<LogLevel>("Logging:LogLevel:Monitoring")
+                    }));
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -68,6 +80,7 @@ namespace Imgeneus.Login
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
                 endpoints.MapHub<ISHub>("/inter_server");
+                endpoints.MapHub<MonitoringHub>(MonitoringHub.HubUrl);
             });
 
             loginServer.Start();
