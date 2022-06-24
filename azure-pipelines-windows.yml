@@ -58,3 +58,12 @@ steps:
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: 'Imgeneus.Windows'
+
+  - task: DockerCompose@0
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
+      azureContainerRegistry: '{"loginServer":"imgeneusregistrytest.azurecr.io", "id" : "/subscriptions/503236c4-a00c-466c-b7b0-4800e8dec527/resourceGroups/imgeneus-test/providers/Microsoft.ContainerRegistry/registries/imgeneusregistrytest"}'
+      dockerComposeFile: '**/docker-compose.yml'
+      action: 'Run a Docker Compose command'
+      dockerComposeCommand: 'rm --all'
