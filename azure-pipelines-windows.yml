@@ -72,7 +72,7 @@ steps:
       additionalImageTags: $(Build.BuildId)
 
   - task: DockerCompose@0
-    displayName: 'Build docker images'
+    displayName: 'Push docker images'
     inputs:
       containerregistrytype: 'Azure Container Registry'
       azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
