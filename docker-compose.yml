@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  imgeneus.login:
+    image: imgeneus.login
+    build:
+      context: .
+      dockerfile: Login.Dockerfile
+    environment:
+        - Database__Host=imgeneus-test.mysql.database.azure.com
+        - Database__Username=aosyatnik
+        - Database__Password=password
+        - Database__SslMode=Required
+        - TcpServer__Host=0.0.0.0
+    ports:
+        - "7000:80"
+        - "30800:30800"
+
+  imgeneus.world:
+    image: imgeneus.world
+    build:
+      context: .
+      dockerfile: World.Dockerfile
+    links:
+        - imgeneus.login
+    environment:
+        - Database__Host=imgeneus-test.mysql.database.azure.com
+        - Database__Username=aosyatnik
+        - Database__Password=password
+        - Database__SslMode=Required
+        - InterServer__Endpoint=http://imgeneus.login/inter_server
+        - TcpServer__Host=0.0.0.0
+    ports:
+        - "7001:80"
+        - "30810:30810"

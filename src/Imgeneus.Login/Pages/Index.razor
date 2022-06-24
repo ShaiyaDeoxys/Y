@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @inject ILoginServer _loginServer;
+@inject IDatabase _database;
 
 <PageTitle>Home</PageTitle>
 
@@ -11,10 +12,16 @@
 </div>
 
 <h2>Open TPC connections: @GetNumberOfConnections()</h2>
+<h2>Registered players: @GetNumberOfRegisteredUsers()</h2>
 
 @code {
     private int GetNumberOfConnections()
     {
         return _loginServer.ConnectedUsers.Count();
+    }
+
+    private int GetNumberOfRegisteredUsers()
+    {
+        return _database.Users.Count();
     }
 }

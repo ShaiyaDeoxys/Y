@@ -27,8 +27,18 @@
         /// </summary>
         public string Database { get; set; }
 
+        /// <summary>
+        /// SSL connection mode.
+        /// </summary>
+        public string SslMode { get; set; }
+
         /// <inheritdoc />
         public override string ToString()
-            => $"server={Host};userid={Username};pwd={Password};port={Port};database={Database};sslmode=none;";
+        {
+            var connectionString = $"server={Host};userid={Username};pwd={Password};port={Port};database={Database};SSL Mode={SslMode}";
+            if (SslMode == "Required") // For Azure database.
+                connectionString += ";Ssl CA=BaltimoreCyberTrustRoot.crt.pem;TlsVersion=TLS 1.2";
+            return connectionString;
+        }
     }
 }

@@ -22,4 +22,10 @@
     <ProjectReference Include="..\Imgeneus.Network\Imgeneus.Network.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="BaltimoreCyberTrustRoot.crt.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

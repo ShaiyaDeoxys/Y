@@ -52,7 +52,7 @@ namespace Imgeneus.Login
                 .AddEntityFrameworkStores<DatabaseContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration, IDatabase mainDb)
         {
             loggerFactory.AddProvider(
                 new SignalRLoggerProvider(
@@ -82,6 +82,8 @@ namespace Imgeneus.Login
                 endpoints.MapHub<ISHub>("/inter_server");
                 endpoints.MapHub<MonitoringHub>(MonitoringHub.HubUrl);
             });
+
+            mainDb.Migrate();
 
             loginServer.Start();
         }
