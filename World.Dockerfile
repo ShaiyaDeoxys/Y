@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine3.16-amd64 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 30810
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine3.16-amd64 AS build
 WORKDIR .
 COPY ["src/Imgeneus.World/Imgeneus.World.csproj", "src/Imgeneus.World/"]
 

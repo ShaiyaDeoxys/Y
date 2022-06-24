@@ -5,6 +5,7 @@ using Imgeneus.World.Game;
 using InterServer.Client;
 using InterServer.SignalR;
 using LiteNetwork.Server;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -17,17 +18,24 @@ namespace Imgeneus.World
         private readonly WorldConfiguration _worldConfiguration;
         private readonly IInterServerClient _interClient;
         private readonly IGameWorld _gameWorld;
+        private readonly IHostApplicationLifetime _applicationLifetime;
 
-        public WorldServer(ILogger<WorldServer> logger, IOptions<ImgeneusServerOptions> tcpConfiguration, IServiceProvider serviceProvider, IOptions<WorldConfiguration> worldConfiguration, IInterServerClient interClient, IGameWorld gameWorld)
+        public WorldServer(ILogger<WorldServer> logger, IOptions<ImgeneusServerOptions> tcpConfiguration, IServiceProvider serviceProvider, IOptions<WorldConfiguration> worldConfiguration, IInterServerClient interClient, IGameWorld gameWorld, IHostApplicationLifetime applicationLifetime)
             : base(tcpConfiguration.Value, serviceProvider)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
             _interClient = interClient;
             _gameWorld = gameWorld;
+            _applicationLifetime = applicationLifetime;
 
             _interClient.OnConnected += SendWorldInfo;
             _interClient.Connect();
+
+            _applicationLifetime.ApplicationStopping.Register(() => {
+                _logger.LogInformation("Application stopped. Server is stopping too.");
+                Stop();
+            });
         }
         protected override void OnBeforeStart()
         {

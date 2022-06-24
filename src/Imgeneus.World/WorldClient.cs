@@ -33,17 +33,11 @@ namespace Imgeneus.World
     public sealed class WorldClient : ImgeneusClient, IWorldClient
     {
         private readonly IHandlerInvoker _handlerInvoker;
-        private readonly IHostApplicationLifetime _applicationLifetime;
 
-        public WorldClient(ILogger<ImgeneusClient> logger, ICryptoManager cryptoManager, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker, IHostApplicationLifetime applicationLifetime) :
+        public WorldClient(ILogger<ImgeneusClient> logger, ICryptoManager cryptoManager, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker) :
             base(logger, cryptoManager, serviceProvider)
         {
             _handlerInvoker = handlerInvoker;
-            _applicationLifetime = applicationLifetime;
-
-            _applicationLifetime.ApplicationStopped.Register(async () => {
-                await ClearSession(true);
-            });
         }
 
         private readonly PacketType[] _excludedPackets = new PacketType[] { PacketType.GAME_HANDSHAKE };

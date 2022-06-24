@@ -59,4 +59,28 @@ steps:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
       artifactName: 'Imgeneus.Linux'
 
+  - task: DockerCompose@0
+    displayName: 'Build docker images'
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
+      azureContainerRegistry: '{"loginServer":"imgeneusregistrytest.azurecr.io", "id" : "/subscriptions/503236c4-a00c-466c-b7b0-4800e8dec527/resourceGroups/imgeneus-test/providers/Microsoft.ContainerRegistry/registries/imgeneusregistrytest"}'
+      dockerComposeFile: '**/docker-compose.yml'
+      action: 'Build services'
+      projectName: $(Build.Repository.Name)
+      qualifyImageNames: true
+      additionalImageTags: $(Build.BuildId)
+
+  - task: DockerCompose@0
+    displayName: 'Push docker images'
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
+      azureContainerRegistry: '{"loginServer":"imgeneusregistrytest.azurecr.io", "id" : "/subscriptions/503236c4-a00c-466c-b7b0-4800e8dec527/resourceGroups/imgeneus-test/providers/Microsoft.ContainerRegistry/registries/imgeneusregistrytest"}'
+      dockerComposeFile: '**/docker-compose.yml'
+      action: 'Push services'
+      projectName: $(Build.Repository.Name)
+      qualifyImageNames: true
+      additionalImageTags: $(Build.BuildId)
+
 
