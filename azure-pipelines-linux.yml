@@ -83,4 +83,31 @@ steps:
       qualifyImageNames: true
       additionalImageTags: $(Build.BuildId)
 
-
+  - task: replacetokens@5
+    displayName: 'Replace passwords in deployment files'
+    inputs:
+      targetFiles: '**/*.yaml'
+      encoding: 'auto'
+      tokenPattern: 'default'
+      writeBOM: true
+      actionOnMissing: 'warn'
+      keepToken: false
+      actionOnNoFiles: 'continue'
+      enableTransforms: false
+      enableRecursion: false
+      useLegacyPattern: false
+      enableTelemetry: true
+  - task: AzureCLI@2
+    displayName: 'Deploy login server'
+    inputs:
+      azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az container create -g imgeneus-test --file deploy-login.yaml'
+  - task: AzureCLI@2
+    displayName: 'Deploy world server'
+    inputs:
+      azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az container create -g imgeneus-test --file deploy-world.yaml'
