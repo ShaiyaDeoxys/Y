@@ -1,0 +1,46 @@
+apiVersion: 2019-12-01
+location: westeurope
+name: imgeneus-login
+properties:
+
+  imageRegistryCredentials:
+    - server: imgeneusregistrytest.azurecr.io
+      username: imgeneusregistrytest
+      password: #{registryPassword}#
+
+  restartPolicy: OnFailure
+
+  containers:
+  - name: imgeneus-login
+    properties:
+      image: imgeneusregistrytest.azurecr.io/imgeneus.login:latest
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 1
+      ports:
+      - port: 80
+      - port: 30800
+
+      environmentVariables:
+      - name: Database__Host
+        value: imgeneus-test.mysql.database.azure.com
+      - name: Database__Username
+        value: aosyatnik
+      - name: Database__Password
+        value: #{dbPassword}#
+      - name: Database__SslMode
+        value: Required
+      - name: TcpServer__Host
+        value: "0.0.0.0"
+
+  osType: Linux
+  ipAddress:
+      type: Public
+      ports:
+      - protocol: tcp
+        port: 80
+      - protocol: tcp
+        port: 30800
+
+type: Microsoft.ContainerInstance/containerGroups
