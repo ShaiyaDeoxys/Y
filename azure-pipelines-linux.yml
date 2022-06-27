@@ -103,11 +103,11 @@ steps:
       azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
-      inlineScript: 'az container create -g imgeneus-test --file deploy-login.yaml'
+      inlineScript: 'az container create -g imgeneus-test --no-wait --file deploy-login.yaml'
   - task: AzureCLI@2
     displayName: 'Deploy world server'
     inputs:
       azureSubscription: 'Visual Studio Enterprise – MPN(503236c4-a00c-466c-b7b0-4800e8dec527)'
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
-      inlineScript: 'az container create -g imgeneus-test --file deploy-world.yaml'
+      inlineScript: 'az container create -g imgeneus-test --no-wait --file deploy-world.yaml'
