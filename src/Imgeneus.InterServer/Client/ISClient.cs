@@ -49,6 +49,10 @@ namespace InterServer.Client
                 _logger.LogInformation("Successfully connected to the login server.");
                 OnConnected?.Invoke();
             }
+            else
+            {
+                _logger.LogError("Failed to connect to {0}.", _config.Endpoint);
+            }
         }
 
         /// <inheritdoc/>
