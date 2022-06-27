@@ -33,6 +33,8 @@ namespace InterServer.Client
                 .WithAutomaticReconnect()
                 .Build();
 
+            _connection.Closed += Connection_Closed;
+
             _connection.On<SessionResponse>(nameof(OnAesKeyResponse), OnAesKeyResponse);
         }
 
@@ -57,6 +59,12 @@ namespace InterServer.Client
 
         /// <inheritdoc/>
         public event Action OnConnected;
+
+        private Task Connection_Closed(Exception ex)
+        {
+            Connect();
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Sends message to login server.
