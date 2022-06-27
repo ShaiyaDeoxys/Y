@@ -37,7 +37,12 @@
         /// </summary>
         public WorldState WorldStatus { get; set; }
 
-        public WorldServerInfo(byte id, byte[] host, string name, int buildVersion, ushort maxAllowedUsers)
+        /// <summary>
+        /// SignalR connection id.
+        /// </summary>
+        public string ConnectionId { get; set; }
+
+        public WorldServerInfo(byte id, byte[] host, string name, int buildVersion, ushort maxAllowedUsers, string connectionId)
         {
             Id = id;
             Host = host;
@@ -45,6 +50,7 @@
             BuildVersion = buildVersion;
             MaxAllowedUsers = maxAllowedUsers;
             WorldStatus = WorldState.Normal;
+            ConnectionId = connectionId;
         }
     }
 }

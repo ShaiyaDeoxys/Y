@@ -29,5 +29,11 @@ namespace InterServer.Server
             _worlds.Add(info);
             _logger.LogInformation($"New world server {info.Name} connected.");
         }
+
+        public void RemoveWorldServer(WorldServerInfo info)
+        {
+            _worlds.Remove(info);
+            _logger.LogInformation($"World server {info.Name} disconnected.");
+        }
     }
 }

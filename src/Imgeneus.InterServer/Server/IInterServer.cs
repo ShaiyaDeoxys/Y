@@ -22,6 +22,11 @@ namespace InterServer.Server
         public void AddWorldServer(WorldServerInfo worldInfo);
 
         /// <summary>
+        /// Removes world from known servers.
+        /// </summary>
+        public void RemoveWorldServer(WorldServerInfo worldInfo);
+
+        /// <summary>
         /// Collection of client sessions.
         /// </summary>
         public ConcurrentDictionary<Guid, KeyPair> Sessions { get; }

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace InterServer.SignalR
 {
@@ -37,6 +38,17 @@ namespace InterServer.SignalR
             _interServer = interServer;
         }
 
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            var serverInfo = _interServer.WorldServers.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            if (serverInfo is null)
+                return Task.CompletedTask;
+
+            _interServer.RemoveWorldServer(serverInfo);
+
+            return Task.CompletedTask;
+        }
+
         public void WorldServerConnected(WorldConfiguration config)
         {
             var worldInfo = new WorldServerInfo(
@@ -44,7 +56,8 @@ namespace InterServer.SignalR
                     IPAddress.Parse(config.Host).GetAddressBytes(),
                     config.Name,
                     config.BuildVersion,
-                    config.MaximumNumberOfConnections);
+                    config.MaximumNumberOfConnections,
+                    Context.ConnectionId);
             _interServer.AddWorldServer(worldInfo);
         }
 
@@ -56,7 +69,7 @@ namespace InterServer.SignalR
 
         public void NumberOfConnectedPlayersChanged(NumberOfConnectedUsers payload)
         {
-            var serverInfo = _interServer.WorldServers.FirstOrDefault(x => x.Name == payload.ServerName);
+            var serverInfo = _interServer.WorldServers.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
             if (serverInfo is null)
                 return;
 
@@ -65,7 +78,7 @@ namespace InterServer.SignalR
 
         public void WorldStateChanged(WorldStateChanged payload)
         {
-            var serverInfo = _interServer.WorldServers.FirstOrDefault(x => x.Name == payload.ServerName);
+            var serverInfo = _interServer.WorldServers.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
             if (serverInfo is null)
                 return;
 
