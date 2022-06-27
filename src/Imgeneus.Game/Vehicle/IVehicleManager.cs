@@ -5,14 +5,14 @@ namespace Imgeneus.World.Game.Vehicle
 {
     public interface IVehicleManager: IDisposable
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         #region Summoning
 
         /// <summary>
         /// Event, that is fired, when the player starts summoning mount.
         /// </summary>
-        event Action<int> OnStartSummonVehicle;
+        event Action<uint> OnStartSummonVehicle;
 
         /// <summary>
         /// Event, that is fired, when summoning mount is finished.
@@ -46,7 +46,7 @@ namespace Imgeneus.World.Game.Vehicle
         /// <summary>
         /// Event, that is fired, when the player change vehicle status.
         /// </summary>
-        event Action<int, bool> OnVehicleChange;
+        event Action<uint, bool> OnVehicleChange;
 
         /// <summary>
         /// Indicator if character is on mount now.
@@ -73,17 +73,17 @@ namespace Imgeneus.World.Game.Vehicle
         /// <summary>
         /// Id of player, that is vehicle owner (2 places mount).
         /// </summary>
-        int Vehicle2CharacterID { get; set; }
+        uint Vehicle2CharacterID { get; set; }
 
         /// <summary>
         /// Event, that is fired, when 2 vehicle character changes.
         /// </summary>
-        event Action<int, int> OnVehiclePassengerChanged;
+        event Action<uint, uint> OnVehiclePassengerChanged;
 
         /// <summary>
         /// Id of player, who has sent vehicle request.
         /// </summary>
-        int VehicleRequesterID { get; set; }
+        uint VehicleRequesterID { get; set; }
 
         #endregion
     }

@@ -114,7 +114,7 @@ namespace Imgeneus.World.Tests
             }
         }
 
-        private int _characterId;
+        private uint _characterId;
         protected Character CreateCharacter(Map map = null, Fraction country = Fraction.Light, GuildConfiguration guildConfiguration = null, GuildHouseConfiguration guildHouseConfiguration = null, CharacterProfession profession = CharacterProfession.Fighter)
         {
             _characterId++;
@@ -232,7 +232,7 @@ namespace Imgeneus.World.Tests
             return character;
         }
 
-        private int _mobId;
+        private uint _mobId;
 
         protected Mob CreateMob(ushort mobId, Map map, Fraction country = Fraction.NotSelected)
         {
@@ -295,7 +295,7 @@ namespace Imgeneus.World.Tests
         public BaseTest()
         {
             gameWorldMock.Setup(x => x.Players)
-                .Returns(new ConcurrentDictionary<int, Character>());
+                .Returns(new ConcurrentDictionary<uint, Character>());
 
             PortalTeleportNotAllowedReason reason;
             gameWorldMock.Setup(x => x.CanTeleport(It.IsAny<Character>(), It.IsAny<ushort>(), out reason))

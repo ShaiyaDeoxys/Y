@@ -180,7 +180,7 @@ namespace Imgeneus.World.SelectionScreen
             return maxMode;
         }
 
-        public async Task<bool> TryDeleteCharacter(int userId, int id)
+        public async Task<bool> TryDeleteCharacter(int userId, uint id)
         {
             var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == id);
             if (character is null)
@@ -193,7 +193,7 @@ namespace Imgeneus.World.SelectionScreen
             return count == 1;
         }
 
-        public async Task<bool> TryRestoreCharacter(int userId, int id)
+        public async Task<bool> TryRestoreCharacter(int userId, uint id)
         {
             var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == id);
             if (character is null)
@@ -206,7 +206,7 @@ namespace Imgeneus.World.SelectionScreen
             return count == 1;
         }
 
-        public async Task<bool> TryRenameCharacter(int userId, int id, string newName)
+        public async Task<bool> TryRenameCharacter(int userId, uint id, string newName)
         {
             var character = await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == id);
             if (character is null)

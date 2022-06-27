@@ -7,7 +7,7 @@ namespace Imgeneus.World.Game.Friends
         /// <summary>
         /// Character id.
         /// </summary>
-        public int Id { get; private set; }
+        public uint Id { get; private set; }
 
         /// <summary>
         /// Friend name.
@@ -24,7 +24,7 @@ namespace Imgeneus.World.Game.Friends
         /// </summary>
         public bool IsOnline { get; set; }
 
-        public Friend(int id, string name, CharacterProfession job, bool isOnline = false)
+        public Friend(uint id, string name, CharacterProfession job, bool isOnline = false)
         {
             Id = id;
             Name = name;

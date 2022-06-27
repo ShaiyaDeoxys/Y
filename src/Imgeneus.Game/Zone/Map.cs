@@ -233,14 +233,14 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Thread-safe dictionary of connected players. Key is character id, value is character.
         /// </summary>
-        protected readonly ConcurrentDictionary<int, Character> Players = new ConcurrentDictionary<int, Character>();
+        protected readonly ConcurrentDictionary<uint, Character> Players = new ConcurrentDictionary<uint, Character>();
 
         /// <summary>
         /// Tries to get player from map.
         /// </summary>
         /// <param name="playerId">id of player, that you are trying to get.</param>
         /// <returns>either player or null if player is not presented</returns>
-        public Character GetPlayer(int playerId)
+        public Character GetPlayer(uint playerId)
         {
             Players.TryGetValue(playerId, out var player);
             return player;
@@ -280,7 +280,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="characterId">player, that we need to unload</param>
         /// <param name="exitGame">if case player exits game, he/she should be teleported to rebirth map</param>
         /// <returns>returns true if we could unload player to map, otherwise false</returns>
-        public virtual bool UnloadPlayer(int characterId, bool exitGame = false)
+        public virtual bool UnloadPlayer(uint characterId, bool exitGame = false)
         {
             if (!Players.ContainsKey(characterId))
                 return false;
@@ -318,7 +318,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// When player's position changes, we are checking if player's map cell should be changed.
         /// </summary>
-        private void Character_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        private void Character_OnMove(uint senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             var sender = Players[senderId];
             var newCellId = GetCellIndex(sender);
@@ -421,14 +421,17 @@ namespace Imgeneus.World.Game.Zone
 
         #region Mobs
 
-        private static int _currentGlobalMobId;
+        /// <summary>
+        /// Mob Id per map.
+        /// </summary>
+        private uint _currentGlobalMobId = 1;
         private readonly object _currentGlobalMobIdMutex = new object();
 
         /// <summary>
         /// Each entity in game has its' own id.
         /// Call this method, when you need to get new id.
         /// </summary>
-        public int GenerateId()
+        public uint GenerateId()
         {
             lock (_currentGlobalMobIdMutex)
             {
@@ -469,7 +472,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="cellId">map cell index</param>
         /// <param name="mobId">id of mob, that you are trying to get.</param>
         /// <returns>either mob or null if mob is not presented</returns>
-        public Mob GetMob(int cellId, int mobId)
+        public Mob GetMob(int cellId, uint mobId)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(Map));
@@ -524,7 +527,7 @@ namespace Imgeneus.World.Game.Zone
         /// Tries to get item from map.
         /// </summary>
         /// <returns>if item is null, means that item doesn't belong to player yet</returns>
-        public MapItem GetItem(int itemId, Character requester)
+        public MapItem GetItem(uint itemId, Character requester)
         {
             return Cells[requester.CellId].GetItem(itemId, requester, true);
         }
@@ -532,7 +535,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Removes item from map.
         /// </summary>
-        public void RemoveItem(int cellId, int itemId)
+        public void RemoveItem(int cellId, uint itemId)
         {
             var item = Cells[cellId].RemoveItem(itemId);
             if (item != null)
@@ -575,7 +578,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Gets npc by its' id.
         /// </summary>
-        public NPCs.Npc GetNPC(int cellIndex, int id)
+        public NPCs.Npc GetNPC(int cellIndex, uint id)
         {
             return Cells[cellIndex].GetNPC(id, true);
         }
@@ -683,7 +686,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Obelisks on this map.
         /// </summary>
-        public ConcurrentDictionary<int, Obelisk> Obelisks = new ConcurrentDictionary<int, Obelisk>();
+        public ConcurrentDictionary<uint, Obelisk> Obelisks = new ConcurrentDictionary<uint, Obelisk>();
 
         /// <summary>
         /// Creates obelisks.

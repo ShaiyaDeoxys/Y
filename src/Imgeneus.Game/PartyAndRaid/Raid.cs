@@ -485,24 +485,24 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         #region Senders
 
-        protected override void SendAddBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        protected override void SendAddBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             _packetFactory.SendAddRaidBuff(client, senderId, skillId, skillLevel);
         }
 
-        protected override void SendRemoveBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        protected override void SendRemoveBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             _packetFactory.SendRemoveRaidBuff(client, senderId, skillId, skillLevel);
         }
 
-        protected override void Send_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        protected override void Send_Single_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type)
         {
-            _packetFactory.SendRaid_Single_HP_SP_MP(client, id, value, type);
+            _packetFactory.SendRaid_Single_HP_SP_MP(client, senderId, value, type);
         }
 
-        protected override void Send_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        protected override void Send_Single_Max_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type)
         {
-            _packetFactory.SendRaid_Single_Max_HP_SP_MP(client, id, value, type);
+            _packetFactory.SendRaid_Single_Max_HP_SP_MP(client, senderId, value, type);
         }
 
         protected override void Send_HP_SP_MP(IWorldClient client, Character partyMember)
@@ -525,7 +525,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             _packetFactory.SendNewRaidSubLeader(client, character);
         }
 
-        protected override void SendLevel(IWorldClient client, int senderId, ushort level)
+        protected override void SendLevel(IWorldClient client, uint senderId, ushort level)
         {
             throw new NotImplementedException();
         }

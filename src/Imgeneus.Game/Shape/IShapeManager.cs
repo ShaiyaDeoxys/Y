@@ -4,12 +4,12 @@ namespace Imgeneus.World.Game.Shape
 {
     public interface IShapeManager : IDisposable
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// Event, that is fired, when character changes shape.
         /// </summary>
-        event Action<int, ShapeEnum, int, int> OnShapeChange;
+        event Action<uint, ShapeEnum, uint, uint> OnShapeChange;
 
         /// <summary>
         /// Character shape.
@@ -24,7 +24,7 @@ namespace Imgeneus.World.Game.Shape
         /// <summary>
         /// Event, that is fired, when tranform forms changes.
         /// </summary>
-        event Action<int, bool> OnTranformated;
+        event Action<uint, bool> OnTranformated;
 
         /// <summary>
         /// Monster shape level. Fox is 1, Wolf is 2, Knight is 3.
@@ -44,6 +44,6 @@ namespace Imgeneus.World.Game.Shape
         /// <summary>
         /// Opposite country character.
         /// </summary>
-        int CharacterId { get; set; }
+        uint CharacterId { get; set; }
     }
 }

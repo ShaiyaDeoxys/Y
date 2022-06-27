@@ -19,7 +19,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
         /// <summary>
         /// Obelisk id.
         /// </summary>
-        public int Id { get; set; }
+        public uint Id { get; set; }
 
         /// <summary>
         /// X coordinate.

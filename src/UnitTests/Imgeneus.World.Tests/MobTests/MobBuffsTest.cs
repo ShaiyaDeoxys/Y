@@ -14,7 +14,7 @@ namespace Imgeneus.World.Tests.MobTests
         {
             var mob = CreateMob(Wolf.Id, testMap);
             Buff buff = null;
-            mob.BuffsManager.OnBuffAdded += (int senderId, Buff newBuff) =>
+            mob.BuffsManager.OnBuffAdded += (uint senderId, Buff newBuff) =>
             {
                 buff = newBuff;
             };

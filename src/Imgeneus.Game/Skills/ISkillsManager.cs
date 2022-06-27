@@ -21,17 +21,17 @@ namespace Imgeneus.World.Game.Skills
         /// <param name="ownerId">who is using skills</param>
         /// <param name="skills">initial skills</param>
         /// <param name="skillPoint">free skill points</param>
-        void Init(int ownerId, IEnumerable<Skill> skills, ushort skillPoint = 0);
+        void Init(uint ownerId, IEnumerable<Skill> skills, ushort skillPoint = 0);
 
         /// <summary>
         /// Event, that is fired, when single target skill is used.
         /// </summary>
-        event Action<int, IKillable, Skill, AttackResult> OnUsedSkill;
+        event Action<uint, IKillable, Skill, AttackResult> OnUsedSkill;
 
         /// <summary>
         /// Event, that is fired, when range skill is used.
         /// </summary>
-        event Action<int, IKillable, Skill, AttackResult> OnUsedRangeSkill;
+        event Action<uint, IKillable, Skill, AttackResult> OnUsedRangeSkill;
 
         /// <summary>
         /// Free skill points.

@@ -28,7 +28,7 @@ namespace Imgeneus.World.Game.Quests
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly ILevelingManager _levelingManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public QuestsManager(ILogger<QuestsManager> logger, IGameDefinitionsPreloder definitionsPreloader, IMapProvider mapProvider, IGameWorld gameWorld, IDatabase database, IPartyManager partyManager, IInventoryManager inventoryManager, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, ILevelingManager levelingManager)
         {
@@ -57,7 +57,7 @@ namespace Imgeneus.World.Game.Quests
 
         #region Init & Clear
 
-        public void Init(int ownerId, IEnumerable<DbCharacterQuest> quests)
+        public void Init(uint ownerId, IEnumerable<DbCharacterQuest> quests)
         {
             _ownerId = ownerId;
 
@@ -105,7 +105,7 @@ namespace Imgeneus.World.Game.Quests
 
         public event Action<short, byte, byte> OnQuestMobCountChanged;
 
-        public event Action<int, Quest, bool> OnQuestFinished;
+        public event Action<uint, Quest, bool> OnQuestFinished;
 
         private void Quest_QuestTimeElapsed(Quest quest)
         {
@@ -113,7 +113,7 @@ namespace Imgeneus.World.Game.Quests
             OnQuestFinished?.Invoke(0, quest, false);
         }
 
-        public async Task<bool> TryStartQuest(int npcId, short questId)
+        public async Task<bool> TryStartQuest(uint npcId, short questId)
         {
             if (npcId != 0)
             {
@@ -153,7 +153,7 @@ namespace Imgeneus.World.Game.Quests
             OnQuestFinished?.Invoke(0, quest, false);
         }
 
-        public bool TryFinishQuest(int npcId, short questId, out Quest quest)
+        public bool TryFinishQuest(uint npcId, short questId, out Quest quest)
         {
             quest = quest = Quests.FirstOrDefault(q => q.Id == questId && !q.IsFinished);
             if (quest is null)
@@ -260,7 +260,7 @@ namespace Imgeneus.World.Game.Quests
             return true;
         }
 
-        public bool TryFinishQuestSelect(int npcId, short questId, byte index)
+        public bool TryFinishQuestSelect(uint npcId, short questId, byte index)
         {
             var quest = Quests.FirstOrDefault(q => q.Id == questId && !q.IsFinished);
             if (quest is null)

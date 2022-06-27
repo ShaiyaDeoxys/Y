@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class PartyMember_HP_SP_MP : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId { get; }
+        public uint CharacterId { get; }
 
         [FieldOrder(1)]
         public int CurrentHP { get; }

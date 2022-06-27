@@ -4,11 +4,11 @@ namespace Imgeneus.Network.Packets.Game
 {
     public record TradeRequestPacket : IPacketDeserializer
     {
-        public int TradeToWhomId { get; private set; }
+        public uint TradeToWhomId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            TradeToWhomId = packetStream.Read<int>();
+            TradeToWhomId = packetStream.Read<uint>();
         }
     }
 }

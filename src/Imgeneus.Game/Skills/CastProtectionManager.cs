@@ -19,7 +19,7 @@ namespace Imgeneus.Game.Skills
         private readonly IGamePacketFactory _packetFactory;
         private readonly IGameSession _gameSession;
         private readonly IMapProvider _mapProvider;
-        private int _ownerId;
+        private uint _ownerId;
 
         public CastProtectionManager(ILogger<CastProtectionManager> logger, IMovementManager movementManager, IPartyManager partyProvider, IGamePacketFactory packetFactory, IGameSession gameSession, IMapProvider mapProvider)
         {
@@ -46,7 +46,7 @@ namespace Imgeneus.Game.Skills
 
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }

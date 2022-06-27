@@ -5,7 +5,7 @@ namespace Imgeneus.World.Game.AI
 {
     public interface IAIManager : IDisposable
     {
-        void Init(int ownerId,
+        void Init(uint ownerId,
                   MobAI aiType, 
                   MoveArea moveArea,
                   int idleTime = 4000,

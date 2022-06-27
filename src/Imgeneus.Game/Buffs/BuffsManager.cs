@@ -52,7 +52,7 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IMapProvider _mapProvider;
         private readonly IGameWorld _gameWorld;
-        private int _ownerId;
+        private uint _ownerId;
 
         public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, IGameWorld gameWorld)
         {
@@ -98,7 +98,7 @@ namespace Imgeneus.World.Game.Buffs
 
         #region Init & Clear
 
-        public void Init(int ownerId, IEnumerable<DbCharacterActiveBuff> initBuffs = null)
+        public void Init(uint ownerId, IEnumerable<DbCharacterActiveBuff> initBuffs = null)
         {
             _ownerId = ownerId;
 
@@ -156,11 +156,11 @@ namespace Imgeneus.World.Game.Buffs
 
         public ObservableRangeCollection<Buff> ActiveBuffs { get; private set; } = new ObservableRangeCollection<Buff>();
 
-        public event Action<int, Buff> OnBuffAdded;
+        public event Action<uint, Buff> OnBuffAdded;
 
-        public event Action<int, Buff> OnBuffRemoved;
+        public event Action<uint, Buff> OnBuffRemoved;
 
-        public event Action<int, Buff, AttackResult> OnSkillKeep;
+        public event Action<uint, Buff, AttackResult> OnSkillKeep;
 
         /// <summary>
         /// Fired, when new buff added or old deleted.
@@ -1247,7 +1247,7 @@ namespace Imgeneus.World.Game.Buffs
                 _healthManager.RaiseHitpointsChange();
         }
 
-        public event Action<int, IKillable, Skill, AttackResult> OnPeriodicalDamage;
+        public event Action<uint, IKillable, Skill, AttackResult> OnPeriodicalDamage;
 
         private void Buff_OnPeriodicalDamage(Buff buff, AttackResult result)
         {
@@ -1284,14 +1284,14 @@ namespace Imgeneus.World.Game.Buffs
         /// </summary>
         public DateTime LastPontentialDefence { get; private set; }
 
-        private void HealthManager_OnDead(int senderId, IKiller killer)
+        private void HealthManager_OnDead(uint senderId, IKiller killer)
         {
             var buffs = ActiveBuffs.Where(b => b.Skill.ShouldClearAfterDeath).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker, int damage)
+        private void HealthManager_OnGotDamage(uint senderId, IKiller damageMaker, int damage)
         {
             var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenDamage).ToList();
             foreach (var b in buffs)
@@ -1330,7 +1330,7 @@ namespace Imgeneus.World.Game.Buffs
             }
         }
 
-        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        private void MovementManager_OnMove(uint senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             var buffs = ActiveBuffs.Where(b => b.IsCanceledWhenMoving).ToList();
             foreach (var b in buffs)

@@ -16,15 +16,15 @@ namespace Imgeneus.World.Game.Player
 
         private void SendResetStats() => _packetFactory.SendResetStats(GameSession.Client, this);
 
-        private void SendQuestFinished(int npcId, Quest quest, bool success) => _packetFactory.SendQuestFinished(GameSession.Client, npcId, quest.Id, quest, success);
+        private void SendQuestFinished(uint npcId, Quest quest, bool success) => _packetFactory.SendQuestFinished(GameSession.Client, npcId, quest.Id, quest, success);
 
-        public void SendFriendOnline(int friendId, bool isOnline) => _packetFactory.SendFriendOnline(GameSession.Client, friendId, isOnline);
+        public void SendFriendOnline(uint friendId, bool isOnline) => _packetFactory.SendFriendOnline(GameSession.Client, friendId, isOnline);
 
         private void SendQuestCountUpdate(short questId, byte index, byte count) => _packetFactory.SendQuestCountUpdate(GameSession.Client, questId, index, count);
 
-        private void SendAddBuff(int senderId, Buff buff) => _packetFactory.SendAddBuff(GameSession.Client, buff.Id, buff.Skill.SkillId, buff.Skill.SkillLevel, buff.CountDownInSeconds);
+        private void SendAddBuff(uint senderId, Buff buff) => _packetFactory.SendAddBuff(GameSession.Client, buff.Id, buff.Skill.SkillId, buff.Skill.SkillLevel, buff.CountDownInSeconds);
 
-        private void SendRemoveBuff(int senderId, Buff buff) => _packetFactory.SendRemoveBuff(GameSession.Client, buff.Id);
+        private void SendRemoveBuff(uint senderId, Buff buff) => _packetFactory.SendRemoveBuff(GameSession.Client, buff.Id);
 
         private void SendAttackStart() => _packetFactory.SendAttackStart(GameSession.Client);
 
@@ -36,11 +36,11 @@ namespace Imgeneus.World.Game.Player
 
         private void SendTargetRemoveBuff(IKillable target, Buff buff) => _packetFactory.SendTargetRemoveBuff(GameSession.Client, target.Id, buff, target is Mob);
 
-        private void SendDuelResponse(int senderId, DuelResponse response) => _packetFactory.SendDuelResponse(GameSession.Client, response, senderId);
+        private void SendDuelResponse(uint senderId, DuelResponse response) => _packetFactory.SendDuelResponse(GameSession.Client, response, senderId);
 
         private void SendDuelStart() => _packetFactory.SendDuelStart(GameSession.Client);
 
-        private void SendDuelCancel(int senderId, DuelCancelReason reason)
+        private void SendDuelCancel(uint senderId, DuelCancelReason reason)
         {
             if (reason != DuelCancelReason.Other)
                 _packetFactory.SendDuelCancel(GameSession.Client, reason, senderId);
@@ -68,15 +68,15 @@ namespace Imgeneus.World.Game.Player
 
         public void SendResetSkills() => _packetFactory.SendResetSkills(GameSession.Client, SkillsManager.SkillPoints);
 
-        public void SendGuildMemberIsOnline(int playerId) => _packetFactory.SendGuildMemberIsOnline(GameSession.Client, playerId);
+        public void SendGuildMemberIsOnline(uint playerId) => _packetFactory.SendGuildMemberIsOnline(GameSession.Client, playerId);
 
-        public void SendGuildMemberIsOffline(int playerId) => _packetFactory.SendGuildMemberIsOffline(GameSession.Client, playerId);
+        public void SendGuildMemberIsOffline(uint playerId) => _packetFactory.SendGuildMemberIsOffline(GameSession.Client, playerId);
 
         public void SendGuildJoinRequestAdd(Character character) => _packetFactory.SendGuildJoinRequestAdd(GameSession.Client, character);
 
-        public void SendGuildJoinRequestRemove(int playerId) => _packetFactory.SendGuildJoinRequestRemove(GameSession.Client, playerId);
+        public void SendGuildJoinRequestRemove(uint playerId) => _packetFactory.SendGuildJoinRequestRemove(GameSession.Client, playerId);
 
-        public void SendGBRPoints(int currentPoints, int maxPoints, int topGuild) => _packetFactory.SendGBRPoints(GameSession.Client, currentPoints, maxPoints, topGuild);
+        public void SendGBRPoints(int currentPoints, int maxPoints, uint topGuild) => _packetFactory.SendGBRPoints(GameSession.Client, currentPoints, maxPoints, topGuild);
 
         public void SendGRBStartsSoon() => _packetFactory.SendGRBNotice(GameSession.Client, GRBNotice.StartsSoon);
 
@@ -86,7 +86,7 @@ namespace Imgeneus.World.Game.Player
 
         public void SendGRB1MinLeft() => _packetFactory.SendGRBNotice(GameSession.Client, GRBNotice.Min1);
 
-        public void SendGuildRanksCalculated(IEnumerable<(int GuildId, int Points, byte Rank)> results) => _packetFactory.SendGuildRanksCalculated(GameSession.Client, results);
+        public void SendGuildRanksCalculated(IEnumerable<(uint GuildId, int Points, byte Rank)> results) => _packetFactory.SendGuildRanksCalculated(GameSession.Client, results);
 
         public void SendGoldUpdate() => _packetFactory.SendGoldUpdate(GameSession.Client, InventoryManager.Gold);
 

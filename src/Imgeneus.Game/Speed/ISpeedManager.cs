@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Speed
         /// <summary>
         /// Inits speed manager.
         /// </summary>
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         #region Attack
 
@@ -71,10 +71,10 @@ namespace Imgeneus.World.Game.Speed
 
         #region Events
 
-            /// <summary>
-            /// Event, that is fired, when attack or move speed changes.
-            /// </summary>
-        event Action<int, AttackSpeed, MoveSpeed> OnAttackOrMoveChanged;
+        /// <summary>
+        /// Event, that is fired, when attack or move speed changes.
+        /// </summary>
+        event Action<uint, AttackSpeed, MoveSpeed> OnAttackOrMoveChanged;
 
         /// <summary>
         /// Raises <see cref="OnAttackOrMoveChanged"/> event.

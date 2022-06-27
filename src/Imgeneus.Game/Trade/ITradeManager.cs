@@ -7,12 +7,12 @@ namespace Imgeneus.World.Game.Trade
 {
     public interface ITradeManager : ISessionedService
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// With whom player is currently trading.
         /// </summary>
-        int PartnerId { get; set; }
+        uint PartnerId { get; set; }
 
         /// <summary>
         /// Represents currently open trade window.

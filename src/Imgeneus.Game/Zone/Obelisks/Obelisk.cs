@@ -27,7 +27,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
         #region Map member
 
-        public int Id => _config.Id;
+        public uint Id => _config.Id;
 
         public float PosX => _config.PosX;
 
@@ -89,7 +89,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
         /// </summary>
         public Mob ObeliskAI { get; private set; }
 
-        private void ObeliskAI_OnDead(int senderId, IKiller killer)
+        private void ObeliskAI_OnDead(uint senderId, IKiller killer)
         {
             ObeliskAI.HealthManager.OnDead -= ObeliskAI_OnDead;
 
@@ -150,7 +150,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
         private object _syncObjectGuardTimer = new object();
 
-        private void Guard_OnDead(int senderId, IKiller killer)
+        private void Guard_OnDead(uint senderId, IKiller killer)
         {
             var mob = Guards.First(x => x.Id == senderId);
             mob.HealthManager.OnDead -= Guard_OnDead;

@@ -8,13 +8,13 @@ namespace Imgeneus.Network.Packets.Game
 
         public byte Slot { get; private set; }
 
-        public int TargetId { get; private set; }
+        public uint TargetId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
             Bag = packetStream.Read<byte>();
             Slot = packetStream.Read<byte>();
-            TargetId = packetStream.Read<int>();
+            TargetId = packetStream.Read<uint>();
         }
     }
 }

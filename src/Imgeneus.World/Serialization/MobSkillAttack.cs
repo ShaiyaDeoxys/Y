@@ -12,10 +12,10 @@ namespace Imgeneus.World.Serialization
         public AttackSuccess IsSuccess;
 
         [FieldOrder(1)]
-        public int MobId;
+        public uint MobId;
 
         [FieldOrder(2)]
-        public int TargetId;
+        public uint TargetId;
 
         [FieldOrder(3)]
         public byte AttackType = 1; // Unknown.
@@ -29,7 +29,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(6)]
         public ushort[] Damage;
 
-        public MobSkillAttack(int mobId, int targetId, Skill skill, AttackResult attackResult)
+        public MobSkillAttack(uint mobId, uint targetId, Skill skill, AttackResult attackResult)
         {
             IsSuccess = attackResult.Success;
             MobId = mobId;

@@ -6,7 +6,7 @@ namespace Imgeneus.Database.Entities
     [Table("CharacterSavePoint")]
     public class DbCharacterSavePositions
     {
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
 
         public byte Slot { get; set; }
 

@@ -27,7 +27,7 @@ namespace Imgeneus.World.Game.Warehouse
         private readonly IGameWorld _gameWorld;
         private readonly IGamePacketFactory _packetFactory;
         private int _userId;
-        private int _characterId;
+        private uint _characterId;
 
         public WarehouseManager(ILogger<WarehouseManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IGameWorld gameWorld, IGamePacketFactory packetFactory)
         {
@@ -54,7 +54,7 @@ namespace Imgeneus.World.Game.Warehouse
 
         #region Init & Clear
 
-        public void Init(int userId, int characterId, int? guildId, IEnumerable<DbWarehouseItem> items)
+        public void Init(int userId, uint characterId, uint? guildId, IEnumerable<DbWarehouseItem> items)
         {
             _userId = userId;
             _characterId = characterId;
@@ -240,7 +240,7 @@ namespace Imgeneus.World.Game.Warehouse
 
         #region Guild items
 
-        public int? GuildId { get; set; }
+        public uint? GuildId { get; set; }
 
         #endregion
     }

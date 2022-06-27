@@ -18,7 +18,7 @@ namespace Imgeneus.World.Game.Vehicle
         private readonly ISpeedManager _speedManager;
         private readonly IHealthManager _healthManager;
         private readonly IGameWorld _gameWorld;
-        private int _ownerId;
+        private uint _ownerId;
 
         public VehicleManager(ILogger<VehicleManager> logger, IStealthManager stealthManager, ISpeedManager speedManager, IHealthManager healthManager, IGameWorld gameWorld)
         {
@@ -44,7 +44,7 @@ namespace Imgeneus.World.Game.Vehicle
 #endif
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -61,7 +61,7 @@ namespace Imgeneus.World.Game.Vehicle
 
         public int SummoningTime { get; set; }
 
-        public event Action<int> OnStartSummonVehicle;
+        public event Action<uint> OnStartSummonVehicle;
 
         private bool _isSummmoningVehicle;
 
@@ -109,7 +109,7 @@ namespace Imgeneus.World.Game.Vehicle
 
         public Item Mount { get; set; }
 
-        public event Action<int, bool> OnVehicleChange;
+        public event Action<uint, bool> OnVehicleChange;
 
         public event Action<bool, bool> OnUsedVehicle;
 
@@ -149,7 +149,7 @@ namespace Imgeneus.World.Game.Vehicle
             return true;
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker, int damage)
+        private void HealthManager_OnGotDamage(uint senderId, IKiller damageMaker, int damage)
         {
             RemoveVehicle();
         }
@@ -158,13 +158,13 @@ namespace Imgeneus.World.Game.Vehicle
 
         #region Passenger
 
-        public event Action<int, int> OnVehiclePassengerChanged;
+        public event Action<uint, uint> OnVehiclePassengerChanged;
 
-        private int _vehicle2CharacterID;
+        private uint _vehicle2CharacterID;
 
         private Character _vehicleOwner;
 
-        public int Vehicle2CharacterID
+        public uint Vehicle2CharacterID
         {
             get => _vehicle2CharacterID;
             set
@@ -188,7 +188,7 @@ namespace Imgeneus.World.Game.Vehicle
             }
         }
 
-        private void VehicleOwner_OnShapeChange(int senderId, ShapeEnum shape, int param1, int param2)
+        private void VehicleOwner_OnShapeChange(uint senderId, ShapeEnum shape, uint param1, uint param2)
         {
             var sender = _gameWorld.Players[senderId];
             if (!sender.VehicleManager.IsOnVehicle)
@@ -197,7 +197,7 @@ namespace Imgeneus.World.Game.Vehicle
             }
         }
 
-        public int VehicleRequesterID { get; set; }
+        public uint VehicleRequesterID { get; set; }
 
         #endregion
     }

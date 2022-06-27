@@ -49,7 +49,7 @@ namespace Imgeneus.World.Tests.SummonTests
 
             Assert.Equal(character1.PartyManager.Party.SummonRequest, character2.PartyManager.Party.SummonRequest);
             Assert.NotNull(character1.PartyManager.Party.SummonRequest);
-            Assert.Equal(1, character1.PartyManager.Party.SummonRequest.OwnerId);
+            Assert.Equal((uint)1, character1.PartyManager.Party.SummonRequest.OwnerId);
             Assert.True(character1.PartyManager.IsSummoning);
         }
 

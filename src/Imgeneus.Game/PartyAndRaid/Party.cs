@@ -186,24 +186,24 @@ namespace Imgeneus.World.Game.PartyAndRaid
             _packetFactory.SendNewPartyLeader(client, character);
         }
 
-        protected override void SendAddBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        protected override void SendAddBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             _packetFactory.SendAddPartyBuff(client, senderId, skillId, skillLevel);
         }
 
-        protected override void SendRemoveBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        protected override void SendRemoveBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             _packetFactory.SendRemovePartyBuff(client, senderId, skillId, skillLevel);
         }
 
-        protected override void Send_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        protected override void Send_Single_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type)
         {
-            _packetFactory.SendPartySingle_HP_SP_MP(client, id, value, type);
+            _packetFactory.SendPartySingle_HP_SP_MP(client, senderId, value, type);
         }
 
-        protected override void Send_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        protected override void Send_Single_Max_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type)
         {
-            _packetFactory.SendPartySingle_Max_HP_SP_MP(client, id, value, type);
+            _packetFactory.SendPartySingle_Max_HP_SP_MP(client, senderId, value, type);
         }
 
         protected override void Send_HP_SP_MP(IWorldClient client, Character partyMember)
@@ -225,12 +225,12 @@ namespace Imgeneus.World.Game.PartyAndRaid
         {
         }
 
-        private void SendMemberGetItem(IWorldClient client, int characterId, Item item)
+        private void SendMemberGetItem(IWorldClient client, uint characterId, Item item)
         {
             _packetFactory.SendPartyMemberGetItem(client, characterId, item);
         }
 
-        protected override void SendLevel(IWorldClient client, int senderId, ushort level)
+        protected override void SendLevel(IWorldClient client, uint senderId, ushort level)
         {
             _packetFactory.SendPartyLevel(client, senderId, level);
         }

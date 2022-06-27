@@ -32,7 +32,7 @@ namespace Imgeneus.World.Game.Duel
         private readonly Timer _duelRequestTimer = new Timer();
         private readonly Timer _duelStartTimer = new Timer();
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public DuelManager(ILogger<DuelManager> logger, IGameWorld gameWorld, ITradeManager tradeManager, IMovementManager movementManager, IHealthManager healthManager, IKillsManager killsManager, IMapProvider mapProvider, IInventoryManager inventoryManager, ITeleportationManager teleportationManager)
         {
@@ -66,7 +66,7 @@ namespace Imgeneus.World.Game.Duel
 
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -87,8 +87,8 @@ namespace Imgeneus.World.Game.Duel
 
         #region Request duel
 
-        private int _opponentId;
-        public int OpponentId
+        private uint _opponentId;
+        public uint OpponentId
         {
             get => _opponentId;
             set
@@ -108,9 +108,9 @@ namespace Imgeneus.World.Game.Duel
             ProcessResponse(OpponentId, DuelResponse.NoResponse);
         }
 
-        public event Action<int, DuelResponse> OnDuelResponse;
+        public event Action<uint, DuelResponse> OnDuelResponse;
 
-        public void ProcessResponse(int senderId, DuelResponse response)
+        public void ProcessResponse(uint senderId, DuelResponse response)
         {
             _duelRequestTimer.Stop();
 
@@ -168,9 +168,9 @@ namespace Imgeneus.World.Game.Duel
 
         #region Cancel
 
-        public event Action<int, DuelCancelReason> OnCanceled;
+        public event Action<uint, DuelCancelReason> OnCanceled;
 
-        public void Cancel(int senderId, DuelCancelReason reason)
+        public void Cancel(uint senderId, DuelCancelReason reason)
         {
             if (OpponentId == 0)
                 return;
@@ -284,24 +284,24 @@ namespace Imgeneus.World.Game.Duel
 
         #region Helpers
 
-        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort angle, MoveMotion motion)
+        private void MovementManager_OnMove(uint senderId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
             if (MathExtensions.Distance(x, _x, z, _z) >= 45)
                 Cancel(_ownerId, DuelCancelReason.TooFarAway);
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller damageMaker, int damage)
+        private void HealthManager_OnGotDamage(uint senderId, IKiller damageMaker, int damage)
         {
             if (damageMaker is Mob || damageMaker.Id != OpponentId)
                 Cancel(_ownerId, DuelCancelReason.MobAttack);
         }
 
-        private void HealthManager_OnDead(int senderId, IKiller killer)
+        private void HealthManager_OnDead(uint senderId, IKiller killer)
         {
             Lose();
         }
 
-        private void TeleportationManager_OnTeleporting(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
+        private void TeleportationManager_OnTeleporting(uint senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
         {
             if (_mapProvider.Map.Id != mapId|| MathExtensions.Distance(x, _x, z, _z) >= 45)
                 Cancel(_ownerId, DuelCancelReason.TooFarAway);

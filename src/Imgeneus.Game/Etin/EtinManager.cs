@@ -26,7 +26,7 @@ namespace Imgeneus.World.Game.Etin
         }
 #endif
 
-        public async Task<int> GetEtin(int guildId)
+        public async Task<int> GetEtin(uint guildId)
         {
             var guild = await _database.Guilds.AsNoTracking().FirstOrDefaultAsync(x => x.Id == guildId);
             return guild is null ? 0 : guild.Etin;

@@ -52,7 +52,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Thread-safe dictionary of connected players. Key is character id, value is character.
         /// </summary>
-        private readonly ConcurrentDictionary<int, Character> Players = new ConcurrentDictionary<int, Character>();
+        private readonly ConcurrentDictionary<uint, Character> Players = new ConcurrentDictionary<uint, Character>();
 
         /// <summary>
         /// Adds character to map cell.
@@ -125,7 +125,7 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         /// <param name="playerId">id of player, that you are trying to get.</param>
         /// <returns>either player or null if player is not presented</returns>
-        public Character GetPlayer(int playerId)
+        public Character GetPlayer(uint playerId)
         {
             Players.TryGetValue(playerId, out var player);
             return player;
@@ -278,7 +278,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players about position change.
         /// </summary>
-        private void Character_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        private void Character_OnMove(uint senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             // Send other clients notification, that user is moving.
             foreach (var player in GetAllPlayers(true))
@@ -300,7 +300,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="characterId">player, that changed equipment</param>
         /// <param name="equipmentItem">item, that was worn</param>
         /// <param name="slot">item slot</param>
-        private void Character_OnEquipmentChanged(int characterId, Item equipmentItem, byte slot)
+        private void Character_OnEquipmentChanged(uint characterId, Item equipmentItem, byte slot)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendCharacterChangedEquipment(player.GameSession.Client, characterId, equipmentItem, slot);
@@ -327,7 +327,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player changed attack/move speed.
         /// </summary>
-        private void Character_OnAttackOrMoveChanged(int senderId, AttackSpeed attack, MoveSpeed move)
+        private void Character_OnAttackOrMoveChanged(uint senderId, AttackSpeed attack, MoveSpeed move)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendAttackAndMovementSpeed(player.GameSession.Client, senderId, attack, move);
@@ -336,7 +336,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player used skill.
         /// </summary>
-        private void Character_OnUsedSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
+        private void Character_OnUsedSkill(uint senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             if (skill.Type == TypeDetail.Scouting)
             {
@@ -357,7 +357,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player used auto attack.
         /// </summary>
-        private void Character_OnAttack(int senderId, IKillable target, AttackResult attackResult)
+        private void Character_OnAttack(uint senderId, IKillable target, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
@@ -371,7 +371,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player is dead.
         /// </summary>
-        private void Character_OnDead(int senderId, IKiller killer)
+        private void Character_OnDead(uint senderId, IKiller killer)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendCharacterKilled(player.GameSession.Client, senderId, killer);
@@ -388,7 +388,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player starts casting.
         /// </summary>
-        private void Character_OnSkillCastStarted(int senderId, IKillable target, Skill skill)
+        private void Character_OnSkillCastStarted(uint senderId, IKillable target, Skill skill)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendSkillCastStarted(player.GameSession.Client, senderId, target, skill);
@@ -397,55 +397,55 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players, that player used some item.
         /// </summary>
-        private void Character_OnUsedItem(int senderId, Item item)
+        private void Character_OnUsedItem(uint senderId, Item item)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendUsedItem(player.GameSession.Client, senderId, item);
         }
 
-        private void Character_OnRecover(int senderId, int hp, int mp, int sp)
+        private void Character_OnRecover(uint senderId, int hp, int mp, int sp)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendRecoverCharacter(player.GameSession.Client, senderId, hp, mp, sp);
         }
 
-        private void Character_OnMaxHPChanged(int senderId, int value)
+        private void Character_OnMaxHPChanged(uint senderId, int value)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMaxHitpoints(player.GameSession.Client, senderId, HitpointType.HP, value);
         }
 
-        private void Character_OnMaxSPChanged(int senderId, int value)
+        private void Character_OnMaxSPChanged(uint senderId, int value)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMaxHitpoints(player.GameSession.Client, senderId, HitpointType.SP, value);
         }
 
-        private void Character_OnMaxMPChanged(int senderId, int value)
+        private void Character_OnMaxMPChanged(uint senderId, int value)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMaxHitpoints(player.GameSession.Client, senderId, HitpointType.MP, value);
         }
 
-        private void Character_OnMirrowDamage(int senderId, int targetId, Damage damage)
+        private void Character_OnMirrowDamage(uint senderId, uint targetId, Damage damage)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendCharacterMirrorDamage(player.GameSession.Client, senderId, targetId, damage);
         }
 
-        private void Character_OnSkillKeep(int senderId, Buff buff, AttackResult result)
+        private void Character_OnSkillKeep(uint senderId, Buff buff, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendSkillKeep(player.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel, result);
         }
 
-        private void Character_OnPeriodicalDamage(int senderId, IKillable target, Skill skill, AttackResult result)
+        private void Character_OnPeriodicalDamage(uint senderId, IKillable target, Skill skill, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendUsedRangeSkill(player.GameSession.Client, senderId, target, skill, result);
         }
 
-        private void Character_OnShapeChange(int senderId, ShapeEnum shape, int param1, int param2)
+        private void Character_OnShapeChange(uint senderId, ShapeEnum shape, uint param1, uint param2)
         {
             foreach (var player in GetAllPlayers(true))
             {
@@ -459,7 +459,7 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Character_OnUsedRangeSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
+        private void Character_OnUsedRangeSkill(uint senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
@@ -470,7 +470,7 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Character_OnRebirthed(int senderId)
+        private void Character_OnRebirthed(uint senderId)
         {
             foreach (var player in GetAllPlayers(true))
             {
@@ -479,13 +479,13 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Character_OnAppearanceChanged(int characterId, byte hair, byte face, byte size, byte gender)
+        private void Character_OnAppearanceChanged(uint characterId, byte hair, byte face, byte size, byte gender)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendAppearanceChanged(player.GameSession.Client, characterId, hair, face, size, gender);
         }
 
-        private void Character_OnStartSummonVehicle(int senderId)
+        private void Character_OnStartSummonVehicle(uint senderId)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendStartSummoningVehicle(player.GameSession.Client, senderId);
@@ -494,7 +494,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that player levelled up
         /// </summary>
-        private void Character_OnLevelUp(int senderId, ushort level, ushort oldLevel)
+        private void Character_OnLevelUp(uint senderId, ushort level, ushort oldLevel)
         {
             var sender = Players[senderId];
 
@@ -506,7 +506,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that 2 character now move together on 1 vehicle.
         /// </summary>
-        private void Character_OnVehiclePassengerChanged(int senderId, int vehicle2CharacterID)
+        private void Character_OnVehiclePassengerChanged(uint senderId, uint vehicle2CharacterID)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendVehiclePassengerChanged(player.GameSession.Client, senderId, vehicle2CharacterID);
@@ -515,7 +515,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Teleports player to new position.
         /// </summary>
-        private void Character_OnTeleport(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
+        private void Character_OnTeleport(uint senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
         {
             foreach (var p in GetAllPlayers(true))
                 if (!summonedByAdmin)
@@ -527,7 +527,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that character started casting some item.
         /// </summary>
-        private void Character_OnItemCasting(int senderId)
+        private void Character_OnItemCasting(uint senderId)
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendItemCasting(p.GameSession.Client, senderId);
@@ -536,7 +536,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that character started shop.
         /// </summary>
-        private void Character_OnShopStarted(int senderId, string shopName)
+        private void Character_OnShopStarted(uint senderId, string shopName)
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendMyShopStarted(p.GameSession.Client, senderId, shopName);
@@ -545,19 +545,19 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Notifies other players that character closed shop.
         /// </summary>
-        private void Character_OnShopFinished(int senderId)
+        private void Character_OnShopFinished(uint senderId)
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendMyShopFinished(p.GameSession.Client, senderId);
         }
 
-        private void Character_OnTranformated(int senderId, bool isTransformed)
+        private void Character_OnTranformated(uint senderId, bool isTransformed)
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendTransformation(p.GameSession.Client, senderId, isTransformed);
         }
 
-        private void Character_OnNameChange(int senderId)
+        private void Character_OnNameChange(uint senderId)
         {
             var player = Map.GameWorld.Players[senderId];
 
@@ -574,7 +574,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Thread-safe dictionary of monsters loaded to this map. Where key id mob id.
         /// </summary>
-        private readonly ConcurrentDictionary<int, Mob> Mobs = new ConcurrentDictionary<int, Mob>();
+        private readonly ConcurrentDictionary<uint, Mob> Mobs = new ConcurrentDictionary<uint, Mob>();
 
         /// <summary>
         /// Adds mob to cell.
@@ -607,7 +607,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="mobId">id of mob, that you are trying to get.</param>
         /// <param name="includeNeighborCells">search also in neighbor cells</param>
         /// <returns>either mob or null if mob is not presented</returns>
-        public Mob GetMob(int mobId, bool includeNeighborCells)
+        public Mob GetMob(uint mobId, bool includeNeighborCells)
         {
             Mob mob;
             Mobs.TryGetValue(mobId, out mob);
@@ -687,7 +687,7 @@ namespace Imgeneus.World.Game.Zone
             mob.TimeToRebirth -= RebirthMob;
         }
 
-        private async void Mob_OnDead(int senderId, IKiller killer)
+        private async void Mob_OnDead(uint senderId, IKiller killer)
         {
             Mobs.TryRemove(senderId, out var mob);
             if (mob is null)
@@ -747,13 +747,13 @@ namespace Imgeneus.World.Game.Zone
 #endif
         }
 
-        private void Mob_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        private void Mob_OnMove(uint senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMobMove(player.GameSession.Client, senderId, x, z, motion);
         }
 
-        private void Mob_OnAttack(int senderId, IKillable target, AttackResult attackResult)
+        private void Mob_OnAttack(uint senderId, IKillable target, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
@@ -764,7 +764,7 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Mob_OnUsedSkill(int senderId, IKillable target, Skill skill, AttackResult attackResult)
+        private void Mob_OnUsedSkill(uint senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             foreach (var player in GetAllPlayers(true))
             {
@@ -775,19 +775,19 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
-        private void Mob_OnRecover(int senderId, int hp, int mp, int sp)
+        private void Mob_OnRecover(uint senderId, int hp, int mp, int sp)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMobRecover(player.GameSession.Client, senderId, hp);
         }
 
-        private void Mob_OnSkillKeep(int senderId, Buff buff, AttackResult result)
+        private void Mob_OnSkillKeep(uint senderId, Buff buff, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMobSkillKeep(player.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel, result);
         }
 
-        private void Mob_OnMirrowDamage(int senderId, int targetId, Damage damage)
+        private void Mob_OnMirrowDamage(uint senderId, uint targetId, Damage damage)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMobMirrorDamage(player.GameSession.Client, senderId, targetId, damage);
@@ -800,7 +800,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Thread-safe dictionary of npcs. Key is npc id, value is npc.
         /// </summary>
-        private readonly ConcurrentDictionary<int, Npc> NPCs = new ConcurrentDictionary<int, Npc>();
+        private readonly ConcurrentDictionary<uint, Npc> NPCs = new ConcurrentDictionary<uint, Npc>();
 
         /// <summary>
         /// Adds npc to cell.
@@ -861,7 +861,7 @@ namespace Imgeneus.World.Game.Zone
         /// Gets NPC by id.
         /// </summary>
         /// <param name="includeNeighborCells">search also in neighbor cells</param>
-        public Npc GetNPC(int id, bool includeNeighborCells)
+        public Npc GetNPC(uint id, bool includeNeighborCells)
         {
             Npc npc;
             NPCs.TryGetValue(id, out npc);
@@ -889,13 +889,13 @@ namespace Imgeneus.World.Game.Zone
             return myNPCs;
         }
 
-        private void Npc_OnMove(int senderId, float x, float y, float z, ushort angle, MoveMotion motion)
+        private void Npc_OnMove(uint senderId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendNpcMove(player.GameSession.Client, senderId, x, y, z, motion);
         }
 
-        private void Npc_OnAttack(int senderId, IKillable target, AttackResult result)
+        private void Npc_OnAttack(uint senderId, IKillable target, AttackResult result)
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendNpcAttack(player.GameSession.Client, senderId, target, result);
@@ -908,7 +908,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Dropped items.
         /// </summary>
-        private readonly ConcurrentDictionary<int, MapItem> Items = new ConcurrentDictionary<int, MapItem>();
+        private readonly ConcurrentDictionary<uint, MapItem> Items = new ConcurrentDictionary<uint, MapItem>();
 
         /// <summary>
         /// Adds item on map cell.
@@ -928,7 +928,7 @@ namespace Imgeneus.World.Game.Zone
         /// Tries to get item from map cell.
         /// </summary>
         /// <returns>if item is null, means that item doesn't belong to player yet</returns>
-        public MapItem GetItem(int itemId, Character requester, bool includeNeighborCells)
+        public MapItem GetItem(uint itemId, Character requester, bool includeNeighborCells)
         {
             MapItem mapItem;
             if (Items.TryGetValue(itemId, out mapItem))
@@ -976,7 +976,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Removes item from map.
         /// </summary>
-        public MapItem RemoveItem(int itemId)
+        public MapItem RemoveItem(uint itemId)
         {
             if (Items.TryRemove(itemId, out var mapItem))
             {

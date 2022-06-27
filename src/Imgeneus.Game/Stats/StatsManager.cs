@@ -17,7 +17,7 @@ namespace Imgeneus.World.Game.Stats
         private readonly ILevelProvider _levelProvider;
         private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly ICharacterConfiguration _characterConfig;
-        private int _ownerId;
+        private uint _ownerId;
 
         public StatsManager(ILogger<StatsManager> logger, IDatabase database, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, ICharacterConfiguration charactedConfig)
         {
@@ -43,7 +43,7 @@ namespace Imgeneus.World.Game.Stats
 
         #region Init & Clear
 
-        public void Init(int ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0, byte autoStr = 0, byte autoDex = 0, byte autoRec = 0, byte autoInt = 0, byte autoWis = 0, byte autoLuc = 0)
+        public void Init(uint ownerId, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc, ushort statPoints = 0, CharacterProfession? profession = null, ushort def = 0, ushort res = 0, byte autoStr = 0, byte autoDex = 0, byte autoRec = 0, byte autoInt = 0, byte autoWis = 0, byte autoLuc = 0)
         {
             _ownerId = ownerId;
 
@@ -619,7 +619,7 @@ namespace Imgeneus.World.Game.Stats
             return true;
         }
 
-        private void OnLevelUp(int senderId, ushort level, ushort oldLevel)
+        private void OnLevelUp(uint senderId, ushort level, ushort oldLevel)
         {
             var levelDifference = level - oldLevel;
 

@@ -10,7 +10,7 @@ namespace Imgeneus.World.Serialization
     public class PartyMember : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId;
+        public uint CharacterId;
 
         [FieldOrder(1), FieldLength(21)]
         public string Name;

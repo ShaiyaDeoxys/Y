@@ -8,7 +8,7 @@ namespace Imgeneus.World.Serialization
     public class GuildJoinUserUnit : BaseSerializable
     {
         [FieldOrder(0)]
-        public int Id { get; }
+        public uint Id { get; }
 
         [FieldOrder(1)]
         public ushort Level { get; }

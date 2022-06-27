@@ -35,6 +35,6 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="config">size, mobs, npcs etc.</param>
         /// <param name="guildId">guild id</param>
         /// <returns>map instance</returns>
-        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, int guildId);
+        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, uint guildId);
     }
 }

@@ -8,7 +8,7 @@ namespace Imgeneus.World.Serialization
     public class MaxHitpoint : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId;
+        public uint CharacterId;
 
         [FieldOrder(1)]
         public HitpointType HitpointType;
@@ -16,7 +16,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(2)]
         public int Value;
 
-        public MaxHitpoint(int characterId, HitpointType hitpointType, int value)
+        public MaxHitpoint(uint characterId, HitpointType hitpointType, int value)
         {
             CharacterId = characterId;
             HitpointType = hitpointType;

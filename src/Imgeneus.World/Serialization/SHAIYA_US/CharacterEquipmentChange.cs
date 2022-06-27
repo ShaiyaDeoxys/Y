@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
     public class CharacterEquipmentChange : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId;
+        public uint CharacterId;
 
         [FieldOrder(1)]
         public byte Slot;
@@ -27,7 +27,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
         [FieldOrder(6)]
         public DyeColorSerialized DyeColor;
 
-        public CharacterEquipmentChange(int characterId, byte slot, Item item)
+        public CharacterEquipmentChange(uint characterId, byte slot, Item item)
         {
             CharacterId = characterId;
             Slot = slot;

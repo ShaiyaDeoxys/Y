@@ -5,6 +5,6 @@
         /// <summary>
         /// Id of guild for which map was created.
         /// </summary>
-        public int GuildId { get; }
+        public uint GuildId { get; }
     }
 }

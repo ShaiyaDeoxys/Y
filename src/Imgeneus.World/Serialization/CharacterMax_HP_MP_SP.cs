@@ -5,7 +5,7 @@ namespace Imgeneus.World.Serialization
 {
     public class CharacterMax_HP_MP_SP : BaseSerializable
     {
-        public int CharacterId { get; }
+        public uint CharacterId { get; }
         public int MaxHP { get; }
         public int MaxMP { get; }
         public int MaxSP { get; }

@@ -10,7 +10,7 @@ namespace Imgeneus.World.Game.Health
     /// </summary>
     public interface IHealthManager : ISessionedService, IDisposable
     {
-        void Init(int ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null);
+        void Init(uint ownerId, int currentHP, int currentSP, int currentMP, int? constHP = null, int? constSP = null, int? constMP = null);
 
         /// <summary>
         /// Max health.
@@ -30,17 +30,17 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Event, that is fired, when max hp changes.
         /// </summary>
-        event Action<int, int> OnMaxHPChanged;
+        event Action<uint, int> OnMaxHPChanged;
 
         /// <summary>
         /// Event, that is fired, when max sp changes.
         /// </summary>
-        event Action<int, int> OnMaxSPChanged;
+        event Action<uint, int> OnMaxSPChanged;
 
         /// <summary>
         /// Event, that is fired, when max mp changes.
         /// </summary>
-        event Action<int, int> OnMaxMPChanged;
+        event Action<uint, int> OnMaxMPChanged;
 
         /// <summary>
         /// Health points based on level.
@@ -90,7 +90,7 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Fires event, when there is some damage got from some killer.
         /// </summary>
-        event Action<int, IKiller, int> OnGotDamage;
+        event Action<uint, IKiller, int> OnGotDamage;
 
         /// <summary>
         /// IKiller, that made max damage.
@@ -128,12 +128,12 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Event, that is fired, when entity is killed.
         /// </summary>
-        event Action<int, IKiller> OnDead;
+        event Action<uint, IKiller> OnDead;
 
         /// <summary>
         /// Event, that is fired, when killable is resurrected.
         /// </summary>
-        event Action<int> OnRebirthed;
+        event Action<uint> OnRebirthed;
 
         /// <summary>
         /// Resurrects killable.
@@ -153,17 +153,17 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Event, that is fired, when hp changes.
         /// </summary>
-        event Action<int, HitpointArgs> HP_Changed;
+        event Action<uint, HitpointArgs> HP_Changed;
 
         /// <summary>
         /// Event, that is fired, when mp changes.
         /// </summary>
-        event Action<int, HitpointArgs> MP_Changed;
+        event Action<uint, HitpointArgs> MP_Changed;
 
         /// <summary>
         /// Event, that is fired, when sp changes.
         /// </summary>
-        event Action<int, HitpointArgs> SP_Changed;
+        event Action<uint, HitpointArgs> SP_Changed;
 
         /// <summary>
         /// Event, that is fired, when player used any skill and both MP and SP changed.
@@ -178,7 +178,7 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Event, that is fired, when killable recovers.
         /// </summary>
-        event Action<int, int, int, int> OnRecover;
+        event Action<uint, int, int, int> OnRecover;
 
         /// <summary>
         /// Raises all 3 hitpoints change.
@@ -208,7 +208,7 @@ namespace Imgeneus.World.Game.Health
         /// <summary>
         /// Event, that is fired when mirror damage comes.
         /// </summary>
-        event Action<int, int, Damage> OnMirrowDamage;
+        event Action<uint, uint, Damage> OnMirrowDamage;
 
         /// <summary>
         /// Use MP before HP.

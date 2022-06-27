@@ -11,7 +11,7 @@ namespace Imgeneus.World.Game.Zone
     /// </summary>
     public class MapItem : IMapMember, IDisposable
     {
-        public int Id { get; set; }
+        public uint Id { get; set; }
 
         public float PosX { get; set; }
 

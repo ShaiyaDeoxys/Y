@@ -20,7 +20,7 @@ namespace Imgeneus.Game.Skills
         private readonly IBuffsManager _buffsManager;
         private readonly IGameWorld _gameWorld;
         private readonly ICastProtectionManager _castProtectionManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public SkillCastingManager(ILogger<SkillCastingManager> logger, IMovementManager movementManager, ITeleportationManager teleportationManager, IHealthManager healthManager, ISkillsManager skillsManager, IBuffsManager buffsManager, IGameWorld gameWorld, ICastProtectionManager castProtectionManager)
         {
@@ -53,7 +53,7 @@ namespace Imgeneus.Game.Skills
 
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -84,7 +84,7 @@ namespace Imgeneus.Game.Skills
         /// <summary>
         /// Event, that is fired, when user starts casting.
         /// </summary>
-        public event Action<int, IKillable, Skill> OnSkillCastStarted;
+        public event Action<uint, IKillable, Skill> OnSkillCastStarted;
 
         public void StartCasting(Skill skill, IKillable target)
         {
@@ -111,17 +111,17 @@ namespace Imgeneus.Game.Skills
             _targetInCast = null;
         }
 
-        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        private void MovementManager_OnMove(uint senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             CancelCasting();
         }
 
-        private void TeleportationManager_OnTeleporting(int senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
+        private void TeleportationManager_OnTeleporting(uint senderId, ushort mapId, float x, float y, float z, bool teleportedByAdmin, bool summonedByAdmin)
         {
             CancelCasting();
         }
 
-        private void HealthManager_OnGotDamage(int senderId, IKiller gamageMaker, int damage)
+        private void HealthManager_OnGotDamage(uint senderId, IKiller gamageMaker, int damage)
         {
             if (_castProtectionManager.IsCastProtected)
                 return;
@@ -129,7 +129,7 @@ namespace Imgeneus.Game.Skills
             CancelCasting();
         }
 
-        private void BuffsManager_OnBuffAdded(int senderId, Buff buff)
+        private void BuffsManager_OnBuffAdded(uint senderId, Buff buff)
         {
             if (_castProtectionManager.IsCastProtected)
                 return;

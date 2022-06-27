@@ -18,7 +18,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             var killer1 = CreateCharacter();
             var killer2 = CreateCharacter();
             IKiller finalKiller = null;
-            characterToKill.HealthManager.OnDead += (int senderId, IKiller killer) =>
+            characterToKill.HealthManager.OnDead += (uint senderId, IKiller killer) =>
             {
                 finalKiller = killer;
             };

@@ -18,7 +18,7 @@ namespace Imgeneus.World.Game.Attack
         /// <summary>
         /// Inits attack manager.
         /// </summary>
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// If this set to true, attack will always success. Used mainly in tests.
@@ -72,7 +72,7 @@ namespace Imgeneus.World.Game.Attack
         /// <summary>
         /// Event, that is fired, when melee attack.
         /// </summary>
-        event Action<int, IKillable, AttackResult> OnAttack;
+        event Action<uint, IKillable, AttackResult> OnAttack;
 
         /// <summary>
         /// Calculates attack result based on skill type and target.

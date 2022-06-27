@@ -8,7 +8,7 @@ namespace Imgeneus.World.Serialization
     public class GuildUnit : BaseSerializable
     {
         [FieldOrder(0)]
-        public int Id;
+        public uint Id;
 
         [FieldOrder(1), FieldLength(25)]
         public string Name;

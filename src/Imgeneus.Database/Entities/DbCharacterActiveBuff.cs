@@ -9,7 +9,7 @@ namespace Imgeneus.Database.Entities
         /// <summary>
         /// Character id.
         /// </summary>
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
 
         /// <summary>
         /// Skill id.

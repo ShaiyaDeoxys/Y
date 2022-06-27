@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Teleport
 {
     public interface ITeleportationManager : ISessionedService, IDisposable
     {
-        void Init(int ownerId, IEnumerable<DbCharacterSavePositions> savedPositions);
+        void Init(uint ownerId, IEnumerable<DbCharacterSavePositions> savedPositions);
 
         /// <summary>
         /// Indicator if character is teleporting between maps.
@@ -19,7 +19,7 @@ namespace Imgeneus.World.Game.Teleport
         /// <summary>
         /// Fires event, that teleports player.
         /// </summary>
-        event Action<int, ushort, float, float, float, bool, bool> OnTeleporting;
+        event Action<uint, ushort, float, float, float, bool, bool> OnTeleporting;
 
         /// <summary>
         /// Teleports character inside one map or to another map.
@@ -39,7 +39,7 @@ namespace Imgeneus.World.Game.Teleport
         /// <summary>
         /// Fires event, when player starts casting teleport.
         /// </summary>
-        event Action<int> OnCastingTeleport;
+        event Action<uint> OnCastingTeleport;
 
         /// <summary>
         /// Fires event, when player finished casting teleport.

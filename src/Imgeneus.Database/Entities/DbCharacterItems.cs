@@ -78,7 +78,7 @@ namespace Imgeneus.Database.Entities
         /// <summary>
         /// Gets or sets the character Id associated to this item.
         /// </summary>
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
 
         /// <summary>
         /// Gets or sets the character associated to this item.

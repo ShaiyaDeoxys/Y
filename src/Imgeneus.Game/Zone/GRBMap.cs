@@ -15,13 +15,13 @@ namespace Imgeneus.World.Game.Zone
 {
     public class GRBMap : GuildMap, IGRBMap
     {
-        public GRBMap(int guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, Svmap config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+        public GRBMap(uint guildId, IGuildRankingManager guildRankingManager, ushort id, MapDefinition definition, Svmap config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
             : base(guildId, guildRankingManager, id, definition, config, logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
         {
             _guildRankingManager.OnPointsChanged += GuildRankingManager_OnPointsChanged;
         }
 
-        private void GuildRankingManager_OnPointsChanged(int guildId, int points)
+        private void GuildRankingManager_OnPointsChanged(uint guildId, int points)
         {
             var topGuild = _guildRankingManager.GetTopGuild();
             var topGuildPoints = _guildRankingManager.GetGuildPoints(topGuild);

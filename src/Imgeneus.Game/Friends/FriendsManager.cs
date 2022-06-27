@@ -15,7 +15,7 @@ namespace Imgeneus.World.Game.Friends
         private readonly IDatabase _database;
         private readonly IGameWorld _gameWorld;
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public FriendsManager(ILogger<FriendsManager> logger, IDatabase database, IGameWorld gameWorld)
         {
@@ -36,7 +36,7 @@ namespace Imgeneus.World.Game.Friends
 
         #region Init & Clear
 
-        public void Init(int ownerId, IEnumerable<DbCharacter> friends)
+        public void Init(uint ownerId, IEnumerable<DbCharacter> friends)
         {
             _ownerId = ownerId;
 
@@ -75,7 +75,7 @@ namespace Imgeneus.World.Game.Friends
 
         #endregion
 
-        public ConcurrentDictionary<int, Friend> Friends { get; init; } = new ConcurrentDictionary<int, Friend>();
+        public ConcurrentDictionary<uint, Friend> Friends { get; init; } = new ConcurrentDictionary<uint, Friend>();
 
         public Character LastRequester { get; set; }
 
@@ -90,7 +90,7 @@ namespace Imgeneus.World.Game.Friends
             return friend;
         }
 
-        public async Task<Friend> DeleteFriend(int id)
+        public async Task<Friend> DeleteFriend(uint id)
         {
             var dbFriend = _database.Friends.FirstOrDefault(x => x.CharacterId == _ownerId && x.FriendId == id);
             if (dbFriend is not null)

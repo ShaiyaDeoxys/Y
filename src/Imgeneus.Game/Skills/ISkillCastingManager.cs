@@ -5,7 +5,7 @@ namespace Imgeneus.Game.Skills
 {
     public interface ISkillCastingManager : IDisposable
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// Starts casting.
@@ -23,6 +23,6 @@ namespace Imgeneus.Game.Skills
         /// <summary>
         /// Event, that is fired, when user starts casting.
         /// </summary>
-        event Action<int, IKillable, Skill> OnSkillCastStarted;
+        event Action<uint, IKillable, Skill> OnSkillCastStarted;
     }
 }

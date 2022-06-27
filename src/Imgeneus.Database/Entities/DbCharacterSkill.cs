@@ -5,7 +5,7 @@ namespace Imgeneus.Database.Entities
     [Table("CharacterSkill")]
     public class DbCharacterSkill
     {
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
         public ushort SkillId { get; set; }
         public byte SkillLevel { get; set; }
 

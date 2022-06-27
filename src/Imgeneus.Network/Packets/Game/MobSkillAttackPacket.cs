@@ -6,12 +6,12 @@ namespace Imgeneus.Network.Packets.Game
     {
         public byte Number { get; private set; }
 
-        public int TargetId { get; private set; }
+        public uint TargetId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
             Number = packetStream.Read<byte>();
-            TargetId = packetStream.Read<int>();
+            TargetId = packetStream.Read<uint>();
         }
     }
 }

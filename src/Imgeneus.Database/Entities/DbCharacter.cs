@@ -300,7 +300,7 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public ICollection<DbCharacterSavePositions> SavedPositions { get; set; }
 
-        public int? GuildId { get; set; }
+        public uint? GuildId { get; set; }
 
         /// <summary>
         /// Character guild.

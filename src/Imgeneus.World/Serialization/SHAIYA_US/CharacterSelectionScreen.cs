@@ -11,7 +11,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
     public class CharacterSelectionScreen : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId;
+        public uint CharacterId;
 
         [FieldOrder(1)]
         public int Unknown; // possibly date of creation

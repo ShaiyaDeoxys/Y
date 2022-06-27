@@ -8,7 +8,7 @@ namespace Imgeneus.World.Game.Country
     {
         private readonly ILogger<CountryProvider> _logger;
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public CountryProvider(ILogger<CountryProvider> logger)
         {
@@ -26,7 +26,7 @@ namespace Imgeneus.World.Game.Country
 #endif
         public CountryType Country { get; private set; }
 
-        public void Init(int ownerId, Fraction country)
+        public void Init(uint ownerId, Fraction country)
         {
             _ownerId = ownerId;
 
@@ -46,7 +46,7 @@ namespace Imgeneus.World.Game.Country
             }
         }
 
-        public void Init(int ownerId, MobFraction country)
+        public void Init(uint ownerId, MobFraction country)
         {
             _ownerId = ownerId;
 

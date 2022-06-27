@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class CharacterMove : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharId { get; }
+        public uint CharId { get; }
 
         [FieldOrder(1)]
         public MoveMotion Motion { get; }
@@ -24,7 +24,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(5)]
         public float PosZ { get; }
 
-        public CharacterMove(int characterId, float x, float y, float z, ushort a, MoveMotion motion)
+        public CharacterMove(uint characterId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             CharId = characterId;
             Motion = motion;

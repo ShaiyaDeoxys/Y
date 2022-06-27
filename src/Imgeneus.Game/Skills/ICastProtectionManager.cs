@@ -4,7 +4,7 @@ namespace Imgeneus.Game.Skills
 {
     public interface ICastProtectionManager : IDisposable
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// Casting can not be interrupted by debuff or damage.

@@ -1,5 +1,4 @@
-﻿using Imgeneus.Database;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 
 namespace Imgeneus.World.Game.Movement
@@ -8,7 +7,7 @@ namespace Imgeneus.World.Game.Movement
     {
         private readonly ILogger<MovementManager> _logger;
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public MovementManager(ILogger<MovementManager> logger)
         {
@@ -27,7 +26,7 @@ namespace Imgeneus.World.Game.Movement
 
         #region Init & Clear
 
-        public void Init(int ownerId, float x, float y, float z, ushort angle, MoveMotion motion)
+        public void Init(uint ownerId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
             _ownerId = ownerId;
 
@@ -50,7 +49,7 @@ namespace Imgeneus.World.Game.Movement
 
         public MoveMotion MoveMotion { get; set; }
 
-        public event Action<int, float, float, float, ushort, MoveMotion> OnMove;
+        public event Action<uint, float, float, float, ushort, MoveMotion> OnMove;
 
         public void RaisePositionChanged()
         {

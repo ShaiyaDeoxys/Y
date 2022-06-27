@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Speed
     public class SpeedManager : ISpeedManager
     {
         private readonly ILogger<SpeedManager> _logger;
-        protected int _ownerId;
+        protected uint _ownerId;
 
         public SpeedManager(ILogger<SpeedManager> logger)
         {
@@ -28,7 +28,7 @@ namespace Imgeneus.World.Game.Speed
 
         #region Init
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -109,7 +109,7 @@ namespace Imgeneus.World.Game.Speed
 
         #region Evenets
 
-        public event Action<int, AttackSpeed, MoveSpeed> OnAttackOrMoveChanged;
+        public event Action<uint, AttackSpeed, MoveSpeed> OnAttackOrMoveChanged;
         public event Action<byte, byte, bool> OnPassiveModificatorChanged;
 
         public void RaiseMoveAndAttackSpeed()

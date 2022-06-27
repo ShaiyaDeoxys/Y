@@ -14,11 +14,11 @@ namespace Imgeneus.World.Game.Trade
         /// <summary>
         /// Items, that are currently in trade window.
         /// </summary>
-        public ConcurrentDictionary<(int CharacterId, byte Slot), Item> TradeItems { get; init; } = new ConcurrentDictionary<(int CharacterId, byte Slot), Item>();
+        public ConcurrentDictionary<(uint CharacterId, byte Slot), Item> TradeItems { get; init; } = new ConcurrentDictionary<(uint CharacterId, byte Slot), Item>();
 
         /// <summary>
         /// Money in trade window.
         /// </summary>
-        public ConcurrentDictionary<int, uint> TradeMoney { get; init; } = new ConcurrentDictionary<int, uint>();
+        public ConcurrentDictionary<uint, uint> TradeMoney { get; init; } = new ConcurrentDictionary<uint, uint>();
     }
 }

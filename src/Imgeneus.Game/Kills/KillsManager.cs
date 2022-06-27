@@ -8,7 +8,7 @@ namespace Imgeneus.World.Game.Kills
     {
         private readonly ILogger<KillsManager> _logger;
         private readonly IDatabase _database;
-        private int _ownerId;
+        private uint _ownerId;
 
         public KillsManager(ILogger<KillsManager> logger, IDatabase database)
         {
@@ -29,7 +29,7 @@ namespace Imgeneus.World.Game.Kills
 
         #region Init & Clear
 
-        public void Init(int ownerId, ushort kills = 0, ushort deaths = 0, ushort victories = 0, ushort defeats = 0)
+        public void Init(uint ownerId, ushort kills = 0, ushort deaths = 0, ushort victories = 0, ushort defeats = 0)
         {
             _ownerId = ownerId;
 

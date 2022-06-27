@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class MobEnter : BaseSerializable
     {
         [FieldOrder(0)]
-        public int GlobalId { get; }
+        public uint GlobalId { get; }
 
         [FieldOrder(1)]
         public bool IsNew { get; }

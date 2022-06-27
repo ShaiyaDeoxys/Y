@@ -14,7 +14,7 @@ namespace Imgeneus.World.Game.Buffs
         /// <summary>
         /// Inits buffs from database.
         /// </summary>
-        void Init(int ownerId, IEnumerable<DbCharacterActiveBuff> initBuffs = null);
+        void Init(uint ownerId, IEnumerable<DbCharacterActiveBuff> initBuffs = null);
 
         #region Active buffs
 
@@ -27,22 +27,22 @@ namespace Imgeneus.World.Game.Buffs
         /// <summary>
         /// Event, that is fired, when buff is added.
         /// </summary>
-        event Action<int, Buff> OnBuffAdded;
+        event Action<uint, Buff> OnBuffAdded;
 
         /// <summary>
         /// Event, that is fired, when buff is removed.
         /// </summary>
-        event Action<int, Buff> OnBuffRemoved;
+        event Action<uint, Buff> OnBuffRemoved;
 
         /// <summary>
         /// Skill or buff that is called peridically, e.g. periodical healing.
         /// </summary>
-        event Action<int, Buff, AttackResult> OnSkillKeep;
+        event Action<uint, Buff, AttackResult> OnSkillKeep;
 
         /// <summary>
         /// Buff, that makes damage within X meters.
         /// </summary>
-        event Action<int, IKillable, Skill, AttackResult> OnPeriodicalDamage;
+        event Action<uint, IKillable, Skill, AttackResult> OnPeriodicalDamage;
 
         /// <summary>
         /// Updates collection of buffs.

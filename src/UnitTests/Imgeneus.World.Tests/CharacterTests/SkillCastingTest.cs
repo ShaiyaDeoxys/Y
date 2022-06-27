@@ -20,7 +20,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
             var character2 = CreateCharacter(country: Fraction.Dark);
             var skillWasCasted = false;
 
-            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
+            character1.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
 
             character1.SkillCastingManager.StartCasting(new Skill(MagicRoots_Lvl1, 0, 0), character2);
             Assert.NotNull(character1.SkillCastingManager.SkillInCast);
@@ -46,7 +46,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
 
             var skillWasCasted = false;
 
-            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
+            character1.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
 
             character1.SkillCastingManager.StartCasting(new Skill(MagicRoots_Lvl1, 0, 0), character2);
             Assert.NotNull(character1.SkillCastingManager.SkillInCast);
@@ -71,7 +71,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
             character2.HealthManager.FullRecover();
 
             var skillWasCasted = false;
-            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
+            character1.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
 
             character1.SkillCastingManager.StartCasting(new Skill(MagicRoots_Lvl1, 0, 0), character2);
 
@@ -107,7 +107,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
             Assert.True(character1.CastProtectionManager.IsCastProtected);
 
             var skillWasCasted = false;
-            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
+            character1.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult res) => skillWasCasted = true;
             character1.SkillCastingManager.StartCasting(new Skill(MagicRoots_Lvl1, 0, 0), character2);
 
             character2.AttackManager.Target = character1;

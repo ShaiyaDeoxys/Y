@@ -11,7 +11,7 @@ namespace Imgeneus.World.Game.Shape
         private readonly ILogger<ShapeManager> _logger;
         private readonly IStealthManager _stealthManager;
         private readonly IVehicleManager _vehicleManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public ShapeManager(ILogger<ShapeManager> logger, IStealthManager stealthManager, IVehicleManager vehicleManager)
         {
@@ -35,7 +35,7 @@ namespace Imgeneus.World.Game.Shape
 #endif
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -48,7 +48,7 @@ namespace Imgeneus.World.Game.Shape
 
         #endregion
 
-        public event Action<int, ShapeEnum, int, int> OnShapeChange;
+        public event Action<uint, ShapeEnum, uint, uint> OnShapeChange;
 
         public ShapeEnum Shape
         {
@@ -78,16 +78,16 @@ namespace Imgeneus.World.Game.Shape
             }
         }
 
-        private void StealthManager_OnStealthChange(int senderId)
+        private void StealthManager_OnStealthChange(uint senderId)
         {
             OnShapeChange?.Invoke(_ownerId, Shape, 0, 0);
         }
 
-        private void VehicleManager_OnVehicleChange(int senderId, bool isOnVehicle)
+        private void VehicleManager_OnVehicleChange(uint senderId, bool isOnVehicle)
         {
             var param1 = _vehicleManager.Mount is null ? 0 : _vehicleManager.Mount.Type;
             var param2 = _vehicleManager.Mount is null ? 0 : _vehicleManager.Mount.TypeId;
-            OnShapeChange?.Invoke(_ownerId, Shape, param1, param2);
+            OnShapeChange?.Invoke(_ownerId, Shape, (uint)param1, (uint)param2);
         }
 
         private bool _isTranformated;
@@ -113,7 +113,7 @@ namespace Imgeneus.World.Game.Shape
 
         public ushort MobId { get; set; }
 
-        public event Action<int, bool> OnTranformated;
+        public event Action<uint, bool> OnTranformated;
 
 
         private bool _isOppositeCountry;
@@ -127,6 +127,6 @@ namespace Imgeneus.World.Game.Shape
             }
         }
 
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
     }
 }

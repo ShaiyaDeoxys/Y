@@ -28,7 +28,7 @@ namespace Imgeneus.World.Game.Guild
         private readonly IPartyManager _partyManager;
         private readonly ICountryProvider _countryProvider;
         private readonly IEtinManager _etinManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         private readonly IGuildConfiguration _config;
         private readonly IGuildHouseConfiguration _houseConfig;
@@ -59,7 +59,7 @@ namespace Imgeneus.World.Game.Guild
 
         #region Init & Clear
 
-        public void Init(int ownerId, int guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null)
+        public void Init(uint ownerId, uint guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null)
         {
             _ownerId = ownerId;
             GuildId = guildId;
@@ -83,7 +83,7 @@ namespace Imgeneus.World.Game.Guild
             return Task.CompletedTask;
         }
 
-        public int GuildId { get; set; }
+        public uint GuildId { get; set; }
 
         public bool HasGuild { get => GuildId != 0; }
 
@@ -208,7 +208,7 @@ namespace Imgeneus.World.Game.Guild
         /// Ensures, that character doesn't have a penalty.
         /// </summary>
         /// <returns>true is penalty</returns>
-        private async Task<bool> CheckPenalty(int characterId)
+        private async Task<bool> CheckPenalty(uint characterId)
         {
             var character = await _database.Characters.FindAsync(characterId);
             if (character is null)
@@ -242,7 +242,7 @@ namespace Imgeneus.World.Game.Guild
             party.OnMemberLeft -= Party_OnMemberChange;
         }
 
-        public async Task<DbGuild> TryCreateGuild(string name, string message, int masterId)
+        public async Task<DbGuild> TryCreateGuild(string name, string message, uint masterId)
         {
             var guild = new DbGuild(name, message, masterId, _countryProvider.Country == Country.CountryType.Light ? Fraction.Light : Fraction.Dark);
 
@@ -291,7 +291,7 @@ namespace Imgeneus.World.Game.Guild
 
         #region Add/remove members
 
-        public async Task<DbCharacter> TryAddMember(int characterId, byte rank = 9)
+        public async Task<DbCharacter> TryAddMember(uint characterId, byte rank = 9)
         {
             if (GuildId == 0)
                 throw new Exception("Member can not be added to guild, if guild manager is not initialized.");
@@ -315,7 +315,7 @@ namespace Imgeneus.World.Game.Guild
                 return null;
         }
 
-        public async Task<bool> TryRemoveMember(int characterId)
+        public async Task<bool> TryRemoveMember(uint characterId)
         {
             if (GuildId == 0)
                 throw new Exception("Member can not be removed from guild, if guild manager is not initialized.");
@@ -360,7 +360,7 @@ namespace Imgeneus.World.Game.Guild
         }
 
         /// <inheritdoc/>
-        public void ReloadGuildRanks(IEnumerable<(int GuildId, int Points, byte Rank)> results)
+        public void ReloadGuildRanks(IEnumerable<(uint GuildId, int Points, byte Rank)> results)
         {
             foreach (var res in results)
             {
@@ -384,7 +384,7 @@ namespace Imgeneus.World.Game.Guild
         /// Key is player id.
         /// Value is guild id.
         /// </summary>
-        public static readonly ConcurrentDictionary<int, int> JoinRequests = new ConcurrentDictionary<int, int>();
+        public static readonly ConcurrentDictionary<uint, int> JoinRequests = new ConcurrentDictionary<uint, int>();
 
         public async Task<bool> RequestJoin(int guildId, Character player)
         {
@@ -409,7 +409,7 @@ namespace Imgeneus.World.Game.Guild
         }
 
         /// <inheritdoc/>
-        public async Task RemoveRequestJoin(int playerId)
+        public async Task RemoveRequestJoin(uint playerId)
         {
             if (JoinRequests.TryRemove(playerId, out var removed))
             {
@@ -432,7 +432,7 @@ namespace Imgeneus.World.Game.Guild
 
         #region Member rank change
 
-        public async Task<byte> TryChangeRank(int playerId, bool demote)
+        public async Task<byte> TryChangeRank(uint playerId, bool demote)
         {
             if (GuildId == 0)
                 throw new Exception("Rank of member can not be changed, if guild manager is not initialized.");

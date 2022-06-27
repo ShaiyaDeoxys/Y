@@ -260,7 +260,7 @@ namespace Imgeneus.World.Tests.GuildTests
             int guild3_Points = 0;
             byte guild3_Rank = 0;
 
-            rankingManager.OnRanksCalculated += (IEnumerable<(int GuildId, int Points, byte Rank)> results) =>
+            rankingManager.OnRanksCalculated += (IEnumerable<(uint GuildId, int Points, byte Rank)> results) =>
             {
                 foreach (var res in results)
                 {

@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class CharacterEnteredMap : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharId { get; }
+        public uint CharId { get; }
 
         [FieldOrder(1)]
         public byte IsAdmin { get; }
@@ -25,10 +25,10 @@ namespace Imgeneus.World.Serialization
         public float PosZ { get; }
 
         [FieldOrder(6)]
-        public int GuildId { get; }
+        public uint GuildId { get; }
 
         [FieldOrder(7)]
-        public int Vehicle { get; }
+        public uint Vehicle { get; }
 
         public CharacterEnteredMap(Character character)
         {

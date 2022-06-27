@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class ObeliskUnit : BaseSerializable
     {
         [FieldOrder(0)]
-        public int Id;
+        public uint Id;
 
         [FieldOrder(1)]
         public ObeliskCountry ObeliskCountry;

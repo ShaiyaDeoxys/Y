@@ -8,7 +8,7 @@ namespace Imgeneus.World.Game.Quests
 {
     public interface IQuestsManager : ISessionedService
     {
-        void Init(int ownerId, IEnumerable<DbCharacterQuest> quests);
+        void Init(uint ownerId, IEnumerable<DbCharacterQuest> quests);
 
         /// <summary>
         /// Collection of currently started quests.
@@ -23,13 +23,13 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Event, that is fired, when quest is finished.
         /// </summary>
-        event Action<int, Quest, bool> OnQuestFinished;
+        event Action<uint, Quest, bool> OnQuestFinished;
 
         /// <summary>
         /// Tries to start new quest.
         /// </summary>
         /// <returns>true if quest is started</returns>
-        Task<bool> TryStartQuest(int npcId, short questId);
+        Task<bool> TryStartQuest(uint npcId, short questId);
 
         /// <summary>
         /// Changes number of killed mobs in quest.
@@ -50,11 +50,11 @@ namespace Imgeneus.World.Game.Quests
         /// <summary>
         /// Tries successfully finish quest.
         /// </summary>
-        bool TryFinishQuest(int npcId, short questId, out Quest quest);
+        bool TryFinishQuest(uint npcId, short questId, out Quest quest);
 
         /// <summary>
         /// After quest is finished, it's possible to select revard item.
         /// </summary>
-        bool TryFinishQuestSelect(int npcId, short questId, byte index);
+        bool TryFinishQuestSelect(uint npcId, short questId, byte index);
     }
 }

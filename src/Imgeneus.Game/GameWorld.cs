@@ -262,12 +262,12 @@ namespace Imgeneus.World.Game
         /// <summary>
         /// Thread-safe dictionary of maps. Where key is guild id.
         /// </summary>
-        public ConcurrentDictionary<int, IGuildMap> GuildHouseMaps { get; private set; } = new ConcurrentDictionary<int, IGuildMap>();
+        public ConcurrentDictionary<uint, IGuildMap> GuildHouseMaps { get; private set; } = new ConcurrentDictionary<uint, IGuildMap>();
 
         /// <summary>
         /// Thread-safe dictionary of maps. Where key is guild id.
         /// </summary>
-        public ConcurrentDictionary<int, IGuildMap> GRBMaps { get; private set; } = new ConcurrentDictionary<int, IGuildMap>();
+        public ConcurrentDictionary<uint, IGuildMap> GRBMaps { get; private set; } = new ConcurrentDictionary<uint, IGuildMap>();
 
         /// <summary>
         /// Inits guild ranking battle timers.
@@ -305,7 +305,7 @@ namespace Imgeneus.World.Game
                 player.SendGRB1MinLeft();
         }
 
-        private void GuildRankingManager_OnRanksCalculated(IEnumerable<(int guildId, int points, byte rank)> results)
+        private void GuildRankingManager_OnRanksCalculated(IEnumerable<(uint guildId, int points, byte rank)> results)
         {
             foreach (var player in Players.Values.ToList())
             {
@@ -319,7 +319,7 @@ namespace Imgeneus.World.Game
         #region Players
 
         /// <inheritdoc />
-        public ConcurrentDictionary<int, Character> Players { get; private set; } = new ConcurrentDictionary<int, Character>();
+        public ConcurrentDictionary<uint, Character> Players { get; private set; } = new ConcurrentDictionary<uint, Character>();
 
         /// <inheritdoc />
         public bool TryLoadPlayer(Character newPlayer)
@@ -335,7 +335,7 @@ namespace Imgeneus.World.Game
         }
 
         /// <inheritdoc />
-        public void LoadPlayerInMap(int characterId)
+        public void LoadPlayerInMap(uint characterId)
         {
             var player = Players[characterId];
             if (Maps.ContainsKey(player.MapProvider.NextMapId))
@@ -385,7 +385,7 @@ namespace Imgeneus.World.Game
 
                 if (mapDef.CreateType == CreateType.GuildHouse || mapDef.CreateType == CreateType.GRB)
                 {
-                    int guildId = 0;
+                    uint guildId = 0;
                     if (!player.GuildManager.HasGuild) // probably guild id has changed during loading in portal? Or it's admin without guild tries to load into GBR map.
                     {
                         _logger.LogWarning("Trying to load character {id} without guild id to guild specific map. Fallback to 0.", player.Id);
@@ -427,7 +427,7 @@ namespace Imgeneus.World.Game
         }
 
         /// <inheritdoc />
-        public void RemovePlayer(int characterId)
+        public void RemovePlayer(uint characterId)
         {
             Character player;
             if (Players.TryRemove(characterId, out player))

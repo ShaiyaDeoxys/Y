@@ -11,7 +11,7 @@ namespace Imgeneus.Database.Entities
         public DbCharacter Character { get; set; }
 
         [ForeignKey(nameof(Character))]
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
 
         /// <summary>
         /// Quick bar index.

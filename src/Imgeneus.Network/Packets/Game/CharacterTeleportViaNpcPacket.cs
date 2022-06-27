@@ -4,13 +4,13 @@ namespace Imgeneus.Network.Packets.Game
 {
     public record CharacterTeleportViaNpcPacket : IPacketDeserializer
     {
-        public int NpcId { get; private set; }
+        public uint NpcId { get; private set; }
 
         public byte GateId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            NpcId = packetStream.Read<int>();
+            NpcId = packetStream.Read<uint>();
             GateId = packetStream.Read<byte>();
         }
     }

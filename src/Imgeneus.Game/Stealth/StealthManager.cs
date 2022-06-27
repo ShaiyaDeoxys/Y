@@ -8,7 +8,7 @@ namespace Imgeneus.World.Game.Stealth
     {
         private readonly ILogger<StealthManager> _logger;
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public StealthManager(ILogger<StealthManager> logger)
         {
@@ -27,14 +27,14 @@ namespace Imgeneus.World.Game.Stealth
 #endif
 
         #region Init & Clear
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
 
         #endregion
 
-        public event Action<int> OnStealthChange;
+        public event Action<uint> OnStealthChange;
 
         private bool _isAdminStealth = false;
         public bool IsAdminStealth

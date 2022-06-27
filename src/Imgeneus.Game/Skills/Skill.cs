@@ -80,7 +80,7 @@ namespace Imgeneus.Game.Skills
         /// <summary>
         /// To which character are we going to transform?
         /// </summary>
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
 
         /// <summary>
         /// To what target this skill can be applied.

@@ -7,7 +7,7 @@ namespace Imgeneus.World.Game.Untouchable
     {
         private readonly ILogger<UntouchableManager> _logger;
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public UntouchableManager(ILogger<UntouchableManager> logger)
         {
@@ -26,7 +26,7 @@ namespace Imgeneus.World.Game.Untouchable
 
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }

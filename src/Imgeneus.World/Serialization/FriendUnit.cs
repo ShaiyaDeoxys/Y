@@ -8,7 +8,7 @@ namespace Imgeneus.World.Serialization
     public class FriendUnit : BaseSerializable
     {
         [FieldOrder(0)]
-        public int Id;
+        public uint Id;
 
         [FieldOrder(1)]
         public CharacterProfession Job;

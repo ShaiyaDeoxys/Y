@@ -13,7 +13,7 @@ namespace Imgeneus.World.Serialization
         [FieldCount(nameof(Count))]
         public List<GuildUpdateUnit> Items { get; } = new List<GuildUpdateUnit>();
 
-        public GuildRankUpdate(IEnumerable<(int GuildId, int Points, byte Rank)> guilds)
+        public GuildRankUpdate(IEnumerable<(uint GuildId, int Points, byte Rank)> guilds)
         {
             foreach (var guild in guilds)
                 Items.Add(new GuildUpdateUnit(guild));

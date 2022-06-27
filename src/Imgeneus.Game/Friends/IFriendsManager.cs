@@ -9,12 +9,12 @@ namespace Imgeneus.World.Game.Friends
 {
     public interface IFriendsManager : ISessionedService
     {
-        void Init(int ownerId, IEnumerable<DbCharacter> friends);
+        void Init(uint ownerId, IEnumerable<DbCharacter> friends);
 
         /// <summary>
         /// Dictionary of friends.
         /// </summary>
-        ConcurrentDictionary<int, Friend> Friends { get; init; }
+        ConcurrentDictionary<uint, Friend> Friends { get; init; }
 
         /// <summary>
         /// Character from whom friend request was sent last time.
@@ -29,6 +29,6 @@ namespace Imgeneus.World.Game.Friends
         /// <summary>
         /// Removed friend from database.
         /// </summary>
-        Task<Friend> DeleteFriend(int id);
+        Task<Friend> DeleteFriend(uint id);
     }
 }

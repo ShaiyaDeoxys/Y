@@ -45,7 +45,7 @@ namespace Imgeneus.World.Game.AI
         private readonly ISpeedManager _speedManager;
         private readonly IHealthManager _healthManager;
         private readonly IBuffsManager _buffsManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         private IKiller _owner;
         private IKiller Owner
@@ -111,7 +111,7 @@ namespace Imgeneus.World.Game.AI
 
         #region Init
 
-        public void Init(int ownerId,
+        public void Init(uint ownerId,
                          MobAI aiType,
                          MoveArea moveArea,
                          int idleTime = 4000,
@@ -414,7 +414,7 @@ namespace Imgeneus.World.Game.AI
         /// <summary>
         /// When target (player) goes into stealth or turns into a mob, mob returns to its' original place.
         /// </summary>
-        private void Target_OnStealth(int sender)
+        private void Target_OnStealth(uint sender)
         {
             if ((_target as Character).StealthManager.IsStealth)
                 _attackManager.Target = null;
@@ -425,7 +425,7 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         /// <param name="senderId">player, that is dead</param>
         /// <param name="killer">player's killer</param>
-        private void Target_OnDead(int senderId, IKiller killer)
+        private void Target_OnDead(uint senderId, IKiller killer)
         {
             _attackManager.Target = null;
         }
@@ -1077,7 +1077,7 @@ namespace Imgeneus.World.Game.AI
         /// <summary>
         /// Mob's agro, where key is id of player and value is agro points.
         /// </summary>
-        public ConcurrentDictionary<int, int> Agro { get; init; } = new();
+        public ConcurrentDictionary<uint, int> Agro { get; init; } = new();
 
         /// <summary>
         /// Selects target based on agro points.
@@ -1087,7 +1087,7 @@ namespace Imgeneus.World.Game.AI
             if (Agro.Count == 0)
                 return null;
 
-            KeyValuePair<int, int> maxAgro = new();
+            KeyValuePair<uint, int> maxAgro = new();
             foreach (var x in Agro)
             {
                 if (maxAgro.Key == 0)
@@ -1103,7 +1103,7 @@ namespace Imgeneus.World.Game.AI
         /// <summary>
         /// When user hits mob, it automatically turns on ai.
         /// </summary>
-        private void OnDecreaseHP(int senderId, IKiller damageMaker, int damage)
+        private void OnDecreaseHP(uint senderId, IKiller damageMaker, int damage)
         {
             if (!_healthManager.IsDead)
             {
@@ -1118,7 +1118,7 @@ namespace Imgeneus.World.Game.AI
             }
         }
 
-        private void OnBuffAdded(int senderId, Buff buff)
+        private void OnBuffAdded(uint senderId, Buff buff)
         {
             var character = buff.BuffCreator as Character;
             if (character is null)
@@ -1142,7 +1142,7 @@ namespace Imgeneus.World.Game.AI
             }
         }
 
-        private void OnBuffRemoved(int senderId, Buff buff)
+        private void OnBuffRemoved(uint senderId, Buff buff)
         {
             if (buff.Skill.Type == TypeDetail.Provoke)
             {

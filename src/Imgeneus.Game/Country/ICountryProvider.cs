@@ -13,12 +13,12 @@ namespace Imgeneus.World.Game.Country
         /// <summary>
         /// Inits country of player.
         /// </summary>
-        void Init(int ownerId, Fraction country);
+        void Init(uint ownerId, Fraction country);
 
         /// <summary>
         /// Inits country of mob.
         /// </summary>
-        void Init(int ownerId, MobFraction country);
+        void Init(uint ownerId, MobFraction country);
 
         /// <summary>
         /// Returns fraction of those players, who are enemies to this mob.

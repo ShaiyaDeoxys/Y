@@ -10,7 +10,7 @@ namespace Imgeneus.World.Game.Levelling
         /// </summary>
         /// <param name="owner">character id</param>
         /// <param name="exp">exp stored in databse</param>
-        void Init(int owner, uint exp);
+        void Init(uint owner, uint exp);
 
         /// <summary>
         /// Current experience amount.

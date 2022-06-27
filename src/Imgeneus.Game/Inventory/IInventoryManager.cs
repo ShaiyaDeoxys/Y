@@ -18,7 +18,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Event, that is fired, when some equipment of character changes.
         /// </summary>
-        event Action<int, Item, byte> OnEquipmentChanged;
+        event Action<uint, Item, byte> OnEquipmentChanged;
 
         /// <summary>
         /// Fires <see cref="OnEquipmentChanged"/>
@@ -116,7 +116,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="owner">character db id</param>
         /// <param name="items">items loaded from database</param>
         /// <param name="gold">gold amount from database</param>
-        void Init(int owner, IEnumerable<DbCharacterItems> items, uint gold);
+        void Init(uint owner, IEnumerable<DbCharacterItems> items, uint gold);
 
         event Action<Item> OnAddItem;
 
@@ -151,7 +151,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Event, that is fired, when player uses any item from inventory.
         /// </summary>
-        event Action<int, Item> OnUsedItem;
+        event Action<uint, Item> OnUsedItem;
 
         /// <summary>
         /// Use item from inventory.
@@ -160,7 +160,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="slot">slot, where item is situated</param>
         /// <param name="targetId">id of another player</param>
         /// <param name="skillApplyingItemEffect">some items like lucky cms and hammers do not have any effect but are still "usable"</param>
-        Task<bool> TryUseItem(byte bag, byte slot, int? targetId = null, bool skillApplyingItemEffect = false);
+        Task<bool> TryUseItem(byte bag, byte slot, uint? targetId = null, bool skillApplyingItemEffect = false);
 
         /// <summary>
         /// Checks if item can be used. E.g. cooldown is over, required level is right etc.
@@ -170,7 +170,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Checks if item can be used on another player.
         /// </summary>
-        bool CanUseItemOnTarget(Item item, int targetId);
+        bool CanUseItemOnTarget(Item item, uint targetId);
 
         /// <summary>
         /// Buys item from npc store.

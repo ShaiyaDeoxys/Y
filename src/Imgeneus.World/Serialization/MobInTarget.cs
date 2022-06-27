@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class MobInTarget : BaseSerializable
     {
         [FieldOrder(0)]
-        public int TargetId { get; }
+        public uint TargetId { get; }
 
         [FieldOrder(1)]
         public int CurrentHP { get; }

@@ -168,7 +168,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// </summary>
         /// <param name="senderId">buff sender</param>
         /// <param name="buff">buff, that he got</param>
-        private void Member_OnAddedBuff(int senderId, Buff buff)
+        private void Member_OnAddedBuff(uint senderId, Buff buff)
         {
             foreach (var member in Members)
                 SendAddBuff(member.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel);
@@ -179,7 +179,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// </summary>
         /// <param name="senderId">buff sender</param>
         /// <param name="buff">buff, that he lost</param>
-        private void Member_OnRemovedBuff(int senderId, Buff buff)
+        private void Member_OnRemovedBuff(uint senderId, Buff buff)
         {
             foreach (var member in Members)
                 SendRemoveBuff(member.GameSession.Client, senderId, buff.Skill.SkillId, buff.Skill.SkillLevel);
@@ -188,7 +188,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Notifies party member, that member has new hp value.
         /// </summary>
-        private void Member_HP_Changed(int senderId, HitpointArgs args)
+        private void Member_HP_Changed(uint senderId, HitpointArgs args)
         {
             foreach (var member in Members)
                 Send_Single_HP_SP_MP(member.GameSession.Client, senderId, args.NewValue, 0);
@@ -197,7 +197,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Notifies party member, that member has new sp value.
         /// </summary>
-        private void Member_SP_Changed(int senderId, HitpointArgs args)
+        private void Member_SP_Changed(uint senderId, HitpointArgs args)
         {
             foreach (var member in Members)
                 Send_Single_HP_SP_MP(member.GameSession.Client, senderId, args.NewValue, 1);
@@ -206,7 +206,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Notifies party member, that member has new mp value.
         /// </summary>
-        private void Member_MP_Changed(int senderId, HitpointArgs args)
+        private void Member_MP_Changed(uint senderId, HitpointArgs args)
         {
             foreach (var member in Members)
                 Send_Single_HP_SP_MP(member.GameSession.Client, senderId, args.NewValue, 2);
@@ -224,7 +224,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Notifies party member, that member has new max hp value.
         /// </summary>
-        private void Member_MaxHP_Changed(int senderId, int newMaxHP)
+        private void Member_MaxHP_Changed(uint senderId, int newMaxHP)
         {
             foreach (var member in Members)
                 Send_Single_Max_HP_SP_MP(member.GameSession.Client, senderId, newMaxHP, 0);
@@ -233,7 +233,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Notifies party member, that member has new max sp value.
         /// </summary>
-        private void Member_MaxSP_Changed(int senderId, int newMaxSP)
+        private void Member_MaxSP_Changed(uint senderId, int newMaxSP)
         {
             foreach (var member in Members)
                 Send_Single_Max_HP_SP_MP(member.GameSession.Client, senderId, newMaxSP, 1);
@@ -242,7 +242,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Notifies party member, that member has new max mp value.
         /// </summary>
-        private void Member_MaxMP_Changed(int senderId, int newMaxMP)
+        private void Member_MaxMP_Changed(uint senderId, int newMaxMP)
         {
             foreach (var member in Members)
                 Send_Single_Max_HP_SP_MP(member.GameSession.Client, senderId, newMaxMP, 2);
@@ -284,7 +284,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// Notifies party member that a member's level changed
         /// </summary>
         /// <param name="sender">Character whose level changed</param>
-        private void Member_OnLevelChange(int senderId, ushort level, ushort oldLevel)
+        private void Member_OnLevelChange(uint senderId, ushort level, ushort oldLevel)
         {
             foreach (var member in Members.Where(m => m.Id != senderId))
                 SendLevel(member.GameSession.Client, senderId, level);
@@ -306,13 +306,13 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         public abstract void LeaveParty(Character player);
 
-        protected abstract void SendAddBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel);
+        protected abstract void SendAddBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel);
 
-        protected abstract void SendRemoveBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel);
+        protected abstract void SendRemoveBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel);
 
-        protected abstract void Send_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type);
+        protected abstract void Send_Single_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type);
 
-        protected abstract void Send_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type);
+        protected abstract void Send_Single_Max_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type);
 
         protected abstract void Send_HP_SP_MP(IWorldClient client, Character sender);
 
@@ -328,7 +328,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         public abstract void MemberGetItem(Character player, Item item);
 
-        protected abstract void SendLevel(IWorldClient client, int senderId, ushort level);
+        protected abstract void SendLevel(IWorldClient client, uint senderId, ushort level);
 
         #endregion
     }

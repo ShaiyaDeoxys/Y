@@ -6,22 +6,22 @@ namespace Imgeneus.World.Game.Duel
 {
     public interface IDuelManager : ISessionedService, IDisposable
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// Duel opponent.
         /// </summary>
-        int OpponentId { get; set; }
+        uint OpponentId { get; set; }
 
         /// <summary>
         /// On some response got from player.
         /// </summary>
-        event Action<int, DuelResponse> OnDuelResponse;
+        event Action<uint, DuelResponse> OnDuelResponse;
 
         /// <summary>
         /// Starts or stops duel.
         /// </summary>
-        void ProcessResponse(int senderId, DuelResponse response);
+        void ProcessResponse(uint senderId, DuelResponse response);
 
         /// <summary>
         /// Adds item from inventory to duel trade.
@@ -74,12 +74,12 @@ namespace Imgeneus.World.Game.Duel
         /// <summary>
         /// Event, that is fired as soon as duel is canceled.
         /// </summary>
-        event Action<int, DuelCancelReason> OnCanceled;
+        event Action<uint, DuelCancelReason> OnCanceled;
 
         /// <summary>
         /// Cancels duel.
         /// </summary>
-        void Cancel(int senderId, DuelCancelReason reason);
+        void Cancel(uint senderId, DuelCancelReason reason);
 
         /// <summary>
         /// Event, that is fired on lose or win.

@@ -21,7 +21,7 @@ namespace Imgeneus.World.Game
         /// <summary>
         /// Connected players. Key is character id, value is character.
         /// </summary>
-        ConcurrentDictionary<int, Character> Players { get; }
+        ConcurrentDictionary<uint, Character> Players { get; }
 
         /// <summary>
         /// Loaded maps. Key is map id, value is map.
@@ -56,12 +56,12 @@ namespace Imgeneus.World.Game
         /// <summary>
         /// Loads player into map and send notification other players.
         /// </summary>
-        void LoadPlayerInMap(int characterId);
+        void LoadPlayerInMap(uint characterId);
 
         /// <summary>
         /// Removes player from game world.
         /// </summary>
-        void RemovePlayer(int characterId);
+        void RemovePlayer(uint characterId);
 
         /// <summary>
         /// Checks, if player can be teleported to map.

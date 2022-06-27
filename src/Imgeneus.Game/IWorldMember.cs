@@ -10,7 +10,7 @@ namespace Imgeneus.World.Game
         /// <summary>
         /// Unique id inside of a game world.
         /// </summary>
-        public int Id { get; }
+        public uint Id { get; }
 
         public ICountryProvider CountryProvider { get; }
     }

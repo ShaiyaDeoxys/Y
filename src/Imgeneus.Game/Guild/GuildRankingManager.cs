@@ -241,16 +241,16 @@ namespace Imgeneus.World.Game.Guild
         #region Guild points
 
         /// <inheritdoc/>
-        public event Action<int, int> OnPointsChanged;
+        public event Action<uint, int> OnPointsChanged;
 
         /// <summary>
         /// During GRB all guild points saved here.
         /// Key is guild id. Value is points.
         /// </summary>
-        private readonly ConcurrentDictionary<int, int> GuildPoints = new ConcurrentDictionary<int, int>();
+        private readonly ConcurrentDictionary<uint, int> GuildPoints = new ConcurrentDictionary<uint, int>();
 
         /// <inheritdoc/>
-        public void AddPoints(int guildId, short points)
+        public void AddPoints(uint guildId, short points)
         {
             if (!GuildPoints.ContainsKey(guildId))
                 GuildPoints[guildId] = points;
@@ -261,14 +261,14 @@ namespace Imgeneus.World.Game.Guild
         }
 
         /// <inheritdoc/>
-        public int GetTopGuild()
+        public uint GetTopGuild()
         {
             var key = GuildPoints.OrderByDescending(x => x.Value).Select(x => x.Key).FirstOrDefault();
             return key;
         }
 
         /// <inheritdoc/>
-        public int GetGuildPoints(int guildId)
+        public int GetGuildPoints(uint guildId)
         {
             if (!GuildPoints.ContainsKey(guildId))
                 return 0;
@@ -281,14 +281,14 @@ namespace Imgeneus.World.Game.Guild
         #region Participated players
 
         /// <inheritdoc/>
-        public HashSet<int> ParticipatedPlayers { get; private set; } = new HashSet<int>();
+        public HashSet<uint> ParticipatedPlayers { get; private set; } = new HashSet<uint>();
 
         #endregion
 
         #region Calculate ranks
 
         /// <inheritdoc/>
-        public event Action<IEnumerable<(int GuildId, int Points, byte Rank)>> OnRanksCalculated;
+        public event Action<IEnumerable<(uint GuildId, int Points, byte Rank)>> OnRanksCalculated;
 
         public async Task CalculateRanks()
         {
@@ -297,7 +297,7 @@ namespace Imgeneus.World.Game.Guild
             foreach (var g in guilds)
                 g.Rank = 31;
 
-            var guildRanks = new List<(int GuildId, int Points, byte Rank)>();
+            var guildRanks = new List<(uint GuildId, int Points, byte Rank)>();
 
             byte rank = 1;
             foreach (var result in GuildPoints.OrderByDescending(x => x.Value).Take(30))

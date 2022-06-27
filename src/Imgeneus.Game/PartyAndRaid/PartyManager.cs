@@ -22,7 +22,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
         private readonly IGameWorld _gameWorld;
         private readonly IMapProvider _mapProvider;
         private readonly IHealthManager _healthManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public PartyManager(ILogger<PartyManager> logger, IGamePacketFactory packetFactory, IGameWorld gameWorld, IMapProvider mapProvider, IHealthManager healthManager)
         {
@@ -49,7 +49,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -73,7 +73,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         #region Party creation
 
-        public int InviterId { get; set; }
+        public uint InviterId { get; set; }
 
         private IParty _party;
 
@@ -129,9 +129,9 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         private Timer _summonTimer = new Timer() { AutoReset = false, Interval = 5000 };
 
-        public event Action<int> OnSummonning;
+        public event Action<uint> OnSummonning;
 
-        public event Action<int> OnSummoned;
+        public event Action<uint> OnSummoned;
 
         public bool IsSummoning { get; set; }
 
@@ -168,7 +168,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
             IsSummoning = false;
         }
 
-        private void CancelSummon(int senderId, IKiller damageMaker, int damage)
+        private void CancelSummon(uint senderId, IKiller damageMaker, int damage)
         {
             if (Party is not null && Party.SummonRequest is not null)
             {

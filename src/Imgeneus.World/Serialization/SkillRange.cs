@@ -11,10 +11,10 @@ namespace Imgeneus.World.Serialization
         public AttackSuccess IsSuccess { get; }
 
         [FieldOrder(1)]
-        public int CharacterId { get; }
+        public uint CharacterId { get; }
 
         [FieldOrder(2)]
-        public int TargetId { get; }
+        public uint TargetId { get; }
 
         [FieldOrder(3)]
         public ushort SkillId { get; }
@@ -28,7 +28,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(6)]
         public bool KeepActivated { get; }
 
-        public SkillRange(int characterId, int targetId, Skill skill, AttackResult attackResult)
+        public SkillRange(uint characterId, uint targetId, Skill skill, AttackResult attackResult)
         {
             IsSuccess = attackResult.Success;
             CharacterId = characterId;

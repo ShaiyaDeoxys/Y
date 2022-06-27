@@ -8,7 +8,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
 {
     public interface IAdditionalInfoManager : ISessionedService
     {
-        void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points, string name);
+        void Init(uint ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points, string name);
 
         Race Race { get; set; }
         CharacterProfession Class { get; set; }
@@ -35,7 +35,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
         /// <summary>
         /// Event, that is fired, when player changes appearance.
         /// </summary>
-        event Action<int, byte, byte, byte, byte> OnAppearanceChanged;
+        event Action<uint, byte, byte, byte, byte> OnAppearanceChanged;
 
         /// <summary>
         /// Changes player's appearance.
@@ -69,6 +69,6 @@ namespace Imgeneus.World.Game.AdditionalInfo
         /// <summary>
         /// Event is fired when <see cref="FakeName"/> or <see cref="FakeGuildName"/> changed.
         /// </summary>
-        event Action<int> OnNameChange;
+        event Action<uint> OnNameChange;
     }
 }

@@ -20,7 +20,7 @@ namespace Imgeneus.Database.Entities
         /// <summary>
         /// Character id, that is guild owner.
         /// </summary>
-        public int MasterId { get; set; }
+        public uint MasterId { get; set; }
 
         /// <summary>
         /// Guild owner.
@@ -83,7 +83,7 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public ICollection<DbGuildWarehouseItem> WarehouseItems { get; set; }
 
-        public DbGuild(string name, string message, int masterId, Fraction country)
+        public DbGuild(string name, string message, uint masterId, Fraction country)
         {
             Name = name;
             Message = message;

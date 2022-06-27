@@ -11,7 +11,7 @@ namespace Imgeneus.Database.Entities
         /// Gets the guild associated id.
         /// </summary>
         [Required]
-        public int GuildId { get; set; }
+        public uint GuildId { get; set; }
 
         /// <summary>
         /// Gets the associated guild.

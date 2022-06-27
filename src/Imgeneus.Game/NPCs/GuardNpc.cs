@@ -33,7 +33,7 @@ namespace Imgeneus.World.Game.NPCs
 
         public ISkillsManager SkillsManager => throw new System.NotImplementedException();
 
-        public override void Init(int ownerId)
+        public override void Init(uint ownerId)
         {
             base.Init(ownerId);
             AIManager.Init(Id,

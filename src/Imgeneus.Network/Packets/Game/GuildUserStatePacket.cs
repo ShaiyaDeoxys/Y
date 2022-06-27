@@ -6,12 +6,12 @@ namespace Imgeneus.Network.Packets.Game
     {
         public bool Demote { get; private set; }
 
-        public int CharacterId { get; private set; }
+        public uint CharacterId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
             Demote = packetStream.Read<bool>();
-            CharacterId = packetStream.Read<int>();
+            CharacterId = packetStream.Read<uint>();
         }
     }
 }

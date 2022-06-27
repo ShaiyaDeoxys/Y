@@ -38,7 +38,7 @@ namespace Imgeneus.World.SelectionScreen
         /// <param name="userId">user id</param>
         /// <param name="id">character id</param>
         /// <returns>true if deleted, otherwise false</returns>
-        Task<bool> TryDeleteCharacter(int userId, int id);
+        Task<bool> TryDeleteCharacter(int userId, uint id);
 
         /// <summary>
         /// Tries to restore character (i.e. sets IsDeleted & DeleteDate).
@@ -46,7 +46,7 @@ namespace Imgeneus.World.SelectionScreen
         /// <param name="userId">user id</param>
         /// <param name="id">character id</param>
         /// <returns>true if restored, otherwise false</returns>
-        Task<bool> TryRestoreCharacter(int userId, int id);
+        Task<bool> TryRestoreCharacter(int userId, uint id);
 
         /// <summary>
         /// Tries to rename character.
@@ -55,6 +55,6 @@ namespace Imgeneus.World.SelectionScreen
         /// <param name="id">character id</param>
         /// <param name="newName">new name</param>
         /// <returns>true if renamed, otherwise false</returns>
-        Task<bool> TryRenameCharacter(int userId, int id, string newName);
+        Task<bool> TryRenameCharacter(int userId, uint id, string newName);
     }
 }

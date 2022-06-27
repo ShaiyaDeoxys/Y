@@ -7,12 +7,12 @@ namespace Imgeneus.World.Game.PartyAndRaid
 {
     public interface IPartyManager : ISessionedService, IDisposable
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// Id of character, that invites to the party.
         /// </summary>
-        int InviterId { get; set; }
+        uint InviterId { get; set; }
 
         /// <summary>
         /// Party or raid, in which player is currently.
@@ -52,12 +52,12 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Event, that is fired, when summoning is started.
         /// </summary>
-        event Action<int> OnSummonning;
+        event Action<uint> OnSummonning;
 
         /// <summary>
         /// Event, that is fired, when summoning is finished.
         /// </summary>
-        event Action<int> OnSummoned;
+        event Action<uint> OnSummoned;
 
         /// <summary>
         /// Summoning is progress?

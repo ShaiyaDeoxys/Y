@@ -15,7 +15,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
         private readonly ILogger<AdditionalInfoManager> _logger;
         private readonly ICharacterConfiguration _characterConfig;
         private readonly IDatabase _database;
-        private int _ownerId;
+        private uint _ownerId;
 
         public AdditionalInfoManager(ILogger<AdditionalInfoManager> logger, ICharacterConfiguration characterConfiguration, IDatabase database)
         {
@@ -37,7 +37,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
 
         #region Init & Clear
 
-        public void Init(int ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points, string name)
+        public void Init(uint ownerId, Race race, CharacterProfession profession, byte hair, byte face, byte height, Gender gender, Mode grow, uint points, string name)
         {
             _ownerId = ownerId;
 
@@ -104,7 +104,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
 
         #region Appearance
 
-        public event Action<int, byte, byte, byte, byte> OnAppearanceChanged;
+        public event Action<uint, byte, byte, byte, byte> OnAppearanceChanged;
         public async Task ChangeAppearance(byte hair, byte face, byte size, byte sex)
         {
             Hair = hair;
@@ -150,7 +150,7 @@ namespace Imgeneus.World.Game.AdditionalInfo
         public string FakeName { get; set; }
         public string FakeGuildName { get; set; }
 
-        public event Action<int> OnNameChange;
+        public event Action<uint> OnNameChange;
 
         public void RaiseNameChange()
         {

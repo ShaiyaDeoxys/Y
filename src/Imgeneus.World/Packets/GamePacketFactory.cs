@@ -125,7 +125,7 @@ namespace Imgeneus.World.Packets
                 client.Send(p);
         }
 
-        public void SendCharacterSelected(IWorldClient client, bool ok, int id)
+        public void SendCharacterSelected(IWorldClient client, bool ok, uint id)
         {
             using var packet = new ImgeneusPacket(PacketType.SELECT_CHARACTER);
             packet.Write((byte)(ok ? 0 : 1));
@@ -133,7 +133,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendDeletedCharacter(IWorldClient client, bool ok, int id)
+        public void SendDeletedCharacter(IWorldClient client, bool ok, uint id)
         {
             using var packet = new ImgeneusPacket(PacketType.DELETE_CHARACTER);
             packet.Write((byte)(ok ? 0 : 1));
@@ -141,7 +141,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendRestoredCharacter(IWorldClient client, bool ok, int id)
+        public void SendRestoredCharacter(IWorldClient client, bool ok, uint id)
         {
             using var packet = new ImgeneusPacket(PacketType.RESTORE_CHARACTER);
             packet.Write((byte)(ok ? 0 : 1));
@@ -149,7 +149,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendRenamedCharacter(IWorldClient client, bool ok, int id)
+        public void SendRenamedCharacter(IWorldClient client, bool ok, uint id)
         {
             using var packet = new ImgeneusPacket(PacketType.RENAME_CHARACTER);
             packet.Write((byte)(ok ? 1 : 0));
@@ -362,7 +362,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCanNotUseItem(IWorldClient client, int characterId)
+        public void SendCanNotUseItem(IWorldClient client, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_ITEM);
             packet.Write(characterId);
@@ -440,21 +440,21 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendVehicleRequest(IWorldClient client, int requesterId)
+        public void SendVehicleRequest(IWorldClient client, uint requesterId)
         {
             using var packet = new ImgeneusPacket(PacketType.VEHICLE_REQUEST);
             packet.Write(requesterId);
             client.Send(packet);
         }
 
-        public void SendStartSummoningVehicle(IWorldClient client, int senderId)
+        public void SendStartSummoningVehicle(IWorldClient client, uint senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_READY);
             packet.Write(senderId);
             client.Send(packet);
         }
 
-        public void SendVehiclePassengerChanged(IWorldClient client, int passengerId, int vehicleCharId)
+        public void SendVehiclePassengerChanged(IWorldClient client, uint passengerId, uint vehicleCharId)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_VEHICLE_2);
             packet.Write(passengerId);
@@ -465,7 +465,7 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Map
-        public void SendCharacterMotion(IWorldClient client, int characterId, Motion motion)
+        public void SendCharacterMotion(IWorldClient client, uint characterId, Motion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_MOTION);
             packet.Write(characterId);
@@ -473,29 +473,29 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterMoves(IWorldClient client, int senderId, float x, float y, float z, ushort a, MoveMotion motion)
+        public void SendCharacterMoves(IWorldClient client, uint senderId, float x, float y, float z, ushort a, MoveMotion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_MOVE);
             packet.Write(new CharacterMove(senderId, x, y, z, a, motion).Serialize());
             client.Send(packet);
         }
 
-        public void SendCharacterChangedEquipment(IWorldClient client, int characterId, Item equipmentItem, byte slot)
+        public void SendCharacterChangedEquipment(IWorldClient client, uint characterId, Item equipmentItem, byte slot)
         {
             using var packet = new ImgeneusPacket(PacketType.SEND_EQUIPMENT);
             packet.Write(new CharacterEquipmentChange(characterId, slot, equipmentItem).Serialize());
             client.Send(packet);
         }
 
-        public void SendCharacterShape(IWorldClient client, int id, Character character)
+        public void SendCharacterShape(IWorldClient client, uint characterId, Character character)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SHAPE);
-            packet.Write(id);
+            packet.Write(characterId);
             packet.Write(new CharacterShape(character).Serialize());
             client.Send(packet);
         }
 
-        public void SendShapeUpdate(IWorldClient client, int senderId, ShapeEnum shape, int? param1 = null, int? param2 = null)
+        public void SendShapeUpdate(IWorldClient client, uint senderId, ShapeEnum shape, uint? param1 = null, uint? param2 = null)
         {
             if (shape != ShapeEnum.Mob)
             {
@@ -506,8 +506,8 @@ namespace Imgeneus.World.Packets
                 // Only for ep 8. Type & TypeId for new mounts.
                 if (param1 != null && param2 != null)
                 {
-                    packet.Write((int)param1);
-                    packet.Write((int)param2);
+                    packet.Write((uint)param1);
+                    packet.Write((uint)param2);
                 }
 
                 client.Send(packet);
@@ -522,14 +522,14 @@ namespace Imgeneus.World.Packets
             }
         }
 
-        public void SendMaxHitpoints(IWorldClient client, int characterId, HitpointType type, int value)
+        public void SendMaxHitpoints(IWorldClient client, uint characterId, HitpointType type, int value)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_MAX_HITPOINTS);
             packet.Write(new MaxHitpoint(characterId, type, value).Serialize());
             client.Send(packet);
         }
 
-        public void SendRecoverCharacter(IWorldClient client, int characterId, int hp, int mp, int sp)
+        public void SendRecoverCharacter(IWorldClient client, uint characterId, int hp, int mp, int sp)
         {
             // NB!!! In previous episodes and in china ep 8 with recover packet it's sent how much hitpoints recovered.
             // But in os ep8 this packet sends current hitpoints.
@@ -541,7 +541,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMobRecover(IWorldClient client, int mobId, int hp)
+        public void SendMobRecover(IWorldClient client, uint mobId, int hp)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_RECOVER);
             packet.Write(mobId);
@@ -549,7 +549,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendAppearanceChanged(IWorldClient client, int characterId, byte hair, byte face, byte size, byte gender)
+        public void SendAppearanceChanged(IWorldClient client, uint characterId, byte hair, byte face, byte size, byte gender)
         {
             using var packet = new ImgeneusPacket(PacketType.CHANGE_APPEARANCE);
             packet.Write(characterId);
@@ -575,7 +575,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterTeleport(IWorldClient client, int characterId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
+        public void SendCharacterTeleport(IWorldClient client, uint characterId, ushort mapId, float x, float y, float z, bool teleportedByAdmin)
         {
             using var packet = new ImgeneusPacket(teleportedByAdmin ? PacketType.CHARACTER_MAP_TELEPORT : PacketType.GM_TELEPORT_MAP_COORDINATES);
             packet.Write(characterId);
@@ -614,7 +614,7 @@ namespace Imgeneus.World.Packets
 
             if (character.ShapeManager.Shape != ShapeEnum.None)
                 if (character.ShapeManager.Shape != ShapeEnum.Mob)
-                    SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : character.InventoryManager.Mount.TypeId);
+                    SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : (uint)character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : (uint)character.InventoryManager.Mount.TypeId);
                 else
                     SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.ShapeManager.MobId);
 
@@ -622,14 +622,14 @@ namespace Imgeneus.World.Packets
                 SendTransformation(client, character.Id, character.ShapeManager.IsTranformated);
         }
 
-        public void SendAttackAndMovementSpeed(IWorldClient client, int senderId, AttackSpeed attack, MoveSpeed move)
+        public void SendAttackAndMovementSpeed(IWorldClient client, uint senderId, AttackSpeed attack, MoveSpeed move)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTACK_MOVEMENT_SPEED);
             packet.Write(new CharacterAttackAndMovement(senderId, attack, move).Serialize());
             client.Send(packet);
         }
 
-        public void SendCharacterUsedSkill(IWorldClient client, int senderId, IKillable target, Skill skill, AttackResult attackResult)
+        public void SendCharacterUsedSkill(IWorldClient client, uint senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             PacketType skillType;
             if (target is Character)
@@ -660,7 +660,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendSkillCastStarted(IWorldClient client, int senderId, IKillable target, Skill skill)
+        public void SendSkillCastStarted(IWorldClient client, uint senderId, IKillable target, Skill skill)
         {
             PacketType type;
             if (target is Character)
@@ -675,7 +675,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendUsedItem(IWorldClient client, int senderId, Item item)
+        public void SendUsedItem(IWorldClient client, uint senderId, Item item)
         {
             using var packet = new ImgeneusPacket(PacketType.USE_ITEM);
             packet.Write(senderId);
@@ -694,10 +694,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendSkillKeep(IWorldClient client, int id, ushort skillId, byte skillLevel, AttackResult result)
+        public void SendSkillKeep(IWorldClient client, uint characterId, ushort skillId, byte skillLevel, AttackResult result)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILL_KEEP);
-            packet.Write(id);
+            packet.Write(characterId);
             packet.Write(skillId);
             packet.Write(skillLevel);
             packet.Write(result.Damage.HP);
@@ -706,7 +706,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendUsedRangeSkill(IWorldClient client, int senderId, IKillable target, Skill skill, AttackResult attackResult)
+        public void SendUsedRangeSkill(IWorldClient client, uint senderId, IKillable target, Skill skill, AttackResult attackResult)
         {
             PacketType type;
             if (target is Character)
@@ -746,7 +746,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendTransformation(IWorldClient client, int senderId, bool isTransformed)
+        public void SendTransformation(IWorldClient client, uint senderId, bool isTransformed)
         {
             using var packet = new ImgeneusPacket(PacketType.TRANSFORMATION_MODE);
             packet.Write(senderId);
@@ -755,7 +755,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterMirrorDamage(IWorldClient client, int senderId, int targetId, Damage damage)
+        public void SendCharacterMirrorDamage(IWorldClient client, uint senderId, uint targetId, Damage damage)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_SKILL_MIRROR);
             packet.Write(targetId);
@@ -766,7 +766,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMobMirrorDamage(IWorldClient client, int senderId, int targetId, Damage damage)
+        public void SendMobMirrorDamage(IWorldClient client, uint senderId, uint targetId, Damage damage)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_SKILL_MIRROR);
             packet.Write(targetId);
@@ -777,7 +777,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendTargetHP(IWorldClient client, int targetId, int currentHP)
+        public void SendTargetHP(IWorldClient client, uint targetId, int currentHP)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_CHARACTER_GET_HP);
             packet.Write(targetId);
@@ -809,7 +809,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendNpcMove(IWorldClient client, int senderId, float x, float y, float z, MoveMotion motion)
+        public void SendNpcMove(IWorldClient client, uint senderId, float x, float y, float z, MoveMotion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.MAP_NPC_MOVE);
             packet.Write(senderId);
@@ -820,7 +820,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendNpcAttack(IWorldClient client, int senderId, IKillable target, AttackResult result)
+        public void SendNpcAttack(IWorldClient client, uint senderId, IKillable target, AttackResult result)
         {
             using var packet = new ImgeneusPacket(target is Character ? PacketType.MAP_NPC_ATTACK_PLAYER : PacketType.MAP_NPC_ATTACK_MOB);
             packet.Write((byte)result.Success);
@@ -1072,14 +1072,14 @@ namespace Imgeneus.World.Packets
 
         #region Party
 
-        public void SendPartyRequest(IWorldClient client, int requesterId)
+        public void SendPartyRequest(IWorldClient client, uint requesterId)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_REQUEST);
             packet.Write(requesterId);
             client.Send(packet);
         }
 
-        public void SendDeclineParty(IWorldClient client, int charId)
+        public void SendDeclineParty(IWorldClient client, uint charId)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_RESPONSE);
             packet.Write(false);
@@ -1136,7 +1136,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendAddPartyBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        public void SendAddPartyBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_ADDED_BUFF);
             packet.Write(senderId);
@@ -1145,7 +1145,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendRemovePartyBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        public void SendRemovePartyBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_REMOVED_BUFF);
             packet.Write(senderId);
@@ -1154,19 +1154,19 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendPartySingle_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        public void SendPartySingle_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_CHARACTER_SP_MP);
-            packet.Write(id);
+            packet.Write(senderId);
             packet.Write(type);
             packet.Write(value);
             client.Send(packet);
         }
 
-        public void SendPartySingle_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        public void SendPartySingle_Max_HP_SP_MP(IWorldClient client, uint senderId, int value, byte type)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_SET_MAX);
-            packet.Write(id);
+            packet.Write(senderId);
             packet.Write(type);
             packet.Write(value);
             client.Send(packet);
@@ -1186,7 +1186,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendPartyMemberGetItem(IWorldClient client, int characterId, Item item)
+        public void SendPartyMemberGetItem(IWorldClient client, uint characterId, Item item)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_GET_ITEM);
             packet.Write(characterId);
@@ -1195,7 +1195,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendPartyLevel(IWorldClient client, int senderId, ushort level)
+        public void SendPartyLevel(IWorldClient client, uint senderId, ushort level)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_MEMBER_LEVEL);
             packet.Write(senderId);
@@ -1211,7 +1211,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterPartyChanged(IWorldClient client, int characterId, PartyMemberType type)
+        public void SendCharacterPartyChanged(IWorldClient client, uint characterId, PartyMemberType type)
         {
             using var packet = new ImgeneusPacket(PacketType.MAP_PARTY_SET);
             packet.Write(characterId);
@@ -1274,7 +1274,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendAddRaidBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        public void SendAddRaidBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_ADDED_BUFF);
             packet.Write(senderId);
@@ -1283,7 +1283,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendRemoveRaidBuff(IWorldClient client, int senderId, ushort skillId, byte skillLevel)
+        public void SendRemoveRaidBuff(IWorldClient client, uint senderId, ushort skillId, byte skillLevel)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_REMOVED_BUFF);
             packet.Write(senderId);
@@ -1292,19 +1292,19 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendRaid_Single_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        public void SendRaid_Single_HP_SP_MP(IWorldClient client, uint characterId, int value, byte type)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_CHARACTER_SP_MP);
-            packet.Write(id);
+            packet.Write(characterId);
             packet.Write(type);
             packet.Write(value);
             client.Send(packet);
         }
 
-        public void SendRaid_Single_Max_HP_SP_MP(IWorldClient client, int id, int value, byte type)
+        public void SendRaid_Single_Max_HP_SP_MP(IWorldClient client, uint characterId, int value, byte type)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_SET_MAX);
-            packet.Write(id);
+            packet.Write(characterId);
             packet.Write(type);
             packet.Write(value);
             client.Send(packet);
@@ -1341,7 +1341,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMemberGetItem(IWorldClient client, int characterId, Item item)
+        public void SendMemberGetItem(IWorldClient client, uint characterId, Item item)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_MEMBER_GET_ITEM);
             packet.Write(characterId);
@@ -1350,14 +1350,14 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendRaidInvite(IWorldClient client, int requesterId)
+        public void SendRaidInvite(IWorldClient client, uint requesterId)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_INVITE);
             packet.Write(requesterId);
             client.Send(packet);
         }
 
-        public void SendDeclineRaid(IWorldClient client, int charId)
+        public void SendDeclineRaid(IWorldClient client, uint charId)
         {
             using var packet = new ImgeneusPacket(PacketType.RAID_RESPONSE);
             packet.Write(false);
@@ -1368,14 +1368,14 @@ namespace Imgeneus.World.Packets
 
         #region Trade
 
-        public void SendTradeRequest(IWorldClient client, int tradeRequesterId)
+        public void SendTradeRequest(IWorldClient client, uint tradeRequesterId)
         {
             using var packet = new ImgeneusPacket(PacketType.TRADE_REQUEST);
             packet.Write(tradeRequesterId);
             client.Send(packet);
         }
 
-        public void SendTradeStart(IWorldClient client, int traderId)
+        public void SendTradeStart(IWorldClient client, uint traderId)
         {
             using var packet = new ImgeneusPacket(PacketType.TRADE_START);
             packet.Write(traderId);
@@ -1475,7 +1475,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendTargetAddBuff(IWorldClient client, int targetId, Buff buff, bool isMob)
+        public void SendTargetAddBuff(IWorldClient client, uint targetId, Buff buff, bool isMob)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_BUFF_ADD);
             if (isMob)
@@ -1493,7 +1493,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendTargetRemoveBuff(IWorldClient client, int targetId, Buff buff, bool isMob)
+        public void SendTargetRemoveBuff(IWorldClient client, uint targetId, Buff buff, bool isMob)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_BUFF_REMOVE);
             if (isMob)
@@ -1521,7 +1521,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendAutoAttackFailed(IWorldClient client, int senderId, IKillable target, AttackSuccess reason)
+        public void SendAutoAttackFailed(IWorldClient client, uint senderId, IKillable target, AttackSuccess reason)
         {
             var type = target is Character ? PacketType.CHARACTER_CHARACTER_AUTO_ATTACK : PacketType.CHARACTER_MOB_AUTO_ATTACK;
             using var packet = new ImgeneusPacket(type);
@@ -1529,7 +1529,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendUseSkillFailed(IWorldClient client, int senderId, Skill skill, IKillable target, AttackSuccess reason)
+        public void SendUseSkillFailed(IWorldClient client, uint senderId, Skill skill, IKillable target, AttackSuccess reason)
         {
             var type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
             using var packet = new ImgeneusPacket(type);
@@ -1544,7 +1544,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterUsualAttack(IWorldClient client, int senderId, IKillable target, AttackResult attackResult)
+        public void SendCharacterUsualAttack(IWorldClient client, uint senderId, IKillable target, AttackResult attackResult)
         {
             PacketType attackType;
             if (target is Character)
@@ -1568,7 +1568,7 @@ namespace Imgeneus.World.Packets
 
         #region Mobs
 
-        public void SendMobPosition(IWorldClient client, int senderId, float x, float z, MoveMotion motion)
+        public void SendMobPosition(IWorldClient client, uint senderId, float x, float z, MoveMotion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
             packet.Write(new MobMove(senderId, x, z, motion).Serialize());
@@ -1589,28 +1589,28 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMobMove(IWorldClient client, int senderId, float x, float z, MoveMotion motion)
+        public void SendMobMove(IWorldClient client, uint senderId, float x, float z, MoveMotion motion)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_MOVE);
             packet.Write(new MobMove(senderId, x, z, motion).Serialize());
             client.Send(packet);
         }
 
-        public void SendMobAttack(IWorldClient client, int mobId, int targetId, AttackResult attackResult)
+        public void SendMobAttack(IWorldClient client, uint mobId, uint targetId, AttackResult attackResult)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_ATTACK);
             packet.Write(new MobAttack(mobId, targetId, attackResult).Serialize());
             client.Send(packet);
         }
 
-        public void SendMobUsedSkill(IWorldClient client, int mobId, int targetId, Skill skill, AttackResult attackResult)
+        public void SendMobUsedSkill(IWorldClient client, uint mobId, uint targetId, Skill skill, AttackResult attackResult)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_SKILL_USE);
             packet.Write(new MobSkillAttack(mobId, targetId, skill, attackResult).Serialize());
             client.Send(packet);
         }
 
-        public void SendMobDead(IWorldClient client, int senderId, IKiller killer)
+        public void SendMobDead(IWorldClient client, uint senderId, IKiller killer)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_DEATH);
             packet.Write(senderId);
@@ -1619,7 +1619,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMobSkillKeep(IWorldClient client, int senderId, ushort skillId, byte skillLevel, AttackResult result)
+        public void SendMobSkillKeep(IWorldClient client, uint senderId, ushort skillId, byte skillLevel, AttackResult result)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_SKILL_KEEP);
             packet.Write(senderId);
@@ -1658,7 +1658,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendFriendDeleted(IWorldClient client, int id)
+        public void SendFriendDeleted(IWorldClient client, uint id)
         {
             using var packet = new ImgeneusPacket(PacketType.FRIEND_DELETE);
             packet.Write(id);
@@ -1672,7 +1672,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendFriendOnline(IWorldClient client, int id, bool isOnline)
+        public void SendFriendOnline(IWorldClient client, uint id, bool isOnline)
         {
             using var packet = new ImgeneusPacket(PacketType.FRIEND_ONLINE);
             packet.Write(id);
@@ -1684,7 +1684,7 @@ namespace Imgeneus.World.Packets
 
         #region Duel
 
-        public void SendWaitingDuel(IWorldClient client, int duelStarterId, int duelOpponentId)
+        public void SendWaitingDuel(IWorldClient client, uint duelStarterId, uint duelOpponentId)
         {
             using var packet = new ImgeneusPacket(PacketType.DUEL_REQUEST);
             packet.Write(duelStarterId);
@@ -1692,7 +1692,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendDuelResponse(IWorldClient client, DuelResponse response, int characterId)
+        public void SendDuelResponse(IWorldClient client, DuelResponse response, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.DUEL_RESPONSE);
             packet.Write((byte)response);
@@ -1700,7 +1700,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendDuelStartTrade(IWorldClient client, int characterId)
+        public void SendDuelStartTrade(IWorldClient client, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.DUEL_TRADE);
             packet.Write(characterId);
@@ -1770,7 +1770,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendDuelCancel(IWorldClient client, DuelCancelReason cancelReason, int playerId)
+        public void SendDuelCancel(IWorldClient client, DuelCancelReason cancelReason, uint playerId)
         {
             using var packet = new ImgeneusPacket(PacketType.DUEL_CANCEL);
             packet.Write((byte)cancelReason);
@@ -1789,7 +1789,7 @@ namespace Imgeneus.World.Packets
 
         #region Chat
 
-        public void SendNormal(IWorldClient client, int senderId, string message, bool isAdmin)
+        public void SendNormal(IWorldClient client, uint senderId, string message, bool isAdmin)
         {
             SendMessage(isAdmin ? PacketType.CHAT_NORMAL_ADMIN : PacketType.CHAT_NORMAL, client, senderId, message);
         }
@@ -1799,7 +1799,7 @@ namespace Imgeneus.World.Packets
             SendMessage(isAdmin ? PacketType.CHAT_WHISPER_ADMIN : PacketType.CHAT_WHISPER, client, senderName, message, true);
         }
 
-        public void SendParty(IWorldClient client, int senderId, string message, bool isAdmin)
+        public void SendParty(IWorldClient client, uint senderId, string message, bool isAdmin)
         {
             SendMessage(isAdmin ? PacketType.CHAT_PARTY_ADMIN : PacketType.CHAT_PARTY, client, senderId, message);
         }
@@ -1824,7 +1824,7 @@ namespace Imgeneus.World.Packets
             SendMessage(isAdmin ? PacketType.CHAT_GUILD_ADMIN : PacketType.CHAT_GUILD, client, senderName, message);
         }
 
-        private void SendMessage(PacketType packetType, IWorldClient client, int senderId, string message)
+        private void SendMessage(PacketType packetType, IWorldClient client, uint senderId, string message)
         {
             using var packet = new ImgeneusPacket(packetType);
             packet.Write(senderId);
@@ -1871,7 +1871,7 @@ namespace Imgeneus.World.Packets
 
         #region Guild
 
-        public void SendGuildCreateSuccess(IWorldClient client, int guildId, byte rank, string guildName, string guildMessage)
+        public void SendGuildCreateSuccess(IWorldClient client, uint guildId, byte rank, string guildName, string guildMessage)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE);
             packet.Write((byte)GuildCreateFailedReason.Success);
@@ -1889,7 +1889,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildCreateRequest(IWorldClient client, int creatorId, string guildName, string guildMessage)
+        public void SendGuildCreateRequest(IWorldClient client, uint creatorId, string guildName, string guildMessage)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_CREATE_AGREE);
             packet.Write(creatorId);
@@ -1898,7 +1898,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildMemberIsOnline(IWorldClient client, int playerId)
+        public void SendGuildMemberIsOnline(IWorldClient client, uint playerId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(104);
@@ -1906,7 +1906,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildMemberIsOffline(IWorldClient client, int playerId)
+        public void SendGuildMemberIsOffline(IWorldClient client, uint playerId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(105);
@@ -1974,14 +1974,14 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildJoinRequestRemove(IWorldClient client, int playerId)
+        public void SendGuildJoinRequestRemove(IWorldClient client, uint playerId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_REMOVE);
             packet.Write(playerId);
             client.Send(packet);
         }
 
-        public void SendGuildJoinResult(IWorldClient client, bool ok, int guildId = 0, byte rank = 9, string name = "")
+        public void SendGuildJoinResult(IWorldClient client, bool ok, uint guildId = 0, byte rank = 9, string name = "")
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_RESULT_USER);
             packet.Write(ok);
@@ -1999,7 +1999,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildKickMember(IWorldClient client, bool ok, int characterId)
+        public void SendGuildKickMember(IWorldClient client, bool ok, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_KICK);
             packet.Write(ok);
@@ -2007,7 +2007,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildMemberRemove(IWorldClient client, int characterId)
+        public void SendGuildMemberRemove(IWorldClient client, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(103);
@@ -2015,7 +2015,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildUserChangeRank(IWorldClient client, int characterId, byte rank)
+        public void SendGuildUserChangeRank(IWorldClient client, uint characterId, byte rank)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte((byte)(rank + 200));
@@ -2030,7 +2030,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildMemberLeave(IWorldClient client, int characterId)
+        public void SendGuildMemberLeave(IWorldClient client, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_USER_STATE);
             packet.WriteByte(102);
@@ -2053,7 +2053,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildListRemove(IWorldClient client, int guildId)
+        public void SendGuildListRemove(IWorldClient client, uint guildId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_LIST_REMOVE);
             packet.Write(guildId);
@@ -2121,7 +2121,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGBRPoints(IWorldClient client, int currentPoints, int maxPoints, int topGuild)
+        public void SendGBRPoints(IWorldClient client, int currentPoints, int maxPoints, uint topGuild)
         {
             using var packet = new ImgeneusPacket(PacketType.GRB_POINTS);
             packet.Write(currentPoints);
@@ -2130,7 +2130,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildRanksCalculated(IWorldClient client, IEnumerable<(int GuildId, int Points, byte Rank)> results)
+        public void SendGuildRanksCalculated(IWorldClient client, IEnumerable<(uint GuildId, int Points, byte Rank)> results)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_RANK_UPDATE);
             packet.Write(new GuildRankUpdate(results).Serialize());
@@ -2193,7 +2193,7 @@ namespace Imgeneus.World.Packets
             }
         }
 
-        public void SendGuildWarehouseItemAdd(IWorldClient client, DbGuildWarehouseItem item, int characterId)
+        public void SendGuildWarehouseItemAdd(IWorldClient client, DbGuildWarehouseItem item, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_WAREHOUSE_ITEM_ADD);
             packet.Write(new GuildWarehouseItem(item).Serialize());
@@ -2201,7 +2201,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildWarehouseItemRemove(IWorldClient client, DbGuildWarehouseItem item, int characterId)
+        public void SendGuildWarehouseItemRemove(IWorldClient client, DbGuildWarehouseItem item, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_WAREHOUSE_ITEM_REMOVE);
             packet.Write(new GuildWarehouseItem(item).Serialize());
@@ -2268,7 +2268,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendQuestStarted(IWorldClient client, int npcId, short questId)
+        public void SendQuestStarted(IWorldClient client, uint npcId, short questId)
         {
             using var packet = new ImgeneusPacket(PacketType.QUEST_START);
             packet.Write(npcId);
@@ -2276,7 +2276,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendQuestFinished(IWorldClient client, int npcId, short questId, Quest quest, bool success)
+        public void SendQuestFinished(IWorldClient client, uint npcId, short questId, Quest quest, bool success)
         {
             using var packet = new ImgeneusPacket(PacketType.QUEST_END);
             packet.Write(npcId);
@@ -2370,7 +2370,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendLevelUp(IWorldClient client, int characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp, bool hasParty = false)
+        public void SendLevelUp(IWorldClient client, uint characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp, bool hasParty = false)
         {
             var type = hasParty ? PacketType.GM_CHARACTER_LEVEL_UP : PacketType.CHARACTER_LEVEL_UP;
             using var packet = new ImgeneusPacket(type);
@@ -2382,7 +2382,7 @@ namespace Imgeneus.World.Packets
 
         #region Death
 
-        public void SendCharacterKilled(IWorldClient client, int characterId, IKiller killer)
+        public void SendCharacterKilled(IWorldClient client, uint characterId, IKiller killer)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_DEATH);
             packet.Write(characterId);
@@ -2403,7 +2403,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterRebirth(IWorldClient client, int senderId)
+        public void SendCharacterRebirth(IWorldClient client, uint senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.CHARACTER_LEAVE_DEAD);
             packet.Write(senderId);
@@ -2414,21 +2414,21 @@ namespace Imgeneus.World.Packets
 
         #region Summon
 
-        public void SendItemCasting(IWorldClient client, int senderId)
+        public void SendItemCasting(IWorldClient client, uint senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.ITEM_CASTING);
             packet.Write(senderId);
             client.Send(packet);
         }
 
-        public void SendPartycallRequest(IWorldClient client, int senderId)
+        public void SendPartycallRequest(IWorldClient client, uint senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_CALL_REQUEST);
             packet.Write(senderId);
             client.Send(packet);
         }
 
-        public void SendSummonAnswer(IWorldClient client, int senderId, bool ok)
+        public void SendSummonAnswer(IWorldClient client, uint senderId, bool ok)
         {
             using var packet = new ImgeneusPacket(PacketType.PARTY_CALL_ANSWER);
             packet.Write(senderId);
@@ -2481,7 +2481,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMyShopStarted(IWorldClient client, int senderId, string shopName)
+        public void SendMyShopStarted(IWorldClient client, uint senderId, string shopName)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_INFO);
             packet.Write(senderId);
@@ -2496,7 +2496,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMyShopFinished(IWorldClient client, int senderId)
+        public void SendMyShopFinished(IWorldClient client, uint senderId)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_INFO);
             packet.Write(senderId);
@@ -2504,7 +2504,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMyShopVisit(IWorldClient client, bool ok, int characterId)
+        public void SendMyShopVisit(IWorldClient client, bool ok, uint characterId)
         {
             using var packet = new ImgeneusPacket(PacketType.MY_SHOP_VISIT);
             packet.Write(ok);
@@ -2603,7 +2603,7 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGmSummon(IWorldClient client, int senderId, ushort mapId, float x, float y, float z)
+        public void SendGmSummon(IWorldClient client, uint senderId, ushort mapId, float x, float y, float z)
         {
 #if DEBUG || SHAIYA_US || SHAIYA_US_DEBUG
             using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_SUMMON_PLAYER);

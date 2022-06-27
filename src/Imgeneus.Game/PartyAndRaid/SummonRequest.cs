@@ -9,19 +9,19 @@ namespace Imgeneus.World.Game.PartyAndRaid
         /// <summary>
         /// Id of character, who started summonning.
         /// </summary>
-        public int OwnerId { get; private set; }
+        public uint OwnerId { get; private set; }
 
         /// <summary>
         /// Answers of party members.
         /// </summary>
-        public Dictionary<int, bool?> MemberAnswers { get; private init; } = new Dictionary<int, bool?>();
+        public Dictionary<uint, bool?> MemberAnswers { get; private init; } = new Dictionary<uint, bool?>();
 
         /// <summary>
         /// Item from inventory, that should be used, if summoning success.
         /// </summary>
         public Item SummonItem { get; init; }
 
-        public SummonRequest(int ownerId, Item summonItem)
+        public SummonRequest(uint ownerId, Item summonItem)
         {
             OwnerId = ownerId;
             SummonItem = summonItem;

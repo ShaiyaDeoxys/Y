@@ -6,7 +6,7 @@ namespace Imgeneus.World.Serialization
     public class GuildUpdateUnit : BaseSerializable
     {
         [FieldOrder(0)]
-        public int Id;
+        public uint Id;
 
         [FieldOrder(1)]
         public int Points;
@@ -14,7 +14,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(2)]
         public byte Rank;
 
-        public GuildUpdateUnit((int GuildId, int Points, byte Rank) result)
+        public GuildUpdateUnit((uint GuildId, int Points, byte Rank) result)
         {
             Id = result.GuildId;
             Points = result.Points;

@@ -15,7 +15,7 @@ namespace Imgeneus.World.Game.Shop
         private readonly IInventoryManager _inventoryManager;
         private readonly IMapProvider _mapProvider;
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public ShopManager(ILogger<ShopManager> logger, IInventoryManager inventoryManager, IMapProvider mapProvider)
         {
@@ -35,7 +35,7 @@ namespace Imgeneus.World.Game.Shop
         }
 #endif
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -118,8 +118,8 @@ namespace Imgeneus.World.Game.Shop
             return true;
         }
 
-        public event Action<int, string> OnShopStarted;
-        public event Action<int> OnShopFinished;
+        public event Action<uint, string> OnShopStarted;
+        public event Action<uint> OnShopFinished;
 
         public bool TryStart(string name)
         {
@@ -181,7 +181,7 @@ namespace Imgeneus.World.Game.Shop
             }
         }
 
-        private void UseShop_OnShopFinished(int senderId)
+        private void UseShop_OnShopFinished(uint senderId)
         {
             UseShop = null;
             OnUseShopClosed?.Invoke();

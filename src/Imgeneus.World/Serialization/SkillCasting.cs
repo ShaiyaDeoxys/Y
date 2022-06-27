@@ -7,10 +7,10 @@ namespace Imgeneus.World.Serialization
     public class SkillCasting : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId { get; }
+        public uint CharacterId { get; }
 
         [FieldOrder(1)]
-        public int TargetId { get; }
+        public uint TargetId { get; }
 
         [FieldOrder(2)]
         public ushort SkillId { get; }
@@ -18,7 +18,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(3)]
         public byte SkillLevel { get; }
 
-        public SkillCasting(int characterId, int targetId, Skill skill)
+        public SkillCasting(uint characterId, uint targetId, Skill skill)
         {
             CharacterId = characterId;
             TargetId = targetId;

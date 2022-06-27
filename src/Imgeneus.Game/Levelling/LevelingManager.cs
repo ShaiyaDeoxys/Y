@@ -25,7 +25,7 @@ namespace Imgeneus.World.Game.Levelling
         private readonly IPartyManager _partyManager;
         private readonly IMapProvider _mapProvider;
         private readonly IMovementManager _movementManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public LevelingManager(ILogger<LevelingManager> logger, IDatabase database, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, ICharacterConfiguration charConfig, IDatabasePreloader databasePreloader, IPartyManager partyManager, IMapProvider mapProvider, IMovementManager movementManager)
         {
@@ -51,7 +51,7 @@ namespace Imgeneus.World.Game.Levelling
         }
 #endif
 
-        public void Init(int ownerId, uint exp)
+        public void Init(uint ownerId, uint exp)
         {
             _ownerId = ownerId;
 

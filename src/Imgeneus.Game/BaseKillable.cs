@@ -44,10 +44,10 @@ namespace Imgeneus.World.Game
             MapProvider = mapProvider;
         }
 
-        private int _id;
+        private uint _id;
 
         /// <inheritdoc />
-        public int Id
+        public uint Id
         {
             get => _id;
             set

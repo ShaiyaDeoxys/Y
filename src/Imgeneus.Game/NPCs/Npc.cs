@@ -65,7 +65,7 @@ namespace Imgeneus.World.Game.NPCs
             }
         }
 
-        public virtual void Init(int ownerId)
+        public virtual void Init(uint ownerId)
         {
             Id = ownerId;
 
@@ -89,7 +89,7 @@ namespace Imgeneus.World.Game.NPCs
             CountryProvider.Init(Id, country);
         }
 
-        public int Id { get; set; }
+        public uint Id { get; set; }
 
         #region Position
 

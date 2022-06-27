@@ -11,7 +11,7 @@ namespace Imgeneus.Database.Entities
         /// Gets the warehouse item associated guild id.
         /// </summary>
         [Required]
-        public int GuildId { get; set; }
+        public uint GuildId { get; set; }
 
         /// <summary>
         /// The bank item's associated guild.

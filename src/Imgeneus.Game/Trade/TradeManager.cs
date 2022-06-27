@@ -16,7 +16,7 @@ namespace Imgeneus.World.Game.Trade
         private readonly IGameWorld _gameWorld;
         private readonly IInventoryManager _inventoryManager;
 
-        private int _ownerId;
+        private uint _ownerId;
 
         public TradeManager(ILogger<TradeManager> logger, IGameWorld gameWorld, IInventoryManager inventoryManager)
         {
@@ -37,7 +37,7 @@ namespace Imgeneus.World.Game.Trade
 
         #region Init & Clear
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -52,7 +52,7 @@ namespace Imgeneus.World.Game.Trade
 
         #region Trade start
 
-        public int PartnerId { get; set; }
+        public uint PartnerId { get; set; }
 
         public TradeRequest Request { get; set; }
 

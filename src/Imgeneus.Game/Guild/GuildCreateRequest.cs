@@ -14,12 +14,12 @@ namespace Imgeneus.World.Game.Guild
         /// Key is character id.
         /// Value if accepted or not.
         /// </summary>
-        public Dictionary<int, bool> Acceptance { get; private set; } = new Dictionary<int, bool>();
+        public Dictionary<uint, bool> Acceptance { get; private set; } = new Dictionary<uint, bool>();
 
         /// <summary>
         /// Initiator of request.
         /// </summary>
-        public int GuildCreatorId { get; private set; }
+        public uint GuildCreatorId { get; private set; }
 
         /// <summary>
         /// All party members.
@@ -36,7 +36,7 @@ namespace Imgeneus.World.Game.Guild
         /// </summary>
         public string Message { get; private set; }
 
-        public GuildCreateRequest(int guildCreatorId, IEnumerable<Character> members, string name, string message)
+        public GuildCreateRequest(uint guildCreatorId, IEnumerable<Character> members, string name, string message)
         {
             GuildCreatorId = guildCreatorId;
             Members = members;

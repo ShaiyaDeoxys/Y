@@ -75,7 +75,7 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
             var shapeChangeCalled = false;
-            character.ShapeManager.OnTranformated += (int sender, bool transformed) => shapeChangeCalled = transformed;
+            character.ShapeManager.OnTranformated += (uint sender, bool transformed) => shapeChangeCalled = transformed;
 
             character.BuffsManager.AddBuff(new Skill(Transformation, 0, 0), null);
             Assert.Single(character.BuffsManager.ActiveBuffs);
@@ -129,13 +129,13 @@ namespace Imgeneus.World.Tests.CharacterTests
             var numberOfUsedSkill = 0;
             var numberOfRangeAttacks = 0;
             var allDamage = 0;
-            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            character1.SkillsManager.OnUsedSkill += (uint senderId, IKillable killable, Skill skill, AttackResult res) =>
             {
                 numberOfUsedSkill++;
                 allDamage += res.Damage.HP;
                 usedSkillGoesFirst = numberOfRangeAttacks == 0;
             };
-            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            character1.SkillsManager.OnUsedRangeSkill += (uint senderId, IKillable killable, Skill skill, AttackResult res) =>
             {
                 numberOfRangeAttacks++;
                 allDamage += res.Damage.HP;
@@ -163,7 +163,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             var character3OnDead = false;
             var onDeadWasCalledAfterOnRange = false;
             var numberOfRangeAttacks = 0;
-            character1.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            character1.SkillsManager.OnUsedRangeSkill += (uint senderId, IKillable killable, Skill skill, AttackResult res) =>
             {
                 numberOfRangeAttacks++;
                 if (killable == character3)
@@ -171,7 +171,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             };
 
             var numberOfUsedSkill = 0;
-            character1.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => numberOfUsedSkill++;
+            character1.SkillsManager.OnUsedSkill += (uint senderId, IKillable killable, Skill skill, AttackResult res) => numberOfUsedSkill++;
 
             character1.StatsManager.WeaponMinAttack = 100;
             character1.StatsManager.WeaponMaxAttack = 100;
@@ -180,17 +180,17 @@ namespace Imgeneus.World.Tests.CharacterTests
             var character3GotDamage = false;
             var character4GotDamage = false;
 
-            character2.HealthManager.OnGotDamage += (int senderId, IKiller character1, int damage) => character2GotDamage = true;
+            character2.HealthManager.OnGotDamage += (uint senderId, IKiller character1, int damage) => character2GotDamage = true;
             character2.HealthManager.FullRecover();
 
-            character3.HealthManager.OnGotDamage += (int senderId, IKiller character1, int damage) => character3GotDamage = true;
-            character3.HealthManager.OnDead += (int senderId, IKiller character1) =>
+            character3.HealthManager.OnGotDamage += (uint senderId, IKiller character1, int damage) => character3GotDamage = true;
+            character3.HealthManager.OnDead += (uint senderId, IKiller character1) =>
             {
                 character3OnDead = true;
             };
             character3.HealthManager.FullRecover();
 
-            character4.HealthManager.OnGotDamage += (int senderId, IKiller character1, int damage) => character4GotDamage = true;
+            character4.HealthManager.OnGotDamage += (uint senderId, IKiller character1, int damage) => character4GotDamage = true;
             character4.HealthManager.FullRecover();
 
             character1.SkillsManager.UseSkill(new Skill(NettleSting, 0, 0), character1, character2);
@@ -288,7 +288,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.Single(character.BuffsManager.ActiveBuffs);
 
             var missed = 0;
-            character2.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult result) =>
+            character2.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult result) =>
             {
                 if (result.Success == AttackSuccess.Miss)
                     missed++;
@@ -423,7 +423,7 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             var result = new AttackResult();
 
-            priest.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult res) => result = res;
+            priest.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult res) => result = res;
             priest.SkillsManager.UseSkill(new Skill(Healing, 0, 0), priest, character1);
 
             Assert.Equal(54, character1.HealthManager.CurrentHP);
@@ -710,13 +710,13 @@ namespace Imgeneus.World.Tests.CharacterTests
             var usedSkill = false;
             var usedRangeSkill = false;
 
-            priest.SkillsManager.OnUsedSkill += (int senderId, IKillable target, Skill skill, AttackResult result) =>
+            priest.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult result) =>
             {
                 if (target is null && result.Damage.HP == 0)
                     usedSkill = true;
             };
 
-            priest.SkillsManager.OnUsedRangeSkill += (int senderId, IKillable target, Skill skill, AttackResult result) =>
+            priest.SkillsManager.OnUsedRangeSkill += (uint senderId, IKillable target, Skill skill, AttackResult result) =>
             {
                 if (target == character)
                     usedRangeSkill = true;
@@ -857,7 +857,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             var character = CreateCharacter(map);
 
             var skillUsed = false;
-            character.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) => skillUsed = true;
+            character.SkillsManager.OnUsedSkill += (uint senderId, IKillable killable, Skill skill, AttackResult res) => skillUsed = true;
 
             character.SkillsManager.UseSkill(new Skill(DisruptionStun, 0, 0), character);
 
@@ -891,7 +891,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.HealthManager.CurrentSP = 9;
 
             var usedSkill = false;
-            character.SkillsManager.OnUsedSkill += (int senderId, IKillable killable, Skill skill, AttackResult res) =>
+            character.SkillsManager.OnUsedSkill += (uint senderId, IKillable killable, Skill skill, AttackResult res) =>
             {
                 usedSkill = res.Damage.HP == 0 && res.Damage.MP == Diversion.HealMP;
             };

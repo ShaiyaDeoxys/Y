@@ -53,7 +53,7 @@ namespace Imgeneus.World.Game.Skills
         private readonly ISpeedManager _speedManager;
         private readonly IPartyManager _partyManager;
         private readonly IGamePacketFactory _packetFactory;
-        private int _ownerId;
+        private uint _ownerId;
 
         public SkillsManager(ILogger<SkillsManager> logger, IGameDefinitionsPreloder definitionsPreloder, IDatabase database, IHealthManager healthManager, IAttackManager attackManager, IBuffsManager buffsManager, IStatsManager statsManager, IElementProvider elementProvider, ICountryProvider countryProvider, ICharacterConfiguration characterConfig, ILevelProvider levelProvider, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, ITeleportationManager teleportationManager, IMovementManager movementManager, IShapeManager shapeManager, ISpeedManager speedManager, IPartyManager partyManager, IGamePacketFactory packetFactory)
         {
@@ -92,7 +92,7 @@ namespace Imgeneus.World.Game.Skills
 
         #region Init & Clear
 
-        public void Init(int ownerId, IEnumerable<Skill> skills, ushort skillPoint = 0)
+        public void Init(uint ownerId, IEnumerable<Skill> skills, ushort skillPoint = 0)
         {
             _ownerId = ownerId;
             SkillPoints = skillPoint;
@@ -138,9 +138,9 @@ namespace Imgeneus.World.Game.Skills
 
         #region Events
 
-        public event Action<int, IKillable, Skill, AttackResult> OnUsedSkill;
+        public event Action<uint, IKillable, Skill, AttackResult> OnUsedSkill;
 
-        public event Action<int, IKillable, Skill, AttackResult> OnUsedRangeSkill;
+        public event Action<uint, IKillable, Skill, AttackResult> OnUsedRangeSkill;
 
         #endregion
 
@@ -154,7 +154,7 @@ namespace Imgeneus.World.Game.Skills
             return true;
         }
 
-        private void OnLevelUp(int arg1, ushort arg2, ushort arg3)
+        private void OnLevelUp(uint arg1, ushort arg2, ushort arg3)
         {
             var levelStats = _characterConfig.GetLevelStatSkillPoints(_additionalInfoManager.Grow);
             TrySetSkillPoints((ushort)(SkillPoints + levelStats.SkillPoint));

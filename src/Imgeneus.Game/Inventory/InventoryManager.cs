@@ -66,7 +66,7 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ITeleportationManager _teleportationManager;
         private readonly IChatManager _chatManager;
         private readonly IWarehouseManager _warehouseManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager)
         {
@@ -112,7 +112,7 @@ namespace Imgeneus.World.Game.Inventory
 
         #region Init & Clear
 
-        public void Init(int ownerId, IEnumerable<DbCharacterItems> items, uint gold)
+        public void Init(uint ownerId, IEnumerable<DbCharacterItems> items, uint gold)
         {
             _ownerId = ownerId;
 
@@ -269,7 +269,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Event, that is fired, when some equipment of character changes.
         /// </summary>
-        public event Action<int, Item, byte> OnEquipmentChanged;
+        public event Action<uint, Item, byte> OnEquipmentChanged;
 
         private Item _helmet;
         public Item Helmet
@@ -1019,9 +1019,9 @@ namespace Imgeneus.World.Game.Inventory
 
         private readonly Dictionary<byte, DateTime> _itemCooldowns = new Dictionary<byte, DateTime>();
 
-        public event Action<int, Item> OnUsedItem;
+        public event Action<uint, Item> OnUsedItem;
 
-        public async Task<bool> TryUseItem(byte bag, byte slot, int? targetId = null, bool skillApplyingItemEffect = false)
+        public async Task<bool> TryUseItem(byte bag, byte slot, uint? targetId = null, bool skillApplyingItemEffect = false)
         {
             InventoryItems.TryGetValue((bag, slot), out var item);
             if (item is null)
@@ -1037,7 +1037,7 @@ namespace Imgeneus.World.Game.Inventory
 
             if (targetId != null)
             {
-                if (!CanUseItemOnTarget(item, (int)targetId))
+                if (!CanUseItemOnTarget(item, (uint)targetId))
                 {
                     return false;
                 }
@@ -1171,7 +1171,7 @@ namespace Imgeneus.World.Game.Inventory
             return true;
         }
 
-        public bool CanUseItemOnTarget(Item item, int targetId)
+        public bool CanUseItemOnTarget(Item item, uint targetId)
         {
             switch (item.Special)
             {
@@ -1194,7 +1194,7 @@ namespace Imgeneus.World.Game.Inventory
         /// <summary>
         /// Adds the effect of the item to the character.
         /// </summary>
-        private async Task<bool> ApplyItemEffect(Item item, int? targetId = null)
+        private async Task<bool> ApplyItemEffect(Item item, uint? targetId = null)
         {
             var ok = false;
 
@@ -1341,7 +1341,7 @@ namespace Imgeneus.World.Game.Inventory
                     break;
 
                 case SpecialEffect.MovementRune:
-                    if (_gameWorld.Players.TryGetValue((int)targetId, out var target))
+                    if (_gameWorld.Players.TryGetValue((uint)targetId, out var target))
                     {
                         _teleportationManager.Teleport(target.Map.Id, target.PosX, target.PosY, target.PosZ);
                         ok = true;
@@ -1523,7 +1523,7 @@ namespace Imgeneus.World.Game.Inventory
             return ok;
         }
 
-        private void PartyManager_OnSummoned(int senderId)
+        private void PartyManager_OnSummoned(uint senderId)
         {
             if (_ownerId != senderId)
                 return;

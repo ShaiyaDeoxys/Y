@@ -11,15 +11,15 @@ namespace Imgeneus.World.Serialization
         public AttackSuccess IsSuccess;
 
         [FieldOrder(1)]
-        public int MobId;
+        public uint MobId;
 
         [FieldOrder(2)]
-        public int TargetId;
+        public uint TargetId;
 
         [FieldOrder(3)]
         public ushort[] Damage;
 
-        public MobAttack(int mobId, int targetId, AttackResult attackResult)
+        public MobAttack(uint mobId, uint targetId, AttackResult attackResult)
         {
             IsSuccess = attackResult.Success;
             MobId = mobId;

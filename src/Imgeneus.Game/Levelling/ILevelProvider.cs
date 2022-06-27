@@ -4,7 +4,7 @@ namespace Imgeneus.World.Game.Levelling
 {
     public interface ILevelProvider
     {
-        void Init(int ownerId, ushort level);
+        void Init(uint ownerId, ushort level);
 
         /// <summary>
         /// Current level.
@@ -14,6 +14,6 @@ namespace Imgeneus.World.Game.Levelling
         /// <summary>
         /// Event that's fired when a player level's up
         /// </summary>
-        event Action<int, ushort, ushort> OnLevelUp;
+        event Action<uint, ushort, ushort> OnLevelUp;
     }
 }

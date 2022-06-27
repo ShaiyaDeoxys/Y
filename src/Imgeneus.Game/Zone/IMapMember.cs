@@ -5,7 +5,7 @@
         /// <summary>
         /// Unique id in this map.
         /// </summary>
-        public int Id { get; }
+        public uint Id { get; }
 
         /// <summary>
         /// X coordinate.

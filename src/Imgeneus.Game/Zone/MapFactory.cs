@@ -52,7 +52,7 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <inheritdoc/>
-        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, int guildId)
+        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, uint guildId)
         {
             if (definition.CreateType == CreateType.GRB)
                 return new GRBMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);

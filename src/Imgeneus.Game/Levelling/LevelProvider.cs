@@ -6,7 +6,7 @@ namespace Imgeneus.World.Game.Levelling
     public class LevelProvider : ILevelProvider
     {
         private readonly ILogger<LevelProvider> _logger;
-        private int _ownerId;
+        private uint _ownerId;
 
         public LevelProvider(ILogger<LevelProvider> logger)
         {
@@ -26,7 +26,7 @@ namespace Imgeneus.World.Game.Levelling
 
         #region Init & Clear
 
-        public void Init(int ownerId, ushort level)
+        public void Init(uint ownerId, ushort level)
         {
             _ownerId = ownerId;
             _level = level;
@@ -46,6 +46,6 @@ namespace Imgeneus.World.Game.Levelling
             }
         }
 
-        public event Action<int, ushort, ushort> OnLevelUp;
+        public event Action<uint, ushort, ushort> OnLevelUp;
     }
 }

@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization
     public class CharacterLevelUp : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId { get; }
+        public uint CharacterId { get; }
 
         [FieldOrder(1)]
         public ushort Level { get; }
@@ -24,7 +24,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(5)]
         public uint NextLevelExp { get; }
 
-        public CharacterLevelUp(int characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
+        public CharacterLevelUp(uint characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
         {
             CharacterId = characterId;
             Level = level;

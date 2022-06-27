@@ -13,7 +13,7 @@ namespace Imgeneus.World.Serialization
         public ushort IndexPositionInRaid;
 
         [FieldOrder(1)]
-        public int CharacterId;
+        public uint CharacterId;
 
         [FieldOrder(2), FieldLength(21)]
         public string Name;

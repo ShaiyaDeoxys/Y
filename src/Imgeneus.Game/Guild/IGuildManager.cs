@@ -10,12 +10,12 @@ namespace Imgeneus.World.Game.Guild
 {
     public interface IGuildManager : ISessionedService
     {
-        void Init(int ownerId, int guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null);
+        void Init(uint ownerId, uint guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null);
 
         /// <summary>
         /// Owner guild id.
         /// </summary>
-        int GuildId { get; set; }
+        uint GuildId { get; set; }
 
         /// <summary>
         /// Bool indicator, that shows if character is guild member.
@@ -71,7 +71,7 @@ namespace Imgeneus.World.Game.Guild
         /// Creates guild in database.
         /// </summary>
         /// <returns>Db guild, if it was created, otherwise null.</returns>
-        Task<DbGuild> TryCreateGuild(string name, string message, int masterId);
+        Task<DbGuild> TryCreateGuild(string name, string message, uint masterId);
 
         /// <summary>
         /// Tries to add character to guild.
@@ -80,14 +80,14 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="characterId">new character</param>
         /// <param name="rank">character rank in guild</param>
         /// <returns>db character, if character was added to guild, otherwise null</returns>
-        Task<DbCharacter> TryAddMember(int characterId, byte rank = 9);
+        Task<DbCharacter> TryAddMember(uint characterId, byte rank = 9);
 
         /// <summary>
         /// Tries to remove character from guild.
         /// </summary>
         /// <param name="characterId">character id</param>
         /// <returns>db character, if character was removed, otherwise null</returns>
-        Task<bool> TryRemoveMember(int characterId);
+        Task<bool> TryRemoveMember(uint characterId);
 
         /// <summary>
         /// Get all guilds in this server.
@@ -111,7 +111,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Removes player from join requests.
         /// </summary>
-        Task RemoveRequestJoin(int playerId);
+        Task RemoveRequestJoin(uint playerId);
 
         /// <summary>
         /// Change guild rank of character.
@@ -119,7 +119,7 @@ namespace Imgeneus.World.Game.Guild
         /// <param name="characterId">character id</param>
         /// <param name="demote">decrease or increase rank?</param>
         /// <returns>new rank</returns>
-        Task<byte> TryChangeRank(int characterId, bool demote);
+        Task<byte> TryChangeRank(uint characterId, bool demote);
 
         /// <summary>
         /// Tries to remove guild.
@@ -140,7 +140,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Reloads guild ranks after GRB.
         /// </summary>
-        void ReloadGuildRanks(IEnumerable<(int GuildId, int Points, byte Rank)> results);
+        void ReloadGuildRanks(IEnumerable<(uint GuildId, int Points, byte Rank)> results);
 
         /// <summary>
         /// Gets guild's etin.

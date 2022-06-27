@@ -9,7 +9,7 @@ namespace Imgeneus.World.Serialization
     public class CharacterAttackAndMovement : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId;
+        public uint CharacterId;
 
         [FieldOrder(1)]
         public AttackSpeed AttackSpeed { get; }
@@ -17,7 +17,7 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(2)]
         public MoveSpeed MoveSpeed { get; }
 
-        public CharacterAttackAndMovement(int characterId, AttackSpeed attack, MoveSpeed move)
+        public CharacterAttackAndMovement(uint characterId, AttackSpeed attack, MoveSpeed move)
         {
             CharacterId = characterId;
             AttackSpeed = attack;

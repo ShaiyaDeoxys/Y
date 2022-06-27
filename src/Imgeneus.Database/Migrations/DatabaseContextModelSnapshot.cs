@@ -56,7 +56,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BankItems");
+                    b.ToTable("BankItems", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbCharacter", b =>
@@ -214,7 +214,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Characters");
+                    b.ToTable("Characters", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbCharacterActiveBuff", b =>
@@ -239,7 +239,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("CharacterActiveBuff");
+                    b.ToTable("CharacterActiveBuff", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbCharacterFriend", b =>
@@ -254,7 +254,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("FriendId");
 
-                    b.ToTable("CharacterFriends");
+                    b.ToTable("CharacterFriends", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbCharacterItems", b =>
@@ -342,7 +342,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("CharacterItems");
+                    b.ToTable("CharacterItems", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbCharacterQuest", b =>
@@ -382,7 +382,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("CharacterQuest");
+                    b.ToTable("CharacterQuest", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbCharacterSavePositions", b =>
@@ -407,7 +407,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasKey("CharacterId", "Slot");
 
-                    b.ToTable("CharacterSavePoint");
+                    b.ToTable("CharacterSavePoint", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbCharacterSkill", b =>
@@ -426,7 +426,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasKey("CharacterId", "SkillId");
 
-                    b.ToTable("CharacterSkill");
+                    b.ToTable("CharacterSkill", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbGuild", b =>
@@ -472,7 +472,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("MasterId");
 
-                    b.ToTable("Guilds");
+                    b.ToTable("Guilds", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbGuildNpcLvl", b =>
@@ -491,7 +491,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasKey("GuildId", "NpcType", "Group", "NpcLevel");
 
-                    b.ToTable("GuildNpcLvl");
+                    b.ToTable("GuildNpcLvl", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbGuildWarehouseItem", b =>
@@ -569,7 +569,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("GuildWarehouseItems");
+                    b.ToTable("GuildWarehouseItems", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbItem", b =>
@@ -734,7 +734,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasKey("Type", "TypeId");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbLevel", b =>
@@ -754,7 +754,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Levels");
+                    b.ToTable("Levels", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbMob", b =>
@@ -974,7 +974,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Mobs");
+                    b.ToTable("Mobs", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbMobItems", b =>
@@ -993,7 +993,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasKey("MobId", "ItemOrder");
 
-                    b.ToTable("MobItems");
+                    b.ToTable("MobItems", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbQuickSkillBarItem", b =>
@@ -1021,7 +1021,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("CharacterQuickItems");
+                    b.ToTable("CharacterQuickItems", (string)null);
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbRole", b =>
@@ -1212,7 +1212,7 @@ namespace Imgeneus.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("WarehouseItems");
+                    b.ToTable("WarehouseItems", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

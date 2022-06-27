@@ -92,7 +92,7 @@ namespace Imgeneus.World.Game.Monster
             AIManager.OnStateChanged += AIManager_OnStateChanged;
         }
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             Id = ownerId;
 

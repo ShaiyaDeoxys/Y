@@ -4,7 +4,7 @@ namespace Imgeneus.World.Game.Movement
 {
     public interface IMovementManager
     {
-        void Init(int ownerId, float x, float y, float z, ushort angle, MoveMotion moveMotion);
+        void Init(uint ownerId, float x, float y, float z, ushort angle, MoveMotion moveMotion);
 
         /// <summary>
         /// X coordinate.
@@ -35,7 +35,7 @@ namespace Imgeneus.World.Game.Movement
         /// <summary>
         /// Event, that is fired, when owner changes his position.
         /// </summary>
-        event Action<int, float, float, float, ushort, MoveMotion> OnMove;
+        event Action<uint, float, float, float, ushort, MoveMotion> OnMove;
 
         /// <summary>
         /// Raises event <see cref="OnMove"/>.

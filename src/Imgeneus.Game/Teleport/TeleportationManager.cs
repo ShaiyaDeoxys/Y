@@ -30,7 +30,7 @@ namespace Imgeneus.World.Game.Teleport
         private readonly ILevelProvider _levelProvider;
         private readonly IGameWorld _gameWorld;
         private readonly IHealthManager _healthManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IGameWorld gameWorld, IHealthManager healthManager)
         {
@@ -61,7 +61,7 @@ namespace Imgeneus.World.Game.Teleport
 
         #region Init & Clear
 
-        public void Init(int ownerId, IEnumerable<DbCharacterSavePositions> savedPositions)
+        public void Init(uint ownerId, IEnumerable<DbCharacterSavePositions> savedPositions)
         {
             _ownerId = ownerId;
 
@@ -114,7 +114,7 @@ namespace Imgeneus.World.Game.Teleport
 
         #region Teleport
 
-        public event Action<int, ushort, float, float, float, bool, bool> OnTeleporting;
+        public event Action<uint, ushort, float, float, float, bool, bool> OnTeleporting;
 
         /// <summary>
         /// Indicator if character is teleporting between maps.
@@ -189,7 +189,7 @@ namespace Imgeneus.World.Game.Teleport
 
         #region Casting teleport
 
-        public event Action<int> OnCastingTeleport;
+        public event Action<uint> OnCastingTeleport;
 
         public event Action OnCastingTeleportFinished;
 
@@ -219,12 +219,12 @@ namespace Imgeneus.World.Game.Teleport
             CastingPosition = (0, 0, 0, 0);
         }
 
-        private void HealthManager_OnGotDamage(int sender, IKiller damageMaker, int damage)
+        private void HealthManager_OnGotDamage(uint sender, IKiller damageMaker, int damage)
         {
             CancelCasting();
         }
 
-        private void MovementManager_OnMove(int senderId, float x, float y, float z, ushort angle, MoveMotion motion)
+        private void MovementManager_OnMove(uint senderId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
             CancelCasting();
         }

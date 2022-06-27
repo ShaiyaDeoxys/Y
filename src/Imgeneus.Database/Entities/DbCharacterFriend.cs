@@ -10,7 +10,7 @@ namespace Imgeneus.Database.Entities
         /// Character key.
         /// </summary>
         [Required]
-        public int CharacterId { get; set; }
+        public uint CharacterId { get; set; }
 
         [ForeignKey(nameof(CharacterId))]
         public DbCharacter Character { get; set; }
@@ -19,12 +19,12 @@ namespace Imgeneus.Database.Entities
         /// Friend key.
         /// </summary>
         [Required]
-        public int FriendId { get; set; }
+        public uint FriendId { get; set; }
 
         [ForeignKey(nameof(FriendId))]
         public DbCharacter Friend { get; set; }
 
-        public DbCharacterFriend(int characterId, int friendId)
+        public DbCharacterFriend(uint characterId, uint friendId)
         {
             CharacterId = characterId;
             FriendId = friendId;

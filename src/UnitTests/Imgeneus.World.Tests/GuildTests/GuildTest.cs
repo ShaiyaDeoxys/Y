@@ -398,7 +398,7 @@ namespace Imgeneus.World.Tests.GuildTests
             database.Setup(x => x.SaveChangesAsync(default)).ReturnsAsync(1);
 
             var etin = new Mock<IEtinManager>();
-            etin.Setup(x => x.GetEtin(It.IsAny<int>())).ReturnsAsync(50);
+            etin.Setup(x => x.GetEtin(It.IsAny<uint>())).ReturnsAsync(50);
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, partyMock.Object, countryMock.Object, etin.Object);
             guildManager.GuildId = 1;

@@ -11,22 +11,22 @@ namespace Imgeneus.World.Game.Guild
         /// </summary>
         /// <param name="guildId">guild id</param>
         /// <param name="points">points to add</param>
-        public void AddPoints(int guildId, short points);
+        public void AddPoints(uint guildId, short points);
 
         /// <summary>
         /// Event, that is fired, when guild changes number of points
         /// </summary>
-        public event Action<int, int> OnPointsChanged;
+        public event Action<uint, int> OnPointsChanged;
 
         /// <summary>
         /// Finds guild id with the max number of points.
         /// </summary>
-        public int GetTopGuild();
+        public uint GetTopGuild();
 
         /// <summary>
         /// Finds guild points by guild id.
         /// </summary>
-        public int GetGuildPoints(int guildId);
+        public int GetGuildPoints(uint guildId);
 
         /// <summary>
         /// GRB will start soon.
@@ -51,7 +51,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         ///  New ranks are set.
         /// </summary>
-        public event Action<IEnumerable<(int GuildId, int Points, byte Rank)>> OnRanksCalculated;
+        public event Action<IEnumerable<(uint GuildId, int Points, byte Rank)>> OnRanksCalculated;
 
         /// <summary>
         /// Calculates guild ranks based on guild points gained during GRB.
@@ -66,6 +66,6 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Player ids, that took part in GRB.
         /// </summary>
-        public HashSet<int> ParticipatedPlayers { get; }
+        public HashSet<uint> ParticipatedPlayers { get; }
     }
 }

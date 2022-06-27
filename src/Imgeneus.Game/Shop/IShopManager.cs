@@ -7,7 +7,7 @@ namespace Imgeneus.World.Game.Shop
 {
     public interface IShopManager : ISessionedService
     {
-        void Init(int ownerId);
+        void Init(uint ownerId);
 
         /// <summary>
         /// Items, that are currently in shop.
@@ -57,12 +57,12 @@ namespace Imgeneus.World.Game.Shop
         /// <summary>
         /// Event, that is fired, when shop is started.
         /// </summary>
-        event Action<int, string> OnShopStarted;
+        event Action<uint, string> OnShopStarted;
 
         /// <summary>
         /// Event, that is fired, when shop is closed.
         /// </summary>
-        event Action<int> OnShopFinished;
+        event Action<uint> OnShopFinished;
 
         /// <summary>
         /// If player is buying something from another's player shop, we keep reference to another player's shop.

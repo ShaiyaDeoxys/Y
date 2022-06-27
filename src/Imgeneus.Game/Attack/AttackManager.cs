@@ -35,7 +35,7 @@ namespace Imgeneus.World.Game.Attack
         private readonly IHealthManager _healthManager;
         private readonly IShapeManager _shapeManager;
         private readonly IMovementManager _movementManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager, IShapeManager shapeManager, IMovementManager movementManager)
         {
@@ -64,7 +64,7 @@ namespace Imgeneus.World.Game.Attack
 
         #region Init
 
-        public void Init(int ownerId)
+        public void Init(uint ownerId)
         {
             _ownerId = ownerId;
         }
@@ -101,13 +101,13 @@ namespace Imgeneus.World.Game.Attack
 
         public event Action<IKillable, Buff> TargetOnBuffAdded;
 
-        private void Target_OnBuffAdded(int senderId, Buff buff)
+        private void Target_OnBuffAdded(uint senderId, Buff buff)
         {
             TargetOnBuffAdded?.Invoke(Target, buff);
         }
 
         public event Action<IKillable, Buff> TargetOnBuffRemoved;
-        private void Target_OnBuffRemoved(int senderId, Buff buff)
+        private void Target_OnBuffRemoved(uint senderId, Buff buff)
         {
             TargetOnBuffRemoved?.Invoke(Target, buff);
         }
@@ -167,7 +167,7 @@ namespace Imgeneus.World.Game.Attack
 
         public event Action OnStartAttack;
 
-        public event Action<int, IKillable, AttackResult> OnAttack;
+        public event Action<uint, IKillable, AttackResult> OnAttack;
 
         public bool IsWeaponAvailable { get; set; } = true;
 

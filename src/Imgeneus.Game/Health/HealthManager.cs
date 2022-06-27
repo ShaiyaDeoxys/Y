@@ -20,7 +20,7 @@ namespace Imgeneus.World.Game.Health
         private readonly ICharacterConfiguration _characterConfiguration;
         private readonly IDatabase _database;
         private readonly IAdditionalInfoManager _additionalInfoManager;
-        private int _ownerId;
+        private uint _ownerId;
 
         public HealthManager(ILogger<HealthManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, ICharacterConfiguration characterConfiguration, IDatabase database, IAdditionalInfoManager additionalInfoManager)
         {
@@ -50,7 +50,7 @@ namespace Imgeneus.World.Game.Health
 
         #region Init & Clear
 
-        public void Init(int id, int currentHP, int currentSP, int currentMP, int? constHP, int? constSP, int? constMP)
+        public void Init(uint id, int currentHP, int currentSP, int currentMP, int? constHP, int? constSP, int? constMP)
         {
             _ownerId = id;
 
@@ -126,7 +126,7 @@ namespace Imgeneus.World.Game.Health
             }
         }
 
-        public event Action<int, IKiller, int> OnGotDamage;
+        public event Action<uint, IKiller, int> OnGotDamage;
 
         public void DecreaseHP(int hp, IKiller damageMaker)
         {
@@ -341,7 +341,7 @@ namespace Imgeneus.World.Game.Health
             Recover(MaxHP, MaxMP, MaxSP);
         }
 
-        private void OnLevelUp(int senderId, ushort level, ushort oldLevel)
+        private void OnLevelUp(uint senderId, ushort level, ushort oldLevel)
         {
             OnMaxHPChanged?.Invoke(_ownerId, MaxHP);
             OnMaxMPChanged?.Invoke(_ownerId, MaxMP);
@@ -379,19 +379,19 @@ namespace Imgeneus.World.Game.Health
 
         #region Events
 
-        public event Action<int, int> OnMaxHPChanged;
+        public event Action<uint, int> OnMaxHPChanged;
 
-        public event Action<int, int> OnMaxSPChanged;
+        public event Action<uint, int> OnMaxSPChanged;
 
-        public event Action<int, int> OnMaxMPChanged;
+        public event Action<uint, int> OnMaxMPChanged;
 
-        public event Action<int, int, int, int> OnRecover;
+        public event Action<uint, int, int, int> OnRecover;
 
         #endregion
 
         #region Death
 
-        public event Action<int, IKiller> OnDead;
+        public event Action<uint, IKiller> OnDead;
 
         private bool _isDead;
 
@@ -440,7 +440,7 @@ namespace Imgeneus.World.Game.Health
 
         #region Rebirth
 
-        public event Action<int> OnRebirthed;
+        public event Action<uint> OnRebirthed;
 
         public void Rebirth()
         {
@@ -475,7 +475,7 @@ namespace Imgeneus.World.Game.Health
 
         public bool ReflectMagicDamage { get; set; }
 
-        public event Action<int, int, Damage> OnMirrowDamage;
+        public event Action<uint, uint, Damage> OnMirrowDamage;
 
         public void InvokeMirrowDamage(Damage damage, IKillable damageMaker)
         {
@@ -496,11 +496,11 @@ namespace Imgeneus.World.Game.Health
 
         #endregion
 
-        public event Action<int, HitpointArgs> HP_Changed;
+        public event Action<uint, HitpointArgs> HP_Changed;
 
-        public event Action<int, HitpointArgs> MP_Changed;
+        public event Action<uint, HitpointArgs> MP_Changed;
 
-        public event Action<int, HitpointArgs> SP_Changed;
+        public event Action<uint, HitpointArgs> SP_Changed;
 
         public event Action<ushort, ushort> MP_SP_Used;
     }

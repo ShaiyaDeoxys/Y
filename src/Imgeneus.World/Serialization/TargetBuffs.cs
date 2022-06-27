@@ -14,7 +14,7 @@ namespace Imgeneus.World.Serialization
         public byte TargetType;
 
         [FieldOrder(1)]
-        public int TargetId;
+        public uint TargetId;
 
         [FieldOrder(2)]
         public byte BuffsCount;
