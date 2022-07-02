@@ -595,7 +595,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.Stun:
                 case TypeDetail.BlockShootingAttack:
                 case TypeDetail.Transformation:
-                case TypeDetail.EnergyBackhole:
+                case TypeDetail.EnergyBlackhole:
                 case TypeDetail.BlockMagicAttack:
                 case TypeDetail.EtainShield:
                 case TypeDetail.DamageReflection:

@@ -731,7 +731,7 @@ namespace Imgeneus.World.Tests
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.HP,
             AbilityValue1 = 500,
-            FixRange = ClearAfterDeath.KeepInMins
+            FixRange = Duration.DurationInMinutes
         };
 
         protected DbSkill Leadership = new DbSkill()
@@ -745,7 +745,7 @@ namespace Imgeneus.World.Tests
             ApplyRange = 50,
             AbilityType1 = AbilityType.PhysicalAttackPower,
             AbilityValue1 = 13,
-            FixRange = ClearAfterDeath.Clear
+            FixRange = Duration.ClearAfterDeath
         };
 
         protected DbSkill EXP = new DbSkill()
@@ -759,7 +759,7 @@ namespace Imgeneus.World.Tests
             ApplyRange = 50,
             AbilityType1 = AbilityType.ExpGainRate,
             AbilityValue1 = 150,
-            FixRange = ClearAfterDeath.KeepInHours
+            FixRange = Duration.DurationInHours
         };
 
         protected DbSkill skill1_level1 = new DbSkill()
@@ -1196,7 +1196,7 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
             TypeAttack = TypeAttack.PhysicalAttack,
-            DamageType = DamageType.HPPercentDamage,
+            DamageType = DamageType.HPPercentageDamage,
             DamageHP = 65
         };
 

@@ -413,7 +413,7 @@ namespace Imgeneus.World.Game.Attack
                         result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)(_healthManager.CurrentHP * 2), 0, 0));
                         break;
 
-                    case DamageType.HPPercentDamage:
+                    case DamageType.HPPercentageDamage:
                         result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)(target.HealthManager.MaxHP * skill.DamageHP / 100), 0, 0));
                         break;
 

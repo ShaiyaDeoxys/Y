@@ -15,7 +15,7 @@ namespace Imgeneus.GameDefinitions
         {
             SkillId = (ushort)record.SkillId;
             SkillLevel = (byte)record.SkillLevel;
-            SkillUtilizer = record.SkillUtilizer;
+            SkillUtilizer = record.UserFamily;
             UsedByFighter = (byte)record.AttackFighter;
             UsedByDefender = (byte)record.DefenseFighter;
             UsedByRanger = (byte)record.PatrolRogue;
@@ -119,7 +119,7 @@ namespace Imgeneus.GameDefinitions
         /// <summary>
         /// Which faction and profession can use this skill.
         /// </summary>
-        public SkillUtilizer SkillUtilizer { get; set; }
+        public UserFamily SkillUtilizer { get; set; }
 
         /// <summary>
         /// Indicates if skill can be used by fighter. Maybe this can be migrated to bool...
@@ -502,6 +502,6 @@ namespace Imgeneus.GameDefinitions
         /// <summary>
         /// Is buff should be cleared after character death?
         /// </summary>
-        public ClearAfterDeath FixRange { get; set; }
+        public Duration FixRange { get; set; }
     }
 }

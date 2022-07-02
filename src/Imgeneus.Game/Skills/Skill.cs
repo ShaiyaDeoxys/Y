@@ -202,7 +202,7 @@ namespace Imgeneus.Game.Skills
         /// <summary>
         /// After character death this skill is cleared from buffs list?
         /// </summary>
-        public bool ShouldClearAfterDeath { get => _dbSkill.FixRange == ClearAfterDeath.Clear; }
+        public bool ShouldClearAfterDeath { get => _dbSkill.FixRange == Duration.ClearAfterDeath; }
 
         /// <summary>
         /// When skill should be activated.

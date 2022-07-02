@@ -447,7 +447,7 @@ namespace Imgeneus.World.Game.Buffs
                     buff.TimeMPDamage = skill.TimeDamageMP;
                     buff.TimeSPDamage = skill.TimeDamageSP;
                     buff.TimeDamageType = skill.TimeDamageType > 0 ?
-                                              skill.TimeDamageType == TimeDamageType.DoublePrevious ? TimeDamageType.DoublePrevious : TimeDamageType.Percent
+                                              skill.TimeDamageType == TimeDamageType.DoublePrevious ? TimeDamageType.DoublePrevious : TimeDamageType.Percentage
                                               :
                                               TimeDamageType.None;
                     buff.OnPeriodicalDebuff += Buff_OnPeriodicalDebuff;
@@ -901,14 +901,14 @@ namespace Imgeneus.World.Game.Buffs
                         _statsManager.ExtraShootingHittingChance -= abilityValue;
                     return;
 
-                case AbilityType.PhysicalEvationRate:
+                case AbilityType.PhysicalEvasionRate:
                     if (addAbility)
                         _statsManager.ExtraPhysicalEvasionChance += abilityValue;
                     else
                         _statsManager.ExtraPhysicalEvasionChance -= abilityValue;
                     return;
 
-                case AbilityType.ShootingEvationRate:
+                case AbilityType.ShootingEvasionRate:
                     if (addAbility)
                         _statsManager.ExtraShootingEvasionChance += abilityValue;
                     else
@@ -922,7 +922,7 @@ namespace Imgeneus.World.Game.Buffs
                         _statsManager.ExtraMagicHittingChance -= abilityValue;
                     return;
 
-                case AbilityType.MagicEvationRate:
+                case AbilityType.MagicEvasionRate:
                     if (addAbility)
                         _statsManager.ExtraMagicEvasionChance += abilityValue;
                     else
@@ -1083,7 +1083,7 @@ namespace Imgeneus.World.Game.Buffs
                     }
                     return;
 
-                case AbilityType.RedPheonixCharm:
+                case AbilityType.RedPhoenixCharm:
                     if (addAbility)
                     {
                         _teleportationManager.MaxSavedPoints = 4;
@@ -1106,7 +1106,7 @@ namespace Imgeneus.World.Game.Buffs
                     if (addAbility)
                     {
                         buff.TimeHPDamage = abilityValue;
-                        buff.TimeDamageType = TimeDamageType.Percent;
+                        buff.TimeDamageType = TimeDamageType.Percentage;
                         buff.OnPeriodicalDebuff += Buff_OnPeriodicalDebuff;
                         buff.RepeatTime = skill.KeepTime;
                         buff.StartPeriodicalDebuff();
@@ -1121,7 +1121,7 @@ namespace Imgeneus.World.Game.Buffs
                     if (addAbility)
                     {
                         buff.TimeMPDamage = abilityValue;
-                        buff.TimeDamageType = TimeDamageType.Percent;
+                        buff.TimeDamageType = TimeDamageType.Percentage;
                         buff.OnPeriodicalDebuff += Buff_OnPeriodicalDebuff;
                         buff.RepeatTime = skill.KeepTime;
                         buff.StartPeriodicalDebuff();
@@ -1164,11 +1164,11 @@ namespace Imgeneus.World.Game.Buffs
                     _statsManager.IncreaseLucBySacrificing = addAbility;
                     break;
 
-                case AbilityType.IncreasePhysicalDefenceByPersent:
+                case AbilityType.IncreasePhysicalDefenceByPercent:
                     _statsManager.DefencePersent = addAbility ? abilityValue : 0;
                     break;
 
-                case AbilityType.IncreaseMagicDefenceByPersent:
+                case AbilityType.IncreaseMagicDefenceByPercent:
                     _statsManager.ResistancePersent = addAbility ? abilityValue : 0;
                     break;
 
@@ -1230,7 +1230,7 @@ namespace Imgeneus.World.Game.Buffs
         {
             var damage = debuffResult.Damage;
 
-            if (buff.TimeDamageType == TimeDamageType.Percent)
+            if (buff.TimeDamageType == TimeDamageType.Percentage)
             {
                 damage = new Damage(
                     Convert.ToUInt16(_healthManager.MaxHP * debuffResult.Damage.HP * 1.0 / 100),
