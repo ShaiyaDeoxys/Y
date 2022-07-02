@@ -106,7 +106,7 @@ namespace Imgeneus.World.Game.Guild
         /// Player requests to join a guild.
         /// </summary>
         /// <returns>true is success</returns>
-        Task<bool> RequestJoin(int guildId, Character player);
+        Task<bool> RequestJoin(uint guildId, Character player);
 
         /// <summary>
         /// Removes player from join requests.

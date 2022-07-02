@@ -328,7 +328,7 @@ namespace Imgeneus.World.Game.Player
         ///  TODO: maybe it's better to have db procedure for this?
         ///  For now, we will clear old values, when character is loaded.
         /// </summary>
-        public static void ClearOutdatedValues(IDatabase database, int characterId)
+        public static void ClearOutdatedValues(IDatabase database, uint characterId)
         {
             // Clear outdated buffs
             var outdatedBuffs = database.ActiveBuffs.Where(b => b.CharacterId == characterId && b.ResetTime < DateTime.UtcNow.AddSeconds(30));

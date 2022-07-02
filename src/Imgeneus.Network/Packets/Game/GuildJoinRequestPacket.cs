@@ -4,11 +4,11 @@ namespace Imgeneus.Network.Packets.Game
 {
     public record GuildJoinRequestPacket : IPacketDeserializer
     {
-        public int GuildId { get; private set; }
+        public uint GuildId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            GuildId = packetStream.Read<int>();
+            GuildId = packetStream.Read<uint>();
         }
     }
 }

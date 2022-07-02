@@ -171,7 +171,7 @@ namespace Imgeneus.World.Game.Player
             _userManager = userManager;
         }
 
-        public async Task<Character> CreateCharacter(int userId, int characterId)
+        public async Task<Character> CreateCharacter(int userId, uint characterId)
         {
             Character.ClearOutdatedValues(_database, characterId);
 

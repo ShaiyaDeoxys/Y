@@ -207,21 +207,21 @@ namespace Imgeneus.World.Tests.GuildTests
             var character = CreateCharacter(testMap);
 
             var database = new Mock<IDatabase>();
-            database.Setup(x => x.Guilds.FindAsync(It.IsAny<int>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light));
-            database.Setup(x => x.Characters.FindAsync(It.IsAny<int>())).ReturnsAsync(new DbCharacter());
+            database.Setup(x => x.Guilds.FindAsync(It.IsAny<uint>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light));
+            database.Setup(x => x.Characters.FindAsync(It.IsAny<uint>())).ReturnsAsync(new DbCharacter());
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
             await guildManager.RequestJoin(1, character);
 
             Assert.Single(GuildManager.JoinRequests);
             Assert.True(GuildManager.JoinRequests.ContainsKey(character.Id));
-            Assert.Equal(1, GuildManager.JoinRequests[character.Id]);
+            Assert.Equal((uint)1, GuildManager.JoinRequests[character.Id]);
 
             await guildManager.RequestJoin(2, character);
 
             Assert.Single(GuildManager.JoinRequests);
             Assert.True(GuildManager.JoinRequests.ContainsKey(character.Id));
-            Assert.Equal(2, GuildManager.JoinRequests[character.Id]);
+            Assert.Equal((uint)2, GuildManager.JoinRequests[character.Id]);
         }
 
         [Fact]
@@ -258,7 +258,7 @@ namespace Imgeneus.World.Tests.GuildTests
             var character = CreateCharacter(testMap);
 
             var database = new Mock<IDatabase>();
-            database.Setup(x => x.Guilds.FindAsync(It.IsAny<int>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light) { Rank = 31 });
+            database.Setup(x => x.Guilds.FindAsync(It.IsAny<uint>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light) { Rank = 31 });
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
             guildManager.GuildId = 1;
@@ -276,7 +276,7 @@ namespace Imgeneus.World.Tests.GuildTests
             var character = CreateCharacter(testMap);
 
             var database = new Mock<IDatabase>();
-            database.Setup(x => x.Guilds.FindAsync(It.IsAny<int>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light) { Rank = 1, HasHouse = true });
+            database.Setup(x => x.Guilds.FindAsync(It.IsAny<uint>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light) { Rank = 1, HasHouse = true });
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
             guildManager.GuildId = 1;
@@ -294,7 +294,7 @@ namespace Imgeneus.World.Tests.GuildTests
             var character = CreateCharacter(testMap);
 
             var database = new Mock<IDatabase>();
-            database.Setup(x => x.Guilds.FindAsync(It.IsAny<int>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light) { Rank = 1, HasHouse = false });
+            database.Setup(x => x.Guilds.FindAsync(It.IsAny<uint>())).ReturnsAsync(new DbGuild("test_guild", "test_message", 99, Fraction.Light) { Rank = 1, HasHouse = false });
             database.Setup(x => x.SaveChangesAsync(default)).ReturnsAsync(1);
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
@@ -394,7 +394,7 @@ namespace Imgeneus.World.Tests.GuildTests
 
             var guild = new DbGuild("test_guild", "test_message", 1, Fraction.Light) { Etin = 50 };
             var database = new Mock<IDatabase>();
-            database.Setup(x => x.Guilds.FindAsync(It.IsAny<int>())).ReturnsAsync(guild);
+            database.Setup(x => x.Guilds.FindAsync(It.IsAny<uint>())).ReturnsAsync(guild);
             database.Setup(x => x.SaveChangesAsync(default)).ReturnsAsync(1);
 
             var etin = new Mock<IEtinManager>();

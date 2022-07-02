@@ -7,6 +7,6 @@ namespace Imgeneus.World.Game.Player
         /// <summary>
         /// Creates player instance from db character id.
         /// </summary>
-        public Task<Character> CreateCharacter(int userId, int id);
+        public Task<Character> CreateCharacter(int userId, uint id);
     }
 }

@@ -7,11 +7,11 @@ namespace Imgeneus.Network.Packets.Game
         /// <summary>
         /// Id of character, that should be loaded.
         /// </summary>
-        public int CharacterId { get; private set; }
+        public uint CharacterId { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            CharacterId = packetStream.Read<int>();
+            CharacterId = packetStream.Read<uint>();
         }
     }
 }

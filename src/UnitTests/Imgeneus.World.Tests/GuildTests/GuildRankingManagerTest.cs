@@ -224,7 +224,7 @@ namespace Imgeneus.World.Tests.GuildTests
                    .Setup(d => d.GetAsyncEnumerator(default))
                    .Returns(new AsyncEnumerator<DbGuild>(data.GetEnumerator()));
 
-            mockSet.Setup(x => x.FindAsync(It.IsAny<int>()))
+            mockSet.Setup(x => x.FindAsync(It.IsAny<uint>()))
                    .ReturnsAsync(new DbGuild("guild1", "", 1, Fraction.Light));
 
 

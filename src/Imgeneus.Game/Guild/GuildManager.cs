@@ -384,9 +384,9 @@ namespace Imgeneus.World.Game.Guild
         /// Key is player id.
         /// Value is guild id.
         /// </summary>
-        public static readonly ConcurrentDictionary<uint, int> JoinRequests = new ConcurrentDictionary<uint, int>();
+        public static readonly ConcurrentDictionary<uint, uint> JoinRequests = new ConcurrentDictionary<uint, uint>();
 
-        public async Task<bool> RequestJoin(int guildId, Character player)
+        public async Task<bool> RequestJoin(uint guildId, Character player)
         {
             var guild = await _database.Guilds.FindAsync(guildId);
             if (guild is null)
