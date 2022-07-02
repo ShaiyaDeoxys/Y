@@ -3,6 +3,7 @@ using Parsec;
 using Parsec.Common;
 using Parsec.Shaiya.Item;
 using Parsec.Shaiya.NpcQuest;
+using Parsec.Shaiya.NpcSkill;
 using Parsec.Shaiya.Skill;
 
 namespace Imgeneus.GameDefinitions
@@ -84,6 +85,27 @@ namespace Imgeneus.GameDefinitions
                     _logger.LogWarning("Skill level is incorrect {level}", skill.SkillLevel);
                     continue;
                 }
+
+                Skills.Add(((ushort)skill.SkillId, (byte)skill.SkillLevel), new DbSkill(skill));
+            }
+
+            var mobSkills = Reader.ReadFromFile<DBNpcSkillData>("config/SData/DBNpcSkillData.SData");
+            for (var i = 0; i < mobSkills.Records.Count; i++)
+            {
+                var skill = mobSkills.Records[i];
+                if (skill.SkillId < 0 || skill.SkillId > ushort.MaxValue)
+                {
+                    _logger.LogWarning("Mob skill id is incorrect {id}", skill.SkillId);
+                    continue;
+                }
+
+                if (skill.SkillLevel < 0 || skill.SkillLevel > byte.MaxValue)
+                {
+                    _logger.LogWarning("Mob skill level is incorrect {level}", skill.SkillLevel);
+                    continue;
+                }
+
+                skill.SkillLevel = 100; // 100 is default level for mob's skills.
 
                 Skills.Add(((ushort)skill.SkillId, (byte)skill.SkillLevel), new DbSkill(skill));
             }

@@ -2,6 +2,7 @@
 using Parsec.Shaiya.Skill;
 using Imgeneus.Database.Constants;
 using Element = Imgeneus.Database.Constants.Element;
+using Parsec.Shaiya.NpcSkill;
 
 namespace Imgeneus.GameDefinitions
 {
@@ -12,6 +13,101 @@ namespace Imgeneus.GameDefinitions
         }
 
         public DbSkill(DBSkillDataRecord record)
+        {
+            SkillId = (ushort)record.SkillId;
+            SkillLevel = (byte)record.SkillLevel;
+            SkillUtilizer = record.UserFamily;
+            UsedByFighter = (byte)record.AttackFighter;
+            UsedByDefender = (byte)record.DefenseFighter;
+            UsedByRanger = (byte)record.PatrolRogue;
+            UsedByArcher = (byte)record.ShootRogue;
+            UsedByMage = (byte)record.AttackMage;
+            UsedByPriest = (byte)record.DefenseMage;
+            PreviousSkillId = (ushort)record.PrevSkill;
+            ReqLevel = (ushort)record.Level;
+            Grow = (byte)record.Grow;
+            SkillPoint = (byte)record.Point;
+            TypeShow = record.TypeShow;
+            TypeAttack = record.TypeAttack;
+            TypeEffect = record.TypeEffect;
+            TypeDetail = record.TypeDetail;
+            NeedWeapon1 = (byte)record.NeedWeapon1;
+            NeedWeapon2 = (byte)record.NeedWeapon2;
+            NeedWeapon3 = (byte)record.NeedWeapon3;
+            NeedWeapon4 = (byte)record.NeedWeapon4;
+            NeedWeapon5 = (byte)record.NeedWeapon5;
+            NeedWeapon6 = (byte)record.NeedWeapon6;
+            NeedWeapon7 = (byte)record.NeedWeapon7;
+            NeedWeapon8 = (byte)record.NeedWeapon8;
+            NeedWeapon9 = (byte)record.NeedWeapon9;
+            NeedWeapon10 = (byte)record.NeedWeapon10;
+            NeedWeapon11 = (byte)record.NeedWeapon11;
+            NeedWeapon12 = (byte)record.NeedWeapon12;
+            NeedWeapon13 = (byte)record.NeedWeapon13;
+            NeedWeapon14 = (byte)record.NeedWeapon14;
+            NeedWeapon15 = (byte)record.NeedWeapon15;
+            NeedShield = (byte)record.NeedShield;
+            SP = (ushort)record.SP;
+            MP = (ushort)record.MP;
+            ReadyTime = (byte)record.ReadyTime;
+            ResetTime = (ushort)record.ResetTime;
+            AttackRange = (byte)record.AttackRange;
+            StateType = record.StateType;
+            Element = (Element)record.Element;
+            DisabledSkill = (ushort)record.Disable;
+            SuccessType = record.SuccessType;
+            SuccessValue = (byte)record.SuccessValue;
+            TargetType = record.TargetType;
+            ApplyRange = (byte)record.ApplyRange;
+            MultiAttack = (byte)record.MultiAttack;
+            KeepTime = (int)record.KeepTime;
+            Weapon1 = (byte)record.Weapon1;
+            Weapon2 = (byte)record.Weapon2;
+            Weaponvalue = (byte)record.WeaponValue;
+            DamageType = record.DamageType;
+            DamageHP = (ushort)record.DamageHP;
+            DamageSP = (ushort)record.DamageSP;
+            DamageMP = (ushort)record.DamageMP;
+            TimeDamageType = record.TimeDamageType;
+            TimeDamageHP = (ushort)record.TimeDamageHP;
+            TimeDamageSP = (ushort)record.TimeDamageSP;
+            TimeDamageMP = (ushort)record.TimeDamageMP;
+            AddDamageHP = (ushort)record.AddDamageHP;
+            AddDamageSP = (ushort)record.AddDamageSP;
+            AddDamageMP = (ushort)record.AddDamageMP;
+            AbilityType1 = record.AbilityType1;
+            AbilityValue1 = (ushort)record.AbilityValue1;
+            AbilityType2 = record.AbilityType2;
+            AbilityValue2 = (ushort)record.AbilityValue2;
+            AbilityType3 = record.AbilityType3;
+            AbilityValue3 = (ushort)record.AbilityValue3;
+            AbilityType4 = record.AbilityType4;
+            AbilityValue4 = (ushort)record.AbilityValue4;
+            AbilityType5 = record.AbilityType5;
+            AbilityValue5 = (ushort)record.AbilityValue5;
+            AbilityType6 = record.AbilityType6;
+            AbilityValue6 = (ushort)record.AbilityValue6;
+            AbilityType7 = record.AbilityType7;
+            AbilityValue7 = (ushort)record.AbilityValue7;
+            AbilityType8 = record.AbilityType8;
+            AbilityValue8 = (ushort)record.AbilityValue8;
+            AbilityType9 = record.AbilityType9;
+            AbilityValue9 = (ushort)record.AbilityValue9;
+            AbilityType10 = record.AbilityType10;
+            AbilityValue10 = (ushort)record.AbilityValue10;
+            HealHP = (ushort)record.HealHP;
+            HealMP = (ushort)record.HealMP;
+            HealSP = (ushort)record.HealSP;
+            TimeHealHP = (ushort)record.TimeHealHP;
+            TimeHealMP = (ushort)record.TimeHealMP;
+            TimeHealSP = (ushort)record.TimeHealSP;
+            DefenceType = (byte)record.DefenceType;
+            DefenceValue = (byte)record.DefenceValue;
+            LimitHP = (byte)record.LimitHP;
+            FixRange = record.FixRange;
+        }
+
+        public DbSkill(DBNpcSkillDataRecord record)
         {
             SkillId = (ushort)record.SkillId;
             SkillLevel = (byte)record.SkillLevel;
