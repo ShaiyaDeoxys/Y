@@ -13,7 +13,7 @@ namespace Imgeneus.World.Serialization
         public byte TypeId { get; }
 
         [FieldOrder(2)]
-        public byte EnhancementLevel { get => 20; } // TODO: implement enhancement level
+        public byte EnhancementLevel { get; }
 
         public EquipmentItem(Item item)
         {
@@ -21,6 +21,7 @@ namespace Imgeneus.World.Serialization
             {
                 Type = item.Type;
                 TypeId = item.TypeId;
+                EnhancementLevel = item.EnchantmentLevel;
             }
         }
     }

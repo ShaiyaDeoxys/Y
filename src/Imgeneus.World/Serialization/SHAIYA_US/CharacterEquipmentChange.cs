@@ -36,7 +36,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
             {
                 Type = item.Type;
                 TypeId = item.TypeId;
-                EnchantLevel = 20; // TODO: implement enchant here.
+                EnchantLevel = item.EnchantmentLevel;
                 HasColor = item.DyeColor.IsEnabled;
                 if (HasColor)
                     DyeColor = new DyeColorSerialized(item.DyeColor.Alpha, item.DyeColor.R, item.DyeColor.G, item.DyeColor.B, item.DyeColor.Saturation);
