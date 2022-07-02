@@ -106,7 +106,11 @@ namespace Imgeneus.World.Game.Buffs
             {
                 var buffs = new List<Buff>();
                 foreach (var b in initBuffs)
-                    buffs.Add(Buff.FromDbCharacterActiveBuff(b, _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)]));
+                {
+                    var buff = Buff.FromDbCharacterActiveBuff(b, _definitionsPreloder.Skills[(b.SkillId, b.SkillLevel)]);
+                    buff.Id = GenerateId();
+                    buffs.Add(buff);
+                }
 
                 ActiveBuffs.AddRange(buffs);
             }
@@ -153,6 +157,20 @@ namespace Imgeneus.World.Game.Buffs
         #endregion
 
         #region Active buffs
+
+        private uint _counter;
+        private object _syncObject = new();
+
+        private uint GenerateId()
+        {
+            uint id = 0;
+            lock (_syncObject)
+            {
+                _counter++;
+                id = _counter;
+            }
+            return id;
+        }
 
         public ObservableRangeCollection<Buff> ActiveBuffs { get; private set; } = new ObservableRangeCollection<Buff>();
 
@@ -298,7 +316,8 @@ namespace Imgeneus.World.Game.Buffs
                         buff = new Buff(creator, skill)
                         {
                             ResetTime = resetTime,
-                            InitialDamage = skill.InitialDamage
+                            InitialDamage = skill.InitialDamage,
+                            Id = GenerateId()
                         };
                         if (skill.IsPassive)
                             PassiveBuffs.Add(buff);
@@ -313,7 +332,8 @@ namespace Imgeneus.World.Game.Buffs
                 buff = new Buff(creator, skill)
                 {
                     ResetTime = resetTime,
-                    InitialDamage = skill.InitialDamage
+                    InitialDamage = skill.InitialDamage,
+                    Id = GenerateId()
                 };
 
                 if (buff.IsDebuff && _untouchableManager.BlockDebuffs)
@@ -1307,6 +1327,7 @@ namespace Imgeneus.World.Game.Buffs
 
                     var copy = new Buff(null, new Skill(_definitionsPreloder.Skills[(buff.Skill.SkillId, buff.Skill.SkillLevel)], 0, 0));
                     copy.ResetTime = DateTime.UtcNow.AddSeconds(30);
+                    copy.Id = GenerateId();
 
                     ActiveBuffs.Add(copy);
                     LastPontentialDefence = DateTime.UtcNow;

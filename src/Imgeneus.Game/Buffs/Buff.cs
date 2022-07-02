@@ -11,11 +11,18 @@ namespace Imgeneus.World.Game.Buffs
 {
     public class Buff
     {
-        private static uint Counter = 1;
+        private uint _id;
+        public uint Id
+        {
+            get => _id;
+            set
+            {
+                if (_id > 0)
+                    throw new Exception("Buff Id can not set twice!");
 
-        public uint Id { get; private set; }
-
-        private object SyncObj = new object();
+                _id = value;
+            }
+        }
 
         public int CountDownInSeconds { get => (int)ResetTime.Subtract(DateTime.UtcNow).TotalSeconds; }
 
@@ -30,11 +37,6 @@ namespace Imgeneus.World.Game.Buffs
 
         public Buff(IKiller maker, Skill skill)
         {
-            lock (SyncObj)
-            {
-                Id = Counter++;
-            }
-
             Skill = skill;
             BuffCreator = maker;
 
@@ -130,7 +132,7 @@ namespace Imgeneus.World.Game.Buffs
             {
                 return Skill.Type == TypeDetail.PersistBarrier ||
                        Skill.Type == TypeDetail.Evolution && Skill.IsUsedByRanger || // Transformation & Disguise
-                       Skill.Type == TypeDetail.Stealth; 
+                       Skill.Type == TypeDetail.Stealth;
             }
         }
 
@@ -142,7 +144,7 @@ namespace Imgeneus.World.Game.Buffs
             get
             {
                 return Skill.Type == TypeDetail.Stealth ||
-                       Skill.StateType == StateType.Sleep || 
+                       Skill.StateType == StateType.Sleep ||
                        (Skill.Type == TypeDetail.Evolution && Skill.TypeEffect == TypeEffect.Debuff) ||
                        (Skill.Type == TypeDetail.Evolution && Skill.IsUsedByRanger);
             }
