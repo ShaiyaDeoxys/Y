@@ -12,8 +12,9 @@ namespace Imgeneus.Network.Packets.Game
         {
             TimeInterval = packetStream.Read<short>();
             var messageLength = packetStream.Read<byte>();
+
             // Message always ends with an empty character
-#if EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG
+#if EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
             Message = packetStream.ReadString(messageLength, Encoding.Unicode);
 #else
             Message = packetStream.ReadString(messageLength);

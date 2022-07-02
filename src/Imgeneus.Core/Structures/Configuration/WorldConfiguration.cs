@@ -21,5 +21,10 @@
         /// Max number os connection.
         /// </summary>
         public ushort MaximumNumberOfConnections { get; set; }
+
+        /// <summary>
+        /// Message, that is sent as soon as player connects to game world.
+        /// </summary>
+        public string WelcomeMessage { get; set; }
     }
 }
