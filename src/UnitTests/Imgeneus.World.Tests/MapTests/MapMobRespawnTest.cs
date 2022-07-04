@@ -11,7 +11,7 @@ namespace Imgeneus.World.Tests
         {
             var map = testMap;
             var mob = CreateMob(1, map);
-            var character = CreateCharacter();
+            var character = CreateCharacter(map);
 
             Assert.NotNull(map.GetMob(mob.CellId, mob.Id));
 
