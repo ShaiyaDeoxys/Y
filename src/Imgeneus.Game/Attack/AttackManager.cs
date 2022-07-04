@@ -293,7 +293,7 @@ namespace Imgeneus.World.Game.Attack
             if (target.UntouchableManager.IsUntouchable)
                 return false;
 
-            if (target.UntouchableManager.BlockedMagicAttacks > 0 && typeAttack == TypeAttack.MagicAttack)
+            if (target.UntouchableManager.BlockedMagicAttacks > 0 && typeAttack == TypeAttack.MagicAttack && !skill.IsForAlly)
             {
                 target.UntouchableManager.BlockedMagicAttacks--;
                 return false;

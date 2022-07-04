@@ -997,7 +997,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             MP = 850,
             TargetType = TargetType.Caster,
-            TypeEffect = TypeEffect.Buff
+            TypeEffect = TypeEffect.Buff,
+            TypeAttack = TypeAttack.MagicAttack
         };
 
         protected DbSkill MagicMirror = new DbSkill()

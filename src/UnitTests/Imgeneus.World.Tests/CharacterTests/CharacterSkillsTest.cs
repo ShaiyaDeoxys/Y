@@ -303,6 +303,22 @@ namespace Imgeneus.World.Tests.CharacterTests
         }
 
         [Fact]
+        [Description("MagicVeil should not block ally buffs.")]
+        public void MagicVeilAndAllyBuffsTest()
+        {
+            var character = CreateCharacter();
+            character.AttackManager.AlwaysHit = false;
+
+            character.BuffsManager.AddBuff(new Skill(MagicVeil, 0, 0), null);
+            Assert.Single(character.BuffsManager.ActiveBuffs);
+            Assert.Equal(3, character.UntouchableManager.BlockedMagicAttacks);
+
+            character.SkillsManager.UseSkill(new Skill(EtainsEmbrace, 0, 0), character, character);
+            Assert.Equal(2, character.BuffsManager.ActiveBuffs.Count);
+            Assert.Equal(3, character.UntouchableManager.BlockedMagicAttacks);
+        }
+
+        [Fact]
         [Description("EtainsEmbrace should require 850 MP.")]
         public void CheckNeedMPTest()
         {
