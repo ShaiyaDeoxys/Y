@@ -568,7 +568,7 @@ namespace Imgeneus.World.Tests
             Level = 38,
             HP = 2765,
             Element = Element.Wind1,
-            AttackSpecial3 = MobRespawnTime.TestEnv,
+            AttackSpecial3 = MobRespawnTime.Seconds_15,
             Exp = 70,
             ChaseStep = 9,
             ChaseRange = 9,
