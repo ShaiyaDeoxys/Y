@@ -605,6 +605,9 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         private void StopChasing()
         {
+#if DEBUG
+            _logger.LogDebug("AI {id} stopped chasing.", _ownerId);
+#endif
             _chaseTimer.Stop();
         }
 
@@ -615,7 +618,8 @@ namespace Imgeneus.World.Game.AI
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} target is already cleared.", GetHashCode());
 #endif
-                State = AIState.BackToBirthPosition;
+                if (State == AIState.Chase || State == AIState.ReadyToAttack)
+                    State = AIState.BackToBirthPosition;
                 return;
             }
 
