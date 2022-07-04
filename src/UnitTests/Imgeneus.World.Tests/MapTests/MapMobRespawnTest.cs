@@ -18,13 +18,14 @@ namespace Imgeneus.World.Tests
             mob.HealthManager.DecreaseHP(mob.HealthManager.CurrentHP, character);
             Assert.Null(map.GetMob(mob.CellId, mob.Id));
 
-            map.Cells[0].RebirthMob(mob);
+            map.RebirthMob(mob);
 
             // Should rebirth with new id.
             var mobs = map.Cells[0].GetAllMobs(false);
             Assert.Single(mobs);
             Assert.Equal(Wolf.HP, mobs.ElementAt(0).HealthManager.CurrentHP);
             Assert.False(mobs.ElementAt(0).HealthManager.IsDead);
+            Assert.True(mobs.ElementAt(0).Id != 0);
         }
     }
 }
