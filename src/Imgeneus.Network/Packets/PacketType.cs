@@ -77,6 +77,7 @@
         MOB_SET_SPEED = 0x0609, // 1545
         MOB_RECOVER = 0x0610, // 1552
         MOB_SKILL_USE = 0x060B, // 1547
+        MOB_RANGE_SKILL_USE = 0x060D, // 1549
 
         // Char stats & skills
         UPDATE_STATS = 0x0208, // 520
@@ -87,10 +88,10 @@
         AUTO_STATS_SET = 0x0121, // 289
 
         // Target
-        TARGET_CHARACTER_GET_HP = 0x0301, // 769
-        TARGET_SELECT_CHARACTER = 0x0302, // 770
+        TARGET_CHARACTER_HP_UPDATE = 0x0301, // 769
+        TARGET_CHARACTER_MAX_HP = 0x0302, // 770
         TARGET_MOB_GET_STATE = 0x0304, // 772
-        TARGET_SELECT_MOB = 0x0305, // 773
+        TARGET_MOB_HP_UPDATE = 0x0305, // 773
         TARGET_GET_CHARACTER_BUFFS = 0x0308, // 776
         TARGET_GET_MOB_BUFFS = 0x0309, // 777
         TARGET_CLEAR = 0x030A, // 778

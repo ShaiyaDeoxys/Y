@@ -452,9 +452,33 @@ namespace Imgeneus.World.Game.Zone
             mob.Map = this;
             Cells[GetCellIndex(mob)].AddMob(mob);
 
+            if (mob.ShouldRebirth)
+                mob.TimeToRebirth += RebirthMob;
+
 #if DEBUG
             _logger.LogDebug("Mob {mobId} with global id {id} entered map {mapId}", mob.MobId, mob.Id, Id);
 #endif
+        }
+
+        /// <summary>
+        /// Called, when mob respawns.
+        /// </summary>
+        /// <param name="sender">respawned mob</param>
+        public void RebirthMob(Mob sender)
+        {
+            sender.TimeToRebirth -= RebirthMob;
+
+            // Create mob clone, because we can not reuse the same id.
+            var mob = sender.Clone();
+
+            // TODO: generate rebirth coordinates based on the spawn area.
+            mob.MovementManager.PosX = sender.PosX;
+            mob.MovementManager.PosY = sender.PosY;
+            mob.MovementManager.PosZ = sender.PosZ;
+
+            mob.HealthManager.Rebirth();
+
+            AddMob(mob);
         }
 
         /// <summary>

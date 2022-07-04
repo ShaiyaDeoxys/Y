@@ -94,6 +94,9 @@ namespace Imgeneus.World.Game.Monster
 
         public void Init(uint ownerId)
         {
+            if (ownerId == 0)
+                throw new ArgumentException("Mob id can not be 0.");
+
             Id = ownerId;
 
             StatsManager.Init(Id, 0, _dbMob.Dex, 0, 0, _dbMob.Wis, _dbMob.Luc, def: _dbMob.Defense, res: _dbMob.Magic);

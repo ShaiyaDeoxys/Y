@@ -23,7 +23,7 @@ namespace Imgeneus.World.Handlers
             _gameWorld = gameWorld;
         }
 
-        [HandlerAction(PacketType.TARGET_SELECT_MOB)]
+        [HandlerAction(PacketType.TARGET_MOB_HP_UPDATE)]
         public void HandleMobTarget(WorldClient client, MobInTargetPacket packet)
         {
             var mob = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.TargetId);
@@ -31,10 +31,10 @@ namespace Imgeneus.World.Handlers
                 return;
 
             _attackManager.Target = mob;
-            _packetFactory.SendMobInTarget(client, mob);
+            _packetFactory.SendMobTargetHP(client, mob.Id, mob.HealthManager.CurrentHP);
         }
 
-        [HandlerAction(PacketType.TARGET_SELECT_CHARACTER)]
+        [HandlerAction(PacketType.TARGET_CHARACTER_MAX_HP)]
         public void HandlePlayerTarget(WorldClient client, PlayerInTargetPacket packet)
         {
             var player = _mapProvider.Map.GetPlayer(packet.TargetId);
@@ -42,7 +42,7 @@ namespace Imgeneus.World.Handlers
                 return;
 
             _attackManager.Target = player;
-            _packetFactory.SendPlayerInTarget(client, player);
+            _packetFactory.SendPlayerInTarget(client, player.Id, player.HealthManager.MaxHP, player.HealthManager.CurrentHP);
         }
 
         [HandlerAction(PacketType.TARGET_CLEAR)]
@@ -85,13 +85,13 @@ namespace Imgeneus.World.Handlers
             }
         }
 
-        [HandlerAction(PacketType.TARGET_CHARACTER_GET_HP)]
+        [HandlerAction(PacketType.TARGET_CHARACTER_HP_UPDATE)]
         public void HandleGetMobHP(WorldClient client, TargetPlayerGetHPPacket packet)
         {
             var target = _mapProvider.Map.GetPlayer(packet.TargetId);
             if (target != null)
             {
-                _packetFactory.SendTargetHP(client, target.Id, target.HealthManager.CurrentHP);
+                _packetFactory.SendCharacterTargetHP(client, target.Id, target.HealthManager.CurrentHP);
             }
         }
     }

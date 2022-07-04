@@ -215,7 +215,7 @@ else
     public Character player { get; private set; }
 
     [Parameter]
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
     public string CurrentTab { get; set; } = STATS_TAB;
 
@@ -227,7 +227,7 @@ else
 
     protected override void OnInitialized()
     {
-        if (_gameWorld.Players.TryGetValue(Id, out var character))
+        if (_gameWorld.Players.TryGetValue((uint)Id, out var character))
             player = character;
     }
 }

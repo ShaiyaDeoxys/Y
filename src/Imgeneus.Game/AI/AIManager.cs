@@ -111,6 +111,8 @@ namespace Imgeneus.World.Game.AI
 
         #region Init
 
+        private bool _initialized = false;
+
         public void Init(uint ownerId,
                          MobAI aiType,
                          MoveArea moveArea,
@@ -142,6 +144,9 @@ namespace Imgeneus.World.Game.AI
                          int attackTime3 = 0)
         {
             _ownerId = ownerId;
+
+            if (_initialized) // When rebirth mob, we are reusing the same ai manager.
+                return;
 
             AI = aiType;
             MoveArea = moveArea;
@@ -184,6 +189,7 @@ namespace Imgeneus.World.Game.AI
             SetupAITimers();
 
             State = AIState.Idle;
+            _initialized = true;
         }
 
         public void Dispose()
@@ -286,6 +292,8 @@ namespace Imgeneus.World.Game.AI
 
         private AIState _state = AIState.Idle;
 
+        private object _stateSyncObject = new();
+
         public AIState State
         {
             get
@@ -295,50 +303,56 @@ namespace Imgeneus.World.Game.AI
 
             private set
             {
-                _state = value;
+                lock (_stateSyncObject)
+                {
+                    if (value == AIState.BackToBirthPosition && (StartPosX == -1 || StartPosZ == -1))
+                        _logger.LogDebug("WTF?");
+
+                    _state = value;
 
 #if DEBUG
-                _logger.LogDebug("AI {hashcode} changed state to {state}.", GetHashCode(), _state);
+                    _logger.LogDebug("AI {hashcode} changed state to {state}.", GetHashCode(), _state);
 #endif
 
-                switch (_state)
-                {
-                    case AIState.Idle:
-                        // Idle timer generates a mob walk. Not available for altars.
-                        if (AI != MobAI.Relic)
-                            _idleTimer.Start();
+                    switch (_state)
+                    {
+                        case AIState.Idle:
+                            // Idle timer generates a mob walk. Not available for altars.
+                            if (AI != MobAI.Relic)
+                                _idleTimer.Start();
 
-                        // If this is combat mob start watching as soon as it's in idle state.
-                        if (AI != MobAI.Peaceful && AI != MobAI.Peaceful2)
-                            _watchTimer.Start();
+                            // If this is combat mob start watching as soon as it's in idle state.
+                            if (AI != MobAI.Peaceful && AI != MobAI.Peaceful2)
+                                _watchTimer.Start();
 
-                        _untouchableManager.IsUntouchable = false;
-                        StartPosX = -1;
-                        StartPosZ = -1;
-                        _movementManager.MoveMotion = MoveMotion.Walk;
-                        Agro.Clear();
-                        break;
+                            _untouchableManager.IsUntouchable = false;
+                            StartPosX = -1;
+                            StartPosZ = -1;
+                            _movementManager.MoveMotion = MoveMotion.Walk;
+                            Agro.Clear();
+                            break;
 
-                    case AIState.Chase:
-                        StartChasing();
-                        break;
+                        case AIState.Chase:
+                            StartChasing();
+                            break;
 
-                    case AIState.ReadyToAttack:
-                        UseAttack();
-                        break;
+                        case AIState.ReadyToAttack:
+                            UseAttack();
+                            break;
 
-                    case AIState.BackToBirthPosition:
-                        StopChasing();
-                        ReturnToBirthPosition();
-                        _untouchableManager.IsUntouchable = true;
-                        break;
+                        case AIState.BackToBirthPosition:
+                            StopChasing();
+                            ReturnToBirthPosition();
+                            _untouchableManager.IsUntouchable = true;
+                            break;
 
-                    default:
-                        _logger.LogWarning("Not implemented mob state: {state}.", _state);
-                        break;
+                        default:
+                            _logger.LogWarning("Not implemented mob state: {state}.", _state);
+                            break;
+                    }
+
+                    OnStateChanged?.Invoke(_state);
                 }
-
-                OnStateChanged?.Invoke(_state);
             }
         }
 
@@ -407,7 +421,7 @@ namespace Imgeneus.World.Game.AI
                 SelectActionBasedOnAI();
             }
 
-            if (_target is null)
+            if (_target is null && State != AIState.Idle)
                 State = AIState.BackToBirthPosition;
         }
 
@@ -691,15 +705,39 @@ namespace Imgeneus.World.Game.AI
 
         #region Return to birth place
 
+        private float _startX = -1;
         /// <summary>
         /// Position x, where mob started chasing.
         /// </summary>
-        private float StartPosX = -1;
+        private float StartPosX
+        {
+            get => _startX;
+            set
+            {
+                if (value != -1 && _startX == -1)
+                    _startX = value;
 
+                if (value == -1 && _startX != -1)
+                    _startX = value;
+            }
+        }
+
+        private float _startZ = -1;
         /// <summary>
         /// Position z, where mob started chasing.
         /// </summary>
-        private float StartPosZ = -1;
+        private float StartPosZ
+        {
+            get => _startZ;
+            set
+            {
+                if (value != -1 && _startZ == -1)
+                    _startZ = value;
+
+                if (value == -1 && _startZ != -1)
+                    _startZ = value;
+            }
+        }
 
         /// <summary>
         /// Is mob too far away from its' area?
@@ -708,7 +746,11 @@ namespace Imgeneus.World.Game.AI
         {
             get
             {
-                return MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ) > 45;
+                var distance = MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ);
+#if DEBUG
+                _logger.LogDebug("AI {hashcode} distance to start chasing location is {distance}.", GetHashCode(), distance);
+#endif
+                return distance > 45;
             }
         }
 

@@ -120,7 +120,8 @@ namespace Imgeneus.World.Packets
         void SendTransformation(IWorldClient client, uint senderId, bool isTransformed);
         void SendCharacterMirrorDamage(IWorldClient client, uint senderId, uint targetId, Damage damage);
         void SendMobMirrorDamage(IWorldClient client, uint senderId, uint targetId, Damage damage);
-        void SendTargetHP(IWorldClient client, uint targetId, int currentHP);
+        void SendCharacterTargetHP(IWorldClient client, uint targetId, int currentHP);
+        void SendMobTargetHP(IWorldClient client, uint targetId, int currentHP);
         #endregion
 
         #region NPC
@@ -215,8 +216,7 @@ namespace Imgeneus.World.Packets
 
         #region Attack
         void SendAttackStart(IWorldClient client);
-        void SendMobInTarget(IWorldClient client, Mob target);
-        void SendPlayerInTarget(IWorldClient client, Character target);
+        void SendPlayerInTarget(IWorldClient client, uint characterId, int maxHp, int hp);
         void SendCurrentBuffs(IWorldClient client, IKillable target);
         void SendTargetAddBuff(IWorldClient client, uint targetId, Buff buff, bool isMob);
         void SendTargetRemoveBuff(IWorldClient client, uint targetId, Buff buff, bool isMob);

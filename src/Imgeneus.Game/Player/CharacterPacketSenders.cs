@@ -36,6 +36,12 @@ namespace Imgeneus.World.Game.Player
 
         private void SendTargetRemoveBuff(IKillable target, Buff buff) => _packetFactory.SendTargetRemoveBuff(GameSession.Client, target.Id, buff, target is Mob);
 
+        private void SendMobTargetHP(uint senderId, int hp, int mp, int sp) => _packetFactory.SendMobTargetHP(GameSession.Client, senderId, hp);
+
+        private void SendCharacterTargetHP(uint senderId, int hp, int mp, int sp) => _packetFactory.SendCharacterTargetHP(GameSession.Client, senderId, hp);
+
+        private void SendCharacterTargetMaxHP(uint senderId, int maxHp) => _packetFactory.SendPlayerInTarget(GameSession.Client, senderId, maxHp, AttackManager.Target.HealthManager.CurrentHP);
+
         private void SendDuelResponse(uint senderId, DuelResponse response) => _packetFactory.SendDuelResponse(GameSession.Client, response, senderId);
 
         private void SendDuelStart() => _packetFactory.SendDuelStart(GameSession.Client);

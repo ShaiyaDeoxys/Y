@@ -581,6 +581,9 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         public void AddMob(Mob mob)
         {
+            if (mob.Id == 0)
+                throw new ArgumentException("Mob id can not be 0.");
+
             Mobs.TryAdd(mob.Id, mob);
             AssignCellIndex(mob);
             AddListeners(mob);
@@ -624,27 +627,6 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <summary>
-        /// Called, when mob respawns.
-        /// </summary>
-        /// <param name="sender">respawned mob</param>
-        public void RebirthMob(Mob sender)
-        {
-            sender.TimeToRebirth -= RebirthMob;
-
-            // Create mob clone, because we can not reuse the same id.
-            var mob = sender.Clone();
-
-            // TODO: generate rebirth coordinates based on the spawn area.
-            mob.MovementManager.PosX = sender.PosX;
-            mob.MovementManager.PosY = sender.PosY;
-            mob.MovementManager.PosZ = sender.PosZ;
-
-            mob.HealthManager.Rebirth();
-
-            AddMob(mob);
-        }
-
-        /// <summary>
         /// Gets all mobs from map cell.
         /// </summary>
         /// /// <param name="includeNeighborCells">if set to true includes mobs fom neighbor cells</param>
@@ -684,7 +666,6 @@ namespace Imgeneus.World.Game.Zone
             mob.HealthManager.OnRecover -= Mob_OnRecover;
             mob.BuffsManager.OnSkillKeep -= Mob_OnSkillKeep;
             mob.HealthManager.OnMirrowDamage -= Mob_OnMirrowDamage;
-            mob.TimeToRebirth -= RebirthMob;
         }
 
         private async void Mob_OnDead(uint senderId, IKiller killer)
@@ -727,10 +708,8 @@ namespace Imgeneus.World.Game.Zone
             if (Map is GRBMap)
                 (Map as GRBMap).AddPoints(mob.GuildPoints);
 
-            if (mob.ShouldRebirth)
-                mob.TimeToRebirth += RebirthMob;
-
-            mob.Dispose();
+            if (!mob.ShouldRebirth)
+                mob.Dispose();
 
 #if DEBUG
             // ONLY for debug! Don't uncomment it in prod.

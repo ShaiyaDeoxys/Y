@@ -18,6 +18,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Kills;
 using Imgeneus.World.Game.Levelling;
 using Imgeneus.World.Game.Linking;
+using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Quests;
@@ -151,6 +152,7 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnItemExpired += SendItemExpired;
             AttackManager.TargetOnBuffAdded += SendTargetAddBuff;
             AttackManager.TargetOnBuffRemoved += SendTargetRemoveBuff;
+            AttackManager.OnTargetChanged += OnTargetChanged;
             DuelManager.OnDuelResponse += SendDuelResponse;
             DuelManager.OnStart += SendDuelStart;
             DuelManager.OnCanceled += SendDuelCancel;
@@ -164,6 +166,33 @@ namespace Imgeneus.World.Game.Player
 
             Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
             Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;
+        }
+
+        private IKillable _target;
+        private void OnTargetChanged(IKillable value)
+        {
+            if (_target == value)
+                return;
+
+            if (_target is not null)
+            {
+                _target.HealthManager.OnRecover -= SendMobTargetHP;
+                _target.HealthManager.OnMaxHPChanged -= SendCharacterTargetMaxHP;
+            }
+
+            _target = value;
+
+            if (_target is Mob)
+            {
+                _target.HealthManager.OnRecover += SendMobTargetHP;
+            }
+
+            if (_target is Character)
+            {
+                // Map cell will send recover for all players.
+                //_target.HealthManager.OnRecover += SendCharacterTargetHP;
+                _target.HealthManager.OnMaxHPChanged += SendCharacterTargetMaxHP;
+            }
         }
 
         public void Dispose()
@@ -182,6 +211,7 @@ namespace Imgeneus.World.Game.Player
             InventoryManager.OnItemExpired -= SendItemExpired;
             AttackManager.TargetOnBuffAdded -= SendTargetAddBuff;
             AttackManager.TargetOnBuffRemoved -= SendTargetRemoveBuff;
+            AttackManager.OnTargetChanged -= OnTargetChanged;
             DuelManager.OnDuelResponse -= SendDuelResponse;
             DuelManager.OnStart -= SendDuelStart;
             DuelManager.OnCanceled -= SendDuelCancel;
@@ -221,7 +251,7 @@ namespace Imgeneus.World.Game.Player
                 {
                     _motion = value;
                 }
-                
+
                 OnMotion?.Invoke(this, value);
             }
         }

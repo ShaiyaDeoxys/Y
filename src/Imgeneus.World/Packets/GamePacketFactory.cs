@@ -543,10 +543,11 @@ namespace Imgeneus.World.Packets
 
         public void SendMobRecover(IWorldClient client, uint mobId, int hp)
         {
-            using var packet = new ImgeneusPacket(PacketType.MOB_RECOVER);
-            packet.Write(mobId);
-            packet.Write(hp);
-            client.Send(packet);
+            // Mob recover causes hp glitch. Instead os server used 0305 packet. Why? =\
+            //using var packet = new ImgeneusPacket(PacketType.MOB_RECOVER);
+            //packet.Write(mobId);
+            //packet.Write(hp);
+            //client.Send(packet);
         }
 
         public void SendAppearanceChanged(IWorldClient client, uint characterId, byte hair, byte face, byte size, byte gender)
@@ -777,9 +778,17 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendTargetHP(IWorldClient client, uint targetId, int currentHP)
+        public void SendCharacterTargetHP(IWorldClient client, uint targetId, int currentHP)
         {
-            using var packet = new ImgeneusPacket(PacketType.TARGET_CHARACTER_GET_HP);
+            using var packet = new ImgeneusPacket(PacketType.TARGET_CHARACTER_HP_UPDATE);
+            packet.Write(targetId);
+            packet.Write(currentHP);
+            client.Send(packet);
+        }
+
+        public void SendMobTargetHP(IWorldClient client, uint targetId, int currentHP)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_HP_UPDATE);
             packet.Write(targetId);
             packet.Write(currentHP);
             client.Send(packet);
@@ -1454,17 +1463,12 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendMobInTarget(IWorldClient client, Mob target)
+        public void SendPlayerInTarget(IWorldClient client, uint characterId, int maxHp, int hp)
         {
-            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_MOB);
-            packet.Write(new MobInTarget(target).Serialize());
-            client.Send(packet);
-        }
-
-        public void SendPlayerInTarget(IWorldClient client, Character target)
-        {
-            using var packet = new ImgeneusPacket(PacketType.TARGET_SELECT_CHARACTER);
-            packet.Write(new CharacterInTarget(target).Serialize());
+            using var packet = new ImgeneusPacket(PacketType.TARGET_CHARACTER_MAX_HP);
+            packet.Write(characterId);
+            packet.Write(maxHp);
+            packet.Write(hp);
             client.Send(packet);
         }
 
