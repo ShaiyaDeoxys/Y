@@ -26,6 +26,7 @@ namespace Imgeneus.World.Tests
             Assert.Equal(Wolf.HP, mobs.ElementAt(0).HealthManager.CurrentHP);
             Assert.False(mobs.ElementAt(0).HealthManager.IsDead);
             Assert.True(mobs.ElementAt(0).Id != 0);
+            Assert.True(mobs.ElementAt(0).Id != mob.Id);
         }
     }
 }
