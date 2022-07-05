@@ -58,7 +58,7 @@ namespace Imgeneus.World.Packets
         void SendResetStats(IWorldClient client, Character character);
         void SendResetSkills(IWorldClient client, ushort skillPoint);
         void SendSkillBar(IWorldClient client, IEnumerable<DbQuickSkillBarItem> quickItems);
-        void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue);
+        void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue, PacketType packetType);
         void SendStatsUpdate(IWorldClient client, ushort str, ushort dex, ushort rec, ushort intl, ushort wis, ushort luc);
         void SendLearnedNewSkill(IWorldClient client, bool ok, Skill skill);
         void SendLearnedSkills(IWorldClient client, Character character);

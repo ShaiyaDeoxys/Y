@@ -213,14 +213,9 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue)
+        public void SendAttribute(IWorldClient client, CharacterAttributeEnum attribute, uint attributeValue, PacketType packetType)
         {
-#if SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
-            using var packet = new ImgeneusPacket(PacketType.GM_SHAIYA_US_ATTRIBUTE_SET);
-#else
-            using var packet = new ImgeneusPacket(PacketType.CHARACTER_ATTRIBUTE_SET);
-#endif
-
+            using var packet = new ImgeneusPacket(packetType);
             packet.Write(new CharacterAttribute(attribute, attributeValue).Serialize());
             client.Send(packet);
         }

@@ -22,24 +22,24 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.CHARACTER_ATTRIBUTE_SET)]
-        public async Task HandleOriginal(WorldClient client, GMSetAttributePacket packet)
+        public void HandleOriginal(WorldClient client, GMSetAttributePacket packet)
         {
             if (!_gameSession.IsAdmin)
                 return;
 
-            await Handle(client, packet);
+            Handle(client, packet, PacketType.CHARACTER_ATTRIBUTE_SET);
         }
 
         [HandlerAction(PacketType.GM_SHAIYA_US_ATTRIBUTE_SET)]
-        public async Task HandleUS(WorldClient client, GMSetAttributePacket packet)
+        public void HandleUS(WorldClient client, GMSetAttributePacket packet)
         {
             if (!_gameSession.IsAdmin)
                 return;
 
-            await Handle(client, packet);
+            Handle(client, packet, PacketType.CHARACTER_ATTRIBUTE_SET);
         }
 
-        private async Task Handle(WorldClient client, GMSetAttributePacket packet)
+        private void Handle(WorldClient client, GMSetAttributePacket packet, PacketType packetType)
         {
             var (attribute, attributeValue, player) = packet;
 
@@ -58,61 +58,91 @@ namespace Imgeneus.World.Handlers
                 case CharacterAttributeEnum.Grow:
                     targetPlayer.AdditionalInfoManager.Grow = (Mode)attributeValue;
                     ok = true;
+                    _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Level:
-                    ok = targetPlayer.LevelingManager.TryChangeLevel((ushort)attributeValue, true);
+                    ok = targetPlayer.LevelingManager.TryChangeLevel((ushort)attributeValue);
+                    if (ok)
+                    {
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, CharacterAttributeEnum.Level, targetPlayer.LevelProvider.Level, packetType);
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, CharacterAttributeEnum.Exp, targetPlayer.LevelingManager.Exp, packetType);
+                    }
                     break;
 
                 case CharacterAttributeEnum.Exp:
                     ok = targetPlayer.LevelingManager.TryChangeExperience((ushort)attributeValue);
+                    if (ok)
+                    {
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, CharacterAttributeEnum.Level, targetPlayer.LevelProvider.Level, packetType);
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, CharacterAttributeEnum.Exp, targetPlayer.LevelingManager.Exp, packetType);
+                    }
                     break;
 
                 case CharacterAttributeEnum.Money:
                     targetPlayer.InventoryManager.Gold = attributeValue;
                     ok = true;
+                    _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.StatPoint:
                     ok = targetPlayer.StatsManager.TrySetStats(statPoints: (ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.SkillPoint:
                     ok = targetPlayer.SkillsManager.TrySetSkillPoints((ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Strength:
                     ok = targetPlayer.StatsManager.TrySetStats(str: (ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Dexterity:
                     ok = targetPlayer.StatsManager.TrySetStats(dex: (ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Reaction:
                     ok = targetPlayer.StatsManager.TrySetStats(rec: (ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Intelligence:
                     ok = targetPlayer.StatsManager.TrySetStats(intl: (ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Luck:
                     ok = targetPlayer.StatsManager.TrySetStats(luc: (ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Wisdom:
                     ok = targetPlayer.StatsManager.TrySetStats(wis: (ushort)attributeValue);
+                    if (ok)
+                        _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Kills:
                     targetPlayer.KillsManager.Kills = (ushort)attributeValue;
                     ok = true;
+                    _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Deaths:
                     targetPlayer.KillsManager.Deaths = (ushort)attributeValue;
                     ok = true;
+                    _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Hg:
@@ -129,7 +159,6 @@ namespace Imgeneus.World.Handlers
 
             if (ok)
             {
-                _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue);
                 _packetFactory.SendGmCommandSuccess(client);
             }
             else

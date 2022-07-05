@@ -93,7 +93,7 @@ namespace Imgeneus.World.Game.Levelling
 
         public uint NextLevelExp => _databasePreloader.Levels[(_additionalInfoManager.Grow, _levelProvider.Level)].Exp;
 
-        public bool TryChangeLevel(ushort newLevel, bool changedByAdmin = false)
+        public bool TryChangeLevel(ushort newLevel)
         {
             // Set character's new level
             if (!CanSetLevel(newLevel))
@@ -101,10 +101,10 @@ namespace Imgeneus.World.Game.Levelling
 
             _levelProvider.Level = newLevel;
 
-            // Check that experience is at least the minimum experience for the level
-            if (Exp < MinLevelExp)
+            // Check that experience is at least the minimum experience for the level, without notifiyng client.
+            if (_exp < MinLevelExp || _exp > NextLevelExp)
                 // Change player experience to 0% of current level
-                Exp = MinLevelExp;
+                _exp = MinLevelExp;
 
             return true;
         }
@@ -130,7 +130,7 @@ namespace Imgeneus.World.Game.Levelling
             return true;
         }
 
-        public bool TryChangeExperience(uint exp, bool changedByAdmin = false)
+        public bool TryChangeExperience(uint exp)
         {
             // TODO: Multiply exp by global exp multiplier
 
@@ -146,7 +146,7 @@ namespace Imgeneus.World.Game.Levelling
             // Check current level experience boundaries and change level if necessary
             if (Exp < MinLevelExp || Exp >= NextLevelExp)
                 // Update level to value that matches the new experience value
-                TryChangeLevel(LevelByExperience, changedByAdmin);
+                TryChangeLevel(LevelByExperience);
 
             return true;
         }
