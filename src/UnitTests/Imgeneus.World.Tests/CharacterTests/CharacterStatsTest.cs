@@ -95,14 +95,14 @@ namespace Imgeneus.World.Tests.CharacterTests
         public void SetVictoriesAndDefeatsTest()
         {
             var character = CreateCharacter();
-            Assert.Equal(0, character.KillsManager.Victories);
-            Assert.Equal(0, character.KillsManager.Defeats);
+            Assert.Equal((uint)0, character.KillsManager.Victories);
+            Assert.Equal((uint)0, character.KillsManager.Defeats);
 
             character.KillsManager.Victories = 10;
             character.KillsManager.Defeats = 20;
 
-            Assert.Equal(10, character.KillsManager.Victories);
-            Assert.Equal(20, character.KillsManager.Defeats);
+            Assert.Equal((uint)10, character.KillsManager.Victories);
+            Assert.Equal((uint)20, character.KillsManager.Defeats);
         }
     }
 }

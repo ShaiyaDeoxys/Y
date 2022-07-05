@@ -43,7 +43,7 @@ namespace Imgeneus.World.Serialization.EP_8_V1
         public Mode Mode { get; }
 
         [FieldOrder(11)]
-        public int Kills { get; }
+        public uint Kills { get; }
 
         [FieldOrder(12)]
         public EquipmentItem[] EquipmentItems { get; } = new EquipmentItem[17];

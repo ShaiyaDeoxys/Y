@@ -55,9 +55,9 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.AdditionalInfoManager.Grow = Mode.Ultimate;
 
             character.KillsManager.Kills = 10;
-            Assert.NotEqual(105, character.KillsManager.Kills);
+            Assert.NotEqual((uint)105, character.KillsManager.Kills);
             character.KillsManager.Kills = 105;
-            Assert.Equal(105, character.KillsManager.Kills);
+            Assert.Equal((uint)105, character.KillsManager.Kills);
 
             character.KillsManager.Kills = ushort.MinValue;
             Assert.Equal(ushort.MinValue, character.KillsManager.Kills);
@@ -75,9 +75,9 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.AdditionalInfoManager.Grow = Mode.Ultimate;
 
             character.KillsManager.Deaths = 10;
-            Assert.NotEqual(105, character.KillsManager.Deaths);
+            Assert.NotEqual((uint)105, character.KillsManager.Deaths);
             character.KillsManager.Deaths = 105;
-            Assert.Equal(105, character.KillsManager.Deaths);
+            Assert.Equal((uint)105, character.KillsManager.Deaths);
 
             character.KillsManager.Deaths = ushort.MinValue;
             Assert.Equal(ushort.MinValue, character.KillsManager.Deaths);

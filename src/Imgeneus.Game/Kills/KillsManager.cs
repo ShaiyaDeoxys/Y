@@ -45,7 +45,7 @@ namespace Imgeneus.World.Game.Kills
 
         #region Init & Clear
 
-        public void Init(uint ownerId, ushort kills = 0, ushort deaths = 0, ushort victories = 0, ushort defeats = 0)
+        public void Init(uint ownerId, uint kills = 0, uint deaths = 0, uint victories = 0, uint defeats = 0)
         {
             _ownerId = ownerId;
 
@@ -79,8 +79,8 @@ namespace Imgeneus.World.Game.Kills
 
         #endregion
 
-        private ushort _kills;
-        public ushort Kills
+        private uint _kills;
+        public uint Kills
         {
             get => _kills;
             set
@@ -90,7 +90,7 @@ namespace Imgeneus.World.Game.Kills
                 OnCountChanged?.Invoke(0, _kills);
             }
         }
-        public event Action<uint, ushort> OnKillsChanged;
+        public event Action<uint, uint> OnKillsChanged;
 
         private void HealthManager_OnDead(uint senderId, IKiller killer)
         {
@@ -114,8 +114,8 @@ namespace Imgeneus.World.Game.Kills
 
         }
 
-        private ushort _deaths;
-        public ushort Deaths
+        private uint _deaths;
+        public uint Deaths
         {
             get => _deaths;
             set
@@ -125,10 +125,11 @@ namespace Imgeneus.World.Game.Kills
             }
         }
 
-        private ushort _victories;
-        public ushort Victories
+        private uint _victories;
+        public uint Victories
         {
-            get => _victories; set
+            get => _victories;
+            set
             {
 
                 _victories = value;
@@ -136,8 +137,8 @@ namespace Imgeneus.World.Game.Kills
             }
         }
 
-        public ushort _defeats;
-        public ushort Defeats
+        public uint _defeats;
+        public uint Defeats
         {
             get => _defeats;
             set
@@ -147,6 +148,6 @@ namespace Imgeneus.World.Game.Kills
             }
         }
 
-        public event Action<byte, ushort> OnCountChanged;
+        public event Action<byte, uint> OnCountChanged;
     }
 }

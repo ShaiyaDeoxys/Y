@@ -200,25 +200,25 @@ namespace Imgeneus.Database.Entities
         /// Gets or sets the character kills.
         /// </summary>
         [DefaultValue(0)]
-        public ushort Kills { get; set; }
+        public uint Kills { get; set; }
 
         /// <summary>
         /// Gets or sets the character deaths.
         /// </summary>
         [DefaultValue(0)]
-        public ushort Deaths { get; set; }
+        public uint Deaths { get; set; }
 
         /// <summary>
         /// Gets or sets the character battle victories.
         /// </summary>
         [DefaultValue(0)]
-        public ushort Victories { get; set; }
+        public uint Victories { get; set; }
 
         /// <summary>
         /// Gets or sets the character battle defeats.
         /// </summary>
         [DefaultValue(0)]
-        public ushort Defeats { get; set; }
+        public uint Defeats { get; set; }
 
         /// <summary>
         /// Gets or sets a flag that indicates if the character is deleted.

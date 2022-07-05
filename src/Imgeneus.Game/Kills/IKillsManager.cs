@@ -5,21 +5,21 @@ namespace Imgeneus.World.Game.Kills
 {
     public interface IKillsManager : ISessionedService, IDisposable
     {
-        void Init(uint ownerId, ushort kills = 0, ushort deaths = 0, ushort victories = 0, ushort defeats = 0);
+        void Init(uint ownerId, uint kills = 0, uint deaths = 0, uint victories = 0, uint defeats = 0);
 
         /// <summary>
         /// Event is fired, when number of kills changes.
         /// </summary>
-        event Action<uint, ushort> OnKillsChanged;
+        event Action<uint, uint> OnKillsChanged;
 
         /// <summary>
         /// Event is fired, when any of kills, deaths, victories or defeats changes.
         /// </summary>
-        event Action<byte, ushort> OnCountChanged;
+        event Action<byte, uint> OnCountChanged;
 
-        ushort Kills { get; set; }
-        ushort Deaths { get; set; }
-        ushort Victories { get; set; }
-        ushort Defeats { get; set; }
+        uint Kills { get; set; }
+        uint Deaths { get; set; }
+        uint Victories { get; set; }
+        uint Defeats { get; set; }
     }
 }

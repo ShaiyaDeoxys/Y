@@ -102,6 +102,6 @@ namespace Imgeneus.World.Game.Player
 
         public void SendSoldItem(byte slot, byte count) => _packetFactory.SendMyShopSoldItem(GameSession.Client, slot, count, InventoryManager.Gold);
 
-        public void SendKillCountChanged(byte index, ushort count) => _packetFactory.SendKillCountChanged(GameSession.Client, index, count);
+        public void SendKillCountChanged(byte index, uint count) => _packetFactory.SendKillCountChanged(GameSession.Client, index, count);
     }
 }

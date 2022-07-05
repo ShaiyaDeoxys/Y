@@ -45,11 +45,11 @@ namespace Imgeneus.World.Tests.CharacterTests
             characterToKill.HealthManager.IncreaseHP(characterToKill.HealthManager.MaxHP);
 
             var killer = CreateCharacter(map, country: Fraction.Dark);
-            Assert.Equal(0, killer.KillsManager.Kills);
+            Assert.Equal((uint)0, killer.KillsManager.Kills);
 
             characterToKill.HealthManager.DecreaseHP(characterToKill.HealthManager.MaxHP, killer);
 
-            Assert.Equal(1, killer.KillsManager.Kills);
+            Assert.Equal((uint)1, killer.KillsManager.Kills);
         }
 
         [Fact]
@@ -64,9 +64,9 @@ namespace Imgeneus.World.Tests.CharacterTests
             var killer2 = CreateCharacter(map, country: Fraction.Dark);
             var killer3 = CreateCharacter(testMap, country: Fraction.Dark); // On another map.
             
-            Assert.Equal(0, killer1.KillsManager.Kills);
-            Assert.Equal(0, killer2.KillsManager.Kills);
-            Assert.Equal(0, killer3.KillsManager.Kills);
+            Assert.Equal((uint)0, killer1.KillsManager.Kills);
+            Assert.Equal((uint)0, killer2.KillsManager.Kills);
+            Assert.Equal((uint)0, killer3.KillsManager.Kills);
 
             var party = new Party(packetFactoryMock.Object);
             killer1.PartyManager.Party = party;
@@ -75,9 +75,9 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             characterToKill.HealthManager.DecreaseHP(characterToKill.HealthManager.MaxHP, killer1);
 
-            Assert.Equal(1, killer1.KillsManager.Kills);
-            Assert.Equal(1, killer2.KillsManager.Kills);
-            Assert.Equal(0, killer3.KillsManager.Kills);
+            Assert.Equal((uint)1, killer1.KillsManager.Kills);
+            Assert.Equal((uint)1, killer2.KillsManager.Kills);
+            Assert.Equal((uint)0, killer3.KillsManager.Kills);
         }
     }
 }

@@ -567,7 +567,7 @@ namespace Imgeneus.World.Game.Zone
                 Map.PacketFactory.SendCharacterShape(p.GameSession.Client, senderId, player);
         }
 
-        private void Character_OnKillsChanged(uint senderId, ushort kills)
+        private void Character_OnKillsChanged(uint senderId, uint kills)
         {
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendKillsUpdate(p.GameSession.Client, senderId, kills);
