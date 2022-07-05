@@ -36,7 +36,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            Handle(client, packet, PacketType.CHARACTER_ATTRIBUTE_SET);
+            Handle(client, packet, PacketType.GM_SHAIYA_US_ATTRIBUTE_SET);
         }
 
         private void Handle(WorldClient client, GMSetAttributePacket packet, PacketType packetType)
