@@ -182,6 +182,13 @@ namespace Imgeneus.World.Game.Player
 
             _target = value;
 
+#if DEBUG
+            if (_target is null)
+                _logger.LogDebug("Target cleared.");
+            else
+                _logger.LogDebug("Target is {target} with id {id}", _target, _target.Id);
+#endif
+
             if (_target is Mob)
             {
                 _target.HealthManager.OnRecover += SendMobTargetHP;
@@ -229,7 +236,7 @@ namespace Imgeneus.World.Game.Player
             Map = null;
         }
 
-        #region Motion
+#region Motion
 
         /// <summary>
         /// Event, that is fires, when character makes any motion.
@@ -256,16 +263,16 @@ namespace Imgeneus.World.Game.Player
             }
         }
 
-        #endregion
+#endregion
 
-        #region Quick skill bar
+#region Quick skill bar
 
         /// <summary>
         /// Quick items, i.e. skill bars. Not sure if I need to store it as DbQuickSkillBarItem or need another connector helper class here?
         /// </summary>
         public IEnumerable<DbQuickSkillBarItem> QuickItems;
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Creates character from database information.

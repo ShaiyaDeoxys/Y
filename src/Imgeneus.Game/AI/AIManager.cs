@@ -306,7 +306,7 @@ namespace Imgeneus.World.Game.AI
                 lock (_stateSyncObject)
                 {
                     if (value == AIState.BackToBirthPosition && (StartPosX == -1 || StartPosZ == -1))
-                        _logger.LogDebug("WTF?");
+                        return;
 
                     _state = value;
 

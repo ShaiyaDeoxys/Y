@@ -41,7 +41,7 @@ namespace Imgeneus.World.Game.NPCs
                            new MoveArea(_moveCoordinates[0].X, _moveCoordinates[0].Y, _moveCoordinates[0].Z, _moveCoordinates[0].X, _moveCoordinates[0].Y, _moveCoordinates[0].Z),
                            chaseTime: 1800,
                            chaseSpeed: 8,
-                           chaseRange: 30,
+                           chaseRange: 15,
                            isAttack1Enabled: true);
             StatsManager.Init(Id, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
             AttackManager.Init(Id);

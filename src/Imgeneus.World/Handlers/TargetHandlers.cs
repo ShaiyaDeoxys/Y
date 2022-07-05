@@ -79,7 +79,6 @@ namespace Imgeneus.World.Handlers
             var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.MobId);
             if (target != null)
             {
-                _attackManager.Target = target;
                 _packetFactory.SendMobPosition(client, target.Id, target.MovementManager.PosX, target.MovementManager.PosZ, target.MovementManager.MoveMotion);
                 _packetFactory.SendMobState(client, target);
             }
