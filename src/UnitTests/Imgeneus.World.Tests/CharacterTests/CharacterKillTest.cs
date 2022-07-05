@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using System.ComponentModel;
 using Xunit;
@@ -33,6 +34,50 @@ namespace Imgeneus.World.Tests.CharacterTests
 
             Assert.True(characterToKill.HealthManager.IsDead);
             Assert.Equal(killer2, finalKiller);
+        }
+
+        [Fact]
+        [Description("Character should get kills, when killed opposite country.")]
+        public void CharacterGetKills()
+        {
+            var map = testMap;
+            var characterToKill = CreateCharacter(map);
+            characterToKill.HealthManager.IncreaseHP(characterToKill.HealthManager.MaxHP);
+
+            var killer = CreateCharacter(map, country: Fraction.Dark);
+            Assert.Equal(0, killer.KillsManager.Kills);
+
+            characterToKill.HealthManager.DecreaseHP(characterToKill.HealthManager.MaxHP, killer);
+
+            Assert.Equal(1, killer.KillsManager.Kills);
+        }
+
+        [Fact]
+        [Description("Characters in party should get kills, when killed opposite country, if they not far away.")]
+        public void CharacterPartyGetKills()
+        {
+            var map = testMap;
+            var characterToKill = CreateCharacter(map);
+            characterToKill.HealthManager.IncreaseHP(characterToKill.HealthManager.MaxHP);
+
+            var killer1 = CreateCharacter(map, country: Fraction.Dark);
+            var killer2 = CreateCharacter(map, country: Fraction.Dark);
+            var killer3 = CreateCharacter(testMap, country: Fraction.Dark); // On another map.
+            
+            Assert.Equal(0, killer1.KillsManager.Kills);
+            Assert.Equal(0, killer2.KillsManager.Kills);
+            Assert.Equal(0, killer3.KillsManager.Kills);
+
+            var party = new Party(packetFactoryMock.Object);
+            killer1.PartyManager.Party = party;
+            killer2.PartyManager.Party = party;
+            killer3.PartyManager.Party = party;
+
+            characterToKill.HealthManager.DecreaseHP(characterToKill.HealthManager.MaxHP, killer1);
+
+            Assert.Equal(1, killer1.KillsManager.Kills);
+            Assert.Equal(1, killer2.KillsManager.Kills);
+            Assert.Equal(0, killer3.KillsManager.Kills);
         }
     }
 }

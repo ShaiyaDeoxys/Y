@@ -291,6 +291,15 @@ namespace Imgeneus.World.Packets
             packet.Write(new CharacterHitpoints(hp, mp, sp).Serialize());
             client.Send(packet);
         }
+
+        public void SendKillCountChanged(IWorldClient client, byte index, uint count)
+        {
+            using var packet = new ImgeneusPacket(PacketType.USER_KILLCOUNT_UPDATE);
+            packet.Write(index);
+            packet.Write(count);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Inventory
@@ -800,6 +809,14 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_HP_UPDATE);
             packet.Write(targetId);
             packet.Write(currentHP);
+            client.Send(packet);
+        }
+
+        public void SendKillsUpdate(IWorldClient client, uint senderId, uint kills)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHARACTER_KILLINFO);
+            packet.Write(senderId);
+            packet.Write(kills);
             client.Send(packet);
         }
 

@@ -233,6 +233,7 @@ namespace Imgeneus.World.Game.Zone
             character.ShopManager.OnShopStarted += Character_OnShopStarted;
             character.ShopManager.OnShopFinished += Character_OnShopFinished;
             character.AdditionalInfoManager.OnNameChange += Character_OnNameChange;
+            character.KillsManager.OnKillsChanged += Character_OnKillsChanged;
         }
 
         /// <summary>
@@ -271,6 +272,7 @@ namespace Imgeneus.World.Game.Zone
             character.ShopManager.OnShopStarted -= Character_OnShopStarted;
             character.ShopManager.OnShopFinished -= Character_OnShopFinished;
             character.AdditionalInfoManager.OnNameChange -= Character_OnNameChange;
+            character.KillsManager.OnKillsChanged -= Character_OnKillsChanged;
         }
 
         #region Character listeners
@@ -563,6 +565,12 @@ namespace Imgeneus.World.Game.Zone
 
             foreach (var p in GetAllPlayers(true))
                 Map.PacketFactory.SendCharacterShape(p.GameSession.Client, senderId, player);
+        }
+
+        private void Character_OnKillsChanged(uint senderId, ushort kills)
+        {
+            foreach (var p in GetAllPlayers(true))
+                Map.PacketFactory.SendKillsUpdate(p.GameSession.Client, senderId, kills);
         }
 
         #endregion

@@ -67,6 +67,7 @@ namespace Imgeneus.World.Packets
         void SendRemoveBuff(IWorldClient client, uint id);
         void SendAutoStats(IWorldClient client, byte str, byte dex, byte rec, byte intl, byte wis, byte luc);
         void SendCurrentHitpoints(IWorldClient client, int hp, int mp, int sp);
+        void SendKillCountChanged(IWorldClient client, byte index, uint count);
         #endregion
 
         #region Inventory
@@ -122,6 +123,7 @@ namespace Imgeneus.World.Packets
         void SendMobMirrorDamage(IWorldClient client, uint senderId, uint targetId, Damage damage);
         void SendCharacterTargetHP(IWorldClient client, uint targetId, int currentHP);
         void SendMobTargetHP(IWorldClient client, uint targetId, int currentHP);
+        void SendKillsUpdate(IWorldClient client, uint senderId, uint kills);
         #endregion
 
         #region NPC
