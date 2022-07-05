@@ -121,7 +121,7 @@ namespace Imgeneus.World.Game.Kills
             set
             {
                 _deaths = value;
-                OnCountChanged?.Invoke(1, _kills);
+                OnCountChanged?.Invoke(1, _deaths);
             }
         }
 
@@ -144,7 +144,7 @@ namespace Imgeneus.World.Game.Kills
             set
             {
                 _defeats = value;
-                OnCountChanged?.Invoke(3, _victories);
+                OnCountChanged?.Invoke(3, _defeats);
             }
         }
 
