@@ -40,6 +40,8 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_MOVE)]
         public void Handle(WorldClient client, MoveCharacterPacket packet)
         {
+            _logger.LogInformation("Character {id} is moving {x} {y} {z}", _gameSession.Character.Id, packet.X, packet.Y, packet.Z);
+
             if (_teleportationManager.IsTeleporting)
                 return;
 
@@ -62,6 +64,7 @@ namespace Imgeneus.World.Handlers
             _movementManager.Angle = packet.Angle;
 
             _movementManager.RaisePositionChanged();
+            _logger.LogInformation("Character {id} new position: {x} {y} {z}", _gameSession.Character.Id, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);
         }
     }
 }
