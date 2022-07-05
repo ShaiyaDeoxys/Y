@@ -207,6 +207,8 @@ namespace Imgeneus.World.Game.Buffs
             _deathTouchTimer.Elapsed -= DeathTouchTimer_Elapsed;
             _deathTouchTimer.Stop();
 
+            Skill.IsActivated = false;
+
             OnReset?.Invoke(this);
         }
 

@@ -91,12 +91,12 @@ namespace Imgeneus.World.Tests.CharacterTests
             var skill = new Skill(BerserkersRage, 0, 0);
             Assert.True(skill.CanBeActivated);
 
-            character.BuffsManager.AddBuff(skill, null);
+            character.SkillsManager.UseSkill(skill, character);
 
             Assert.Single(character.BuffsManager.ActiveBuffs);
             Assert.True(skill.IsActivated);
 
-            character.BuffsManager.AddBuff(skill, null);
+            character.SkillsManager.UseSkill(skill, character);
 
             Assert.Empty(character.BuffsManager.ActiveBuffs);
             Assert.False(skill.IsActivated);
@@ -396,9 +396,11 @@ namespace Imgeneus.World.Tests.CharacterTests
             character1.HealthManager.CurrentMP = 15;
             character1.HealthManager.CurrentSP = 100;
 
-            character1.SkillsManager.UseSkill(new Skill(PersistBarrier, 0, 0), character1);
+            var skill = new Skill(PersistBarrier, 0, 0);
+            character1.SkillsManager.UseSkill(skill, character1);
 
             Assert.NotEmpty(character1.BuffsManager.ActiveBuffs);
+            Assert.True(skill.IsActivated);
 
             await Task.Delay(1100); // Wait ~ 1 sec
 
@@ -407,6 +409,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             await Task.Delay(1100); // Wait ~ 1 sec
 
             Assert.Empty(character1.BuffsManager.ActiveBuffs); // Not enough mana, should cancel buff.
+            Assert.False(skill.IsActivated);
         }
 
         [Fact]
@@ -425,6 +428,27 @@ namespace Imgeneus.World.Tests.CharacterTests
             character1.SkillsManager.UseSkill(new Skill(Dispel, 0, 0), character1);
 
             Assert.Empty(character1.BuffsManager.ActiveBuffs);
+        }
+
+        [Fact]
+        [Description("PersistBarrier should be activated/disactivated.")]
+        public void PersistBarrierActivationTest()
+        {
+            var character1 = CreateCharacter();
+            character1.HealthManager.IncreaseHP(100);
+            character1.HealthManager.CurrentMP = 15;
+            character1.HealthManager.CurrentSP = 100;
+
+            var skill = new Skill(PersistBarrier, 0, 0);
+
+            var activated = false;
+            character1.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult res) => activated = skill.IsActivated;
+
+            character1.SkillsManager.UseSkill(skill, character1);
+            Assert.True(activated);
+
+            character1.SkillsManager.UseSkill(skill, character1);
+            Assert.False(activated);
         }
 
         [Fact]

@@ -285,23 +285,12 @@ namespace Imgeneus.World.Game.Buffs
                     // If buffs are the same level, we should only update reset time.
                     if (buff.Skill.SkillLevel == skill.SkillLevel)
                     {
-                        if (!skill.CanBeActivated)
-                        {
-                            buff.ResetTime = resetTime;
-                            buff.InitialDamage = skill.InitialDamage;
+                        buff.ResetTime = resetTime;
+                        buff.InitialDamage = skill.InitialDamage;
 
-                            // Send update of buff.
-                            if (!buff.Skill.IsPassive)
-                                OnBuffAdded?.Invoke(_ownerId, buff);
-                        }
-                        else
-                        {
-                            if (skill.IsActivated)
-                            {
-                                buff.CancelBuff();
-                                skill.IsActivated = false;
-                            }
-                        }
+                        // Send update of buff.
+                        if (!buff.Skill.IsPassive)
+                            OnBuffAdded?.Invoke(_ownerId, buff);
                     }
 
                     if (buff.Skill.SkillLevel < skill.SkillLevel)
@@ -343,9 +332,6 @@ namespace Imgeneus.World.Game.Buffs
                     PassiveBuffs.Add(buff);
                 else
                     ActiveBuffs.Add(buff);
-
-                if (skill.CanBeActivated)
-                    skill.IsActivated = true;
             }
 
             return buff;

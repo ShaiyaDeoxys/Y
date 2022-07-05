@@ -28,15 +28,15 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(6)]
         public bool KeepActivated { get; }
 
-        public SkillRange(uint characterId, uint targetId, Skill skill, AttackResult attackResult)
+        public SkillRange(uint characterId, uint targetId, ushort skillId, byte skillLevel, AttackResult attackResult, bool keepActivated)
         {
             IsSuccess = attackResult.Success;
             CharacterId = characterId;
             TargetId = targetId;
-            SkillId = skill.SkillId;
-            SkillLevel = skill.SkillLevel;
+            SkillId = skillId;
+            SkillLevel = skillLevel;
             Damage = new ushort[] { attackResult.Damage.HP, attackResult.Damage.SP, attackResult.Damage.MP };
-            KeepActivated = skill.IsActivated;
+            KeepActivated = keepActivated;
         }
     }
 }

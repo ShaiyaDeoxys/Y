@@ -648,9 +648,18 @@ namespace Imgeneus.World.Packets
 
             var packet = new ImgeneusPacket(skillType);
             var targetId = target is null ? 0 : target.Id;
-            packet.Write(new SkillRange(senderId, targetId, skill, attackResult).Serialize());
+            packet.Write(new SkillRange(senderId, targetId, skill.SkillId, skill.SkillLevel, attackResult, skill.CanBeActivated).Serialize());
             client.Send(packet);
             packet.Dispose();
+
+            if (skill.IsActivated) // Play activation animation.
+            {
+                var packet2 = new ImgeneusPacket(PacketType.USE_CHARACTER_TARGET_SKILL);
+                targetId = target is null ? 0 : target.Id;
+                packet2.Write(new SkillRange(senderId, targetId, skill.SkillId, 2, attackResult, false).Serialize()); // Some animations are not played with level 1. Why?
+                client.Send(packet2);
+                packet2.Dispose();
+            }
         }
 
 
@@ -718,7 +727,7 @@ namespace Imgeneus.World.Packets
                 type = PacketType.USE_CHARACTER_RANGE_SKILL;
 
             using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillRange(senderId, target.Id, skill, attackResult).Serialize());
+            packet.Write(new SkillRange(senderId, target.Id, skill.SkillId, skill.SkillLevel, attackResult, skill.CanBeActivated).Serialize());
             client.Send(packet);
         }
 
@@ -1537,7 +1546,7 @@ namespace Imgeneus.World.Packets
         {
             var type = target is Character ? PacketType.USE_CHARACTER_TARGET_SKILL : PacketType.USE_MOB_TARGET_SKILL;
             using var packet = new ImgeneusPacket(type);
-            packet.Write(new SkillRange(senderId, 0, skill, new AttackResult() { Success = reason }).Serialize());
+            packet.Write(new SkillRange(senderId, 0, skill.SkillId, skill.SkillLevel, new AttackResult() { Success = reason }, skill.CanBeActivated).Serialize());
             client.Send(packet);
         }
 

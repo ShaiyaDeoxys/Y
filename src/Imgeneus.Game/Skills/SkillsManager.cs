@@ -404,7 +404,7 @@ namespace Imgeneus.World.Game.Skills
             if (skill.SkillId == Skill.CHARGE_SKILL_ID || skill.SkillId == Skill.CHARGE_EP_8_SKILL_ID)
                 ChargeUsedLastTime = DateTime.UtcNow;
 
-            if (!skill.IsPassive)
+            if (!skill.IsPassive && !skill.CanBeActivated)
                 _attackManager.StartAttack();
 
             if (skill.NeedMP > 0 || skill.NeedSP > 0)
@@ -447,7 +447,7 @@ namespace Imgeneus.World.Game.Skills
                     try
                     {
                         // Cancel those buffs, that are canceled, when any skill is used.
-                        CancelBuffs();
+                        CancelBuffs(skill);
 
                         // Apply skill.
                         PerformSkill(skill, target, t, skillOwner, ref attackResult, n);
@@ -500,7 +500,21 @@ namespace Imgeneus.World.Game.Skills
                         }
 
                         if (skill.TypeEffect == TypeEffect.Buff || skill.TypeEffect == TypeEffect.BuffNoss || skill.TypeEffect == TypeEffect.Debuff)
-                            t.BuffsManager.AddBuff(skill, skillOwner);
+                        {
+                            if (!skill.CanBeActivated)
+                                t.BuffsManager.AddBuff(skill, skillOwner);
+                            else
+                            {
+                                if (skill.IsActivated)
+                                    t.BuffsManager.AddBuff(skill, skillOwner);
+                                else
+                                {
+                                    var buff = t.BuffsManager.ActiveBuffs.FirstOrDefault(x => x.Skill == skill);
+                                    if (buff is not null)
+                                        buff.CancelBuff();
+                                }
+                            }
+                        }
                     }
                     catch (NotImplementedException)
                     {
@@ -695,6 +709,9 @@ namespace Imgeneus.World.Game.Skills
                 default:
                     throw new NotImplementedException("Not implemented skill type.");
             }
+
+            if (skill.CanBeActivated)
+                skill.IsActivated = !skill.IsActivated;
         }
 
         /// <summary>
@@ -747,9 +764,9 @@ namespace Imgeneus.World.Game.Skills
 
         public DateTime? ChargeUsedLastTime { get; private set; } = null;
 
-        private void CancelBuffs()
+        private void CancelBuffs(Skill usedSkill)
         {
-            var buffs = _buffsManager.ActiveBuffs.Where(b => b.IsCanceledWhenAttack).ToList();
+            var buffs = _buffsManager.ActiveBuffs.Where(b => b.IsCanceledWhenAttack && b.Skill != usedSkill).ToList();
             foreach (var b in buffs)
                 b.CancelBuff();
         }
