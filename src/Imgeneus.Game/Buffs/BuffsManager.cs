@@ -1167,7 +1167,8 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 default:
-                    throw new NotImplementedException($"Not implemented ability type {abilityType}");
+                    _logger.LogError($"Not implemented ability type {abilityType}");
+                    break;
             }
         }
 
