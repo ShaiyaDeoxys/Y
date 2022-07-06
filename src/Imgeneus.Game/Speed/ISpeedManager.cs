@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Imgeneus.World.Game.Speed
 {
-    public interface ISpeedManager
+    public interface ISpeedManager : IDisposable
     {
         /// <summary>
         /// Inits speed manager.

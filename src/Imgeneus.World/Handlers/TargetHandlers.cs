@@ -31,7 +31,7 @@ namespace Imgeneus.World.Handlers
                 return;
 
             _attackManager.Target = mob;
-            _packetFactory.SendMobTargetHP(client, mob.Id, mob.HealthManager.CurrentHP);
+            _packetFactory.SendMobTargetHP(client, mob.Id, mob.HealthManager.CurrentHP, mob.SpeedManager.TotalAttackSpeed, mob.SpeedManager.TotalMoveSpeed);
         }
 
         [HandlerAction(PacketType.TARGET_CHARACTER_MAX_HP)]
@@ -85,12 +85,12 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.TARGET_CHARACTER_HP_UPDATE)]
-        public void HandleGetMobHP(WorldClient client, TargetPlayerGetHPPacket packet)
+        public void HandleGetCharacterHP(WorldClient client, TargetPlayerGetHPPacket packet)
         {
             var target = _mapProvider.Map.GetPlayer(packet.TargetId);
             if (target != null)
             {
-                _packetFactory.SendCharacterTargetHP(client, target.Id, target.HealthManager.CurrentHP);
+                _packetFactory.SendCharacterTargetHP(client, target.Id, target.HealthManager.CurrentHP, target.HealthManager.MaxHP, target.SpeedManager.TotalAttackSpeed, target.SpeedManager.TotalMoveSpeed);
             }
         }
     }

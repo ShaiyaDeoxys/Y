@@ -93,7 +93,7 @@ namespace Imgeneus.World.Game.Zone
         {
             CalculateCells(_config.MapSize, _config.CellSize);
 
-            InitWeather();
+            //InitWeather();
             InitPortals();
 
 #if !DEBUG

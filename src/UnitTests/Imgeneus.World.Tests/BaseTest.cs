@@ -126,7 +126,8 @@ namespace Imgeneus.World.Tests
             levelProvider.Init(_characterId, 1);
 
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
-            var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
+            var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
+            var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object, stealthManager);
             var additionalInfoManager = new AdditionalInfoManager(new Mock<ILogger<AdditionalInfoManager>>().Object, config.Object, databaseMock.Object);
             additionalInfoManager.Init(_characterId, Race.Human, profession, 0, 0, 0, Gender.Man, Mode.Ultimate, 0, string.Empty);
 
@@ -137,7 +138,6 @@ namespace Imgeneus.World.Tests
 
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
-            var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
 
             var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, packetFactoryMock.Object, gameWorldMock.Object, mapProvider, healthManager);
@@ -252,10 +252,10 @@ namespace Imgeneus.World.Tests
             var healthManager = new HealthManager(new Mock<ILogger<HealthManager>>().Object, statsManager, levelProvider, config.Object, databaseMock.Object, null);
             healthManager.Init(_mobId, dbMob.HP, dbMob.MP, dbMob.SP, dbMob.HP, dbMob.MP, dbMob.SP);
 
-            var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object);
+            var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
+            var speedManager = new SpeedManager(new Mock<ILogger<SpeedManager>>().Object, stealthManager);
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
-            var stealthManager = new StealthManager(new Mock<ILogger<StealthManager>>().Object);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, new Mock<IShapeManager>().Object, movementManager);
             attackManager.AlwaysHit = true;

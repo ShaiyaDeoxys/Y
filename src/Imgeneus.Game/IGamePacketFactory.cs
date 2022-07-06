@@ -121,8 +121,8 @@ namespace Imgeneus.World.Packets
         void SendTransformation(IWorldClient client, uint senderId, bool isTransformed);
         void SendCharacterMirrorDamage(IWorldClient client, uint senderId, uint targetId, Damage damage);
         void SendMobMirrorDamage(IWorldClient client, uint senderId, uint targetId, Damage damage);
-        void SendCharacterTargetHP(IWorldClient client, uint targetId, int currentHP);
-        void SendMobTargetHP(IWorldClient client, uint targetId, int currentHP);
+        void SendCharacterTargetHP(IWorldClient client, uint targetId, int currentHP, int maxHP, AttackSpeed attackSpeed, MoveSpeed moveSpeed);
+        void SendMobTargetHP(IWorldClient client, uint targetId, int currentHP, AttackSpeed attackSpeed, MoveSpeed moveSpeed);
         void SendKillsUpdate(IWorldClient client, uint senderId, uint kills);
         #endregion
 

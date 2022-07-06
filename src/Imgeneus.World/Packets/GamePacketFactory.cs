@@ -513,6 +513,11 @@ namespace Imgeneus.World.Packets
                     packet.Write((uint)param1);
                     packet.Write((uint)param2);
                 }
+                else
+                {
+                    packet.Write((uint)0);
+                    packet.Write((uint)0);
+                }
 
                 client.Send(packet);
             }
@@ -604,24 +609,13 @@ namespace Imgeneus.World.Packets
             packet0.Write(new CharacterEnteredMap(character).Serialize());
             client.Send(packet0);
 
-            using var packet1 = new ImgeneusPacket(PacketType.CHARACTER_MOVE);
-            packet1.Write(new CharacterMove(character.Id,
-                                            character.MovementManager.PosX,
-                                            character.MovementManager.PosY,
-                                            character.MovementManager.PosZ,
-                                            character.MovementManager.Angle,
-                                            character.MovementManager.MoveMotion).Serialize());
-            client.Send(packet1);
-
-            SendAttackAndMovementSpeed(client, character.Id, character.SpeedManager.TotalAttackSpeed, character.SpeedManager.TotalMoveSpeed);
-
-            SendCharacterShape(client, character.Id, character); // Fix for admin in stealth + dye.
-
             if (character.ShapeManager.Shape != ShapeEnum.None)
                 if (character.ShapeManager.Shape != ShapeEnum.Mob)
                     SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.InventoryManager.Mount is null ? 0 : (uint)character.InventoryManager.Mount.Type, character.InventoryManager.Mount is null ? 0 : (uint)character.InventoryManager.Mount.TypeId);
                 else
                     SendShapeUpdate(client, character.Id, character.ShapeManager.Shape, character.ShapeManager.MobId);
+
+            SendAttackAndMovementSpeed(client, character.Id, character.SpeedManager.TotalAttackSpeed, character.SpeedManager.TotalMoveSpeed);
 
             if (character.ShapeManager.IsTranformated)
                 SendTransformation(client, character.Id, character.ShapeManager.IsTranformated);
@@ -791,19 +785,24 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendCharacterTargetHP(IWorldClient client, uint targetId, int currentHP)
+        public void SendCharacterTargetHP(IWorldClient client, uint targetId, int currentHP, int maxHP, AttackSpeed attackSpeed, MoveSpeed moveSpeed)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_CHARACTER_HP_UPDATE);
             packet.Write(targetId);
             packet.Write(currentHP);
+            packet.Write(maxHP);
+            packet.Write((byte)attackSpeed);
+            packet.Write((byte)moveSpeed);
             client.Send(packet);
         }
 
-        public void SendMobTargetHP(IWorldClient client, uint targetId, int currentHP)
+        public void SendMobTargetHP(IWorldClient client, uint targetId, int currentHP, AttackSpeed attackSpeed, MoveSpeed moveSpeed)
         {
             using var packet = new ImgeneusPacket(PacketType.TARGET_MOB_HP_UPDATE);
             packet.Write(targetId);
             packet.Write(currentHP);
+            packet.Write((byte)attackSpeed);
+            packet.Write((byte)moveSpeed);
             client.Send(packet);
         }
 

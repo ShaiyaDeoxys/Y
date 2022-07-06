@@ -1,5 +1,6 @@
 ﻿using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Player;
+using Imgeneus.World.Game.Stealth;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,15 @@ namespace Imgeneus.World.Game.Speed
     public class SpeedManager : ISpeedManager
     {
         private readonly ILogger<SpeedManager> _logger;
+        private readonly IStealthManager _stealthManager;
         protected uint _ownerId;
 
-        public SpeedManager(ILogger<SpeedManager> logger)
+        public SpeedManager(ILogger<SpeedManager> logger, IStealthManager stealthManager)
         {
             _logger = logger;
+            _stealthManager = stealthManager;
+
+            _stealthManager.OnStealthChange += StealthManager_OnStealthChange;
 #if DEBUG
             _logger.LogDebug("SpeedManager {hashcode} created", GetHashCode());
 #endif
@@ -33,6 +38,11 @@ namespace Imgeneus.World.Game.Speed
             _ownerId = ownerId;
         }
 
+        public void Dispose()
+        {
+            _stealthManager.OnStealthChange -= StealthManager_OnStealthChange;
+        }
+
         #endregion
 
         #region Attack speed
@@ -49,7 +59,18 @@ namespace Imgeneus.World.Game.Speed
         public int ConstAttackSpeed { get => _constAttackSpeed; set { _constAttackSpeed = value; RaiseMoveAndAttackSpeed(); } }
 
         private int _extraAttackSpeed;
-        public int ExtraAttackSpeed { get => _extraAttackSpeed; set { _extraAttackSpeed = value; RaiseMoveAndAttackSpeed(); } }
+        public int ExtraAttackSpeed
+        {
+            get => _extraAttackSpeed;
+            set
+            {
+                if (_extraAttackSpeed == value)
+                    return;
+
+                _extraAttackSpeed = value;
+                RaiseMoveAndAttackSpeed();
+            }
+        }
 
         public AttackSpeed TotalAttackSpeed
         {
@@ -81,7 +102,18 @@ namespace Imgeneus.World.Game.Speed
         public int ConstMoveSpeed { get => _constMoveSpeed; set { _constMoveSpeed = value; RaiseMoveAndAttackSpeed(); } }
 
         private int _extraMoveSpeed;
-        public int ExtraMoveSpeed { get => _extraMoveSpeed; set { _extraMoveSpeed = value; RaiseMoveAndAttackSpeed(); } }
+        public int ExtraMoveSpeed
+        {
+            get => _extraMoveSpeed;
+            set
+            {
+                if (_extraMoveSpeed == value)
+                    return;
+
+                _extraMoveSpeed = value;
+                RaiseMoveAndAttackSpeed();
+            }
+        }
 
         private bool _immobilize;
         public bool Immobilize { get => _immobilize; set { _immobilize = value; RaiseMoveAndAttackSpeed(); } }
@@ -92,6 +124,9 @@ namespace Imgeneus.World.Game.Speed
             {
                 if (Immobilize)
                     return MoveSpeed.CanNotMove;
+
+                if (_stealthManager.IsAdminStealth)
+                    return MoveSpeed.VeryFast;
 
                 var finalSpeed = ConstMoveSpeed + ExtraMoveSpeed;
 
@@ -120,6 +155,11 @@ namespace Imgeneus.World.Game.Speed
         public void RaisePassiveModificatorChanged(byte weaponType, byte passiveSkillModifier, bool shouldAdd)
         {
             OnPassiveModificatorChanged?.Invoke(weaponType, passiveSkillModifier, shouldAdd);
+        }
+
+        private void StealthManager_OnStealthChange(uint senderId)
+        {
+            RaiseMoveAndAttackSpeed();
         }
 
         #endregion
