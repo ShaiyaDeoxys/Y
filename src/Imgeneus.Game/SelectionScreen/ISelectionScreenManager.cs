@@ -22,6 +22,11 @@ namespace Imgeneus.World.SelectionScreen
         Task<Fraction> GetFaction(int userId);
 
         /// <summary>
+        /// Sets faction to user.
+        /// </summary>
+        Task SetFaction(int userId, Fraction fraction);
+
+        /// <summary>
         /// Get mode of user.
         /// </summary>
         Task<Mode> GetMaxMode(int userId);

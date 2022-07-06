@@ -3,6 +3,7 @@ using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
+using Imgeneus.World.SelectionScreen;
 using Sylver.HandlerInvoker.Attributes;
 using System.Threading.Tasks;
 
@@ -11,19 +12,17 @@ namespace Imgeneus.World.Handlers
     [Handler]
     public class AccountFractionHandler : BaseHandler
     {
-        private readonly IDatabase _database;
-        public AccountFractionHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabase database) : base(packetFactory, gameSession)
+        private readonly ISelectionScreenManager _selectionScreenManager;
+
+        public AccountFractionHandler(IGamePacketFactory packetFactory, IGameSession gameSession, ISelectionScreenManager selectionScreenManager) : base(packetFactory, gameSession)
         {
-            _database = database;
+            _selectionScreenManager = selectionScreenManager;
         }
 
         [HandlerAction(PacketType.ACCOUNT_FACTION)]
         public async Task Handle(WorldClient client, AccountFractionPacket packet)
         {
-            var user = await _database.Users.FindAsync(client.UserId);
-            user.Faction = packet.Fraction;
-
-            await _database.SaveChangesAsync();
+            await _selectionScreenManager.SetFaction(client.UserId, packet.Fraction);
         }
     }
 }

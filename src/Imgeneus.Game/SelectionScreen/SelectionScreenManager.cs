@@ -167,6 +167,14 @@ namespace Imgeneus.World.SelectionScreen
             return user.Faction;
         }
 
+        public async Task SetFaction(int userId, Fraction fraction)
+        {
+            var user = await _database.Users.FindAsync(userId);
+            user.Faction = fraction;
+
+            await _database.SaveChangesAsync();
+        }
+
         public async Task<Mode> GetMaxMode(int userId)
         {
             var user = await _database.Users.FindAsync(userId);
