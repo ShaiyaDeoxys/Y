@@ -79,6 +79,7 @@ namespace Imgeneus.World.Game.Monster
         private void MobRebirth_OnDead(uint senderId, IKiller killer)
         {
             AttackManager.Target = null;
+            AIManager.Stop();
 
             if (!ShouldRebirth)
                 return;

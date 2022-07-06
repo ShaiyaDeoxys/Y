@@ -451,6 +451,7 @@ namespace Imgeneus.World.Game.Zone
             mob.Init(GenerateId());
             mob.Map = this;
             Cells[GetCellIndex(mob)].AddMob(mob);
+            mob.AIManager.Start();
 
             if (mob.ShouldRebirth)
                 mob.TimeToRebirth += RebirthMob;

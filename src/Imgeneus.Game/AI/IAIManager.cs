@@ -75,5 +75,15 @@ namespace Imgeneus.World.Game.AI
         /// <param name="x">x coordinate</param>
         /// <param name="z">z coordinate</param>
         void Move(float x, float z);
+
+        /// <summary>
+        /// Starts AI.
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// Stops AI.
+        /// </summary>
+        void Stop();
     }
 }

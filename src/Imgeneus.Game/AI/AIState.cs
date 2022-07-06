@@ -20,7 +20,12 @@
         /// <summary>
         /// Mob is returning back to its' birth position.
         /// </summary>
-        BackToBirthPosition
+        BackToBirthPosition,
+
+        /// <summary>
+        /// Mob is dead. Do nothing.
+        /// </summary>
+        Stopped
 
     }
 }

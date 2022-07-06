@@ -188,7 +188,6 @@ namespace Imgeneus.World.Game.AI
 
             SetupAITimers();
 
-            State = AIState.Idle;
             _initialized = true;
         }
 
@@ -276,6 +275,16 @@ namespace Imgeneus.World.Game.AI
             _backToBirthPositionTimer.Stop();
         }
 
+        public void Start()
+        {
+            State = AIState.Idle;
+        }
+
+        public void Stop()
+        {
+            State = AIState.Stopped;
+        }
+
         #endregion
 
         #region AI
@@ -290,7 +299,7 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         public readonly float DELTA = 1f;
 
-        private AIState _state = AIState.Idle;
+        private AIState _state = AIState.Stopped;
 
         private object _stateSyncObject = new();
 
@@ -344,6 +353,14 @@ namespace Imgeneus.World.Game.AI
                             StopChasing();
                             ReturnToBirthPosition();
                             _untouchableManager.IsUntouchable = true;
+                            break;
+
+                        case AIState.Stopped:
+                            _idleTimer.Stop();
+                            _watchTimer.Stop();
+                            _chaseTimer.Stop();
+                            _attackTimer.Stop();
+                            _backToBirthPositionTimer.Stop();
                             break;
 
                         default:
