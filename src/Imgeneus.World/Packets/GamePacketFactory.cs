@@ -1638,7 +1638,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_DEATH);
             packet.Write(senderId);
-            packet.WriteByte(1); // killer type. Always 1, since only player can kill the mob.
+            packet.WriteByte(killer is GuardNpc ? (byte)3 : (byte)1);
             packet.Write(killer.Id);
             client.Send(packet);
         }

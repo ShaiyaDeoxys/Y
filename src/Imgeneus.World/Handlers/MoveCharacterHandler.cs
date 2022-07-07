@@ -65,6 +65,7 @@ namespace Imgeneus.World.Handlers
             _movementManager.PosY = packet.Y;
             _movementManager.PosZ = packet.Z;
             _movementManager.Angle = packet.Angle;
+            _movementManager.MoveMotion = (MoveMotion)packet.MoveMotion;
 
             _movementManager.RaisePositionChanged();
             _logger.LogInformation("Character {id} new position: {x} {y} {z}", _gameSession.Character.Id, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);

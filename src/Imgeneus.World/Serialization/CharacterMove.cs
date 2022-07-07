@@ -10,10 +10,10 @@ namespace Imgeneus.World.Serialization
         public uint CharId { get; }
 
         [FieldOrder(1)]
-        public MoveMotion Motion { get; }
+        public ushort Angle { get; }
 
         [FieldOrder(2)]
-        public ushort Angle { get; }
+        public MoveMotion Motion { get; }
 
         [FieldOrder(3)]
         public float PosX { get; }

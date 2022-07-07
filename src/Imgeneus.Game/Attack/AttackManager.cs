@@ -219,7 +219,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ) > WeaponAttackRange + 1 + ExtraAttackRange)
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ) > WeaponAttackRange + 1 + ExtraAttackRange + 3)
             {
                 success = AttackSuccess.InsufficientRange;
                 return false;
