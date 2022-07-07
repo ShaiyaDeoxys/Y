@@ -139,6 +139,7 @@ namespace Imgeneus.World.Tests
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
+            movementManager.Init(_characterId, 0, 0, 0, 0, MoveMotion.Run);
 
             var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, packetFactoryMock.Object, gameWorldMock.Object, mapProvider, healthManager);
             partyManager.Init(_characterId);
@@ -169,7 +170,7 @@ namespace Imgeneus.World.Tests
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
 
-            var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object,healthManager, countryProvider, mapProvider, movementManager);
+            var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object, healthManager, countryProvider, mapProvider, movementManager);
             var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, databaseMock.Object, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object);
             guildManager.Init(_characterId);
 

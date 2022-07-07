@@ -43,7 +43,10 @@ namespace Imgeneus.World.Handlers
             _logger.LogInformation("Character {id} is moving {x} {y} {z}", _gameSession.Character.Id, packet.X, packet.Y, packet.Z);
 
             if (_teleportationManager.IsTeleporting)
+            {
+                _logger.LogWarning("Character {id} is moving during teleport.", _gameSession.Character.Id);
                 return;
+            }
 
             if (_speedManager.Immobilize)
             {

@@ -63,5 +63,31 @@ namespace Imgeneus.World.Tests.CharacterTests
             character.TeleportationManager.Teleport(map2.Id, 10, 20, 30);
             Assert.Null(map1.GetPlayer(character.Id));
         }
+
+        [Fact]
+        [Description("Cell id should change if teleport inside one map.")]
+        public void TeleportShouldChangeCellId()
+        {
+            var map = new Map(
+                    1,
+                    new MapDefinition(),
+                    new Svmap() { MapSize = 100, CellSize = 50 },
+                    new List<ObeliskConfiguration>(),
+                    mapLoggerMock.Object,
+                    packetFactoryMock.Object,
+                    databasePreloader.Object,
+                    mobFactoryMock.Object,
+                    npcFactoryMock.Object,
+                    obeliskFactoryMock.Object,
+                    timeMock.Object);
+
+            Assert.Equal(4, map.Cells.Count);
+
+            var character = CreateCharacter(map);
+            Assert.Equal(0, character.CellId);
+
+            character.TeleportationManager.Teleport(1, 90, 0, 90);
+            Assert.Equal(3, character.CellId);
+        }
     }
 }

@@ -141,6 +141,7 @@ namespace Imgeneus.World.Game.Teleport
             if (prevMapId == mapId)
             {
                 IsTeleporting = false;
+                _movementManager.RaisePositionChanged(); // Raise coordinate change for cell update.
             }
             else
             {
