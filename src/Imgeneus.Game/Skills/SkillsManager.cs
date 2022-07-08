@@ -369,8 +369,11 @@ namespace Imgeneus.World.Game.Skills
                         // Target is opponent.
                         else
                         {
-                            success = AttackSuccess.WrongTarget;
-                            return false;
+                            if (skill.IsForAlly)
+                            {
+                                success = AttackSuccess.WrongTarget;
+                                return false;
+                            }
                         }
                     }
                     // Can not attack its' own faction.
