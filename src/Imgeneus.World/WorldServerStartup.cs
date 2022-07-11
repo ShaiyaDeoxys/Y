@@ -171,6 +171,7 @@ namespace Imgeneus.World
                     options.Password.RequireUppercase = false;
                     options.Password.RequireLowercase = false;
                     options.Password.RequiredLength = 1;
+                    options.Password.RequireDigit = false;
                 })
                 .AddRoles<DbRole>()
                 .AddEntityFrameworkStores<DatabaseContext>();
