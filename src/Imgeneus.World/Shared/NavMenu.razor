@@ -27,6 +27,12 @@
             </AuthorizeView>
 
             <AuthorizeView Roles="SuperAdmin, Admin">
+                <NavLink class="nav-link" href="Maps" Match="NavLinkMatch.All">
+                    <span class="oi oi-map-marker" aria-hidden="true"></span> Maps
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="SuperAdmin, Admin">
                 <NavLink class="nav-link" href="TcpConnections" Match="NavLinkMatch.All">
                     <span class="oi oi-wifi" aria-hidden="true"></span> TCP connections
                 </NavLink>

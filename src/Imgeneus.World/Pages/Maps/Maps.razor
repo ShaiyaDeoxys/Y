@@ -1,0 +1,32 @@
+﻿@page "/Maps"
+@using Imgeneus.World.Game
+@using Imgeneus.World.Game.Zone
+
+@attribute [Authorize(Roles = "SuperAdmin, Admin")]
+
+@inject IGameWorld _gameWorld
+
+<h3>Maps</h3>
+
+<div class="list-group">
+    @foreach (var map in _maps)
+    {
+        <a href="/Maps/@map.Id" class="list-group-item list-group-item-action">Map @map.Id</a>
+    }
+</div>
+
+
+@code {
+    private List<IMap> _maps;
+
+    protected override void OnInitialized()
+    {
+        InitMaps();
+    }
+
+    private void InitMaps()
+    {
+        _maps = new List<IMap>();
+        _maps.AddRange(_gameWorld.Maps.Values);
+    }
+}

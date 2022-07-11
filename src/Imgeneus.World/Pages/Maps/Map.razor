@@ -1,0 +1,143 @@
+﻿@page "/Maps/{Id:int}"
+
+@attribute [Authorize(Roles = "SuperAdmin, Admin")]
+
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas.Canvas2D
+@using Imgeneus.World.Game
+@using Imgeneus.World.Game.Zone
+
+@inject IGameWorld _gameWorld
+
+@if (_map is not null)
+{
+    <h2>Original map size: @_map.Size. Draw coefficient: @_sizeCoefficient</h2>
+    <div class="canvas-container">
+        <BECanvas Width="_mapSize" Height="_mapSize" @ref="_canvasReference"></BECanvas>
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item tab" @onclick=@(() => CurrentTab = PLAYERS_TAB)>
+                <a class="nav-link @(CurrentTab == PLAYERS_TAB ? "active" : "")">
+                    Players
+                </a>
+            </li>
+            <li class="nav-item tab" @onclick=@(() => CurrentTab = PLAYERS_TAB)>
+                <a class="nav-link @(CurrentTab == MOBS_TAB ? "active" : "")">
+                    Mobs
+                </a>
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    private IMap _map;
+
+    protected BECanvasComponent _canvasReference;
+    private Canvas2DContext _context;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private byte _sizeCoefficient = 1;
+    private int _mapSize;
+
+    public string CurrentTab { get; set; } = PLAYERS_TAB;
+
+    public const string PLAYERS_TAB = "Players";
+    public const string MOBS_TAB = "Mobs";
+
+    protected override void OnInitialized()
+    {
+        InitMap();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        this._context = await this._canvasReference.CreateCanvas2DAsync();
+        if (firstRender)
+            await Redraw();
+    }
+
+    private async Task Redraw()
+    {
+        // Draw mobs
+        await this._context.SetStrokeStyleAsync("black");
+        foreach (var cell in _map.Cells)
+            foreach (var mob in cell.GetAllMobs(false))
+            {
+                var x = mob.MovementManager.PosX;
+                var y = mob.MovementManager.PosZ;
+
+                if (_sizeCoefficient > 1)
+                {
+                    x = x / (2 * _sizeCoefficient);
+                    y = y / (2 * _sizeCoefficient);
+                }
+
+                await this._context.BeginPathAsync();
+                await this._context.ArcAsync(x, y, 5, 0, 2 * Math.PI);
+                await this._context.StrokeAsync();
+            }
+
+        // Draw npc
+        await this._context.SetStrokeStyleAsync("green");
+        foreach (var cell in _map.Cells)
+            foreach (var npc in cell.GetAllNPCs(false))
+            {
+                var x = npc.MovementManager.PosX;
+                var y = npc.MovementManager.PosZ;
+
+                if (_sizeCoefficient > 1)
+                {
+                    x = x / (2 * _sizeCoefficient);
+                    y = y / (2 * _sizeCoefficient);
+                }
+
+                await this._context.BeginPathAsync();
+                await this._context.ArcAsync(x, y, 5, 0, 2 * Math.PI);
+                await this._context.StrokeAsync();
+            }
+
+
+        // Draw players
+        await this._context.SetStrokeStyleAsync("red");
+        foreach (var player in _map.Players)
+        {
+            var x = player.Value.MovementManager.PosX;
+            var y = player.Value.MovementManager.PosZ;
+
+            if (_sizeCoefficient > 1)
+            {
+                x = x / (2 * _sizeCoefficient);
+                y = y / (2 * _sizeCoefficient);
+            }
+
+            await this._context.BeginPathAsync();
+            await this._context.ArcAsync(x, y, 5, 0, 2 * Math.PI);
+            await this._context.StrokeAsync();
+        }
+    }
+
+    private void InitMap()
+    {
+        _map = _gameWorld.Maps[(ushort)Id];
+
+        _mapSize = _map.Size;
+        while (_mapSize > 512)
+        {
+            _mapSize = _mapSize / 2;
+            _sizeCoefficient++;
+        }
+    }
+}
+
+<style>
+    canvas {
+        transform: scaleY(-1);
+    }
+
+    .canvas-container {
+        display: flex;
+    }
+</style>

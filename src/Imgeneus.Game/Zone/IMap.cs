@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Game.Country;
+using System.Collections.Concurrent;
 
 namespace Imgeneus.World.Game.Zone
 {
@@ -22,6 +23,11 @@ namespace Imgeneus.World.Game.Zone
         /// Removes player from the map.
         /// </summary>
         bool UnloadPlayer(uint playerId, bool exitGame = false);
+
+        /// <summary>
+        /// Map players.
+        /// </summary>
+        ConcurrentDictionary<uint, Character> Players { get; }
 
         /// <summary>
         /// Map portals.
@@ -63,5 +69,15 @@ namespace Imgeneus.World.Game.Zone
         /// Game world.
         /// </summary>
         IGameWorld GameWorld { get; set; }
+
+        /// <summary>
+        /// Map size.
+        /// </summary>
+        int Size { get; }
+
+        /// <summary>
+        /// For better performance updates are sent through map cells.
+        /// </summary>
+        List<MapCell> Cells { get; }
     }
 }

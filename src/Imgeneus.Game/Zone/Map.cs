@@ -109,9 +109,6 @@ namespace Imgeneus.World.Game.Zone
 
         #region Cells
 
-        /// <summary>
-        /// Map size.
-        /// </summary>
         public int Size { get; private set; }
 
         /// <summary>
@@ -129,9 +126,6 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         public int Columns { get; private set; }
 
-        /// <summary>
-        /// For better performance updates are sent through map cells.
-        /// </summary>
         public List<MapCell> Cells { get; private set; } = new List<MapCell>();
 
         /// <summary>
@@ -233,7 +227,7 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Thread-safe dictionary of connected players. Key is character id, value is character.
         /// </summary>
-        protected readonly ConcurrentDictionary<uint, Character> Players = new ConcurrentDictionary<uint, Character>();
+        public ConcurrentDictionary<uint, Character> Players { get; init; } = new ConcurrentDictionary<uint, Character>();
 
         /// <summary>
         /// Tries to get player from map.
