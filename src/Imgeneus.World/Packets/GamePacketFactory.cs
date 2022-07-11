@@ -2394,9 +2394,8 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendLevelUp(IWorldClient client, uint characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp, bool hasParty = false)
+        public void SendLevelUp(IWorldClient client, PacketType type, uint characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp)
         {
-            var type = hasParty ? PacketType.GM_CHARACTER_LEVEL_UP : PacketType.CHARACTER_LEVEL_UP;
             using var packet = new ImgeneusPacket(type);
             packet.Write(new CharacterLevelUp(characterId, level, statPoint, skillPoint, minExp, nextExp).Serialize());
             client.Send(packet);

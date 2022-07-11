@@ -44,5 +44,20 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.False(character.LevelingManager.TryChangeLevel(maxLevel));
             Assert.Equal(maxLevel, character.LevelProvider.Level);
         }
+
+        [Fact]
+        [Description("If changing back to level 1, exp should change to 0.")]
+        public void Level1ExpShouldBeExp0Test()
+        {
+            var character = CreateCharacter();
+
+            character.AdditionalInfoManager.Grow = Mode.Ultimate;
+
+            character.LevelingManager.TryChangeLevel(2);
+            Assert.True(character.LevelingManager.Exp != 0);
+
+            character.LevelingManager.TryChangeLevel(1);
+            Assert.True(character.LevelingManager.Exp == 0);
+        }
     }
 }

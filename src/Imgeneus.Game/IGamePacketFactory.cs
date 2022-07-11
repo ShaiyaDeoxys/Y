@@ -347,7 +347,7 @@ namespace Imgeneus.World.Packets
 
         #region Leveling
         void SendExperienceGain(IWorldClient client, uint exp);
-        void SendLevelUp(IWorldClient client, uint characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp, bool hasParty = false);
+        void SendLevelUp(IWorldClient client, PacketType type, uint characterId, ushort level, ushort statPoint, ushort skillPoint, uint minExp, uint nextExp);
         #endregion
 
         #region Death

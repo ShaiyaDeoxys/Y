@@ -102,7 +102,7 @@ namespace Imgeneus.World.Game.Levelling
             _levelProvider.Level = newLevel;
 
             // Check that experience is at least the minimum experience for the level, without notifiyng client.
-            if (_exp < MinLevelExp || _exp > NextLevelExp)
+            if (_exp < MinLevelExp || _exp >= NextLevelExp)
                 // Change player experience to 0% of current level
                 _exp = MinLevelExp;
 

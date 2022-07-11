@@ -397,8 +397,8 @@
 
         // Experience and Leveling
         EXPERIENCE_GAIN = 0x0207, // 519
-        CHARACTER_LEVEL_UP = 0x0508, // 1288
-        GM_CHARACTER_LEVEL_UP = 0x051E, // 1310
+        CHARACTER_LEVEL_UP_MYSELF = 0x0508, // 1288
+        CHARACTER_LEVEL_UP_OTHER = 0x051E, // 1310
 
         // Bank
         BANK_ITEM_LIST = 0xB101, // 45313

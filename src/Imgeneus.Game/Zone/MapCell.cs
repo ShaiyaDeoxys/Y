@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Game.Skills;
+using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
@@ -501,8 +502,22 @@ namespace Imgeneus.World.Game.Zone
             var sender = Players[senderId];
 
             foreach (var player in GetAllPlayers(true))
-                // If sender has party, send admin level up
-                Map.PacketFactory.SendLevelUp(player.GameSession.Client, senderId, level, sender.StatsManager.StatPoint, sender.SkillsManager.SkillPoints, sender.LevelingManager.MinLevelExp, sender.LevelingManager.NextLevelExp, sender.PartyManager.HasParty);
+            {
+                PacketType type;
+                if (player.Id == sender.Id)
+                {
+                    if (player.PartyManager.HasParty)
+                        type = PacketType.CHARACTER_LEVEL_UP_OTHER;
+                    else
+                        type = PacketType.CHARACTER_LEVEL_UP_MYSELF;
+                }
+                else
+                {
+                    type = PacketType.CHARACTER_LEVEL_UP_OTHER;
+
+                }
+                Map.PacketFactory.SendLevelUp(player.GameSession.Client, type, senderId, level, sender.StatsManager.StatPoint, sender.SkillsManager.SkillPoints, sender.LevelingManager.MinLevelExp, sender.LevelingManager.NextLevelExp);
+            }
         }
 
         /// <summary>
@@ -684,17 +699,14 @@ namespace Imgeneus.World.Game.Zone
 
             RemoveListeners(mob);
 
-            foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMobDead(player.GameSession.Client, senderId, killer);
-
             // Add experience to killer character/party
             // Update quest.
             if (killer is Character killerCharacter)
             {
                 // For some unknown reason, when character gets new level, mob death animation is not played.
                 // This is not pretty fix, but I could not find any reason why animation is not played.
-                if (mob.Map.Id != Map.TEST_MAP_ID)
-                    await Task.Delay(1000).ConfigureAwait(false);
+                //if (mob.Map.Id != Map.TEST_MAP_ID)
+                //    await Task.Delay(1000).ConfigureAwait(false);
 
                 killerCharacter.LevelingManager.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
                 killerCharacter.QuestsManager.UpdateQuestMobCount(mob.MobId);
@@ -715,6 +727,12 @@ namespace Imgeneus.World.Game.Zone
 
             if (Map is GRBMap)
                 (Map as GRBMap).AddPoints(mob.GuildPoints);
+
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMobDead(player.GameSession.Client, senderId, killer);
+
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMobLeave(player.GameSession.Client, mob);
 
             if (!mob.ShouldRebirth)
                 mob.Dispose();
