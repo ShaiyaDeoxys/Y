@@ -93,6 +93,7 @@ namespace Imgeneus.World.Game.Monster
         private void RebirthTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             _rebirthTimer.Stop();
+            HealthManager.FullRecover();
             TimeToRebirth?.Invoke(this);
         }
     }

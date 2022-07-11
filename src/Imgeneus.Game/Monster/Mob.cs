@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.Skill;
 using System;
+using System.Timers;
 
 namespace Imgeneus.World.Game.Monster
 {
@@ -31,6 +32,7 @@ namespace Imgeneus.World.Game.Monster
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly DbMob _dbMob;
         private readonly MoveArea _moveArea;
+        private readonly Timer _leaveTimer = new Timer(5000) { AutoReset = false };
 
         public IAIManager AIManager { get; private set; }
         public ISpeedManager SpeedManager { get; private set; }
@@ -85,11 +87,10 @@ namespace Imgeneus.World.Game.Monster
             {
                 _rebirthTimer.Interval = RespawnTimeInMilliseconds;
                 _rebirthTimer.Elapsed += RebirthTimer_Elapsed;
-
-                HealthManager.OnDead += MobRebirth_OnDead;
             }
 
-            AIManager.OnStateChanged += AIManager_OnStateChanged;
+            HealthManager.OnDead += MobRebirth_OnDead;
+            _leaveTimer.Elapsed += LeaveTimer_Elapsed;
         }
 
         public void Init(uint ownerId)
@@ -189,12 +190,6 @@ namespace Imgeneus.World.Game.Monster
                 SkillsManager.ResistSkills.Add(_dbMob.ResistSkill6);
         }
 
-        private void AIManager_OnStateChanged(AIState newState)
-        {
-            if (newState == AIState.Idle)
-                HealthManager.FullRecover();
-        }
-
         /// <summary>
         /// Mob id from database.
         /// </summary>
@@ -223,10 +218,22 @@ namespace Imgeneus.World.Game.Monster
             return new Mob(MobId, ShouldRebirth, _moveArea, _logger, _databasePreloader, AIManager, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
         }
 
+        public Action<Mob> OnLeaveWorld;
+        public void StartLeaveWorld()
+        {
+            _leaveTimer.Start();
+        }
+
+        private void LeaveTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            OnLeaveWorld?.Invoke(this);
+        }
+
+
         public void Dispose()
         {
             HealthManager.OnDead -= MobRebirth_OnDead;
-            AIManager.OnStateChanged -= AIManager_OnStateChanged;
+            _leaveTimer.Elapsed -= LeaveTimer_Elapsed;
 
             Scope?.Dispose();
         }

@@ -674,6 +674,7 @@ namespace Imgeneus.World.Game.Zone
             mob.HealthManager.OnRecover += Mob_OnRecover;
             mob.BuffsManager.OnSkillKeep += Mob_OnSkillKeep;
             mob.HealthManager.OnMirrowDamage += Mob_OnMirrowDamage;
+            mob.OnLeaveWorld += Mob_OnLeaveWorld;
         }
 
         /// <summary>
@@ -697,6 +698,9 @@ namespace Imgeneus.World.Game.Zone
             if (mob is null)
                 return;
 
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMobDead(player.GameSession.Client, senderId, killer);
+
             RemoveListeners(mob);
 
             // Add experience to killer character/party
@@ -705,8 +709,8 @@ namespace Imgeneus.World.Game.Zone
             {
                 // For some unknown reason, when character gets new level, mob death animation is not played.
                 // This is not pretty fix, but I could not find any reason why animation is not played.
-                //if (mob.Map.Id != Map.TEST_MAP_ID)
-                //    await Task.Delay(1000).ConfigureAwait(false);
+                if (mob.Map.Id != Map.TEST_MAP_ID)
+                    await Task.Delay(1000).ConfigureAwait(false);
 
                 killerCharacter.LevelingManager.AddMobExperience(mob.LevelProvider.Level, (ushort)mob.Exp);
                 killerCharacter.QuestsManager.UpdateQuestMobCount(mob.MobId);
@@ -728,28 +732,8 @@ namespace Imgeneus.World.Game.Zone
             if (Map is GRBMap)
                 (Map as GRBMap).AddPoints(mob.GuildPoints);
 
-            foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMobDead(player.GameSession.Client, senderId, killer);
-
-            foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendMobLeave(player.GameSession.Client, mob);
-
             if (!mob.ShouldRebirth)
-                mob.Dispose();
-
-#if DEBUG
-            // ONLY for debug! Don't uncomment it in prod.
-            // It's for checking if every scoped service is finalized, when mob is killed.
-
-            // Wait 0.5 sec after client disconnected.
-            await Task.Delay(500).ContinueWith((x) =>
-            {
-                // Collect everything.
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.WaitForFullGCComplete();
-            });
-#endif
+                mob.StartLeaveWorld();
         }
 
         private void Mob_OnMove(uint senderId, float x, float y, float z, ushort a, MoveMotion motion)
@@ -796,6 +780,29 @@ namespace Imgeneus.World.Game.Zone
         {
             foreach (var player in GetAllPlayers(true))
                 Map.PacketFactory.SendMobMirrorDamage(player.GameSession.Client, senderId, targetId, damage);
+        }
+
+        private async void Mob_OnLeaveWorld(Mob mob)
+        {
+            foreach (var player in GetAllPlayers(true))
+                Map.PacketFactory.SendMobLeave(player.GameSession.Client, mob);
+
+            mob.OnLeaveWorld -= Mob_OnLeaveWorld;
+            mob.Dispose();
+
+#if DEBUG
+            // ONLY for debug! Don't uncomment it in prod.
+            // It's for checking if every scoped service is finalized, when mob is killed.
+
+            // Wait 0.5 sec after client disconnected.
+            await Task.Delay(500).ContinueWith((x) =>
+            {
+                // Collect everything.
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.WaitForFullGCComplete();
+            });
+#endif
         }
 
         #endregion
