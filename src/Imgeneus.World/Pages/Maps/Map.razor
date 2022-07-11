@@ -5,9 +5,11 @@
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas.Canvas2D
 @using Imgeneus.World.Game
+@using Imgeneus.World.Game.Player
 @using Imgeneus.World.Game.Zone
 
 @inject IGameWorld _gameWorld
+@inject NavigationManager _navigationManager
 
 @if (_map is not null)
 {
@@ -15,18 +17,86 @@
     <div class="canvas-container">
         <BECanvas Width="_mapSize" Height="_mapSize" @ref="_canvasReference"></BECanvas>
 
-        <ul class="nav nav-tabs">
-            <li class="nav-item tab" @onclick=@(() => CurrentTab = PLAYERS_TAB)>
-                <a class="nav-link @(CurrentTab == PLAYERS_TAB ? "active" : "")">
-                    Players
-                </a>
-            </li>
-            <li class="nav-item tab" @onclick=@(() => CurrentTab = PLAYERS_TAB)>
-                <a class="nav-link @(CurrentTab == MOBS_TAB ? "active" : "")">
-                    Mobs
-                </a>
-            </li>
-        </ul>
+        <div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item tab" @onclick=@(() => CurrentTab = PLAYERS_TAB)>
+                    <a class="nav-link @(CurrentTab == PLAYERS_TAB ? "active" : "")">
+                        Players
+                    </a>
+                </li>
+                <li class="nav-item tab" @onclick=@(() => CurrentTab = MOBS_TAB)>
+                    <a class="nav-link @(CurrentTab == MOBS_TAB ? "active" : "")">
+                        Mobs
+                    </a>
+                </li>
+            </ul>
+
+            @if (CurrentTab == PLAYERS_TAB)
+            {
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>X</th>
+                            <th>Y</th>
+                            <th>Z</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var player in _map.Players)
+                        {
+                            <tr class="character-row" @onclick="@(() => @RedirectToPlayerPage(@player.Value))">
+                                <td>@player.Value.Id</td>
+                                <td>@player.Value.AdditionalInfoManager.Name</td>
+                                <td>@player.Value.AdditionalInfoManager.Class</td>
+                                <td>@player.Value.MovementManager.PosX</td>
+                                <td>@player.Value.MovementManager.PosY</td>
+                                <td>@player.Value.MovementManager.PosZ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            @if (CurrentTab == MOBS_TAB)
+            {
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Mob id</th>
+                            <th>State</th>
+                            <th>Current HP</th>
+                            <th>Max HP</th>
+                            <th>X</th>
+                            <th>Y</th>
+                            <th>Z</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cell in _map.Cells)
+                        {
+                            @foreach (var mob in cell.GetAllMobs(false))
+                            {
+                                <tr>
+                                    <td>@mob.Id</td>
+                                    <td>@mob.MobId</td>
+                                    <td>@mob.AIManager.State</td>
+                                    <td>@mob.HealthManager.CurrentHP</td>
+                                    <td>@mob.HealthManager.MaxHP</td>
+                                    <td>@mob.HealthManager.CurrentHP</td>
+                                    <td>@mob.MovementManager.PosX</td>
+                                    <td>@mob.MovementManager.PosY</td>
+                                    <td>@mob.MovementManager.PosZ</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
     </div>
 }
 
@@ -61,6 +131,8 @@
 
     private async Task Redraw()
     {
+        await this._context.BeginBatchAsync();
+
         // Draw mobs
         await this._context.SetStrokeStyleAsync("black");
         foreach (var cell in _map.Cells)
@@ -117,6 +189,8 @@
             await this._context.ArcAsync(x, y, 5, 0, 2 * Math.PI);
             await this._context.StrokeAsync();
         }
+
+        await this._context.EndBatchAsync();
     }
 
     private void InitMap()
@@ -130,6 +204,11 @@
             _sizeCoefficient++;
         }
     }
+
+    private void RedirectToPlayerPage(Character player)
+    {
+        _navigationManager.NavigateTo($"Players/{player.Id}");
+    }
 }
 
 <style>
@@ -138,6 +217,9 @@
     }
 
     .canvas-container {
-        display: flex;
+    }
+
+    .character-row {
+        cursor: pointer;
     }
 </style>
