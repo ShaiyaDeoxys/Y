@@ -477,9 +477,6 @@ namespace Imgeneus.World.Game.AI
 
                 SelectActionBasedOnAI();
             }
-
-            //if (_target is null && State != AIState.Idle)
-            //    State = AIState.BackToBirthPosition;
         }
 
         /// <summary>
