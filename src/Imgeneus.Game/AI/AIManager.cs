@@ -314,8 +314,41 @@ namespace Imgeneus.World.Game.AI
             {
                 lock (_stateSyncObject)
                 {
-                    if (value == AIState.BackToBirthPosition && (StartPosX == -1 || StartPosZ == -1))
+                    // State machine Idle => Chase => Too far away?
+                    // Yes: BackToBirthPosition => Idle
+                    // No: ReadyToAttack => Chase
+
+                    if (_state == AIState.Idle && value != AIState.Chase)
+                    {
+#if DEBUG
+                        _logger.LogError("Can not go from {a} to {b}", _state, value);
+#endif
                         return;
+                    }
+
+                    if (_state == AIState.Chase && value != AIState.ReadyToAttack && value != AIState.BackToBirthPosition)
+                    {
+#if DEBUG
+                        _logger.LogError("Can not go from {a} to {b}", _state, value);
+#endif
+                        return;
+                    }
+
+                    if (_state == AIState.ReadyToAttack && value != AIState.Chase)
+                    {
+#if DEBUG
+                        _logger.LogError("Can not go from {a} to {b}", _state, value);
+#endif
+                        return;
+                    }
+
+                    if (_state == AIState.BackToBirthPosition && value != AIState.Idle)
+                    {
+#if DEBUG
+                        _logger.LogError("Can not go from {a} to {b}", _state, value);
+#endif
+                        return;
+                    }
 
                     _state = value;
 
@@ -338,6 +371,7 @@ namespace Imgeneus.World.Game.AI
                             StartPosX = -1;
                             StartPosZ = -1;
                             _movementManager.MoveMotion = MoveMotion.Walk;
+                            _healthManager.FullRecover();
                             Agro.Clear();
                             break;
 
@@ -403,7 +437,13 @@ namespace Imgeneus.World.Game.AI
 
                 default:
                     _logger.LogWarning("AI {hashcode} has not implement ai type - {AI}, falling back to combative type.", GetHashCode(), AI);
-                    State = AIState.Chase;
+                    if (_chaseSpeed > 0)
+                        State = AIState.Chase;
+                    else
+                        if (_attackManager.Target != null && MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ) <= _chaseRange)
+                        State = AIState.ReadyToAttack;
+                    else
+                        State = AIState.Idle;
                     break;
             }
         }
@@ -438,8 +478,8 @@ namespace Imgeneus.World.Game.AI
                 SelectActionBasedOnAI();
             }
 
-            if (_target is null && State != AIState.Idle)
-                State = AIState.BackToBirthPosition;
+            //if (_target is null && State != AIState.Idle)
+            //    State = AIState.BackToBirthPosition;
         }
 
         /// <summary>
@@ -614,6 +654,9 @@ namespace Imgeneus.World.Game.AI
             StartPosX = _movementManager.PosX;
             StartPosZ = _movementManager.PosZ;
 
+            _chaseTimer.Enabled = true;
+            _attackTimer.Enabled = true;
+
             _chaseTimer.Start();
         }
 
@@ -626,6 +669,7 @@ namespace Imgeneus.World.Game.AI
             _logger.LogDebug("AI {id} stopped chasing.", _ownerId);
 #endif
             _chaseTimer.Stop();
+            _attackTimer.Stop();
         }
 
         private void ChaseTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -980,14 +1024,21 @@ namespace Imgeneus.World.Game.AI
                 _statsManager.WeaponMaxAttack = minAttack + additionalDamage;
                 _elementProvider.AttackSkillElement = _elementProvider.ConstAttackElement;
 
-                _attackManager.AutoAttack(Owner);
+                if (_attackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, _attackManager.Target, out var _))
+                    _attackManager.AutoAttack(Owner);
             }
             else
             {
                 try
                 {
                     _elementProvider.AttackSkillElement = element;
-                    _skillsManager.UseSkill(skill, Owner, skill.Type == TypeDetail.Healing ? Owner as IKillable : _attackManager.Target);
+
+                    var canUseSkill = _skillsManager.CanUseSkill(skill, skill.Type == TypeDetail.Healing ? Owner as IKillable : _attackManager.Target, out var reason);
+                    if (canUseSkill)
+                        _skillsManager.UseSkill(skill, Owner, skill.Type == TypeDetail.Healing ? Owner as IKillable : _attackManager.Target);
+                    else if (reason == AttackSuccess.CooldownNotOver)
+                        if (_attackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, _attackManager.Target, out var _))
+                            _attackManager.AutoAttack(Owner);
                 }
                 catch (Exception ex)
                 {
@@ -996,7 +1047,8 @@ namespace Imgeneus.World.Game.AI
                     _statsManager.WeaponMinAttack = minAttack;
                     _statsManager.WeaponMaxAttack = minAttack + additionalDamage;
 
-                    _attackManager.AutoAttack(Owner);
+                    if (_attackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, _attackManager.Target, out var _))
+                        _attackManager.AutoAttack(Owner);
                 }
             }
         }

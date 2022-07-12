@@ -32,7 +32,8 @@ namespace Imgeneus.World.Handlers
                 return;
             }
 
-            target?.HealthManager.FullRecover();
+            target.HealthManager.FullRecover();
+            target.SkillsManager.Cooldowns.Clear();
 
             _packetFactory.SendGmCommandSuccess(client);
         }
@@ -51,7 +52,8 @@ namespace Imgeneus.World.Handlers
                 return;
             }
 
-            target?.HealthManager.FullRecover();
+            target.HealthManager.FullRecover();
+            target.SkillsManager.Cooldowns.Clear();
 
             _packetFactory.SendGmCommandSuccess(client);
         }

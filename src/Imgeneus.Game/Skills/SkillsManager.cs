@@ -336,6 +336,12 @@ namespace Imgeneus.World.Game.Skills
                 return false;
             }
 
+            if (Cooldowns.ContainsKey(skill.SkillId) && Cooldowns[skill.SkillId] > DateTime.UtcNow)
+            {
+                success = AttackSuccess.CooldownNotOver;
+                return false;
+            }
+
             if (target is null && (skill.TargetType == TargetType.Caster || skill.TargetType == TargetType.PartyMembers || skill.TargetType == TargetType.EnemiesNearCaster || skill.TargetType == TargetType.AlliesNearCaster || skill.TargetType == TargetType.AlliesButCaster))
             {
                 success = AttackSuccess.Normal;
@@ -420,6 +426,9 @@ namespace Imgeneus.World.Game.Skills
 
                 _healthManager.InvokeUsedMPSP((ushort)(oldMP - _healthManager.CurrentMP), (ushort)(oldSP - _healthManager.CurrentSP));
             }
+
+            if (skill.ResetTime > 0)
+                Cooldowns[skill.SkillId] = DateTime.UtcNow.AddSeconds(skill.ResetTime);
 
             int n = 0;
             do
@@ -760,6 +769,12 @@ namespace Imgeneus.World.Game.Skills
 
             return new AttackResult(AttackSuccess.Normal, new Damage());
         }
+
+        #endregion
+
+        #region Cooldown
+
+        public ConcurrentDictionary<ushort, DateTime> Cooldowns { get; init; } = new();
 
         #endregion
 

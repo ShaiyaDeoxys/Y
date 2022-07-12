@@ -88,5 +88,10 @@ namespace Imgeneus.World.Game.Skills
         /// To which skills there is resistanse.
         /// </summary>
         IList<ushort> ResistSkills { get; }
+
+        /// <summary>
+        /// When used skill can be used again?
+        /// </summary>
+        ConcurrentDictionary<ushort, DateTime> Cooldowns { get; }
     }
 }
