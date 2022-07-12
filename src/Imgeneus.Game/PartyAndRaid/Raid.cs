@@ -163,7 +163,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
                         var inventoryItem = Leader.InventoryManager.AddItem(item);
                         if (inventoryItem != null)
                         {
-                            Leader.SendAddItemToInventory(inventoryItem);
                             foreach (var member in Members.Where(m => m != Leader))
                                 _packetFactory.SendMemberGetItem(member.GameSession.Client, Leader.Id, inventoryItem);
                         }
@@ -212,7 +211,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;
-                                dropReceiver.SendAddItemToInventory(inventoryItem);
                                 foreach (var member in Members.Where(m => m != dropReceiver))
                                     _packetFactory.SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                             }
@@ -264,7 +262,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;
-                                dropReceiver.SendAddItemToInventory(inventoryItem);
                                 foreach (var member in Members.Where(m => m != dropReceiver))
                                     _packetFactory.SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                             }

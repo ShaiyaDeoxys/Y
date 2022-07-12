@@ -141,7 +141,6 @@ namespace Imgeneus.World.Game.PartyAndRaid
                                 if (inventoryItem != null)
                                 {
                                     itemAdded = true;
-                                    dropReceiver.SendAddItemToInventory(inventoryItem);
                                     foreach (var member in Members.Where(m => m != dropReceiver))
                                         SendMemberGetItem(member.GameSession.Client, dropReceiver.Id, inventoryItem);
                                 }
