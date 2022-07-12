@@ -566,7 +566,13 @@ namespace Imgeneus.World.Game.Skills
                     break;
 
                 case TargetType.EnemiesNearCaster:
-                    targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange));
+                    if (skillOwner is Character)
+                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange));
+                    else // Logic for mobs.
+                        if (skill.Type == TypeDetail.Healing) // Mob 166. Healing skill 198.
+                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetAllMobs(true).Where(x => MathExtensions.Distance(x.MovementManager.PosX, skillOwner.MovementManager.PosX, x.MovementManager.PosZ, skillOwner.MovementManager.PosZ) <= skill.ApplyRange));
+                    else
+                        targets.AddRange(_mapProvider.Map.Cells[_mapProvider.CellId].GetEnemies(skillOwner, skillOwner.MovementManager.PosX, skillOwner.MovementManager.PosZ, skill.ApplyRange));
                     break;
 
                 case TargetType.EnemiesNearTarget:

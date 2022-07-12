@@ -987,7 +987,7 @@ namespace Imgeneus.World.Game.AI
                 try
                 {
                     _elementProvider.AttackSkillElement = element;
-                    _skillsManager.UseSkill(skill, Owner, _attackManager.Target);
+                    _skillsManager.UseSkill(skill, Owner, skill.Type == TypeDetail.Healing ? Owner as IKillable : _attackManager.Target);
                 }
                 catch (Exception ex)
                 {

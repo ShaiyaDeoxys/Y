@@ -236,6 +236,7 @@ namespace Imgeneus.World.Packets
         void SendMobMove(IWorldClient client, uint senderId, float x, float z, MoveMotion motion);
         void SendMobAttack(IWorldClient client, uint senderId, uint targetId, AttackResult attackResult);
         void SendMobUsedSkill(IWorldClient client, uint senderId, uint targetId, Skill skill, AttackResult attackResult);
+        void SendMobUsedRangeSkill(IWorldClient client, uint senderId, uint targetId, Skill skill, AttackResult attackResult);
         void SendMobDead(IWorldClient client, uint senderId, IKiller killer);
         void SendMobSkillKeep(IWorldClient client, uint senderId, ushort skillId, byte skillLevel, AttackResult attackResult);
         #endregion

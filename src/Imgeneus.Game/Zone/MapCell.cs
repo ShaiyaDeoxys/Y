@@ -671,6 +671,7 @@ namespace Imgeneus.World.Game.Zone
             mob.MovementManager.OnMove += Mob_OnMove;
             mob.AttackManager.OnAttack += Mob_OnAttack;
             mob.SkillsManager.OnUsedSkill += Mob_OnUsedSkill;
+            mob.SkillsManager.OnUsedRangeSkill += Mob_OnUsedRangeSkill;
             mob.HealthManager.OnRecover += Mob_OnRecover;
             mob.BuffsManager.OnSkillKeep += Mob_OnSkillKeep;
             mob.HealthManager.OnMirrowDamage += Mob_OnMirrowDamage;
@@ -687,6 +688,7 @@ namespace Imgeneus.World.Game.Zone
             mob.MovementManager.OnMove -= Mob_OnMove;
             mob.AttackManager.OnAttack -= Mob_OnAttack;
             mob.SkillsManager.OnUsedSkill -= Mob_OnUsedSkill;
+            mob.SkillsManager.OnUsedRangeSkill -= Mob_OnUsedRangeSkill;
             mob.HealthManager.OnRecover -= Mob_OnRecover;
             mob.BuffsManager.OnSkillKeep -= Mob_OnSkillKeep;
             mob.HealthManager.OnMirrowDamage -= Mob_OnMirrowDamage;
@@ -761,6 +763,14 @@ namespace Imgeneus.World.Game.Zone
 
                 if (attackResult.Absorb != 0 && player == target)
                     Map.PacketFactory.SendAbsorbValue(player.GameSession.Client, attackResult.Absorb);
+            }
+        }
+
+        private void Mob_OnUsedRangeSkill(uint senderId, IKillable target, Skill skill, AttackResult attackResult)
+        {
+            foreach (var player in GetAllPlayers(true))
+            {
+                Map.PacketFactory.SendMobUsedRangeSkill(player.GameSession.Client, senderId, target.Id, skill, attackResult);
             }
         }
 

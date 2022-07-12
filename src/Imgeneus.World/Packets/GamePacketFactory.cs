@@ -1634,6 +1634,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMobUsedRangeSkill(IWorldClient client, uint senderId, uint targetId, Skill skill, AttackResult attackResult)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MOB_RANGE_SKILL_USE);
+            packet.Write(new SkillRange(senderId, targetId, skill.SkillId, skill.SkillLevel, attackResult, false).Serialize());
+            client.Send(packet);
+        }
+
         public void SendMobDead(IWorldClient client, uint senderId, IKiller killer)
         {
             using var packet = new ImgeneusPacket(PacketType.MOB_DEATH);
