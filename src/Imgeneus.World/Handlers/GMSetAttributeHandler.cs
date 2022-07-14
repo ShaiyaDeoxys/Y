@@ -134,13 +134,13 @@ namespace Imgeneus.World.Handlers
                     break;
 
                 case CharacterAttributeEnum.Kills:
-                    targetPlayer.KillsManager.Kills = (ushort)attributeValue;
+                    targetPlayer.KillsManager.Kills = attributeValue;
                     ok = true;
                     _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;
 
                 case CharacterAttributeEnum.Deaths:
-                    targetPlayer.KillsManager.Deaths = (ushort)attributeValue;
+                    targetPlayer.KillsManager.Deaths = attributeValue;
                     ok = true;
                     _packetFactory.SendAttribute(targetPlayer.GameSession.Client, attribute, attributeValue, packetType);
                     break;

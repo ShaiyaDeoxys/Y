@@ -384,6 +384,12 @@ namespace Imgeneus.World.Packets
         void SendMyShopSoldItem(IWorldClient client, byte slot, byte count, uint gold);
         #endregion
 
+        #region Kill status
+        void SendKillStatusInfo(IWorldClient client, byte killLevel, byte deathLevel);
+        void SendKillsReward(IWorldClient client, bool ok, ushort stats);
+        void SendDeathsReward(IWorldClient client, bool ok, uint money);
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

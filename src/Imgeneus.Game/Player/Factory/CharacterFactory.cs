@@ -240,7 +240,7 @@ namespace Imgeneus.World.Game.Player
 
             _attackManager.Init(dbCharacter.Id);
 
-            _killsManager.Init(dbCharacter.Id, dbCharacter.Kills, dbCharacter.Deaths, dbCharacter.Victories, dbCharacter.Defeats);
+            _killsManager.Init(dbCharacter.Id, dbCharacter.Kills, dbCharacter.Deaths, dbCharacter.Victories, dbCharacter.Defeats, dbCharacter.KillLevel, dbCharacter.DeathLevel);
 
             _vehicleManager.Init(dbCharacter.Id);
 

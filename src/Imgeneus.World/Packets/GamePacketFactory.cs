@@ -2598,6 +2598,34 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Kill status
+
+        public void SendKillStatusInfo(IWorldClient client, byte killLevel, byte deathLevel)
+        {
+            using var packet = new ImgeneusPacket(PacketType.KILLSTATUS_RESULT_INFO);
+            packet.Write(killLevel);
+            packet.Write(deathLevel);
+            client.Send(packet);
+        }
+
+        public void SendKillsReward(IWorldClient client, bool ok, ushort stats)
+        {
+            using var packet = new ImgeneusPacket(PacketType.KILLS_GET_REWARD);
+            packet.Write(ok);
+            packet.Write(stats);
+            client.Send(packet);
+        }
+
+        public void SendDeathsReward(IWorldClient client, bool ok, uint money)
+        {
+            using var packet = new ImgeneusPacket(PacketType.DEATHS_GET_REWARD);
+            packet.Write(ok);
+            packet.Write(money);
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {

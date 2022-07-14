@@ -313,6 +313,18 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         public byte GuildRank { get; set; }
 
+        /// <summary>
+        /// PvP reward level for killed enemies.
+        /// </summary>
+        [DefaultValue(1)]
+        public byte KillLevel { get; set; }
+
+        /// <summary>
+        /// PvP reward level for deathes.
+        /// </summary>
+        [DefaultValue(1)]
+        public byte DeathLevel { get; set; }
+
         public DbCharacter()
         {
             Items = new HashSet<DbCharacterItems>();
