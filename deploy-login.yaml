@@ -43,7 +43,7 @@ properties:
       - protocol: tcp
         port: 30800
   subnetIds:
-   - id: imgeneus-test
+   - id: /subscriptions/503236c4-a00c-466c-b7b0-4800e8dec527/resourceGroups/imgeneus-test/providers/Microsoft.Network/virtualNetworks/imgeneus-test/subnets/imgeneus-test
      name: imgeneus-test
 
 type: Microsoft.ContainerInstance/containerGroups
