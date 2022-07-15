@@ -37,12 +37,13 @@ properties:
   osType: Linux
   ipAddress:
       type: Private
-      vnet: imgeneus-test
-      subnet: imgeneus-test
       ports:
       - protocol: tcp
         port: 80
       - protocol: tcp
         port: 30800
+  subnetIds:
+   - id: imgeneus-test
+     name: imgeneus-test
 
 type: Microsoft.ContainerInstance/containerGroups
