@@ -41,6 +41,7 @@ namespace Imgeneus.World.Game.Kills
             _statsManager = statsManager;
             _inventoryManager = inventoryManager;
             _healthManager.OnDead += HealthManager_OnDead;
+            _statsManager.OnResetStats += StatsManager_OnResetStats;
 
 #if DEBUG
             _logger.LogDebug("KillsManager {hashcode} created", GetHashCode());
@@ -90,6 +91,7 @@ namespace Imgeneus.World.Game.Kills
         public void Dispose()
         {
             _healthManager.OnDead -= HealthManager_OnDead;
+            _statsManager.OnResetStats -= StatsManager_OnResetStats;
         }
 
         #endregion
@@ -196,6 +198,11 @@ namespace Imgeneus.World.Game.Kills
             DeathLevel++;
 
             return (true, money);
+        }
+
+        private void StatsManager_OnResetStats()
+        {
+            KillLevel = 1;
         }
 
         // From: https://shaiya-wiki.eu/en/pvp-rank/
