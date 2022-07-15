@@ -36,7 +36,7 @@ properties:
 
   osType: Linux
   ipAddress:
-      type: Public
+      type: Private
       ports:
       - protocol: tcp
         port: 80
