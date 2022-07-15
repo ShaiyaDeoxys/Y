@@ -1,4 +1,4 @@
-﻿namespace Imgeneus.World.Game.Blessing
+﻿namespace Imgeneus.Game.Blessing
 {
     public struct BlessArgs
     {

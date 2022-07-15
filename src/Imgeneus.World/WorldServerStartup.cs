@@ -3,6 +3,7 @@ using Imgeneus.Database;
 using Imgeneus.Database.Context;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.Logs;
@@ -110,6 +111,7 @@ namespace Imgeneus.World
             services.AddSingleton<INoticeManager, NoticeManager>();
             services.AddSingleton<IGuildRankingManager, GuildRankingManager>();
             services.AddSingleton<IEtinManager, EtinManager>();
+            services.AddSingleton<IBlessManager, BlessManager>();
             services.AddSingleton<IDatabasePreloader, DatabasePreloader>((x) =>
             {
                 using (var scope = x.CreateScope())

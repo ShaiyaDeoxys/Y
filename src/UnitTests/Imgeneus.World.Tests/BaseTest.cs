@@ -62,6 +62,7 @@ using Imgeneus.World.Game.Shop;
 using Parsec.Shaiya.Skill;
 using Element = Imgeneus.Database.Constants.Element;
 using Imgeneus.Game.Skills;
+using Imgeneus.Game.Blessing;
 
 namespace Imgeneus.World.Tests
 {
@@ -90,6 +91,7 @@ namespace Imgeneus.World.Tests
         protected Mock<IEtinManager> etinMock = new Mock<IEtinManager>();
         protected Mock<IItemEnchantConfiguration> enchantConfig = new Mock<IItemEnchantConfiguration>();
         protected Mock<IItemCreateConfiguration> itemCreateConfig = new Mock<IItemCreateConfiguration>();
+        protected BlessManager BlessManager = new BlessManager();
 
         protected Map testMap
         {
@@ -166,7 +168,7 @@ namespace Imgeneus.World.Tests
             skillsManager.Init(_characterId, new List<Skill>());
             var skillCastingManager = new SkillCastingManager(new Mock<ILogger<SkillCastingManager>>().Object, movementManager, teleportManager, healthManager, skillsManager, buffsManager, gameWorldMock.Object, castProtectionManager);
             skillCastingManager.Init(_characterId);
-            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager);
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager, BlessManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
 
@@ -219,6 +221,7 @@ namespace Imgeneus.World.Tests
                 shopManager,
                 skillCastingManager,
                 castProtectionManager,
+                BlessManager,
                 gameSessionMock.Object,
                 packetFactoryMock.Object);
 

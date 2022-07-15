@@ -34,7 +34,7 @@ properties:
       - name: TcpServer__Host
         value: "0.0.0.0"
       - name: InterServer__Endpoint
-        value: "http://20.61.37.216/inter_server"
+        value: "http://20.103.176.123/inter_server"
       - name: WorldServer__Name
         value: ImgeneusDev
       - name: WorldServer__Host

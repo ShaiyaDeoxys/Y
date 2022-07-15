@@ -2,11 +2,11 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
-using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
@@ -66,9 +66,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly ITeleportationManager _teleportationManager;
         private readonly IChatManager _chatManager;
         private readonly IWarehouseManager _warehouseManager;
+        private readonly IBlessManager _blessManager;
         private uint _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager, IBlessManager blessManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -94,6 +95,7 @@ namespace Imgeneus.World.Game.Inventory
             _teleportationManager = teleportationManager;
             _chatManager = chatManager;
             _warehouseManager = warehouseManager;
+            _blessManager = blessManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
             _partyManager.OnSummoned += PartyManager_OnSummoned;
             _teleportationManager.OnCastingTeleportFinished += TeleportationManager_OnCastingTeleportFinished;
@@ -1495,9 +1497,9 @@ namespace Imgeneus.World.Game.Inventory
         private bool UseBlessItem()
         {
             if (_countryProvider.Country == CountryType.Light)
-                Bless.Instance.LightAmount += 500;
+                _blessManager.LightAmount += 500;
             else
-                Bless.Instance.DarkAmount += 500;
+                _blessManager.DarkAmount += 500;
 
             return true;
         }

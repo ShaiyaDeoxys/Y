@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
@@ -83,6 +84,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IShopManager _shopManager;
         private readonly ISkillCastingManager _skillCastingManager;
         private readonly ICastProtectionManager _castProtectionManager;
+        private readonly IBlessManager _blessManager;
         private readonly IGamePacketFactory _packetFactory;
         private readonly UserManager<DbUser> _userManager;
 
@@ -125,6 +127,7 @@ namespace Imgeneus.World.Game.Player
                                 IShopManager shopManager,
                                 ISkillCastingManager skillCastingManager,
                                 ICastProtectionManager castProtectionManager,
+                                IBlessManager blessManager,
                                 IGamePacketFactory packetFactory,
                                 UserManager<DbUser> userManager)
         {
@@ -167,6 +170,7 @@ namespace Imgeneus.World.Game.Player
             _shopManager = shopManager;
             _skillCastingManager = skillCastingManager;
             _castProtectionManager = castProtectionManager;
+            _blessManager = blessManager;
             _packetFactory = packetFactory;
             _userManager = userManager;
         }
@@ -325,6 +329,7 @@ namespace Imgeneus.World.Game.Player
                                         _shopManager,
                                         _skillCastingManager,
                                         _castProtectionManager,
+                                        _blessManager,
                                         _gameSession,
                                         _packetFactory);
 

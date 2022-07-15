@@ -29,8 +29,7 @@ namespace Imgeneus.World.Tests.MobTests
             character.HealthManager.IncreaseHP(1);
             Assert.True(character.HealthManager.CurrentHP > 0);
 
-            Assert.True(mob.AIManager.TryGetEnemy());
-            mob.AIManager.Attack(0, Database.Constants.Element.None, 100, 100);
+            mob.AIManager.TryGetEnemy();
 
             Assert.True(character.HealthManager.IsDead);
         }

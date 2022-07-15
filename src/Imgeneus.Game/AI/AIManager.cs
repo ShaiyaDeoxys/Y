@@ -318,7 +318,7 @@ namespace Imgeneus.World.Game.AI
                     // Yes: BackToBirthPosition => Idle
                     // No: ReadyToAttack => Chase
 
-                    if (_state == AIState.Idle && value != AIState.Chase)
+                    if (_state == AIState.Idle && (value != AIState.Chase && (AI == MobAI.Relic && value != AIState.ReadyToAttack)))
                     {
 #if DEBUG
                         _logger.LogError("Can not go from {a} to {b}", _state, value);
@@ -334,7 +334,7 @@ namespace Imgeneus.World.Game.AI
                         return;
                     }
 
-                    if (_state == AIState.ReadyToAttack && value != AIState.Chase)
+                    if (_state == AIState.ReadyToAttack && (value != AIState.Chase && (AI == MobAI.Relic && value != AIState.ReadyToAttack && value != AIState.Idle)))
                     {
 #if DEBUG
                         _logger.LogError("Can not go from {a} to {b}", _state, value);
@@ -864,7 +864,15 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         public void UseAttack()
         {
-            var distanceToPlayer = Math.Round(MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ));
+            var target = _attackManager.Target;
+            if (target is null)
+            {
+                _attackTimer.Interval = 1000;
+                _attackTimer.Start();
+                return;
+            }
+
+            var distanceToPlayer = Math.Round(MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ));
             var now = DateTime.UtcNow;
             int delay = 1000;
             var attackId = RandomiseAttack(now);

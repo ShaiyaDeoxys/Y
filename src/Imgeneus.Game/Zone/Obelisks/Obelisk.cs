@@ -1,6 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.Game.Blessing;
 using Imgeneus.World.Game.AI;
-using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
 using System;
@@ -15,11 +15,13 @@ namespace Imgeneus.World.Game.Zone.Obelisks
     {
         private readonly ObeliskConfiguration _config;
         private readonly IMobFactory _mobFactory;
+        private readonly IBlessManager _blessManager;
 
-        public Obelisk(ObeliskConfiguration config, Map map, IMobFactory mobFactory)
+        public Obelisk(ObeliskConfiguration config, Map map, IMobFactory mobFactory, IBlessManager blessManager)
         {
             _config = config;
             _mobFactory = mobFactory;
+            _blessManager = blessManager;
             Map = map;
 
             Init();
@@ -98,13 +100,13 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
             if (ObeliskCountry == ObeliskCountry.Light)
             {
-                Bless.Instance.LightAmount += 1000; // TODO: maybe different value for different obelisks?
-                Bless.Instance.DarkAmount -= 500;
+                _blessManager.LightAmount += 1000; // TODO: maybe different value for different obelisks?
+                _blessManager.DarkAmount -= 500;
             }
             else
             {
-                Bless.Instance.DarkAmount += 1000;
-                Bless.Instance.LightAmount -= 500;
+                _blessManager.DarkAmount += 1000;
+                _blessManager.LightAmount -= 500;
             }
 
             ClearGuards();
@@ -113,7 +115,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
         private void ObeliskRebirthTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (Bless.Instance.IsFullBless)
+            if (_blessManager.IsFullBless)
                 return;
 
             if (ObeliskCountry == ObeliskCountry.Light)

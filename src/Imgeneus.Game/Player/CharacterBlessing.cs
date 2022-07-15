@@ -1,4 +1,4 @@
-﻿using Imgeneus.World.Game.Blessing;
+﻿using Imgeneus.Game.Blessing;
 using Imgeneus.World.Game.Country;
 
 namespace Imgeneus.World.Game.Player
@@ -29,13 +29,13 @@ namespace Imgeneus.World.Game.Player
         /// <param name="args">bless args</param>
         private void AddBlessBonuses(BlessArgs args)
         {
-            if (args.OldValue >= Bless.MAX_HP_SP_MP && args.NewValue < Bless.MAX_HP_SP_MP)
+            if (args.OldValue >= IBlessManager.MAX_HP_SP_MP && args.NewValue < IBlessManager.MAX_HP_SP_MP)
             {
                 HealthManager.ExtraHP -= HealthManager.ConstHP / 5;
                 HealthManager.ExtraMP -= HealthManager.ConstMP / 5;
                 HealthManager.ExtraSP -= HealthManager.ConstSP / 5;
             }
-            if (args.OldValue < Bless.MAX_HP_SP_MP && args.NewValue >= Bless.MAX_HP_SP_MP)
+            if (args.OldValue < IBlessManager.MAX_HP_SP_MP && args.NewValue >= IBlessManager.MAX_HP_SP_MP)
             {
                 HealthManager.ExtraHP += HealthManager.ConstHP / 5;
                 HealthManager.ExtraMP += HealthManager.ConstMP / 5;

@@ -1,5 +1,5 @@
 ﻿using Imgeneus.Database.Entities;
-using Imgeneus.World.Game.Blessing;
+using Imgeneus.Game.Blessing;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Player;
@@ -465,15 +465,6 @@ namespace Imgeneus.World.Game
             }
 
         }
-
-        #endregion
-
-        #region Bless
-
-        /// <summary>
-        /// Goddess bless.
-        /// </summary>
-        public Bless Bless { get; private set; } = Bless.Instance;
 
         #endregion
     }

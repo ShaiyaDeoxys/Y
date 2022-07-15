@@ -1,8 +1,8 @@
 ﻿using Imgeneus.Database.Entities;
+using Imgeneus.Game.Blessing;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
-using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Player;
@@ -24,6 +24,7 @@ namespace Imgeneus.World.Handlers
         private readonly IStatsManager _statsManager;
         private readonly IGuildManager _guildManager;
         private readonly ICountryProvider _countryProvider;
+        private readonly IBlessManager _blessManager;
 
         public SelectCharacterHandler(IGamePacketFactory packetFactory,
                                       IGameSession gameSession,
@@ -31,13 +32,15 @@ namespace Imgeneus.World.Handlers
                                       ICharacterFactory characterFactory,
                                       IStatsManager statsManager,
                                       IGuildManager guildManager,
-                                      ICountryProvider countryProvider) : base(packetFactory, gameSession)
+                                      ICountryProvider countryProvider,
+                                      IBlessManager blessManager) : base(packetFactory, gameSession)
         {
             _gameWorld = gameWorld;
             _characterFactory = characterFactory;
             _statsManager = statsManager;
             _guildManager = guildManager;
             _countryProvider = countryProvider;
+            _blessManager = blessManager;
         }
 
         [HandlerAction(PacketType.SELECT_CHARACTER)]
@@ -89,7 +92,7 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendFriends(client, character.FriendsManager.Friends.Values);
 
-            _packetFactory.SendBlessAmount(client, character.CountryProvider.Country, character.CountryProvider.Country == CountryType.Light ? Bless.Instance.LightAmount : Bless.Instance.DarkAmount, Bless.Instance.RemainingTime);
+            _packetFactory.SendBlessAmount(client, character.CountryProvider.Country, character.CountryProvider.Country == CountryType.Light ? _blessManager.LightAmount : _blessManager.DarkAmount, _blessManager.RemainingTime);
 
             _packetFactory.SendBankItems(client, character.BankManager.BankItems.Values);
 

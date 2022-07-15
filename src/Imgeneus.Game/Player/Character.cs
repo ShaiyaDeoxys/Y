@@ -2,11 +2,11 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
-using Imgeneus.World.Game.Blessing;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
@@ -71,6 +71,7 @@ namespace Imgeneus.World.Game.Player
         public IShopManager ShopManager { get; private set; }
         public ISkillCastingManager SkillCastingManager { get; private set; }
         public ICastProtectionManager CastProtectionManager { get; private set; }
+        public IBlessManager BlessManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -107,6 +108,7 @@ namespace Imgeneus.World.Game.Player
                          IShopManager shopManager,
                          ISkillCastingManager skillCastingManager,
                          ICastProtectionManager castProtectionManager,
+                         IBlessManager blessManager,
                          IGameSession gameSession,
                          IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
@@ -136,6 +138,7 @@ namespace Imgeneus.World.Game.Player
             ShopManager = shopManager;
             SkillCastingManager = skillCastingManager;
             CastProtectionManager = castProtectionManager;
+            BlessManager = blessManager;
             GameSession = gameSession;
 
             HealthManager.MP_SP_Used += SendUseMPSP;
@@ -165,8 +168,8 @@ namespace Imgeneus.World.Game.Player
             ShopManager.OnSoldItem += SendSoldItem;
             KillsManager.OnCountChanged += SendKillCountChanged;
 
-            Bless.Instance.OnDarkBlessChanged += OnDarkBlessChanged;
-            Bless.Instance.OnLightBlessChanged += OnLightBlessChanged;
+            BlessManager.OnDarkBlessChanged += OnDarkBlessChanged;
+            BlessManager.OnLightBlessChanged += OnLightBlessChanged;
         }
 
         private IKillable _target;
@@ -232,8 +235,8 @@ namespace Imgeneus.World.Game.Player
             ShopManager.OnSoldItem -= SendSoldItem;
             KillsManager.OnCountChanged -= SendKillCountChanged;
 
-            Bless.Instance.OnDarkBlessChanged -= OnDarkBlessChanged;
-            Bless.Instance.OnLightBlessChanged -= OnLightBlessChanged;
+            BlessManager.OnDarkBlessChanged -= OnDarkBlessChanged;
+            BlessManager.OnLightBlessChanged -= OnLightBlessChanged;
 
             Map = null;
         }
@@ -315,6 +318,7 @@ namespace Imgeneus.World.Game.Player
             IShopManager shopManager,
             ISkillCastingManager skillCastingManager,
             ICastProtectionManager castProtectionManager,
+            IBlessManager blessManager,
             IGameSession gameSession,
             IGamePacketFactory packetFactory)
         {
@@ -352,6 +356,7 @@ namespace Imgeneus.World.Game.Player
                                           shopManager,
                                           skillCastingManager,
                                           castProtectionManager,
+                                          blessManager,
                                           gameSession,
                                           packetFactory)
             {
