@@ -1,4 +1,4 @@
-apiVersion: 2019-12-01
+apiVersion: 2021-10-01
 location: westeurope
 name: imgeneus-world
 properties:
@@ -34,7 +34,7 @@ properties:
       - name: TcpServer__Host
         value: "0.0.0.0"
       - name: InterServer__Endpoint
-        value: "http://20.103.176.123/inter_server"
+        value: "http://20.126.18.67/inter_server"
       - name: WorldServer__Name
         value: ImgeneusDev
       - name: WorldServer__Host
