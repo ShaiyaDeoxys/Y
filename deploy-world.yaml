@@ -42,11 +42,13 @@ properties:
 
   osType: Linux
   ipAddress:
-      type: Public
+      type: Private
       ports:
       - protocol: tcp
         port: 80
       - protocol: tcp
         port: 30810
+  subnetIds:
+   - id: /subscriptions/503236c4-a00c-466c-b7b0-4800e8dec527/resourceGroups/imgeneus-test/providers/Microsoft.Network/virtualNetworks/imgeneus-vnet/subnets/imgeneus-login-subnet
 
 type: Microsoft.ContainerInstance/containerGroups
