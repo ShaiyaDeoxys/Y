@@ -1,5 +1,5 @@
 apiVersion: 2021-10-01
-location: norwayeast
+location: westeurope
 name: imgeneus-login
 properties:
 
