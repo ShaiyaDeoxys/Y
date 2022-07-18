@@ -42,5 +42,6 @@ properties:
         port: 80
       - protocol: tcp
         port: 30800
+    dnsNameLabel: imgeneus-dev-log-in
 
 type: Microsoft.ContainerInstance/containerGroups
