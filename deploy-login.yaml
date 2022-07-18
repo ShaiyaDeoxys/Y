@@ -1,4 +1,4 @@
-apiVersion: 2021-10-01
+apiVersion: 2019-12-01
 location: westeurope
 name: imgeneus-login
 properties:
@@ -42,6 +42,5 @@ properties:
         port: 80
       - protocol: tcp
         port: 30800
-      dnsNameLabel: imgeneus-dev-log-in
 
 type: Microsoft.ContainerInstance/containerGroups
