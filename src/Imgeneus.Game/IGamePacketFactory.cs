@@ -404,6 +404,7 @@ namespace Imgeneus.World.Packets
         void SendRunMode(IWorldClient client, MoveMotion motion);
         void SendAccountPoints(IWorldClient client, uint points);
         void SendScoutingInfo(IWorldClient client, Element defenceElement, ushort level, Mode grow);
+        void SendCashPoint(IWorldClient client, uint points);
         #endregion
     }
 }

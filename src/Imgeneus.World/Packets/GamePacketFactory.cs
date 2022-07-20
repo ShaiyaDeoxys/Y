@@ -2719,6 +2719,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendCashPoint(IWorldClient client, uint points)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CASH_POINT);
+            packet.Write(points);
+            client.Send(packet);
+        }
+
         #endregion
     }
 }
