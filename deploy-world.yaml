@@ -34,7 +34,7 @@ properties:
       - name: TcpServer__Host
         value: "0.0.0.0"
       - name: InterServer__Endpoint
-        value: "http://20.126.18.67/inter_server"
+        value: "http://40.68.242.95/inter_server"
       - name: WorldServer__Name
         value: ImgeneusDev
       - name: WorldServer__Host
@@ -42,13 +42,11 @@ properties:
 
   osType: Linux
   ipAddress:
-      type: Private
+      type: Public
       ports:
       - protocol: tcp
         port: 80
       - protocol: tcp
         port: 30810
-  subnetIds:
-   - id: /subscriptions/503236c4-a00c-466c-b7b0-4800e8dec527/resourceGroups/imgeneus-test/providers/Microsoft.Network/virtualNetworks/imgeneus-vnet/subnets/imgeneus-login-subnet
 
 type: Microsoft.ContainerInstance/containerGroups
