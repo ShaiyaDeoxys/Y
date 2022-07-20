@@ -15,6 +15,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Speed;
 using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
+using Imgeneus.World.Game.Vehicle;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.Skill;
 using System;
@@ -35,9 +36,10 @@ namespace Imgeneus.World.Game.Attack
         private readonly IHealthManager _healthManager;
         private readonly IShapeManager _shapeManager;
         private readonly IMovementManager _movementManager;
+        private readonly IVehicleManager _vehicleManager;
         private uint _ownerId;
 
-        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager, IShapeManager shapeManager, IMovementManager movementManager)
+        public AttackManager(ILogger<AttackManager> logger, IStatsManager statsManager, ILevelProvider levelProvider, IElementProvider elementManager, ICountryProvider countryProvider, ISpeedManager speedManager, IStealthManager stealthManager, IHealthManager healthManager, IShapeManager shapeManager, IMovementManager movementManager, IVehicleManager vehicleManager)
         {
             _logger = logger;
             _statsManager = statsManager;
@@ -49,6 +51,7 @@ namespace Imgeneus.World.Game.Attack
             _healthManager = healthManager;
             _shapeManager = shapeManager;
             _movementManager = movementManager;
+            _vehicleManager = vehicleManager;
 
 #if DEBUG
             _logger.LogDebug("AttackManager {hashcode} created", GetHashCode());
@@ -175,6 +178,12 @@ namespace Imgeneus.World.Game.Attack
 
         public bool CanAttack(byte skillNumber, IKillable target, out AttackSuccess success)
         {
+            if (_vehicleManager.IsOnVehicle)
+            {
+                success = AttackSuccess.CanNotAttack;
+                return false;
+            }
+
             if (_shapeManager.Shape == ShapeEnum.Pig)
             {
                 success = AttackSuccess.CanNotAttack;
