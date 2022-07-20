@@ -3,17 +3,13 @@ using Imgeneus.InterServer.Common;
 using InterServer.Client;
 using InterServer.Common;
 using InterServer.Server;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Connections.Features;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace InterServer.SignalR
@@ -51,22 +47,6 @@ namespace InterServer.SignalR
             _interServer.RemoveWorldServer(serverInfo);
 
             return Task.CompletedTask;
-        }
-
-        public override Task OnConnectedAsync()
-        {
-            // get relative client info from headers
-            var context = Context.Features.Get<IHttpContextFeature>();
-            var host = context.HttpContext.Request.Headers["Host"];
-            var userAgent = context.HttpContext.Request.Headers["User-Agent"];
-            var realIP = context.HttpContext.Request.Headers["X-Real-IP"];
-            var forwardeds = context.HttpContext.Request.Headers["X-Forwarded-For"];
-            var connectedInfo = new Dictionary<string, string>() { { "Host", host }, { "UserAgent", userAgent }, { "Real-IP", realIP }, { "Forward-For", forwardeds },};
-            _logger.LogInformation($"{JsonConvert.SerializeObject(connectedInfo)}");
-
-            // for example just passing through, 
-            // you could handle your controlling logic here
-            return base.OnConnectedAsync();
         }
 
         public void WorldServerConnected(WorldConfiguration config)
