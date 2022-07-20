@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace InterServer.SignalR
@@ -51,10 +52,9 @@ namespace InterServer.SignalR
 
         public void WorldServerConnected(WorldConfiguration config)
         {
-            _logger.LogWarning($"Got connection from: {Context.Features.Get<IHttpConnectionFeature>().RemoteIpAddress}");
             var worldInfo = new WorldServerInfo(
                     (byte)_interServer.WorldServers.Count,
-                    Context.Features.Get<IHttpConnectionFeature>().RemoteIpAddress.GetAddressBytes(),
+                    IPAddress.Parse(config.Host).GetAddressBytes(),
                     config.Name,
                     config.BuildVersion,
                     config.MaximumNumberOfConnections,

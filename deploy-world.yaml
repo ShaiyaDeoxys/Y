@@ -37,6 +37,8 @@ properties:
         value: "http://40.68.242.95/inter_server"
       - name: WorldServer__Name
         value: ImgeneusDev
+      - name: WorldServer__Host
+        value: 20.157.223.73
 
   osType: Linux
   ipAddress:

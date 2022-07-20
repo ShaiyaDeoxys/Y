@@ -13,6 +13,11 @@
         public int BuildVersion { get; set; }
 
         /// <summary>
+        /// Public ip address.
+        /// </summary>
+        public string Host { get; set; }
+
+        /// <summary>
         /// Max number os connection.
         /// </summary>
         public ushort MaximumNumberOfConnections { get; set; }
