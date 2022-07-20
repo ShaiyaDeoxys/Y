@@ -52,6 +52,7 @@ namespace InterServer.SignalR
 
         public void WorldServerConnected(WorldConfiguration config)
         {
+            _logger.LogWarning($"Got connection from: {Context.Features.Get<IHttpConnectionFeature>().RemoteIpAddress}");
             var worldInfo = new WorldServerInfo(
                     (byte)_interServer.WorldServers.Count,
                     Context.Features.Get<IHttpConnectionFeature>().RemoteIpAddress.GetAddressBytes(),
