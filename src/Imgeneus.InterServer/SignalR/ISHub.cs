@@ -3,6 +3,7 @@ using Imgeneus.InterServer.Common;
 using InterServer.Client;
 using InterServer.Common;
 using InterServer.Server;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
@@ -53,7 +54,7 @@ namespace InterServer.SignalR
         {
             var worldInfo = new WorldServerInfo(
                     (byte)_interServer.WorldServers.Count,
-                    IPAddress.Parse(config.Host).GetAddressBytes(),
+                    Context.Features.Get<IHttpConnectionFeature>().RemoteIpAddress.GetAddressBytes(),
                     config.Name,
                     config.BuildVersion,
                     config.MaximumNumberOfConnections,
