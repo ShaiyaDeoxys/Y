@@ -129,7 +129,9 @@ namespace Imgeneus.World.Game.Teleport
                 _mapProvider.NextMapId = mapId;
             else
                 if (reason == PortalTeleportNotAllowedReason.Unknown)
-                _mapProvider.NextMapId = 0;
+                    _mapProvider.NextMapId = 0;
+                else if (teleportedByAdmin)
+                    _mapProvider.NextMapId = mapId;
 
             _movementManager.PosX = x;
             _movementManager.PosY = y;
@@ -162,6 +164,11 @@ namespace Imgeneus.World.Game.Teleport
             if (!portal.IsInPortalZone(_movementManager.PosX, _movementManager.PosY, _movementManager.PosZ))
             {
                 _logger.LogWarning("Character position is not in portal, map {mapId}. Portal index {portalIndex}. Send from character {id}.", _mapProvider.Map.Id, portalIndex, _ownerId);
+                return false;
+            }
+
+            if (!portal.IsOpen)
+            {
                 return false;
             }
 

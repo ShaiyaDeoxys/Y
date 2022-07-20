@@ -1,0 +1,33 @@
+{
+  "Maps": [
+    {
+      "MapId": 50,
+      "MobBosses": [
+        {
+          "MobId": 1855,
+          "X": 506.98,
+          "Y": 45.45,
+          "Z": 340.63,
+          "Portal": 1003,
+          "RespawnTimeInSeconds": 604800
+        },
+        {
+          "MobId": 1853,
+          "X": 159.89,
+          "Y": 30.53,
+          "Z": 720.17,
+          "Portal": 1001,
+          "RespawnTimeInSeconds": 604800
+        },
+        {
+          "MobId": 1851,
+          "X": 149.64,
+          "Y": 57.19,
+          "Z": 901.47,
+          "Portal": 1002,
+          "RespawnTimeInSeconds": 604800
+        }
+      ]
+    }
+  ]
+}

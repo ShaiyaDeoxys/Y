@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Monster;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
@@ -35,6 +36,7 @@ namespace Imgeneus.World.Game.Zone
         private readonly MapDefinition _definition;
         private readonly Svmap _config;
         private readonly IEnumerable<ObeliskConfiguration> _obelisksConfig;
+        private readonly IEnumerable<BossConfiguration> _bossesConfig;
         private readonly ILogger<Map> _logger;
         private readonly IGamePacketFactory _packetFactory;
         private readonly IDatabasePreloader _databasePreloader;
@@ -69,12 +71,13 @@ namespace Imgeneus.World.Game.Zone
 
         public static readonly ushort TEST_MAP_ID = 9999;
 
-        public Map(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+        public Map(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks, IEnumerable<BossConfiguration> bosses, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
         {
             Id = id;
             _definition = definition;
             _config = config;
             _obelisksConfig = obelisks;
+            _bossesConfig = bosses;
             _logger = logger;
             _packetFactory = packetFactory;
             _databasePreloader = databasePreloader;
@@ -100,6 +103,7 @@ namespace Imgeneus.World.Game.Zone
 
             InitNPCs();
             InitMobs();
+            InitBosses();
             InitObelisks();
             InitOpenCloseTimers();
 #endif
@@ -522,6 +526,48 @@ namespace Imgeneus.World.Game.Zone
 
             _logger.LogInformation("Map {id} created {count} mob areas.", Id, _config.MonsterAreas.Count);
             _logger.LogInformation("Map {id} created {finalMobsCount} mobs.", Id, finalMobsCount);
+        }
+
+        private void InitBosses()
+        {
+            int finalMobsCount = 0;
+            foreach (var mobConfig in _bossesConfig)
+            {
+                if (_databasePreloader.Mobs.ContainsKey(mobConfig.MobId))
+                {
+                    var mob = _mobFactory.CreateMob(mobConfig.MobId,
+                                                    true,
+                                                    new MoveArea(mobConfig.X, mobConfig.X, mobConfig.Y, mobConfig.Y, mobConfig.Z, mobConfig.Z));
+
+                    mob.RespawnTimeInMilliseconds = mobConfig.RespawnTimeInSeconds * 1000;
+
+                    if (mobConfig.Portal != 0)
+                    {
+                        mob.HealthManager.OnDead += (uint senderId, IKiller killer) =>
+                        {
+                            var portal = Portals.FirstOrDefault(x => x.PortalId == mobConfig.Portal);
+                            if (portal is null)
+                                return;
+
+                            portal.IsOpen = true;
+                        };
+
+                        mob.HealthManager.OnRebirthed += (uint senderId) =>
+                        {
+                            var portal = Portals.FirstOrDefault(x => x.PortalId == mobConfig.Portal);
+                            if (portal is null)
+                                return;
+
+                            portal.IsOpen = false;
+                        };
+                    }
+
+                    AddMob(mob);
+                    finalMobsCount++;
+                }
+            }
+
+            _logger.LogInformation("Map {id} created {finalMobsCount} bosses.", Id, finalMobsCount);
         }
 
         #endregion

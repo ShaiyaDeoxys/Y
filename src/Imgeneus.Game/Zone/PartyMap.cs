@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.Game.Monster;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.PartyAndRaid;
@@ -30,8 +31,8 @@ namespace Imgeneus.World.Game.Zone
         /// <inheritdoc/>
         public event Action<IPartyMap> OnAllMembersLeft;
 
-        public PartyMap(IParty party, ushort id, MapDefinition definition, Svmap config, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
-            : base(id, definition, config, new List<ObeliskConfiguration>(), logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
+        public PartyMap(IParty party, ushort id, MapDefinition definition, Svmap config, IEnumerable<BossConfiguration> bosses, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+            : base(id, definition, config, new List<ObeliskConfiguration>(), bosses, logger, packetFactory, databasePreloader, mobFactory, npcFactory, obeliskFactory, timeService)
         {
             _party = party;
 

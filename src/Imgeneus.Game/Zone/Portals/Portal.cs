@@ -22,6 +22,9 @@ namespace Imgeneus.World.Game.Zone.Portals
             Y2 = _config.Position.Y + 5;
             Z1 = _config.Position.Z - 5;
             Z2 = _config.Position.Z + 5;
+
+            // > 2 is boss death portal
+            IsOpen = config.FactionOrPortalId > 2 ? false : true;
         }
 
         /// <summary>
@@ -72,6 +75,13 @@ namespace Imgeneus.World.Game.Zone.Portals
         public float Destination_Y => _config.DestinationPosition.Y;
 
         public float Destination_Z => _config.DestinationPosition.Z;
+
+        /// <summary>
+        /// Opened by boss death.
+        /// </summary>
+        public bool IsOpen { get; set; }
+
+        public int PortalId { get => _config.FactionOrPortalId; }
     }
 
 }

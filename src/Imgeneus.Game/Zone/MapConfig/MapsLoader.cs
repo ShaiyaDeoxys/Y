@@ -1,8 +1,8 @@
 ﻿using Imgeneus.Core.Helpers;
+using Imgeneus.Game.Monster;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Microsoft.Extensions.Logging;
 using Parsec;
-using Parsec.Readers;
 using Parsec.Shaiya.Svmap;
 using System.Collections.Generic;
 using System.IO;
@@ -27,12 +27,17 @@ namespace Imgeneus.World.Game.Zone.MapConfig
         /// <summary>
         /// File, that contains definitions for all maps, that must be loaded.
         /// </summary>
-        private const string InitFile = "map_init.json";
+        private const string InitFile = "MapInit.json";
 
         /// <summary>
         /// File, that contains definitions for all obelisks, that must be loaded.
         /// </summary>
-        private const string ObeliskInitFile = "obelisk_init.json";
+        private const string ObeliskInitFile = "ObeliskInit.json";
+
+        /// <summary>
+        /// File, that contains definitions for all bosses, that must be loaded.
+        /// </summary>
+        private const string BossInitFile = "BossMobInit.json";
 
         public MapDefinitions LoadMapDefinitions()
         {
@@ -96,6 +101,33 @@ namespace Imgeneus.World.Game.Zone.MapConfig
                 return new List<ObeliskConfiguration>();
             else
                 return mapObelisks.Obelisks;
+        }
+
+        #endregion
+
+        #region Bosses
+
+        private MapBossConfigurations _bossesConfig;
+
+        public IEnumerable<BossConfiguration> GetBosses(ushort mapId)
+        {
+            if (_bossesConfig == null)
+            {
+                var bossesFile = Path.Combine(ConfigsFolder, BossInitFile);
+                if (!File.Exists(bossesFile))
+                {
+                    _logger.LogError($"Bosses init file is not found.");
+                    return new List<BossConfiguration>();
+                }
+
+                _bossesConfig = ConfigurationHelper.Load<MapBossConfigurations>(bossesFile);
+            }
+
+            var mapBosses = _bossesConfig.Maps.FirstOrDefault(m => m.MapId == mapId);
+            if (mapBosses == null)
+                return new List<BossConfiguration>();
+            else
+                return mapBosses.MobBosses;
         }
 
         #endregion

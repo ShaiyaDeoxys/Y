@@ -117,10 +117,10 @@
     <None Update="config\maps\54.svmap">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="config\maps\map_init.json">
+    <None Update="config\maps\MapInit.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="config\maps\obelisk_init.json">
+    <None Update="config\maps\ObeliskInit.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="config\SData\DBItemData.SData">

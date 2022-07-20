@@ -8,10 +8,22 @@ namespace Imgeneus.World.Game.Monster
     {
         public event Action<Mob> TimeToRebirth;
 
+        private double _respawnTimeInMilliseconds;
+
         public double RespawnTimeInMilliseconds
         {
+            set
+            {
+                _respawnTimeInMilliseconds = value;
+            }
+
             get
             {
+                if (_respawnTimeInMilliseconds > 0)
+                {
+                    return _respawnTimeInMilliseconds;
+                }
+
                 switch (_dbMob.AttackSpecial3)
                 {
                     case Database.Constants.MobRespawnTime.Seconds_15:

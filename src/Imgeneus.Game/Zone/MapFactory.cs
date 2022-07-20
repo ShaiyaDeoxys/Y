@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.Game.Monster;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
@@ -37,25 +38,25 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <inheritdoc/>
-        public IMap CreateMap(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks = null)
+        public IMap CreateMap(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks = null, IEnumerable<BossConfiguration> bosses = null)
         {
             if (obelisks is null)
                 obelisks = new List<ObeliskConfiguration>();
 
-            return new Map(id, definition, config, obelisks, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new Map(id, definition, config, obelisks, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
 
         /// <inheritdoc/>
-        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, Svmap config, IParty party)
+        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, Svmap config, IParty party, IEnumerable<BossConfiguration> bosses = null)
         {
-            return new PartyMap(party, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new PartyMap(party, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
 
         /// <inheritdoc/>
-        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, uint guildId)
+        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, uint guildId, IEnumerable<BossConfiguration> bosses = null)
         {
             if (definition.CreateType == CreateType.GRB)
-                return new GRBMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+                return new GRBMap(guildId, _guildRankingManager, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
 
             return new GuildHouseMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
         }
