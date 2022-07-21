@@ -77,8 +77,7 @@ namespace Imgeneus.World.Game
 
                 if (mapDefinition.CreateType == CreateType.Default)
                 {
-                    var map = _mapFactory.CreateMap(mapDefinition.Id, mapDefinition, config, _mapsLoader.GetObelisks(mapDefinition.Id), _mapsLoader.GetBosses(mapDefinition.Id));
-                    map.GameWorld = this;
+                    var map = _mapFactory.CreateMap(mapDefinition.Id, mapDefinition, config, this, _mapsLoader.GetObelisks(mapDefinition.Id), _mapsLoader.GetBosses(mapDefinition.Id));
                     if (Maps.TryAdd(mapDefinition.Id, map))
                         _logger.LogInformation("Map {id} was successfully loaded.", map.Id);
                 }
@@ -375,7 +374,7 @@ namespace Imgeneus.World.Game
                     PartyMaps.TryGetValue(partyId, out map);
                     if (map is null)
                     {
-                        map = _mapFactory.CreatePartyMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), player.PartyManager.Party, _mapsLoader.GetBosses(mapDef.Id));
+                        map = _mapFactory.CreatePartyMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), this, player.PartyManager.Party, _mapsLoader.GetBosses(mapDef.Id));
                         map.OnAllMembersLeft += PartyMap_OnAllMembersLeft;
                         PartyMaps.TryAdd(partyId, map);
                     }
@@ -401,7 +400,7 @@ namespace Imgeneus.World.Game
                         GuildHouseMaps.TryGetValue(guildId, out map);
                         if (map is null)
                         {
-                            map = _mapFactory.CreateGuildMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), guildId, _mapsLoader.GetBosses(mapDef.Id));
+                            map = _mapFactory.CreateGuildMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), this, guildId, _mapsLoader.GetBosses(mapDef.Id));
                             GuildHouseMaps.TryAdd(guildId, map);
                         }
 
@@ -415,7 +414,7 @@ namespace Imgeneus.World.Game
                         GRBMaps.TryGetValue(guildId, out map);
                         if (map is null)
                         {
-                            map = _mapFactory.CreateGuildMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), guildId, _mapsLoader.GetBosses(mapDef.Id));
+                            map = _mapFactory.CreateGuildMap(mapDef.Id, mapDef, _mapsLoader.LoadMapConfiguration(mapDef.Id), this, guildId, _mapsLoader.GetBosses(mapDef.Id));
                             GRBMaps.TryAdd(guildId, map);
                         }
 

@@ -38,27 +38,27 @@ namespace Imgeneus.World.Game.Zone
         }
 
         /// <inheritdoc/>
-        public IMap CreateMap(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks = null, IEnumerable<BossConfiguration> bosses = null)
+        public IMap CreateMap(ushort id, MapDefinition definition, Svmap config, IGameWorld gameWorld, IEnumerable<ObeliskConfiguration> obelisks = null, IEnumerable<BossConfiguration> bosses = null)
         {
             if (obelisks is null)
                 obelisks = new List<ObeliskConfiguration>();
 
-            return new Map(id, definition, config, obelisks, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new Map(id, definition, config, obelisks, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
         }
 
         /// <inheritdoc/>
-        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, Svmap config, IParty party, IEnumerable<BossConfiguration> bosses = null)
+        public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, Svmap config, IGameWorld gameWorld, IParty party, IEnumerable<BossConfiguration> bosses = null)
         {
-            return new PartyMap(party, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new PartyMap(party, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
         }
 
         /// <inheritdoc/>
-        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, uint guildId, IEnumerable<BossConfiguration> bosses = null)
+        public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, IGameWorld gameWorld, uint guildId, IEnumerable<BossConfiguration> bosses = null)
         {
             if (definition.CreateType == CreateType.GRB)
-                return new GRBMap(guildId, _guildRankingManager, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+                return new GRBMap(guildId, _guildRankingManager, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
 
-            return new GuildHouseMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService);
+            return new GuildHouseMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
         }
     }
 }
