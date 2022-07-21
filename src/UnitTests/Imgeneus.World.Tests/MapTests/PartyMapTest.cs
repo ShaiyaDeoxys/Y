@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.PartyAndRaid;
+﻿using Imgeneus.Game.Monster;
+using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
@@ -27,6 +28,7 @@ namespace Imgeneus.World.Tests.MapTests
                                         Map.TEST_MAP_ID,
                                         new MapDefinition() { CreateType = CreateType.Party },
                                         new Svmap() { MapSize = 100, CellSize = 100 },
+                                        new List<BossConfiguration>(),
                                         mapLoggerMock.Object,
                                         packetFactoryMock.Object,
                                         databasePreloader.Object,
@@ -69,6 +71,7 @@ namespace Imgeneus.World.Tests.MapTests
                                         Map.TEST_MAP_ID,
                                         new MapDefinition() { CreateType = CreateType.Party },
                                         new Svmap() { MapSize = 100, CellSize = 100 },
+                                        new List<BossConfiguration>(),
                                         mapLoggerMock.Object,
                                         packetFactoryMock.Object,
                                         databasePreloader.Object,

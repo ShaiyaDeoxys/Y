@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Imgeneus.Database.Constants;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Imgeneus.World.Game.Movement
@@ -39,6 +40,8 @@ namespace Imgeneus.World.Game.Movement
 
         #endregion
 
+        #region Move
+
         public float PosX { get; set; }
 
         public float PosY { get; set; }
@@ -55,5 +58,28 @@ namespace Imgeneus.World.Game.Movement
         {
             OnMove?.Invoke(_ownerId, PosX, PosY, PosZ, Angle, MoveMotion);
         }
+
+        #endregion
+
+
+        #region Motion
+        public event Action<uint, Motion> OnMotion;
+
+        private Motion _motion;
+        public Motion Motion
+        {
+            get => _motion;
+            set
+            {
+                if (value == Motion.None || value == Motion.Sit)
+                {
+                    _motion = value;
+                }
+
+                OnMotion?.Invoke(_ownerId, value);
+            }
+        }
+
+        #endregion
     }
 }

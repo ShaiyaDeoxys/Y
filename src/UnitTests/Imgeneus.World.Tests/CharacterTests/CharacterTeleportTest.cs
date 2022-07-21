@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Zone;
+﻿using Imgeneus.Game.Monster;
+using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
 using Parsec.Shaiya.Svmap;
@@ -36,6 +37,7 @@ namespace Imgeneus.World.Tests.CharacterTests
                     new MapDefinition(),
                     new Svmap() { MapSize = 100, CellSize = 100 },
                     new List<ObeliskConfiguration>(),
+                    new List<BossConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
                     databasePreloader.Object,
@@ -48,6 +50,7 @@ namespace Imgeneus.World.Tests.CharacterTests
                     new MapDefinition(),
                     new Svmap() { MapSize = 100, CellSize = 100 },
                     new List<ObeliskConfiguration>(),
+                    new List<BossConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
                     databasePreloader.Object,
@@ -73,6 +76,7 @@ namespace Imgeneus.World.Tests.CharacterTests
                     new MapDefinition(),
                     new Svmap() { MapSize = 100, CellSize = 50 },
                     new List<ObeliskConfiguration>(),
+                    new List<BossConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
                     databasePreloader.Object,

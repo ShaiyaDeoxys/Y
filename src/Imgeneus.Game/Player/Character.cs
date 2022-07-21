@@ -3,6 +3,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
+using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
@@ -72,6 +73,7 @@ namespace Imgeneus.World.Game.Player
         public ISkillCastingManager SkillCastingManager { get; private set; }
         public ICastProtectionManager CastProtectionManager { get; private set; }
         public IBlessManager BlessManager { get; private set; }
+        public IRecoverManager RecoverManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -109,6 +111,7 @@ namespace Imgeneus.World.Game.Player
                          ISkillCastingManager skillCastingManager,
                          ICastProtectionManager castProtectionManager,
                          IBlessManager blessManager,
+                         IRecoverManager recoverManager,
                          IGameSession gameSession,
                          IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
@@ -139,6 +142,7 @@ namespace Imgeneus.World.Game.Player
             SkillCastingManager = skillCastingManager;
             CastProtectionManager = castProtectionManager;
             BlessManager = blessManager;
+            RecoverManager = recoverManager;
             GameSession = gameSession;
 
             HealthManager.MP_SP_Used += SendUseMPSP;
@@ -241,35 +245,6 @@ namespace Imgeneus.World.Game.Player
             Map = null;
         }
 
-#region Motion
-
-        /// <summary>
-        /// Event, that is fires, when character makes any motion.
-        /// </summary>
-        public event Action<Character, Motion> OnMotion;
-
-        /// <summary>
-        /// Motion, like sit.
-        /// </summary>
-        private Motion _motion;
-        public Motion Motion
-        {
-            get => _motion;
-            set
-            {
-                _logger.LogDebug($"Character {Id} sends motion {value}");
-
-                if (value == Motion.None || value == Motion.Sit)
-                {
-                    _motion = value;
-                }
-
-                OnMotion?.Invoke(this, value);
-            }
-        }
-
-#endregion
-
 #region Quick skill bar
 
         /// <summary>
@@ -319,6 +294,7 @@ namespace Imgeneus.World.Game.Player
             ISkillCastingManager skillCastingManager,
             ICastProtectionManager castProtectionManager,
             IBlessManager blessManager,
+            IRecoverManager recoverManager,
             IGameSession gameSession,
             IGamePacketFactory packetFactory)
         {
@@ -357,6 +333,7 @@ namespace Imgeneus.World.Game.Player
                                           skillCastingManager,
                                           castProtectionManager,
                                           blessManager,
+                                          recoverManager,
                                           gameSession,
                                           packetFactory)
             {

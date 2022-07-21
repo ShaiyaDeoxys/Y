@@ -21,7 +21,7 @@ namespace Imgeneus.World.Handlers
         public void Handle(WorldClient client, MotionPacket packet)
         {
             var character = _gameWorld.Players[_gameSession.Character.Id];
-            character.Motion = packet.Motion;
+            character.MovementManager.Motion = packet.Motion;
 
             _gameSession.StopLogOff();
         }

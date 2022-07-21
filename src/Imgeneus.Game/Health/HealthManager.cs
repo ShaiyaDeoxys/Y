@@ -329,6 +329,15 @@ namespace Imgeneus.World.Game.Health
 
         public void Recover(int hp, int mp, int sp)
         {
+            if (CurrentHP + hp > MaxHP)
+                hp = MaxHP - CurrentHP;
+
+            if (CurrentMP + mp > MaxMP)
+                mp = MaxMP - CurrentMP;
+
+            if (CurrentSP + sp > MaxSP)
+                sp = MaxSP - CurrentSP;
+
             IncreaseHP(hp);
             CurrentMP += mp;
             CurrentSP += sp;

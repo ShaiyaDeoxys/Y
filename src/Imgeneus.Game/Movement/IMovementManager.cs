@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imgeneus.Database.Constants;
+using System;
 
 namespace Imgeneus.World.Game.Movement
 {
@@ -41,5 +42,16 @@ namespace Imgeneus.World.Game.Movement
         /// Raises event <see cref="OnMove"/>.
         /// </summary>
         void RaisePositionChanged();
+
+        /// <summary>
+        /// Event, that is fires, when character makes any motion.
+        /// </summary>
+        event Action<uint, Motion> OnMotion;
+
+
+        /// <summary>
+        /// Motion, like sit.
+        /// </summary>
+        Motion Motion { get; set; }
     }
 }

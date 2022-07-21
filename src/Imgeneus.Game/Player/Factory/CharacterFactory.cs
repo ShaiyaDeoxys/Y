@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
+using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
@@ -85,6 +86,7 @@ namespace Imgeneus.World.Game.Player
         private readonly ISkillCastingManager _skillCastingManager;
         private readonly ICastProtectionManager _castProtectionManager;
         private readonly IBlessManager _blessManager;
+        private readonly IRecoverManager _recoverManager;
         private readonly IGamePacketFactory _packetFactory;
         private readonly UserManager<DbUser> _userManager;
 
@@ -128,6 +130,7 @@ namespace Imgeneus.World.Game.Player
                                 ISkillCastingManager skillCastingManager,
                                 ICastProtectionManager castProtectionManager,
                                 IBlessManager blessManager,
+                                IRecoverManager recoverManager,
                                 IGamePacketFactory packetFactory,
                                 UserManager<DbUser> userManager)
         {
@@ -171,6 +174,7 @@ namespace Imgeneus.World.Game.Player
             _skillCastingManager = skillCastingManager;
             _castProtectionManager = castProtectionManager;
             _blessManager = blessManager;
+            _recoverManager = recoverManager;
             _packetFactory = packetFactory;
             _userManager = userManager;
         }
@@ -288,6 +292,8 @@ namespace Imgeneus.World.Game.Player
 
             _shopManager.Init(dbCharacter.Id);
 
+            _recoverManager.Init(dbCharacter.Id);
+
             _stealthManager.Init(dbCharacter.Id);
 
 #if !DEBUG
@@ -330,6 +336,7 @@ namespace Imgeneus.World.Game.Player
                                         _skillCastingManager,
                                         _castProtectionManager,
                                         _blessManager,
+                                        _recoverManager,
                                         _gameSession,
                                         _packetFactory);
 

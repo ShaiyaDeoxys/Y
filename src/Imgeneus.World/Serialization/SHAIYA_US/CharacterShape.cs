@@ -72,7 +72,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
         public CharacterShape(Character character)
         {
             IsDead = character.HealthManager.IsDead;
-            Motion = character.Motion;
+            Motion = character.MovementManager.Motion;
             Country = character.CountryProvider.Country;
             Race = character.AdditionalInfoManager.Race;
             Hair = character.AdditionalInfoManager.Hair;

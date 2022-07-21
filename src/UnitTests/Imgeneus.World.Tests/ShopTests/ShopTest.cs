@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Inventory;
+﻿using Imgeneus.Game.Monster;
+using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Game.Zone.MapConfig;
 using Imgeneus.World.Game.Zone.Obelisks;
@@ -16,6 +17,7 @@ namespace Imgeneus.World.Tests.ShopTests
                     new MapDefinition(),
                     new Svmap() { MapSize = 100, CellSize = 100 },
                     new List<ObeliskConfiguration>(),
+                    new List<BossConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
                     databasePreloader.Object,

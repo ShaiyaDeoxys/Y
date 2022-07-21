@@ -204,7 +204,7 @@ namespace Imgeneus.World.Game.Zone
             if (character.MapProvider.NextMapId == Map.TEST_MAP_ID)
                 return;
             character.MovementManager.OnMove += Character_OnMove;
-            character.OnMotion += Character_OnMotion;
+            character.MovementManager.OnMotion += Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged += Character_OnEquipmentChanged;
             character.PartyManager.OnPartyChanged += Character_OnPartyChanged;
             character.SpeedManager.OnAttackOrMoveChanged += Character_OnAttackOrMoveChanged;
@@ -243,7 +243,7 @@ namespace Imgeneus.World.Game.Zone
         private void RemoveListeners(Character character)
         {
             character.MovementManager.OnMove -= Character_OnMove;
-            character.OnMotion -= Character_OnMotion;
+            character.MovementManager.OnMotion -= Character_OnMotion;
             character.InventoryManager.OnEquipmentChanged -= Character_OnEquipmentChanged;
             character.PartyManager.OnPartyChanged -= Character_OnPartyChanged;
             character.SpeedManager.OnAttackOrMoveChanged -= Character_OnAttackOrMoveChanged;
@@ -291,10 +291,10 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// When player sends motion, we should resend this motion to all other players on this map.
         /// </summary>
-        private void Character_OnMotion(Character playerWithMotion, Motion motion)
+        private void Character_OnMotion(uint senderId, Motion motion)
         {
             foreach (var player in GetAllPlayers(true))
-                Map.PacketFactory.SendCharacterMotion(player.GameSession.Client, playerWithMotion.Id, motion);
+                Map.PacketFactory.SendCharacterMotion(player.GameSession.Client, senderId, motion);
         }
 
         /// <summary>

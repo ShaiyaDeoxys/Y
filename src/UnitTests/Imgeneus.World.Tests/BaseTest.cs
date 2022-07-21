@@ -63,6 +63,8 @@ using Parsec.Shaiya.Skill;
 using Element = Imgeneus.Database.Constants.Element;
 using Imgeneus.Game.Skills;
 using Imgeneus.Game.Blessing;
+using Imgeneus.Game.Recover;
+using Imgeneus.Game.Monster;
 
 namespace Imgeneus.World.Tests
 {
@@ -102,6 +104,7 @@ namespace Imgeneus.World.Tests
                         new MapDefinition(),
                         new Svmap() { MapSize = 100, CellSize = 100 },
                         new List<ObeliskConfiguration>(),
+                        new List<BossConfiguration>(),
                         mapLoggerMock.Object,
                         packetFactoryMock.Object,
                         databasePreloader.Object,
@@ -157,7 +160,7 @@ namespace Imgeneus.World.Tests
             shapeManager.Init(_characterId);
 
             var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, shapeManager, movementManager);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, shapeManager, movementManager, vehicleManager);
             attackManager.AlwaysHit = true;
 
             var castProtectionManager = new CastProtectionManager(new Mock<ILogger<CastProtectionManager>>().Object, movementManager, partyManager, packetFactoryMock.Object, new Mock<IGameSession>().Object, mapProvider);
@@ -185,6 +188,7 @@ namespace Imgeneus.World.Tests
             var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, inventoryManager);
             var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, levelingManager);
             var shopManager = new ShopManager(new Mock<ILogger<ShopManager>>().Object, inventoryManager, mapProvider);
+            var recoverManager = new Mock<IRecoverManager>().Object;
 
             var character = new Character(
                 new Mock<ILogger<Character>>().Object,
@@ -222,6 +226,7 @@ namespace Imgeneus.World.Tests
                 skillCastingManager,
                 castProtectionManager,
                 BlessManager,
+                recoverManager,
                 gameSessionMock.Object,
                 packetFactoryMock.Object);
 
@@ -261,7 +266,7 @@ namespace Imgeneus.World.Tests
             var elementProvider = new ElementProvider(new Mock<ILogger<ElementProvider>>().Object);
             var untouchableManager = new UntouchableManager(new Mock<ILogger<UntouchableManager>>().Object);
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
-            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, new Mock<IShapeManager>().Object, movementManager);
+            var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, new Mock<IShapeManager>().Object, movementManager, new Mock<IVehicleManager>().Object);
             attackManager.AlwaysHit = true;
 
             var buffsManager = new BuffsManager(new Mock<ILogger<BuffsManager>>().Object, databaseMock.Object, definitionsPreloader.Object, statsManager, healthManager, speedManager, elementProvider, untouchableManager, stealthManager, levelingManager.Object, attackManager, null, null, null, null, movementManager, null, mapProvider, gameWorldMock.Object);
