@@ -15,6 +15,9 @@ namespace Imgeneus.World.Game.Monster
             set
             {
                 _respawnTimeInMilliseconds = value;
+
+                if (_respawnTimeInMilliseconds > 0)
+                    _rebirthTimer.Interval = _respawnTimeInMilliseconds;
             }
 
             get

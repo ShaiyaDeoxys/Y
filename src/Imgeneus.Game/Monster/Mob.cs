@@ -215,7 +215,10 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, _moveArea, _logger, _databasePreloader, AIManager, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider);
+            return new Mob(MobId, ShouldRebirth, _moveArea, _logger, _databasePreloader, AIManager, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider)
+            {
+                RespawnTimeInMilliseconds = RespawnTimeInMilliseconds
+            };
         }
 
         public Action<Mob> OnLeaveWorld;
