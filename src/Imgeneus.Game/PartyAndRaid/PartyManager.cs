@@ -1,4 +1,6 @@
-﻿using Imgeneus.World.Game.Health;
+﻿using Imgeneus.Game.Blessing;
+using Imgeneus.World.Game.Country;
+using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Zone;
@@ -22,16 +24,19 @@ namespace Imgeneus.World.Game.PartyAndRaid
         private readonly IGameWorld _gameWorld;
         private readonly IMapProvider _mapProvider;
         private readonly IHealthManager _healthManager;
+        private readonly ICountryProvider _countryProvider;
+        private readonly IBlessManager _blessManager;
         private uint _ownerId;
 
-        public PartyManager(ILogger<PartyManager> logger, IGamePacketFactory packetFactory, IGameWorld gameWorld, IMapProvider mapProvider, IHealthManager healthManager)
+        public PartyManager(ILogger<PartyManager> logger, IGamePacketFactory packetFactory, IGameWorld gameWorld, IMapProvider mapProvider, IHealthManager healthManager, ICountryProvider countryProvider, IBlessManager blessManager)
         {
             _logger = logger;
             _packetFactory = packetFactory;
             _gameWorld = gameWorld;
             _mapProvider = mapProvider;
             _healthManager = healthManager;
-
+            _countryProvider = countryProvider;
+            _blessManager = blessManager;
             _summonTimer.Elapsed += OnSummonningFinished;
             _healthManager.OnGotDamage += CancelSummon;
 
@@ -127,7 +132,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
 
         #region Summon
 
-        private Timer _summonTimer = new Timer() { AutoReset = false, Interval = 5000 };
+        private Timer _summonTimer = new Timer() { AutoReset = false };
 
         public event Action<uint> OnSummonning;
 
@@ -146,7 +151,16 @@ namespace Imgeneus.World.Game.PartyAndRaid
             if (skeepTimer)
                 OnSummonningFinished(null, null);
             else
+            {
+                _summonTimer.Interval = 5000;
+
+                if (_countryProvider.Country == CountryType.Light && _blessManager.LightAmount >= IBlessManager.CAST_TIME_DISPOSABLE_ITEMS)
+                    _summonTimer.Interval = 4500;
+                if (_countryProvider.Country == CountryType.Dark && _blessManager.DarkAmount >= IBlessManager.CAST_TIME_DISPOSABLE_ITEMS)
+                    _summonTimer.Interval = 4500;
+
                 _summonTimer.Start();
+            }
 
             OnSummonning?.Invoke(_ownerId);
         }

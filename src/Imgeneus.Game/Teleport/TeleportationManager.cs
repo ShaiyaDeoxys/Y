@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
+using Imgeneus.Game.Blessing;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
@@ -30,9 +31,10 @@ namespace Imgeneus.World.Game.Teleport
         private readonly ILevelProvider _levelProvider;
         private readonly IGameWorld _gameWorld;
         private readonly IHealthManager _healthManager;
+        private readonly IBlessManager _blessManager;
         private uint _ownerId;
 
-        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IGameWorld gameWorld, IHealthManager healthManager)
+        public TeleportationManager(ILogger<TeleportationManager> logger, IMovementManager movementManager, IMapProvider mapProvider, IDatabase database, ICountryProvider countryProvider, ILevelProvider levelProvider, IGameWorld gameWorld, IHealthManager healthManager, IBlessManager blessManager)
         {
             _logger = logger;
             _movementManager = movementManager;
@@ -42,6 +44,7 @@ namespace Imgeneus.World.Game.Teleport
             _levelProvider = levelProvider;
             _gameWorld = gameWorld;
             _healthManager = healthManager;
+            _blessManager = blessManager;
             _castingTimer.Elapsed += OnCastingTimer_Elapsed;
             _healthManager.OnGotDamage += HealthManager_OnGotDamage;
             _movementManager.OnMove += MovementManager_OnMove;
@@ -129,9 +132,9 @@ namespace Imgeneus.World.Game.Teleport
                 _mapProvider.NextMapId = mapId;
             else
                 if (reason == PortalTeleportNotAllowedReason.Unknown)
-                    _mapProvider.NextMapId = 0;
-                else if (teleportedByAdmin)
-                    _mapProvider.NextMapId = mapId;
+                _mapProvider.NextMapId = 0;
+            else if (teleportedByAdmin)
+                _mapProvider.NextMapId = mapId;
 
             _movementManager.PosX = x;
             _movementManager.PosY = y;
@@ -203,7 +206,7 @@ namespace Imgeneus.World.Game.Teleport
 
         public (ushort MapId, float X, float Y, float Z) CastingPosition { get; private set; }
 
-        private Timer _castingTimer = new Timer() { AutoReset = false, Interval = 5000 };
+        private Timer _castingTimer = new Timer() { AutoReset = false };
 
         public Item CastingItem { get; private set; }
 
@@ -213,6 +216,14 @@ namespace Imgeneus.World.Game.Teleport
 
             CastingPosition = (mapId, x, y, z);
             CastingItem = item;
+
+            _castingTimer.Interval = 5000;
+
+            if (_countryProvider.Country == CountryType.Light && _blessManager.LightAmount >= IBlessManager.CAST_TIME_DISPOSABLE_ITEMS)
+                _castingTimer.Interval = 4500;
+            if (_countryProvider.Country == CountryType.Dark && _blessManager.DarkAmount >= IBlessManager.CAST_TIME_DISPOSABLE_ITEMS)
+                _castingTimer.Interval = 4500;
+
             _castingTimer.Start();
         }
 

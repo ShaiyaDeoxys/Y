@@ -143,9 +143,9 @@ namespace Imgeneus.Game.Blessing
         {
             lock (_syncObject)
             {
+                IsFullBless = false;
                 DarkAmount = 0;
                 LightAmount = 0;
-                IsFullBless = false;
             }
         }
 

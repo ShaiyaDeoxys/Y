@@ -146,13 +146,13 @@ namespace Imgeneus.World.Tests
             var movementManager = new MovementManager(new Mock<ILogger<MovementManager>>().Object);
             movementManager.Init(_characterId, 0, 0, 0, 0, MoveMotion.Run);
 
-            var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, packetFactoryMock.Object, gameWorldMock.Object, mapProvider, healthManager);
+            var partyManager = new PartyManager(new Mock<ILogger<PartyManager>>().Object, packetFactoryMock.Object, gameWorldMock.Object, mapProvider, healthManager, countryProvider, BlessManager);
             partyManager.Init(_characterId);
 
             var levelingManager = new LevelingManager(new Mock<ILogger<LevelingManager>>().Object, databaseMock.Object, levelProvider, additionalInfoManager, config.Object, databasePreloader.Object, partyManager, mapProvider, movementManager);
             levelingManager.Init(_characterId, 0);
 
-            var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager);
+            var teleportManager = new TeleportationManager(new Mock<ILogger<TeleportationManager>>().Object, movementManager, mapProvider, databaseMock.Object, countryProvider, levelProvider, gameWorldMock.Object, healthManager, BlessManager);
             teleportManager.Init(_characterId, new List<DbCharacterSavePositions>());
 
             var vehicleManager = new VehicleManager(new Mock<ILogger<VehicleManager>>().Object, stealthManager, speedManager, healthManager, gameWorldMock.Object);

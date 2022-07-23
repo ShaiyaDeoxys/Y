@@ -147,6 +147,7 @@ namespace Imgeneus.World.Game.Player
 
             HealthManager.MP_SP_Used += SendUseMPSP;
             HealthManager.OnCurrentHitpointsChanged += SendCurrentHitpoints;
+            HealthManager.OnDead += IncreaseBless;
             StatsManager.OnAdditionalStatsUpdate += SendAdditionalStats;
             StatsManager.OnResetStats += SendResetStats;
             BuffsManager.OnBuffAdded += SendAddBuff;
@@ -172,6 +173,7 @@ namespace Imgeneus.World.Game.Player
             ShopManager.OnSoldItem += SendSoldItem;
             KillsManager.OnCountChanged += SendKillCountChanged;
 
+            AddBlessBonuses(new BlessArgs(0, CountryProvider.Country == CountryType.Light ? BlessManager.LightAmount : BlessManager.DarkAmount));
             BlessManager.OnDarkBlessChanged += OnDarkBlessChanged;
             BlessManager.OnLightBlessChanged += OnLightBlessChanged;
         }
@@ -214,6 +216,7 @@ namespace Imgeneus.World.Game.Player
         {
             HealthManager.MP_SP_Used -= SendUseMPSP;
             HealthManager.OnCurrentHitpointsChanged -= SendCurrentHitpoints;
+            HealthManager.OnDead -= IncreaseBless;
             StatsManager.OnAdditionalStatsUpdate -= SendAdditionalStats;
             StatsManager.OnResetStats -= SendResetStats;
             BuffsManager.OnBuffAdded -= SendAddBuff;
