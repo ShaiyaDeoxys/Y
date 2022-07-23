@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.Game.Crafting;
 using Imgeneus.Game.Skills;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
@@ -388,6 +389,10 @@ namespace Imgeneus.World.Packets
         void SendKillStatusInfo(IWorldClient client, byte killLevel, byte deathLevel);
         void SendKillsReward(IWorldClient client, bool ok, ushort stats);
         void SendDeathsReward(IWorldClient client, bool ok, uint money);
+        #endregion
+
+        #region Crafting
+        void SendCraftList(IWorldClient client, CraftInfo config);
         #endregion
 
         #region GM

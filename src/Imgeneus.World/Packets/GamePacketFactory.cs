@@ -46,6 +46,7 @@ using Imgeneus.World.Game.NPCs;
 using Parsec.Shaiya.NpcQuest;
 using Quest = Imgeneus.World.Game.Quests.Quest;
 using Imgeneus.Game.Skills;
+using Imgeneus.Game.Crafting;
 
 namespace Imgeneus.World.Packets
 {
@@ -2621,6 +2622,41 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.DEATHS_GET_REWARD);
             packet.Write(ok);
             packet.Write(money);
+            client.Send(packet);
+        }
+
+        #endregion
+
+        #region Crafting
+
+        public void SendCraftList(IWorldClient client, CraftInfo config)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHAOTIC_SQUARE_LIST);
+
+            for (var i = 0; i < 10; i++)
+            {
+                if (config.Recipes.Count > i)
+                    packet.WriteByte(config.Recipes[i].Type);
+                else
+                    packet.WriteByte(0);
+            }
+
+            for (var i = 0; i < 10; i++)
+            {
+                if (config.Recipes.Count > i)
+                    packet.WriteByte(config.Recipes[i].TypeId);
+                else
+                    packet.WriteByte(0);
+            }
+
+            for (var i = 0; i < 10; i++)
+            {
+                if (config.Recipes.Count > i)
+                    packet.WriteByte(config.Recipes[i].Count);
+                else
+                    packet.WriteByte(0);
+            }
+
             client.Send(packet);
         }
 

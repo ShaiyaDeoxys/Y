@@ -4,6 +4,7 @@ using Imgeneus.Database.Context;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
+using Imgeneus.Game.Crafting;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
@@ -108,6 +109,7 @@ namespace Imgeneus.World
             services.AddSingleton<IItemEnchantConfiguration, ItemEnchantConfiguration>((x => ItemEnchantConfiguration.LoadFromConfigFile()));
             services.AddSingleton<IMoveTownsConfiguration, MoveTownsConfiguration>((x => MoveTownsConfiguration.LoadFromConfigFile()));
             services.AddSingleton<IItemCreateConfiguration, ItemCreateConfiguration>((x => ItemCreateConfiguration.LoadFromConfigFile()));
+            services.AddSingleton<ICraftingConfiguration, CraftingConfiguration>((x => CraftingConfiguration.LoadFromConfigFile()));
             services.AddSingleton<IChatManager, ChatManager>();
             services.AddSingleton<INoticeManager, NoticeManager>();
             services.AddSingleton<IGuildRankingManager, GuildRankingManager>();

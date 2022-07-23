@@ -1,0 +1,79 @@
+{
+  "SquareItems": [
+    {
+      "Type": 102,
+      "TypeId": 71,
+      "Recipes": [
+        {
+          "Type": 16,
+          "TypeId": 68,
+          "Count": 1,
+          "Rate": 22.5,
+          "Ingredients": [
+            {
+              "Type": 25,
+              "TypeId": 1,
+              "Count": 10
+            },
+            {
+              "Type": 25,
+              "TypeId": 13,
+              "Count": 10
+            },
+            {
+              "Type": 25,
+              "TypeId": 7,
+              "Count": 10
+            }
+          ]
+        },
+        {
+          "Type": 16,
+          "TypeId": 238,
+          "Count": 1,
+          "Rate": 22.5,
+          "Ingredients": [
+            {
+              "Type": 25,
+              "TypeId": 1,
+              "Count": 10
+            },
+            {
+              "Type": 25,
+              "TypeId": 13,
+              "Count": 10
+            },
+            {
+              "Type": 25,
+              "TypeId": 7,
+              "Count": 10
+            }
+          ]
+        },
+        {
+          "Type": 16,
+          "TypeId": 153,
+          "Count": 1,
+          "Rate": 22.5,
+          "Ingredients": [
+            {
+              "Type": 25,
+              "TypeId": 1,
+              "Count": 10
+            },
+            {
+              "Type": 25,
+              "TypeId": 13,
+              "Count": 10
+            },
+            {
+              "Type": 25,
+              "TypeId": 7,
+              "Count": 10
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

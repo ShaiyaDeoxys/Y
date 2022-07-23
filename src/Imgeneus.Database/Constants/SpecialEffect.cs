@@ -75,7 +75,7 @@
         RecreationRune_Vial_WIS = 96,
         RecreationRune_Vial_REC = 97,
         RecreationRune_Vial_LUC = 98,
-        Box = 99,
+        ChaoticSquare = 99,
         DungeonMap = 100,
         CraftingHammer = 102,
         SafetyEnchant = 103,

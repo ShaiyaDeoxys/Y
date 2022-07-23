@@ -407,6 +407,9 @@
         // Warehouse
         WAREHOUSE_ITEM_LIST = 0x0711, // 1809
 
+        // Chaotic Square
+        CHAOTIC_SQUARE_LIST = 0x0830,
+
         // Account
         ACCOUNT_POINTS = 0x2601, // 9729
 
