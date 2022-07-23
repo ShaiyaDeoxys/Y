@@ -59,6 +59,8 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHAOTIC_SQUARE_CREATE)]
         public void CreateHandle(WorldClient client, ChaoticSquareCreatePacket packet)
         {
+            var ok = _craftingManager.TryCraft(packet.Bag, packet.Slot, packet.Index, packet.HammerBag, packet.HammerSlot);
+            _packetFactory.SendCraftSuccess(client, ok);
         }
     }
 }

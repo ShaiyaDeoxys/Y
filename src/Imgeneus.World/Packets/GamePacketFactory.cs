@@ -2698,6 +2698,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendCraftSuccess(IWorldClient client, bool ok)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHAOTIC_SQUARE_CREATE);
+            packet.Write(ok);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM
