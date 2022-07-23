@@ -27,8 +27,7 @@ namespace Imgeneus.World.Game.Linking
         /// <summary>
         /// Gets success rate of removing gem based on gem and hammer(if presented).
         /// </summary>
-        /// <param name="extraRate">extra rate, that doesn't depend on gem or hammer. E.g. guild house blacksmith or bless rate</param>
-        double GetRemoveRate(Gem gem, Item hammer, byte extraRate = 0);
+        double GetRemoveRate(Gem gem, Item hammer);
 
         /// <summary>
         /// Gets gold amount for linking based on gem.

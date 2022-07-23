@@ -1,5 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Blessing;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
 using Imgeneus.World.Game.Inventory;
@@ -27,8 +29,10 @@ namespace Imgeneus.World.Game.Linking
         private readonly IMapProvider _mapProvider;
         private readonly IItemEnchantConfiguration _itemEnchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
+        private readonly ICountryProvider _countryProvider;
+        private readonly IBlessManager _blessManager;
 
-        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider, IItemEnchantConfiguration itemEnchantConfig, IItemCreateConfiguration itemCreateConfig)
+        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider, IItemEnchantConfiguration itemEnchantConfig, IItemCreateConfiguration itemCreateConfig, ICountryProvider countryProvider, IBlessManager blessManager)
         {
             _logger = logger;
             _databasePreloader = databasePreloader;
@@ -40,6 +44,8 @@ namespace Imgeneus.World.Game.Linking
             _mapProvider = mapProvider;
             _itemEnchantConfig = itemEnchantConfig;
             _itemCreateConfig = itemCreateConfig;
+            _countryProvider = countryProvider;
+            _blessManager = blessManager;
 
 #if DEBUG
             _logger.LogDebug("LinkingManager {hashcode} created", GetHashCode());
@@ -431,9 +437,9 @@ namespace Imgeneus.World.Game.Linking
             return (!itemDestroyed, gemPosition, gemItems, item);
         }
 
-        private bool RemoveGem(Item item, Gem gem, Item hammer, byte extraRate = 0)
+        private bool RemoveGem(Item item, Gem gem, Item hammer)
         {
-            var rate = GetRemoveRate(gem, hammer, extraRate);
+            var rate = GetRemoveRate(gem, hammer);
             var rand = _random.Next(1, 101);
             var success = rate >= rand;
 
@@ -474,7 +480,11 @@ namespace Imgeneus.World.Game.Linking
                 extraRate += rates.LinkRate;
             }
 
-            // TODO: add bless rate.
+            if (_countryProvider.Country == CountryType.Light && _blessManager.LightAmount >= IBlessManager.LINK_EXTRACT_LAPIS)
+                extraRate += 2;
+
+            if (_countryProvider.Country == CountryType.Dark && _blessManager.DarkAmount >= IBlessManager.LINK_EXTRACT_LAPIS)
+                extraRate += 2;
 
             return extraRate;
         }
@@ -485,10 +495,10 @@ namespace Imgeneus.World.Game.Linking
             return gold;
         }
 
-        public double GetRemoveRate(Gem gem, Item hammer, byte extraRate)
+        public double GetRemoveRate(Gem gem, Item hammer)
         {
             double rate = GetRateByReqIg(gem.ReqIg);
-            rate += extraRate;
+            rate += CalculateExtraRate();
 
             if (hammer != null)
             {
