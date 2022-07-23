@@ -293,6 +293,7 @@ namespace Imgeneus.World.Game.Player
             _shopManager.Init(dbCharacter.Id);
 
             _recoverManager.Init(dbCharacter.Id);
+            _recoverManager.Start();
 
             _stealthManager.Init(dbCharacter.Id);
 

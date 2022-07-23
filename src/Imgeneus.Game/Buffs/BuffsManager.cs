@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
@@ -52,9 +53,10 @@ namespace Imgeneus.World.Game.Buffs
         private readonly IAdditionalInfoManager _additionalInfoManager;
         private readonly IMapProvider _mapProvider;
         private readonly IGameWorld _gameWorld;
+        private readonly IRecoverManager _recoverManager;
         private uint _ownerId;
 
-        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, IGameWorld gameWorld)
+        public BuffsManager(ILogger<BuffsManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloder, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IUntouchableManager untouchableManager, IStealthManager stealthManager, ILevelingManager levelingManager, IAttackManager attackManager, ITeleportationManager teleportationManager, IWarehouseManager warehouseManager, IShapeManager shapeManager, ICastProtectionManager castProtectionManager, IMovementManager movementManager, IAdditionalInfoManager additionalInfoManager, IMapProvider mapProvider, IGameWorld gameWorld, IRecoverManager recoverManager)
         {
             _logger = logger;
             _database = database;
@@ -75,6 +77,7 @@ namespace Imgeneus.World.Game.Buffs
             _additionalInfoManager = additionalInfoManager;
             _mapProvider = mapProvider;
             _gameWorld = gameWorld;
+            _recoverManager = recoverManager;
             _healthManager.OnDead += HealthManager_OnDead;
             _healthManager.OnGotDamage += HealthManager_OnGotDamage;
             _attackManager.OnStartAttack += AttackManager_OnStartAttack;
@@ -1164,6 +1167,18 @@ namespace Imgeneus.World.Game.Buffs
 
                 case AbilityType.AttackRange:
                     _attackManager.ExtraAttackRange = addAbility ? abilityValue : (ushort)0;
+                    break;
+
+                case AbilityType.HPRegeneration:
+                    _recoverManager.ExtraHPRegeneration = addAbility ? abilityValue : (ushort)0;
+                    break;
+
+                case AbilityType.MPRegeneration:
+                    _recoverManager.ExtraMPRegeneration = addAbility ? abilityValue : (ushort)0;
+                    break;
+
+                case AbilityType.SPRegeneration:
+                    _recoverManager.ExtraSPRegeneration = addAbility ? abilityValue : (ushort)0;
                     break;
 
                 default:
