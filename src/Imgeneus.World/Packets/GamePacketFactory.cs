@@ -2660,6 +2660,44 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendCraftRecipe(IWorldClient client, Recipe recipe)
+        {
+            using var packet = new ImgeneusPacket(PacketType.CHAOTIC_SQUARE_RECIPE);
+            packet.Write((int)(recipe.Rate * 100));
+
+            for (var i = 0; i < 24; i++)
+            {
+                if (recipe.Ingredients.Count > i)
+                    packet.WriteByte(recipe.Ingredients[i].Type);
+                else
+                    packet.WriteByte(0);
+            }
+
+            packet.WriteByte(recipe.Type);
+
+            for (var i = 0; i < 24; i++)
+            {
+                if (recipe.Ingredients.Count > i)
+                    packet.WriteByte(recipe.Ingredients[i].TypeId);
+                else
+                    packet.WriteByte(0);
+            }
+
+            packet.WriteByte(recipe.TypeId);
+
+            for (var i = 0; i < 24; i++)
+            {
+                if (recipe.Ingredients.Count > i)
+                    packet.WriteByte(recipe.Ingredients[i].Count);
+                else
+                    packet.WriteByte(0);
+            }
+
+            packet.WriteByte(recipe.Count);
+
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

@@ -15,15 +15,17 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IInventoryManager _inventoryManager;
         private readonly ICraftingConfiguration _craftingConfiguration;
+        private readonly ICraftingManager _craftingManager;
 
-        public ChaoticSquareHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IInventoryManager inventoryManager, ICraftingConfiguration craftingConfiguration) : base(packetFactory, gameSession)
+        public ChaoticSquareHandlers(IGamePacketFactory packetFactory, IGameSession gameSession, IInventoryManager inventoryManager, ICraftingConfiguration craftingConfiguration, ICraftingManager craftingManager) : base(packetFactory, gameSession)
         {
             _inventoryManager = inventoryManager;
             _craftingConfiguration = craftingConfiguration;
+            _craftingManager = craftingManager;
         }
 
         [HandlerAction(PacketType.CHAOTIC_SQUARE_LIST)]
-        public void Handle(WorldClient client, ChaoticSquareListPacket packet)
+        public void GetListHandle(WorldClient client, ChaoticSquareListPacket packet)
         {
             if (!_inventoryManager.InventoryItems.TryGetValue((packet.Bag, packet.Slot), out var squareItem))
                 return;
@@ -35,7 +37,28 @@ namespace Imgeneus.World.Handlers
             if (config is null)
                 return;
 
+            _craftingManager.ChaoticSquare = (config.Type, config.TypeId);
+
             _packetFactory.SendCraftList(client, config);
+        }
+
+        [HandlerAction(PacketType.CHAOTIC_SQUARE_RECIPE)]
+        public void GetRecipeHandle(WorldClient client, ChaoticSquareRecipePacket packet)
+        {
+            var config = _craftingConfiguration.SquareItems.FirstOrDefault(x => x.Type == _craftingManager.ChaoticSquare.Type && x.TypeId == _craftingManager.ChaoticSquare.TypeId);
+            if (config is null)
+                return;
+
+            var recipe = config.Recipes.FirstOrDefault(x => x.Type == packet.Type && x.TypeId == packet.TypeId);
+            if (recipe is null)
+                return;
+
+            _packetFactory.SendCraftRecipe(client, recipe);
+        }
+
+        [HandlerAction(PacketType.CHAOTIC_SQUARE_CREATE)]
+        public void CreateHandle(WorldClient client, ChaoticSquareCreatePacket packet)
+        {
         }
     }
 }

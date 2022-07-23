@@ -409,6 +409,8 @@
 
         // Chaotic Square
         CHAOTIC_SQUARE_LIST = 0x0830,
+        CHAOTIC_SQUARE_RECIPE = 0x0831,
+        CHAOTIC_SQUARE_CREATE = 0x0832,
 
         // Account
         ACCOUNT_POINTS = 0x2601, // 9729

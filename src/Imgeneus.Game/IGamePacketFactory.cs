@@ -393,6 +393,7 @@ namespace Imgeneus.World.Packets
 
         #region Crafting
         void SendCraftList(IWorldClient client, CraftInfo config);
+        void SendCraftRecipe(IWorldClient client, Recipe recipe);
         #endregion
 
         #region GM
