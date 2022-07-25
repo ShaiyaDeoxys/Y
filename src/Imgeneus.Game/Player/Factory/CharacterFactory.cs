@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
+using Imgeneus.Game.Market;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
@@ -87,6 +88,7 @@ namespace Imgeneus.World.Game.Player
         private readonly ICastProtectionManager _castProtectionManager;
         private readonly IBlessManager _blessManager;
         private readonly IRecoverManager _recoverManager;
+        private readonly IMarketManager _marketManager;
         private readonly IGamePacketFactory _packetFactory;
         private readonly UserManager<DbUser> _userManager;
 
@@ -131,6 +133,7 @@ namespace Imgeneus.World.Game.Player
                                 ICastProtectionManager castProtectionManager,
                                 IBlessManager blessManager,
                                 IRecoverManager recoverManager,
+                                IMarketManager marketManager,
                                 IGamePacketFactory packetFactory,
                                 UserManager<DbUser> userManager)
         {
@@ -175,6 +178,7 @@ namespace Imgeneus.World.Game.Player
             _castProtectionManager = castProtectionManager;
             _blessManager = blessManager;
             _recoverManager = recoverManager;
+            _marketManager = marketManager;
             _packetFactory = packetFactory;
             _userManager = userManager;
         }
@@ -292,6 +296,8 @@ namespace Imgeneus.World.Game.Player
 
             _shopManager.Init(dbCharacter.Id);
 
+            _marketManager.Init(dbCharacter.Id);
+
             _recoverManager.Init(dbCharacter.Id);
             _recoverManager.Start();
 
@@ -338,6 +344,7 @@ namespace Imgeneus.World.Game.Player
                                         _castProtectionManager,
                                         _blessManager,
                                         _recoverManager,
+                                        _marketManager,
                                         _gameSession,
                                         _packetFactory);
 

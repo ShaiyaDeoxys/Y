@@ -65,6 +65,7 @@ using Imgeneus.Game.Skills;
 using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Monster;
+using Imgeneus.Game.Market;
 
 namespace Imgeneus.World.Tests
 {
@@ -227,6 +228,7 @@ namespace Imgeneus.World.Tests
                 castProtectionManager,
                 BlessManager,
                 recoverManager,
+                new Mock<IMarketManager>().Object,
                 gameSessionMock.Object,
                 packetFactoryMock.Object);
 

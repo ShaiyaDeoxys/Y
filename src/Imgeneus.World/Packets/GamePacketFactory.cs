@@ -2707,6 +2707,28 @@ namespace Imgeneus.World.Packets
 
         #endregion
 
+        #region Market
+
+        public void SendMarketSellList(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_SELL_LIST);
+            packet.WriteByte(2); // count
+            packet.Write(new MarketSellItem(1).Serialize());
+            packet.Write(new MarketSellItem(2).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendMarketTenderList(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_TENDER_LIST);
+            packet.WriteByte(2); // count
+            packet.Write(new MarketItem(1).Serialize());
+            packet.Write(new MarketItem(2).Serialize());
+            client.Send(packet);
+        }
+
+        #endregion
+
         #region GM
         public void SendGmCommandSuccess(IWorldClient client)
         {

@@ -3,6 +3,7 @@ using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
+using Imgeneus.Game.Market;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.World.Game.AdditionalInfo;
@@ -74,6 +75,7 @@ namespace Imgeneus.World.Game.Player
         public ICastProtectionManager CastProtectionManager { get; private set; }
         public IBlessManager BlessManager { get; private set; }
         public IRecoverManager RecoverManager { get; private set; }
+        public IMarketManager MarketManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -112,6 +114,7 @@ namespace Imgeneus.World.Game.Player
                          ICastProtectionManager castProtectionManager,
                          IBlessManager blessManager,
                          IRecoverManager recoverManager,
+                         IMarketManager marketManager,
                          IGameSession gameSession,
                          IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
@@ -143,6 +146,7 @@ namespace Imgeneus.World.Game.Player
             CastProtectionManager = castProtectionManager;
             BlessManager = blessManager;
             RecoverManager = recoverManager;
+            MarketManager = marketManager;
             GameSession = gameSession;
 
             HealthManager.MP_SP_Used += SendUseMPSP;
@@ -298,6 +302,7 @@ namespace Imgeneus.World.Game.Player
             ICastProtectionManager castProtectionManager,
             IBlessManager blessManager,
             IRecoverManager recoverManager,
+            IMarketManager marketManager,
             IGameSession gameSession,
             IGamePacketFactory packetFactory)
         {
@@ -337,6 +342,7 @@ namespace Imgeneus.World.Game.Player
                                           castProtectionManager,
                                           blessManager,
                                           recoverManager,
+                                          marketManager,
                                           gameSession,
                                           packetFactory)
             {

@@ -397,6 +397,11 @@ namespace Imgeneus.World.Packets
         void SendCraftSuccess(IWorldClient client, bool ok);
         #endregion
 
+        #region Market
+        void SendMarketSellList(IWorldClient client);
+        void SendMarketTenderList(IWorldClient client);
+        #endregion
+
         #region GM
         void SendGmCommandSuccess(IWorldClient client);
         void SendGmCommandError(IWorldClient client, PacketType error);

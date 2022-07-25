@@ -5,6 +5,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Crafting;
+using Imgeneus.Game.Market;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
@@ -164,6 +165,7 @@ namespace Imgeneus.World
             services.AddScoped<ICastProtectionManager, CastProtectionManager>();
             services.AddScoped<IRecoverManager, RecoverManager>();
             services.AddScoped<ICraftingManager, CraftingManager>();
+            services.AddScoped<IMarketManager, MarketManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();
