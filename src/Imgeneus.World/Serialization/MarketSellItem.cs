@@ -1,10 +1,11 @@
 ﻿using BinarySerialization;
+using Imgeneus.Database.Entities;
 
 namespace Imgeneus.World.Serialization
 {
     public class MarketSellItem: MarketItem
     {
-        public MarketSellItem(uint marketId) : base(marketId)
+        public MarketSellItem(DbMarket market) : base(market)
         {
         }
 

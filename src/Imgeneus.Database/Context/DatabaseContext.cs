@@ -42,6 +42,12 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbGuildNpcLvl> GuildNpcLvls { get; set; }
 
+        public DbSet<DbMarket> Market { get; set; }
+
+        public DbSet<DbMarketItem> MarketItems { get; set; }
+
+        public DbSet<DbMarketCharacterResultItems> MarketResults { get; set; }
+
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }

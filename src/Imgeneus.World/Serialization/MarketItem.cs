@@ -1,5 +1,6 @@
 ﻿using BinarySerialization;
 using Imgeneus.Core.Extensions;
+using Imgeneus.Database.Entities;
 using Imgeneus.Network.Serialization;
 using System;
 
@@ -41,24 +42,28 @@ namespace Imgeneus.World.Serialization
         public byte[] UnknownBytes1 { get; } = new byte[22];
 
         [FieldOrder(11)]
-        public bool IsItemDyed { get; } = true;
+        public bool IsItemDyed { get; }
 
         [FieldOrder(12)]
         public byte[] UnknownBytes2 { get; } = new byte[26];
 
-        public MarketItem(uint marketId)
+        public MarketItem(DbMarket market)
         {
-            MarketId = marketId;
-            TenderMoney = 3;
-            DirectMoney = 4;
-            EndDate = DateTime.UtcNow.AddDays(5).ToShaiyaTime();
-            Type = 16;
-            TypeId = 6;
-            Count = 1;
-            Gems[0] = 1;
-            Gems[1] = 2;
-            Gems[5] = 15;
-            CraftName = new CraftName("10223344556610203000");
+            MarketId = market.Id;
+            TenderMoney = market.TenderMoney;
+            DirectMoney = market.DirectMoney;
+            EndDate = market.EndDate.ToShaiyaTime();
+            Type = market.MarketItem.Type;
+            TypeId = market.MarketItem.TypeId;
+            Count = market.MarketItem.Count;
+            Gems[0] = market.MarketItem.GemTypeId1;
+            Gems[1] = market.MarketItem.GemTypeId2;
+            Gems[2] = market.MarketItem.GemTypeId3;
+            Gems[3] = market.MarketItem.GemTypeId4;
+            Gems[4] = market.MarketItem.GemTypeId5;
+            Gems[5] = market.MarketItem.GemTypeId6;
+            CraftName = new CraftName(market.MarketItem.Craftname);
+            IsItemDyed = market.MarketItem.HasDyeColor;
         }
     }
 }

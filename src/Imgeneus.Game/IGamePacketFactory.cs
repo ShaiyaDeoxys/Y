@@ -398,8 +398,10 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Market
-        void SendMarketSellList(IWorldClient client);
+        void SendMarketSellList(IWorldClient client, IList<DbMarket> items);
         void SendMarketTenderList(IWorldClient client);
+        void SendMarketItemRegister(IWorldClient client, bool ok, DbMarket marketItem, Item item, uint gold);
+        void SendMarketItemUnregister(IWorldClient client, bool ok, DbMarketCharacterResultItems result);
         #endregion
 
         #region GM

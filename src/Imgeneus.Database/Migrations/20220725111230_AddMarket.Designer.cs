@@ -3,6 +3,7 @@ using System;
 using Imgeneus.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Imgeneus.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220725111230_AddMarket")]
+    partial class AddMarket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -781,12 +783,6 @@ namespace Imgeneus.Database.Migrations
                     b.Property<uint>("GuaranteeMoney")
                         .HasColumnType("int unsigned");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<uint>("MarketItemId")
-                        .HasColumnType("int unsigned");
-
                     b.Property<byte>("MarketType")
                         .HasColumnType("tinyint unsigned");
 
@@ -804,103 +800,6 @@ namespace Imgeneus.Database.Migrations
                     b.HasIndex("CharacterId");
 
                     b.ToTable("Market");
-                });
-
-            modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketCharacterResultItems", b =>
-                {
-                    b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int unsigned");
-
-                    b.Property<uint>("CharacterId")
-                        .HasColumnType("int unsigned");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<uint>("MarketId")
-                        .HasColumnType("int unsigned");
-
-                    b.Property<bool>("Success")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("MarketId");
-
-                    b.ToTable("MarketCharacterResultItems");
-                });
-
-            modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketItem", b =>
-                {
-                    b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int unsigned");
-
-                    b.Property<byte>("Count")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<string>("Craftname")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<byte>("DyeColorAlpha")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<byte>("DyeColorB")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<byte>("DyeColorG")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<byte>("DyeColorR")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<byte>("DyeColorSaturation")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<int>("GemTypeId1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GemTypeId2")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GemTypeId3")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GemTypeId4")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GemTypeId5")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GemTypeId6")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("HasDyeColor")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<uint>("MarketId")
-                        .HasColumnType("int unsigned");
-
-                    b.Property<ushort>("Quality")
-                        .HasColumnType("smallint unsigned");
-
-                    b.Property<byte>("Type")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<byte>("TypeId")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MarketId")
-                        .IsUnique();
-
-                    b.ToTable("MarketItems");
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbMob", b =>
@@ -1606,36 +1505,6 @@ namespace Imgeneus.Database.Migrations
                     b.Navigation("Character");
                 });
 
-            modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketCharacterResultItems", b =>
-                {
-                    b.HasOne("Imgeneus.Database.Entities.DbCharacter", "Character")
-                        .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Imgeneus.Database.Entities.DbMarket", "Market")
-                        .WithMany()
-                        .HasForeignKey("MarketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Market");
-                });
-
-            modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketItem", b =>
-                {
-                    b.HasOne("Imgeneus.Database.Entities.DbMarket", "Market")
-                        .WithOne("MarketItem")
-                        .HasForeignKey("Imgeneus.Database.Entities.DbMarketItem", "MarketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Market");
-                });
-
             modelBuilder.Entity("Imgeneus.Database.Entities.DbQuickSkillBarItem", b =>
                 {
                     b.HasOne("Imgeneus.Database.Entities.DbCharacter", "Character")
@@ -1733,11 +1602,6 @@ namespace Imgeneus.Database.Migrations
                     b.Navigation("NpcLvls");
 
                     b.Navigation("WarehouseItems");
-                });
-
-            modelBuilder.Entity("Imgeneus.Database.Entities.DbMarket", b =>
-                {
-                    b.Navigation("MarketItem");
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbUser", b =>

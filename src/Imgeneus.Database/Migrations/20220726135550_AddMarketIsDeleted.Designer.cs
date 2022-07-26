@@ -3,6 +3,7 @@ using System;
 using Imgeneus.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Imgeneus.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220726135550_AddMarketIsDeleted")]
+    partial class AddMarketIsDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -806,33 +808,6 @@ namespace Imgeneus.Database.Migrations
                     b.ToTable("Market");
                 });
 
-            modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketCharacterResultItems", b =>
-                {
-                    b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int unsigned");
-
-                    b.Property<uint>("CharacterId")
-                        .HasColumnType("int unsigned");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<uint>("MarketId")
-                        .HasColumnType("int unsigned");
-
-                    b.Property<bool>("Success")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("MarketId");
-
-                    b.ToTable("MarketCharacterResultItems");
-                });
-
             modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketItem", b =>
                 {
                     b.Property<uint>("Id")
@@ -1604,25 +1579,6 @@ namespace Imgeneus.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Character");
-                });
-
-            modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketCharacterResultItems", b =>
-                {
-                    b.HasOne("Imgeneus.Database.Entities.DbCharacter", "Character")
-                        .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Imgeneus.Database.Entities.DbMarket", "Market")
-                        .WithMany()
-                        .HasForeignKey("MarketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Market");
                 });
 
             modelBuilder.Entity("Imgeneus.Database.Entities.DbMarketItem", b =>

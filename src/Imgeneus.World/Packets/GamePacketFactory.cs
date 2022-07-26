@@ -2709,12 +2709,12 @@ namespace Imgeneus.World.Packets
 
         #region Market
 
-        public void SendMarketSellList(IWorldClient client)
+        public void SendMarketSellList(IWorldClient client, IList<DbMarket> items)
         {
             using var packet = new ImgeneusPacket(PacketType.MARKET_GET_SELL_LIST);
-            packet.WriteByte(2); // count
-            packet.Write(new MarketSellItem(1).Serialize());
-            packet.Write(new MarketSellItem(2).Serialize());
+            packet.WriteByte((byte)items.Count); // count
+            foreach (var itm in items)
+                packet.Write(new MarketSellItem(itm).Serialize());
             client.Send(packet);
         }
 
@@ -2722,8 +2722,34 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.MARKET_GET_TENDER_LIST);
             packet.WriteByte(2); // count
-            packet.Write(new MarketItem(1).Serialize());
-            packet.Write(new MarketItem(2).Serialize());
+            //packet.Write(new MarketItem(1).Serialize());
+            //packet.Write(new MarketItem(2).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendMarketItemRegister(IWorldClient client, bool ok, DbMarket marketItem, Item item, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_REGISTER_ITEM);
+            packet.Write(ok ? (byte)0 : (byte)1);
+
+            if (ok)
+            {
+                packet.Write(item.Bag);
+                packet.Write(item.Slot);
+                packet.Write(marketItem.MarketItem.Count);
+                packet.Write(gold);
+                packet.Write(new MarketItem(marketItem).Serialize());
+            }
+            client.Send(packet);
+        }
+
+        public void SendMarketItemUnregister(IWorldClient client, bool ok, DbMarketCharacterResultItems result)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_UNREGISTER_ITEM);
+            packet.Write(ok ? (byte)0 : (byte)1);
+
+            if (ok)
+                packet.Write(new MarketEndItem(result).Serialize());
             client.Send(packet);
         }
 

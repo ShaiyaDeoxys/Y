@@ -100,6 +100,21 @@ namespace Imgeneus.Database
         public DbSet<DbGuildNpcLvl> GuildNpcLvls { get; set; }
 
         /// <summary>
+        /// Auction board.
+        /// </summary>
+        public DbSet<DbMarket> Market { get; set; }
+
+        /// <summary>
+        /// Auction board connected item.
+        /// </summary>
+        public DbSet<DbMarketItem> MarketItems { get; set; }
+
+        /// <summary>
+        /// Auction board deal results.
+        /// </summary>
+        public DbSet<DbMarketCharacterResultItems> MarketResults { get; set; }
+
+        /// <summary>
         /// Saves changes to database.
         /// </summary>
         public int SaveChanges();
