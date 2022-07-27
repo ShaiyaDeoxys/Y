@@ -1,7 +1,9 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Linking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,14 +18,19 @@ namespace Imgeneus.Game.Market
         private readonly ILogger<MarketManager> _logger;
         private readonly IDatabase _database;
         private readonly IInventoryManager _inventoryManager;
-
+        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IItemEnchantConfiguration _enchantConfig;
+        private readonly IItemCreateConfiguration _itemCreateConfig;
         private uint _ownerId;
 
-        public MarketManager(ILogger<MarketManager> logger, IDatabase database, IInventoryManager inventoryManager)
+        public MarketManager(ILogger<MarketManager> logger, IDatabase database, IInventoryManager inventoryManager, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
         {
             _logger = logger;
             _database = database;
             _inventoryManager = inventoryManager;
+            _databasePreloader = databasePreloader;
+            _enchantConfig = enchantConfig;
+            _itemCreateConfig = itemCreateConfig;
 #if DEBUG
             _logger.LogDebug("MarketManager {hashcode} created", GetHashCode());
 #endif
@@ -52,7 +59,7 @@ namespace Imgeneus.Game.Market
                 return (false, null, null);
 
             var marketFee = (minMoney / 500000 + 1) * 360;
-            if(_inventoryManager.Gold < marketFee)
+            if (_inventoryManager.Gold < marketFee)
                 return (false, null, null);
 
             if (item.Count < count)
@@ -73,11 +80,11 @@ namespace Imgeneus.Game.Market
                     Count = count,
                     Craftname = item.GetCraftName(),
                     GemTypeId1 = item.Gem1 is null ? 0 : item.Gem1.TypeId,
-                    GemTypeId2 = item.Gem1 is null ? 0 : item.Gem2.TypeId,
-                    GemTypeId3 = item.Gem1 is null ? 0 : item.Gem3.TypeId,
-                    GemTypeId4 = item.Gem1 is null ? 0 : item.Gem4.TypeId,
-                    GemTypeId5 = item.Gem1 is null ? 0 : item.Gem5.TypeId,
-                    GemTypeId6 = item.Gem1 is null ? 0 : item.Gem6.TypeId,
+                    GemTypeId2 = item.Gem2 is null ? 0 : item.Gem2.TypeId,
+                    GemTypeId3 = item.Gem3 is null ? 0 : item.Gem3.TypeId,
+                    GemTypeId4 = item.Gem4 is null ? 0 : item.Gem4.TypeId,
+                    GemTypeId5 = item.Gem5 is null ? 0 : item.Gem5.TypeId,
+                    GemTypeId6 = item.Gem6 is null ? 0 : item.Gem6.TypeId,
                     HasDyeColor = item.DyeColor.IsEnabled,
                     DyeColorAlpha = item.DyeColor.Alpha,
                     DyeColorSaturation = item.DyeColor.Saturation,
@@ -141,6 +148,36 @@ namespace Imgeneus.Game.Market
 
             var ok = (await _database.SaveChangesAsync()) > 0;
             return (ok, result);
+        }
+
+        public async Task<IList<DbMarketCharacterResultItems>> GetEndItems()
+        {
+            return await _database.MarketResults
+                                  .Include(x => x.Market)
+                                  .ThenInclude(x => x.MarketItem)
+                                  .Where(x => x.CharacterId == _ownerId)
+                                  .ToListAsync();
+        }
+
+        public async Task<(bool Ok, Item Item)> TryGetItem(uint marketId)
+        {
+            var result = await _database.MarketResults
+                                  .Include(x => x.Market)
+                                  .ThenInclude(x => x.MarketItem)
+                                  .FirstOrDefaultAsync(x => x.MarketId == marketId && x.CharacterId == _ownerId);
+
+            if (result is null || _inventoryManager.IsFull)
+                return (false, null);
+
+            var marketItem = result.Market.MarketItem;
+            _database.Market.Remove(result.Market);
+
+            var ok = (await _database.SaveChangesAsync()) > 0;
+            Item item = null;
+            if (ok)
+                item = _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, marketItem));
+
+            return (ok, item);
         }
     }
 }

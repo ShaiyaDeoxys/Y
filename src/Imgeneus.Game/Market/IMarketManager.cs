@@ -33,5 +33,18 @@ namespace Imgeneus.Game.Market
         /// <param name="marketId"></param>
         /// <returns></returns>
         Task<(bool Ok, DbMarketCharacterResultItems Result)> TryUnregisterItem(uint marketId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Task<IList<DbMarketCharacterResultItems>> GetEndItems();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="marketId"></param>
+        /// <returns></returns>
+        Task<(bool Ok, Item Item)> TryGetItem(uint marketId);
     }
 }

@@ -48,5 +48,19 @@ namespace Imgeneus.World.Handlers
             var result = await _marketManager.TryUnregisterItem(packet.MarketId);
             _packetFactory.SendMarketItemUnregister(client, result.Ok, result.Result);
         }
+
+        [HandlerAction(PacketType.MARKET_GET_END_ITEM_LIST)]
+        public async Task GetEndItemsHandle(WorldClient client, EmptyPacket packet)
+        {
+            var items = await _marketManager.GetEndItems();
+            _packetFactory.SendMarketEndItems(client, items);
+        }
+
+        [HandlerAction(PacketType.MARKET_GET_ITEM)]
+        public async Task GetItemHandle(WorldClient client, MarketGetItemPacket packet)
+        {
+            var result = await _marketManager.TryGetItem(packet.MarketId);
+            _packetFactory.SendMarketGetItem(client, result.Ok, packet.MarketId, result.Item);
+        }
     }
 }

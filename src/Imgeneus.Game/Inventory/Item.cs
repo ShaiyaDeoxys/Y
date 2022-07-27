@@ -138,6 +138,30 @@ namespace Imgeneus.World.Game.Inventory
                 Gem6 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId6, 5);
         }
 
+        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbMarketItem dbMarketItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbMarketItem.Type, dbMarketItem.TypeId, dbMarketItem.Count)
+        {
+            Quality = dbMarketItem.Quality;
+
+            if (!string.IsNullOrWhiteSpace(dbMarketItem.Craftname))
+                ParseCraftname(dbMarketItem.Craftname);
+
+            if (dbMarketItem.HasDyeColor)
+                DyeColor = new DyeColor(dbMarketItem.DyeColorAlpha, dbMarketItem.DyeColorSaturation, dbMarketItem.DyeColorR, dbMarketItem.DyeColorG, dbMarketItem.DyeColorB);
+
+            if (dbMarketItem.GemTypeId1 != 0)
+                Gem1 = new Gem(databasePreloader, dbMarketItem.GemTypeId1, 0);
+            if (dbMarketItem.GemTypeId2 != 0)
+                Gem2 = new Gem(databasePreloader, dbMarketItem.GemTypeId2, 1);
+            if (dbMarketItem.GemTypeId3 != 0)
+                Gem3 = new Gem(databasePreloader, dbMarketItem.GemTypeId3, 2);
+            if (dbMarketItem.GemTypeId4 != 0)
+                Gem4 = new Gem(databasePreloader, dbMarketItem.GemTypeId4, 3);
+            if (dbMarketItem.GemTypeId5 != 0)
+                Gem5 = new Gem(databasePreloader, dbMarketItem.GemTypeId5, 4);
+            if (dbMarketItem.GemTypeId6 != 0)
+                Gem6 = new Gem(databasePreloader, dbMarketItem.GemTypeId6, 5);
+        }
+
         public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, BankItem bankItem) : this(databasePreloader, enchantConfig, itemCreateConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
         {
         }

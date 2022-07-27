@@ -737,6 +737,18 @@ namespace Imgeneus.World.Game.Inventory
 
         public event Action<Item> OnAddItem;
 
+        public bool IsFull
+        {
+            get
+            {
+                var free = FindFreeSlotInInventory();
+                if (free.Bag == 0 || free.Slot == -1)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
         public Item AddItem(Item item)
         {
             // Find free space.

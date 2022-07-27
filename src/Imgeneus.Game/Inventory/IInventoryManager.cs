@@ -16,6 +16,11 @@ namespace Imgeneus.World.Game.Inventory
         ConcurrentDictionary<(byte Bag, byte Slot), Item> InventoryItems { get; }
 
         /// <summary>
+        /// Is inventory full?
+        /// </summary>
+        bool IsFull { get; }
+
+        /// <summary>
         /// Event, that is fired, when some equipment of character changes.
         /// </summary>
         event Action<uint, Item, byte> OnEquipmentChanged;

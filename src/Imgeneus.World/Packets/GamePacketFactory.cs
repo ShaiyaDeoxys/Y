@@ -2753,6 +2753,29 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMarketEndItems(IWorldClient client, IList<DbMarketCharacterResultItems> items)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_END_ITEM_LIST);
+            packet.WriteByte((byte)items.Count);
+
+            foreach (var itm in items)
+                packet.Write(new MarketEndItem(itm).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendMarketGetItem(IWorldClient client, bool ok, uint marketId, Item item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_ITEM);
+            packet.Write(ok ? (byte)0 : (byte)1);
+
+            if (ok)
+            {
+                packet.Write(marketId);
+                packet.Write(new MarketGetItem(item).Serialize());
+            }
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM
