@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
+using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Inventory;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -46,5 +47,26 @@ namespace Imgeneus.Game.Market
         /// <param name="marketId"></param>
         /// <returns></returns>
         Task<(bool Ok, Item Item)> TryGetItem(uint marketId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="searchCountry"></param>
+        /// <param name="minLevel"></param>
+        /// <param name="maxLevel"></param>
+        /// <param name="grade"></param>
+        /// <param name="marketItemType"></param>
+        /// <returns></returns>
+        Task<IList<DbMarket>> Search(MarketSearchCountry searchCountry, byte minLevel, byte maxLevel, byte grade, MarketItemType marketItemType);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        IList<DbMarket> LastSearchResults { get; }
+
+        /// <summary>
+        /// Search page in focus.
+        /// </summary>
+        byte PageIndex { get; set; }
     }
 }

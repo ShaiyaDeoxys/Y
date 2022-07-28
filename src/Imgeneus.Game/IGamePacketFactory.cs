@@ -404,6 +404,7 @@ namespace Imgeneus.World.Packets
         void SendMarketItemUnregister(IWorldClient client, bool ok, DbMarketCharacterResultItems result);
         void SendMarketEndItems(IWorldClient client, IList<DbMarketCharacterResultItems> items);
         void SendMarketGetItem(IWorldClient client, bool ok, uint marketId, Item item);
+        void SendMarketSearchSection(IWorldClient client, byte prevCursor, byte nextCursor, IList<DbMarket> results);
         #endregion
 
         #region GM

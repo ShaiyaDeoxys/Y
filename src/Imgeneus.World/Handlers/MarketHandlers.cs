@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Handlers
@@ -61,6 +62,27 @@ namespace Imgeneus.World.Handlers
         {
             var result = await _marketManager.TryGetItem(packet.MarketId);
             _packetFactory.SendMarketGetItem(client, result.Ok, packet.MarketId, result.Item);
+        }
+
+        [HandlerAction(PacketType.MARKET_SEARCH_FIRST)]
+        public async Task SearchHandle(WorldClient client, MarketSearchFirstPacket packet)
+        {
+            var results = await _marketManager.Search(packet.SearchCountry, packet.MinLevel, packet.MaxLevel, packet.Grade, packet.MarketItemType);
+            _packetFactory.SendMarketSearchSection(client, 0, results.Count > 7 ? (byte)1 : (byte)0, results.Take(7).ToList());
+        }
+
+        [HandlerAction(PacketType.MARKET_SEARCH_SECTION)]
+        public void SearchSectionHandle(WorldClient client, MarketSearchSectionPacket packet)
+        {
+            if (packet.Action == MarketSearchAction.MoveNext)
+                _marketManager.PageIndex++;
+            if (packet.Action == MarketSearchAction.MovePrev)
+                _marketManager.PageIndex--;
+
+            _packetFactory.SendMarketSearchSection(client, 
+                                                   _marketManager.PageIndex,
+                                                   (byte)(_marketManager.PageIndex + 1),
+                                                   _marketManager.LastSearchResults.Skip(7 * _marketManager.PageIndex).Take(7).ToList());
         }
     }
 }

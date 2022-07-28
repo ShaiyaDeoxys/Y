@@ -2776,6 +2776,17 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMarketSearchSection(IWorldClient client, byte prevCursor, byte nextCursor, IList<DbMarket> results)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_SEARCH_SECTION);
+            packet.Write(prevCursor);
+            packet.Write(nextCursor);
+            packet.Write((byte)results.Count);
+            foreach (var itm in results)
+                packet.Write(new MarketItem(itm).Serialize());
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM
