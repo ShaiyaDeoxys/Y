@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Game.Crafting;
+using Imgeneus.Game.Market;
 using Imgeneus.Game.Skills;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
@@ -405,6 +406,8 @@ namespace Imgeneus.World.Packets
         void SendMarketEndItems(IWorldClient client, IList<DbMarketCharacterResultItems> items);
         void SendMarketGetItem(IWorldClient client, bool ok, uint marketId, Item item);
         void SendMarketSearchSection(IWorldClient client, byte prevCursor, byte nextCursor, IList<DbMarket> results);
+        void SendMarketDirectBuy(IWorldClient client, MarketBuyItemResult ok, uint gold, DbMarketCharacterResultItems item);
+        void SendMarketEndMoney(IWorldClient client, IList<DbMarketCharacterResultMoney> items);
         #endregion
 
         #region GM

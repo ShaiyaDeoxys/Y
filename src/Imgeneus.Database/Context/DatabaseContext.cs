@@ -48,6 +48,8 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbMarketCharacterResultItems> MarketResults { get; set; }
 
+        public DbSet<DbMarketCharacterResultMoney> MarketMoneys { get; set; }
+
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }

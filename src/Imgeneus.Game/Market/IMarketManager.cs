@@ -44,6 +44,12 @@ namespace Imgeneus.Game.Market
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        Task<IList<DbMarketCharacterResultMoney>> GetEndMoney();
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="marketId"></param>
         /// <returns></returns>
         Task<(bool Ok, Item Item)> TryGetItem(uint marketId);
@@ -68,5 +74,7 @@ namespace Imgeneus.Game.Market
         /// Search page in focus.
         /// </summary>
         byte PageIndex { get; set; }
+
+        Task<(MarketBuyItemResult Ok, DbMarketCharacterResultItems Item)> TryDirectBuy(uint marketId);
     }
 }

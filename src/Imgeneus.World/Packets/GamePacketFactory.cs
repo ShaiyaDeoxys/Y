@@ -47,6 +47,7 @@ using Parsec.Shaiya.NpcQuest;
 using Quest = Imgeneus.World.Game.Quests.Quest;
 using Imgeneus.Game.Skills;
 using Imgeneus.Game.Crafting;
+using Imgeneus.Game.Market;
 
 namespace Imgeneus.World.Packets
 {
@@ -2784,6 +2785,27 @@ namespace Imgeneus.World.Packets
             packet.Write((byte)results.Count);
             foreach (var itm in results)
                 packet.Write(new MarketItem(itm).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendMarketDirectBuy(IWorldClient client, MarketBuyItemResult ok, uint gold, DbMarketCharacterResultItems item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_DIRECT_BUY);
+            packet.Write((byte)ok);
+            if (ok == MarketBuyItemResult.Ok)
+            {
+                packet.Write(gold);
+                packet.Write(new MarketEndItem(item).Serialize());
+            }
+            client.Send(packet);
+        }
+
+        public void SendMarketEndMoney(IWorldClient client, IList<DbMarketCharacterResultMoney> items)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_END_MONEY_LIST);
+            packet.Write((byte)items.Count);
+            foreach (var itm in items)
+                packet.Write(new MarketEndMoney(itm).Serialize());
             client.Send(packet);
         }
 

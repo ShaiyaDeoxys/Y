@@ -57,6 +57,13 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendMarketEndItems(client, items);
         }
 
+        [HandlerAction(PacketType.MARKET_GET_END_MONEY_LIST)]
+        public async Task GetEndMoneyHandle(WorldClient client, EmptyPacket packet)
+        {
+            var items = await _marketManager.GetEndMoney();
+            _packetFactory.SendMarketEndMoney(client, items);
+        }
+
         [HandlerAction(PacketType.MARKET_GET_ITEM)]
         public async Task GetItemHandle(WorldClient client, MarketGetItemPacket packet)
         {
@@ -79,10 +86,20 @@ namespace Imgeneus.World.Handlers
             if (packet.Action == MarketSearchAction.MovePrev)
                 _marketManager.PageIndex--;
 
-            _packetFactory.SendMarketSearchSection(client, 
+            _packetFactory.SendMarketSearchSection(client,
                                                    _marketManager.PageIndex,
                                                    (byte)(_marketManager.PageIndex + 1),
                                                    _marketManager.LastSearchResults.Skip(7 * _marketManager.PageIndex).Take(7).ToList());
+        }
+
+        [HandlerAction(PacketType.MARKET_DIRECT_BUY)]
+        public async Task DirectBuyHandle(WorldClient client, MarketDirectBuyPacket packet)
+        {
+            var result = await _marketManager.TryDirectBuy(packet.MarketId);
+            _packetFactory.SendMarketDirectBuy(client,
+                                               result.Ok,
+                                               _inventoryManager.Gold,
+                                               result.Item);
         }
     }
 }
