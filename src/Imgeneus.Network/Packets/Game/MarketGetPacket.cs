@@ -2,13 +2,13 @@
 
 namespace Imgeneus.Network.Packets.Game
 {
-    public record MarketGetItemPacket : IPacketDeserializer
+    public record MarketGetPacket : IPacketDeserializer
     {
-        public uint MarketId { get; private set; }
+        public uint Id { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
-            MarketId = packetStream.Read<uint>();
+            Id = packetStream.Read<uint>();
         }
     }
 }

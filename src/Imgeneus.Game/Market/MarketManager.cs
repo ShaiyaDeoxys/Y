@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Imgeneus.Game.Market
@@ -23,6 +24,8 @@ namespace Imgeneus.Game.Market
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private uint _ownerId;
+
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public MarketManager(ILogger<MarketManager> logger, IDatabase database, IInventoryManager inventoryManager, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
         {
@@ -156,20 +159,32 @@ namespace Imgeneus.Game.Market
 
         public async Task<IList<DbMarketCharacterResultItems>> GetEndItems()
         {
-            return await _database.MarketResults
+            await _semaphore.WaitAsync();
+
+            var results = await _database.MarketResults
                                   .Include(x => x.Market)
                                   .ThenInclude(x => x.MarketItem)
                                   .Where(x => x.CharacterId == _ownerId)
                                   .ToListAsync();
+
+            _semaphore.Release();
+
+            return results;
         }
 
         public async Task<IList<DbMarketCharacterResultMoney>> GetEndMoney()
         {
-            return await _database.MarketMoneys
+            await _semaphore.WaitAsync();
+
+            var results = await _database.MarketMoneys
                                   .Include(x => x.Market)
                                   .ThenInclude(x => x.MarketItem)
                                   .Where(x => x.CharacterId == _ownerId)
                                   .ToListAsync();
+
+            _semaphore.Release();
+
+            return results;
         }
 
         public async Task<(bool Ok, Item Item)> TryGetItem(uint marketId)
@@ -183,14 +198,29 @@ namespace Imgeneus.Game.Market
                 return (false, null);
 
             var marketItem = result.Market.MarketItem;
-            _database.Market.Remove(result.Market);
+            _database.MarketResults.Remove(result);
 
             var ok = (await _database.SaveChangesAsync()) > 0;
             Item item = null;
             if (ok)
-                item = _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, marketItem));
+                item = _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, marketItem), true);
 
             return (ok, item);
+        }
+
+        public async Task<bool> TryGetMoney(uint moneyId)
+        {
+            var money = await _database.MarketMoneys.FirstOrDefaultAsync(x => x.Id == moneyId && x.CharacterId == _ownerId);
+            if (money is null)
+                return false;
+
+            _database.MarketMoneys.Remove(money);
+
+            var ok = (await _database.SaveChangesAsync()) > 0;
+            if (ok)
+                _inventoryManager.Gold += money.ReturnMoney;
+
+            return ok;
         }
 
         public IList<DbMarket> LastSearchResults { get; private set; } = new List<DbMarket>();
@@ -403,6 +433,8 @@ namespace Imgeneus.Game.Market
                 CharacterId = market.CharacterId,
                 MarketId = market.Id,
                 Success = true,
+                Money = market.DirectMoney,
+                ReturnMoney = market.DirectMoney,
                 EndDate = DateTime.UtcNow.AddDays(14)
             };
             _database.MarketMoneys.Add(money);

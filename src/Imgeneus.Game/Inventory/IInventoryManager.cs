@@ -129,7 +129,7 @@ namespace Imgeneus.World.Game.Inventory
         /// Adds item to player's inventory.
         /// </summary>
         /// <param name="item">ite, that we want to add</param>
-        Item AddItem(Item item);
+        Item AddItem(Item item, bool silent = false);
 
         event Action<Item, bool> OnRemoveItem;
 

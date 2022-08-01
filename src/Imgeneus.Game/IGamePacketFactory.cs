@@ -408,6 +408,7 @@ namespace Imgeneus.World.Packets
         void SendMarketSearchSection(IWorldClient client, byte prevCursor, byte nextCursor, IList<DbMarket> results);
         void SendMarketDirectBuy(IWorldClient client, MarketBuyItemResult ok, uint gold, DbMarketCharacterResultItems item);
         void SendMarketEndMoney(IWorldClient client, IList<DbMarketCharacterResultMoney> items);
+        void SendMarketGetMoney(IWorldClient client, bool ok, uint marketId, uint gold);
         #endregion
 
         #region GM

@@ -65,10 +65,17 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.MARKET_GET_ITEM)]
-        public async Task GetItemHandle(WorldClient client, MarketGetItemPacket packet)
+        public async Task GetItemHandle(WorldClient client, MarketGetPacket packet)
         {
-            var result = await _marketManager.TryGetItem(packet.MarketId);
-            _packetFactory.SendMarketGetItem(client, result.Ok, packet.MarketId, result.Item);
+            var result = await _marketManager.TryGetItem(packet.Id);
+            _packetFactory.SendMarketGetItem(client, result.Ok, packet.Id, result.Item);
+        }
+
+        [HandlerAction(PacketType.MARKET_GET_MONEY)]
+        public async Task GetMoneyHandle(WorldClient client, MarketGetPacket packet)
+        {
+            var ok = await _marketManager.TryGetMoney(packet.Id);
+            _packetFactory.SendMarketGetMoney(client, ok, packet.Id, _inventoryManager.Gold);
         }
 
         [HandlerAction(PacketType.MARKET_SEARCH_FIRST)]

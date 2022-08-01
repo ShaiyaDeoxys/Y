@@ -2809,6 +2809,19 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMarketGetMoney(IWorldClient client, bool ok, uint moneyId, uint gold)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_MONEY);
+            packet.Write(ok ? (byte)0 : (byte)1);
+
+            if (ok)
+            {
+                packet.Write(moneyId);
+                packet.Write(gold);
+            }
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

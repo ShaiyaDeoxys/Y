@@ -57,6 +57,13 @@ namespace Imgeneus.Game.Market
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="marketId"></param>
+        /// <returns></returns>
+        Task<bool> TryGetMoney(uint moneyId);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="searchCountry"></param>
         /// <param name="minLevel"></param>
         /// <param name="maxLevel"></param>

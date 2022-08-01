@@ -749,7 +749,7 @@ namespace Imgeneus.World.Game.Inventory
             }
         }
 
-        public Item AddItem(Item item)
+        public Item AddItem(Item item, bool silent = false)
         {
             // Find free space.
             var free = FindFreeSlotInInventory();
@@ -772,7 +772,9 @@ namespace Imgeneus.World.Game.Inventory
 
             _logger.LogDebug("Character {characterId} got item {type} {typeId}", _ownerId, item.Type, item.TypeId);
 
-            OnAddItem?.Invoke(item);
+            if (!silent)
+                OnAddItem?.Invoke(item);
+
             return item;
         }
 
