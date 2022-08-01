@@ -50,6 +50,8 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbMarketCharacterResultMoney> MarketMoneys { get; set; }
 
+        public DbSet<DbMarketCharacterFavorite> MarketFavorites { get; set; }
+
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }

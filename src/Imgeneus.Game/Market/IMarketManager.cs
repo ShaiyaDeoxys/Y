@@ -17,71 +17,53 @@ namespace Imgeneus.Game.Market
         Task<IList<DbMarket>> GetSellItems();
 
         /// <summary>
-        /// 
+        /// Registers item from inventory for sale.
         /// </summary>
-        /// <param name="bag"></param>
-        /// <param name="slot"></param>
-        /// <param name="count"></param>
-        /// <param name="marketType"></param>
-        /// <param name="minMoney"></param>
-        /// <param name="directMoney"></param>
-        /// <returns></returns>
+        /// <param name="bag">bag in inventory</param>
+        /// <param name="slot">slot in inventory</param>
+        /// <param name="count">number of items</param>
+        /// <param name="marketType">for how long item will be on market</param>
+        /// <param name="minMoney">start price</param>
+        /// <param name="directMoney">price when item can be bought directly, without bid</param>
         Task<(bool Ok, DbMarket MarketItem, Item Item)> TryRegisterItem(byte bag, byte slot, byte count, MarketType marketType, uint minMoney, uint directMoney);
         
         /// <summary>
-        /// 
+        /// Unregisters item from market.
         /// </summary>
-        /// <param name="marketId"></param>
-        /// <returns></returns>
         Task<(bool Ok, DbMarketCharacterResultItems Result)> TryUnregisterItem(uint marketId);
 
         /// <summary>
-        /// 
+        /// List of bought or unsold items.
         /// </summary>
-        /// <returns></returns>
         Task<IList<DbMarketCharacterResultItems>> GetEndItems();
 
         /// <summary>
-        /// 
+        /// List of gold for sold item.s
         /// </summary>
-        /// <returns></returns>
         Task<IList<DbMarketCharacterResultMoney>> GetEndMoney();
 
         /// <summary>
-        /// 
+        /// Gets item from market into inventory.
         /// </summary>
-        /// <param name="marketId"></param>
-        /// <returns></returns>
         Task<(bool Ok, Item Item)> TryGetItem(uint marketId);
 
         /// <summary>
-        /// 
+        /// Gets gold from market into inventory.
         /// </summary>
-        /// <param name="marketId"></param>
-        /// <returns></returns>
         Task<bool> TryGetMoney(uint moneyId);
 
         /// <summary>
-        /// 
+        /// Search items.
         /// </summary>
-        /// <param name="searchCountry"></param>
-        /// <param name="minLevel"></param>
-        /// <param name="maxLevel"></param>
-        /// <param name="grade"></param>
-        /// <param name="marketItemType"></param>
-        /// <returns></returns>
         Task<IList<DbMarket>> Search(MarketSearchCountry searchCountry, byte minLevel, byte maxLevel, byte grade, MarketItemType marketItemType);
 
         /// <summary>
-        /// 
+        /// Search same items by it's type and id.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="typeId"></param>
-        /// <returns></returns>
         Task<IList<DbMarket>> Search(byte type, byte typeId);
 
         /// <summary>
-        /// 
+        /// Last saved search result.
         /// </summary>
         IList<DbMarket> LastSearchResults { get; }
 
@@ -91,10 +73,23 @@ namespace Imgeneus.Game.Market
         byte PageIndex { get; set; }
 
         /// <summary>
-        /// 
+        /// Buy item for it's direct price.
         /// </summary>
-        /// <param name="marketId"></param>
-        /// <returns></returns>
         Task<(MarketBuyItemResult Ok, DbMarketCharacterResultItems Item)> TryDirectBuy(uint marketId);
+        
+        /// <summary>
+        /// Add item to favorites.
+        /// </summary>
+        Task<(MarketAddFavoriteResult Ok, DbMarket Item)> AddFavorite(uint marketId);
+
+        /// <summary>
+        /// List of favorite items.
+        /// </summary>
+        Task<IList<DbMarketCharacterFavorite>> GetFavorites();
+
+        /// <summary>
+        /// Remove item from favorites.
+        /// </summary>
+        Task<bool> RemoveFavorite(uint marketId);
     }
 }

@@ -92,7 +92,7 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendMarketSearchSection(client, 0, results.Count > 7 ? (byte)1 : (byte)0, results.Take(7).ToList());
         }
 
-            [HandlerAction(PacketType.MARKET_SEARCH_SECTION)]
+        [HandlerAction(PacketType.MARKET_SEARCH_SECTION)]
         public void SearchSectionHandle(WorldClient client, MarketSearchSectionPacket packet)
         {
             if (packet.Action == MarketSearchAction.MoveNext)
@@ -114,6 +114,33 @@ namespace Imgeneus.World.Handlers
                                                result.Ok,
                                                _inventoryManager.Gold,
                                                result.Item);
+        }
+
+        [HandlerAction(PacketType.MARKET_ADD_CONCERT_MARKET)]
+        public async Task AddFavoriteHandle(WorldClient client, MarketAddFavoritePacket packet)
+        {
+            var result = await _marketManager.AddFavorite(packet.MarketId);
+            _packetFactory.SendMarketAddFavorite(client, result.Ok, result.Item);
+        }
+
+        [HandlerAction(PacketType.MARKET_GET_CONCERN_LIST)]
+        public async Task GetFavoriteListHandle(WorldClient client, EmptyPacket packet)
+        {
+            var results = await _marketManager.GetFavorites();
+            _packetFactory.SendMarketFavorites(client, results);
+        }
+
+        [HandlerAction(PacketType.MARKET_REMOVE_CONCERT_MARKET)]
+        public async Task RemoveFavoriteHandle(WorldClient client, MarketAddFavoritePacket packet)
+        {
+            var ok = await _marketManager.RemoveFavorite(packet.MarketId);
+            _packetFactory.SendMarketRemoveFavorite(client, ok, packet.MarketId);
+        }
+
+        [HandlerAction(PacketType.MARKET_TENDER)]
+        public async Task BidHandle(WorldClient client, MarketTenderPacket packet)
+        {
+            // TODO: handle bid logic.
         }
     }
 }

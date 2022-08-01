@@ -465,5 +465,58 @@ namespace Imgeneus.Game.Market
 
             return (MarketBuyItemResult.Ok, result);
         }
+
+        public async Task<(MarketAddFavoriteResult Ok, DbMarket Item)> AddFavorite(uint marketId)
+        {
+            var market = await _database.Market
+                                        .Include(x => x.MarketItem)
+                                        .FirstOrDefaultAsync(x => x.Id == marketId && !x.IsDeleted);
+            if (market == null)
+                return (MarketAddFavoriteResult.Sold, null);
+
+            var favorites = await _database.MarketFavorites.Where(x => x.CharacterId == _ownerId).ToListAsync();
+            if (favorites.Count >= 5)
+                return (MarketAddFavoriteResult.CanNotAdd, null);
+
+            if (favorites.Any(x => x.MarketId == marketId))
+                return (MarketAddFavoriteResult.AlreadyAdded, null);
+
+            var favorite = new DbMarketCharacterFavorite()
+            {
+                MarketId = marketId,
+                CharacterId = _ownerId
+            };
+
+            _database.MarketFavorites.Add(favorite);
+
+            await _semaphore.WaitAsync();
+
+            var ok = (await _database.SaveChangesAsync()) > 0;
+
+            _semaphore.Release();
+
+            return (MarketAddFavoriteResult.Ok, market);
+        }
+
+        public async Task<IList<DbMarketCharacterFavorite>> GetFavorites()
+        {
+            var favorites = await _database.MarketFavorites
+                                           .Include(x => x.Market)
+                                           .ThenInclude(x => x.MarketItem)
+                                           .Where(x => x.CharacterId == _ownerId && !x.Market.IsDeleted)
+                                           .ToListAsync();
+            return favorites;
+        }
+
+        public async Task<bool> RemoveFavorite(uint marketId)
+        {
+            var favorite = await _database.MarketFavorites.FirstOrDefaultAsync(x => x.MarketId == marketId && x.CharacterId == _ownerId);
+            if (favorite is null)
+                return false;
+
+            _database.MarketFavorites.Remove(favorite);
+
+            return (await _database.SaveChangesAsync()) > 0;
+        }
     }
 }

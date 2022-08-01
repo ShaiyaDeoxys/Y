@@ -409,6 +409,9 @@ namespace Imgeneus.World.Packets
         void SendMarketDirectBuy(IWorldClient client, MarketBuyItemResult ok, uint gold, DbMarketCharacterResultItems item);
         void SendMarketEndMoney(IWorldClient client, IList<DbMarketCharacterResultMoney> items);
         void SendMarketGetMoney(IWorldClient client, bool ok, uint marketId, uint gold);
+        void SendMarketAddFavorite(IWorldClient client, MarketAddFavoriteResult ok, DbMarket item);
+        void SendMarketFavorites(IWorldClient client, IList<DbMarketCharacterFavorite> results);
+        void SendMarketRemoveFavorite(IWorldClient client, bool ok, uint marketId);
         #endregion
 
         #region GM

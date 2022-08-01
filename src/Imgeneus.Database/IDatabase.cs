@@ -120,6 +120,11 @@ namespace Imgeneus.Database
         public DbSet<DbMarketCharacterResultMoney> MarketMoneys { get; set; }
 
         /// <summary>
+        /// Market concert items.
+        /// </summary>
+        public DbSet<DbMarketCharacterFavorite> MarketFavorites { get; set; }
+
+        /// <summary>
         /// Saves changes to database.
         /// </summary>
         public int SaveChanges();

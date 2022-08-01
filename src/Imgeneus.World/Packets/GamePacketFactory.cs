@@ -2822,6 +2822,34 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMarketAddFavorite(IWorldClient client, MarketAddFavoriteResult ok, DbMarket item)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_ADD_CONCERT_MARKET);
+            packet.Write((byte)ok);
+            if (ok == MarketAddFavoriteResult.Ok)
+            {
+                packet.Write(new MarketItem(item).Serialize());
+            }
+            client.Send(packet);
+        }
+
+        public void SendMarketFavorites(IWorldClient client, IList<DbMarketCharacterFavorite> results)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_CONCERN_LIST);
+            packet.Write((byte)results.Count);
+            foreach (var item in results)
+                packet.Write(new MarketItem(item.Market).Serialize());
+            client.Send(packet);
+        }
+
+        public void SendMarketRemoveFavorite(IWorldClient client, bool ok, uint marketId)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_REMOVE_CONCERT_MARKET);
+            packet.Write(marketId);
+            packet.Write(ok ? (byte)0 : (byte)1);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM
