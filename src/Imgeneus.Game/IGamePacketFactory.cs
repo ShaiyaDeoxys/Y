@@ -412,6 +412,7 @@ namespace Imgeneus.World.Packets
         void SendMarketAddFavorite(IWorldClient client, MarketAddFavoriteResult ok, DbMarket item);
         void SendMarketFavorites(IWorldClient client, IList<DbMarketCharacterFavorite> results);
         void SendMarketRemoveFavorite(IWorldClient client, bool ok, uint marketId);
+        void SendMarketRemoveAllFavorite(IWorldClient client, bool ok);
         #endregion
 
         #region GM

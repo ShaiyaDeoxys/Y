@@ -518,5 +518,12 @@ namespace Imgeneus.Game.Market
 
             return (await _database.SaveChangesAsync()) > 0;
         }
+
+        public async Task<bool> RemoveAllFavorite()
+        {
+            var favorites = await _database.MarketFavorites.Where(x => x.CharacterId == _ownerId).ToListAsync();
+            _database.MarketFavorites.RemoveRange(favorites);
+            return (await _database.SaveChangesAsync()) > 0;
+        }
     }
 }

@@ -2850,6 +2850,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendMarketRemoveAllFavorite(IWorldClient client, bool ok)
+        {
+            using var packet = new ImgeneusPacket(PacketType.MARKET_CONCERT_REMOVE_ALL);
+            packet.Write(ok);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region GM

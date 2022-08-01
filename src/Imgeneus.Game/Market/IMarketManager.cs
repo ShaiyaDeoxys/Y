@@ -91,5 +91,10 @@ namespace Imgeneus.Game.Market
         /// Remove item from favorites.
         /// </summary>
         Task<bool> RemoveFavorite(uint marketId);
+
+        /// <summary>
+        /// Removes all favorite items.
+        /// </summary>
+        Task<bool> RemoveAllFavorite();
     }
 }

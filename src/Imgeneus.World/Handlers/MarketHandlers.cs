@@ -137,6 +137,13 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendMarketRemoveFavorite(client, ok, packet.MarketId);
         }
 
+        [HandlerAction(PacketType.MARKET_CONCERT_REMOVE_ALL)]
+        public async Task RemoveAllFavoriteHandle(WorldClient client, EmptyPacket packet)
+        {
+            var ok = await _marketManager.RemoveAllFavorite();
+            _packetFactory.SendMarketRemoveAllFavorite(client, ok);
+        }
+
         [HandlerAction(PacketType.MARKET_TENDER)]
         public async Task BidHandle(WorldClient client, MarketTenderPacket packet)
         {
