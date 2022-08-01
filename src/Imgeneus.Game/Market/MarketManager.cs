@@ -66,7 +66,7 @@ namespace Imgeneus.Game.Market
             if (_inventoryManager.Gold < marketFee)
                 return (false, null, null);
 
-            if (_database.Market.Where(x => x.CharacterId == _ownerId && !x.IsDeleted).Count() >= 10)
+            if (_database.Market.Where(x => x.CharacterId == _ownerId && !x.IsDeleted).Count() >= 5)
                 return (false, null, null);
 
             if (item.Count < count)
@@ -393,6 +393,26 @@ namespace Imgeneus.Game.Market
 
                 if (shouldAdd)
                     resultItems.Add(item);
+            }
+
+            resultItems = resultItems.OrderByDescending(x => x.EndDate).ToList();
+            LastSearchResults = resultItems;
+            PageIndex = 0;
+
+            return resultItems;
+        }
+
+        public async Task<IList<DbMarket>> Search(byte type, byte typeId)
+        {
+            var items = await _database.MarketItems
+                                      .Include(x => x.Market)
+                                      .Where(x => x.Type == type && x.TypeId == typeId && !x.Market.IsDeleted)
+                                      .ToListAsync();
+            var resultItems = new List<DbMarket>();
+            foreach (var item in items)
+            {
+                item.Market.MarketItem = item;
+                resultItems.Add(item.Market);
             }
 
             resultItems = resultItems.OrderByDescending(x => x.EndDate).ToList();

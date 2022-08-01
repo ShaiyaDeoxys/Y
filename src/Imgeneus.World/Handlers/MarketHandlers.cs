@@ -85,7 +85,14 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendMarketSearchSection(client, 0, results.Count > 7 ? (byte)1 : (byte)0, results.Take(7).ToList());
         }
 
-        [HandlerAction(PacketType.MARKET_SEARCH_SECTION)]
+        [HandlerAction(PacketType.MARKET_SEARCH_FIRST_ITEM_ID)]
+        public async Task SearchItemIdHandle(WorldClient client, MarketSearchFirstItemIdPacket packet)
+        {
+            var results = await _marketManager.Search(packet.Type, packet.TypeId);
+            _packetFactory.SendMarketSearchSection(client, 0, results.Count > 7 ? (byte)1 : (byte)0, results.Take(7).ToList());
+        }
+
+            [HandlerAction(PacketType.MARKET_SEARCH_SECTION)]
         public void SearchSectionHandle(WorldClient client, MarketSearchSectionPacket packet)
         {
             if (packet.Action == MarketSearchAction.MoveNext)

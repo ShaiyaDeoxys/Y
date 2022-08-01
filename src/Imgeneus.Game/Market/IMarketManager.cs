@@ -75,6 +75,14 @@ namespace Imgeneus.Game.Market
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeId"></param>
+        /// <returns></returns>
+        Task<IList<DbMarket>> Search(byte type, byte typeId);
+
+        /// <summary>
+        /// 
+        /// </summary>
         IList<DbMarket> LastSearchResults { get; }
 
         /// <summary>
@@ -82,6 +90,11 @@ namespace Imgeneus.Game.Market
         /// </summary>
         byte PageIndex { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="marketId"></param>
+        /// <returns></returns>
         Task<(MarketBuyItemResult Ok, DbMarketCharacterResultItems Item)> TryDirectBuy(uint marketId);
     }
 }
