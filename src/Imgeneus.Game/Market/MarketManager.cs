@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Imgeneus.Game.Market
 {
@@ -50,6 +51,25 @@ namespace Imgeneus.Game.Market
         public void Init(uint ownerId)
         {
             _ownerId = ownerId;
+
+            var expiredMarkets = _database.Market.Where(x => x.CharacterId == _ownerId && x.EndDate < DateTime.UtcNow).ToList();
+            foreach (var market in expiredMarkets)
+            {
+                market.IsDeleted = true;
+
+                var result = new DbMarketCharacterResultItems()
+                {
+                    CharacterId = _ownerId,
+                    MarketId = market.Id,
+                    Market = market,
+                    Success = false,
+                    EndDate = DateTime.UtcNow.AddDays(14)
+                };
+
+                _database.MarketResults.Add(result);
+            }
+
+            _database.SaveChanges();
         }
 
         public async Task<IList<DbMarket>> GetSellItems()
@@ -66,7 +86,7 @@ namespace Imgeneus.Game.Market
             if (_inventoryManager.Gold < marketFee)
                 return (false, null, null);
 
-            if (_database.Market.Where(x => x.CharacterId == _ownerId && !x.IsDeleted).Count() >= 5)
+            if (_database.Market.Where(x => x.CharacterId == _ownerId && !x.IsDeleted && x.EndDate > DateTime.UtcNow).Count() >= 5)
                 return (false, null, null);
 
             if (item.Count < count)
@@ -164,7 +184,7 @@ namespace Imgeneus.Game.Market
             var results = await _database.MarketResults
                                   .Include(x => x.Market)
                                   .ThenInclude(x => x.MarketItem)
-                                  .Where(x => x.CharacterId == _ownerId)
+                                  .Where(x => x.CharacterId == _ownerId && x.EndDate > DateTime.UtcNow)
                                   .ToListAsync();
 
             _semaphore.Release();
@@ -179,7 +199,7 @@ namespace Imgeneus.Game.Market
             var results = await _database.MarketMoneys
                                   .Include(x => x.Market)
                                   .ThenInclude(x => x.MarketItem)
-                                  .Where(x => x.CharacterId == _ownerId)
+                                  .Where(x => x.CharacterId == _ownerId && x.EndDate > DateTime.UtcNow)
                                   .ToListAsync();
 
             _semaphore.Release();
@@ -230,7 +250,7 @@ namespace Imgeneus.Game.Market
         {
             var items = await _database.Market
                                        .Include(x => x.MarketItem)
-                                       .Where(x => !x.IsDeleted)
+                                       .Where(x => x.EndDate > DateTime.UtcNow && !x.IsDeleted)
                                        .ToListAsync();
 
             var resultItems = new List<DbMarket>();
