@@ -106,7 +106,7 @@ namespace Imgeneus.Login.Handlers
                 return AuthenticationResult.ACCOUNT_IN_DELETE_PROCESS_1;
             }
 
-            var result = _passwordHasher.VerifyHashedPassword(dbUser, _passwordHasher.HashPassword(dbUser, password), password);
+            var result = _passwordHasher.VerifyHashedPassword(dbUser, dbUser.PasswordHash, password);
             if (result == PasswordVerificationResult.Failed)
             {
                 return AuthenticationResult.INVALID_PASSWORD;
