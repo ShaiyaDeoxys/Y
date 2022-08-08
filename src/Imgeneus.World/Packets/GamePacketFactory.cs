@@ -2756,12 +2756,24 @@ namespace Imgeneus.World.Packets
 
         public void SendMarketEndItems(IWorldClient client, IList<DbMarketCharacterResultItems> items)
         {
-            using var packet = new ImgeneusPacket(PacketType.MARKET_GET_END_ITEM_LIST);
-            packet.WriteByte((byte)items.Count);
+            var steps = items.Count / 10;
+            var left = items.Count % 10;
 
-            foreach (var itm in items)
-                packet.Write(new MarketEndItem(itm).Serialize());
-            client.Send(packet);
+            for (var i = 0; i <= steps; i++)
+            {
+                var startIndex = i * 10;
+                var length = i == steps ? left : 10;
+                var endIndex = startIndex + length;
+
+                var part = items.Take(startIndex..endIndex);
+
+                using var packet = new ImgeneusPacket(PacketType.MARKET_GET_END_ITEM_LIST);
+                packet.WriteByte((byte)(length));
+                foreach (var x in part)
+                    packet.Write(new MarketEndItem(x).Serialize());
+                    
+                client.Send(packet);
+            }
         }
 
         public void SendMarketGetItem(IWorldClient client, bool ok, uint marketId, Item item)

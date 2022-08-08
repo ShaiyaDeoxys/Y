@@ -52,7 +52,7 @@ namespace Imgeneus.Game.Market
         {
             _ownerId = ownerId;
 
-            var expiredMarkets = _database.Market.Where(x => x.CharacterId == _ownerId && x.EndDate < DateTime.UtcNow).ToList();
+            var expiredMarkets = _database.Market.Where(x => x.CharacterId == _ownerId && x.EndDate < DateTime.UtcNow && !x.IsDeleted).ToList();
             foreach (var market in expiredMarkets)
             {
                 market.IsDeleted = true;
