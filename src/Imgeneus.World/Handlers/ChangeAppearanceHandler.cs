@@ -28,7 +28,7 @@ namespace Imgeneus.World.Handlers
             if (item is null || (item.Special != SpecialEffect.AppearanceChange && item.Special != SpecialEffect.SexChange))
                 return;
 
-            _inventoryManager.TryUseItem(packet.Bag, packet.Slot, skillApplyingItemEffect: true);
+            _inventoryManager.TryUseItem(packet.Bag, packet.Slot, skipApplyingItemEffect: true);
             _additionalInfoManager.ChangeAppearance(packet.Hair, packet.Face, packet.Size, packet.Sex);
         }
     }

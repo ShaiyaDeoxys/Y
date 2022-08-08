@@ -164,8 +164,9 @@ namespace Imgeneus.World.Game.Inventory
         /// <param name="bag">bag, where item is situated</param>
         /// <param name="slot">slot, where item is situated</param>
         /// <param name="targetId">id of another player</param>
-        /// <param name="skillApplyingItemEffect">some items like lucky cms and hammers do not have any effect but are still "usable"</param>
-        Task<bool> TryUseItem(byte bag, byte slot, uint? targetId = null, bool skillApplyingItemEffect = false);
+        /// <param name="skipApplyingItemEffect">some items like lucky cms and hammers do not have any effect but are still "usable"</param>
+        /// <param name="count">how many items are used at once</param>
+        Task<bool> TryUseItem(byte bag, byte slot, uint? targetId = null, bool skipApplyingItemEffect = false, byte count = 1);
 
         /// <summary>
         /// Checks if item can be used. E.g. cooldown is over, required level is right etc.

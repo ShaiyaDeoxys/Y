@@ -2701,8 +2701,8 @@ namespace Imgeneus.World.Packets
 
         public void SendCraftSuccess(IWorldClient client, bool ok)
         {
-            using var packet = new ImgeneusPacket(PacketType.CHAOTIC_SQUARE_CREATE);
-            packet.Write(ok);
+            using var packet = new ImgeneusPacket(PacketType.CHAOTIC_SQUARE_CREATE_2);
+            packet.Write(ok ? (byte)1: (byte)2);
             client.Send(packet);
         }
 

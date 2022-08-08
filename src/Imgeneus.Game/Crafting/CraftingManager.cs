@@ -1,7 +1,10 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.Database.Preload;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Linking;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Imgeneus.Game.Crafting
@@ -13,12 +16,18 @@ namespace Imgeneus.Game.Crafting
         private readonly ILogger<CraftingManager> _logger;
         private readonly IInventoryManager _inventoryManager;
         private readonly ICraftingConfiguration _craftingConfiguration;
+        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IItemEnchantConfiguration _enchantConfig;
+        private readonly IItemCreateConfiguration _itemCreateConfig;
 
-        public CraftingManager(ILogger<CraftingManager> logger, IInventoryManager inventoryManager, ICraftingConfiguration craftingConfiguration)
+        public CraftingManager(ILogger<CraftingManager> logger, IInventoryManager inventoryManager, ICraftingConfiguration craftingConfiguration, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
         {
             _logger = logger;
             _inventoryManager = inventoryManager;
             _craftingConfiguration = craftingConfiguration;
+            _databasePreloader = databasePreloader;
+            _enchantConfig = enchantConfig;
+            _itemCreateConfig = itemCreateConfig;
 #if DEBUG
             _logger.LogDebug("CraftingManager {hashcode} created", GetHashCode());
 #endif
@@ -53,9 +62,31 @@ namespace Imgeneus.Game.Crafting
                 hammer = null;
 
             var recipe = config.Recipes[index];
+            var useIngredients = new List<(Ingredient Ingredient, Item Item)>();
 
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                var useItem = _inventoryManager.InventoryItems.Values.FirstOrDefault(x => x.Type == ingredient.Type && x.TypeId == ingredient.TypeId && x.Count >= ingredient.Count);
+                if (useItem is null)
+                    return false;
+
+                useIngredients.Add((ingredient, useItem));
+            }
+
+            foreach (var x in useIngredients)
+                _inventoryManager.TryUseItem(x.Item.Bag, x.Item.Slot, skipApplyingItemEffect: true, count: x.Ingredient.Count);
+
+            if (hammer is not null)
+                _inventoryManager.TryUseItem(hammer.Bag, hammer.Slot, skipApplyingItemEffect: true);
+
+            _inventoryManager.TryUseItem(craftSquare.Bag, craftSquare.Slot, skipApplyingItemEffect: true);
+            
             var rate = Math.Round(recipe.Rate + (hammer is not null ? hammer.LinkingRate : 0));
             var success = rate >= _random.Next(1, 100);
+
+            if (success)
+                _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, recipe.Type, recipe.TypeId, recipe.Count));
+
             return success;
         }
     }

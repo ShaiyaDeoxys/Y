@@ -64,7 +64,7 @@ namespace Imgeneus.World.Handlers
                 var rune = _inventoryManager.InventoryItems.Values.FirstOrDefault(x => x.Special == SpecialEffect.ResurrectionRune);
                 if (rune != null)
                 {
-                    _inventoryManager.TryUseItem(rune.Bag, rune.Slot, skillApplyingItemEffect: true);
+                    _inventoryManager.TryUseItem(rune.Bag, rune.Slot, skipApplyingItemEffect: true);
 
                     rebirthCoordinate.MapId = _mapProvider.Map.Id;
                     rebirthCoordinate.X = _movementManager.PosX;

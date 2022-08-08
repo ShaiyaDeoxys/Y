@@ -1037,12 +1037,18 @@ namespace Imgeneus.World.Game.Inventory
 
         public event Action<uint, Item> OnUsedItem;
 
-        public async Task<bool> TryUseItem(byte bag, byte slot, uint? targetId = null, bool skillApplyingItemEffect = false)
+        public async Task<bool> TryUseItem(byte bag, byte slot, uint? targetId = null, bool skillApplyingItemEffect = false, byte count = 1)
         {
             InventoryItems.TryGetValue((bag, slot), out var item);
             if (item is null)
             {
                 _logger.LogWarning("Character {id} is trying to use item, that does not exist. Possible hack?", _ownerId);
+                return false;
+            }
+
+            if (item.Count < count)
+            {
+                _logger.LogWarning("Character {id} is trying to use more items then presented in inventory.", _ownerId);
                 return false;
             }
 
@@ -1067,7 +1073,7 @@ namespace Imgeneus.World.Game.Inventory
 
             if (ok)
             {
-                item.Count--;
+                item.Count -= count;
                 _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
 
                 OnUsedItem?.Invoke(_ownerId, item);
