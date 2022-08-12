@@ -280,6 +280,28 @@ namespace Imgeneus.World.Tests.EnchantmentTests
         }
 
         [Fact]
+        [Description("Enchantment of weapon should not add absorption.")]
+        public void EnchantmentWeaponDoNotInfluenceAbsorption()
+        {
+            var character = CreateCharacter();
+
+            var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl1.Type, PerfectWeaponLapisia_Lvl1.TypeId);
+            character.InventoryManager.AddItem(lapisia);
+
+            var weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
+            character.InventoryManager.AddItem(weapon);
+
+            character.InventoryManager.Gold = character.LinkingManager.GetEnchantmentGold(weapon);
+            
+            character.LinkingManager.TryEnchant(weapon.Bag, weapon.Slot, lapisia.Bag, lapisia.Slot);
+
+            Assert.Equal(1, weapon.EnchantmentLevel);
+
+            character.InventoryManager.MoveItem(weapon.Bag, weapon.Slot, 0, 5);
+            Assert.Equal(0, character.Absorption);
+        }
+
+        [Fact]
         [Description("Enchantment fails if item is armor and lapisia is for weapon.")]
         public void EnchantmentCheckItemAndLapisiaType2()
         {

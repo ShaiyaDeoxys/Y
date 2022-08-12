@@ -635,13 +635,14 @@ namespace Imgeneus.World.Game.Inventory
             _healthManager.ExtraMP += item.MP;
             _statsManager.ExtraDefense += item.Defense;
             _statsManager.ExtraResistance += item.Resistance;
-            _statsManager.Absorption += item.Absorb;
 
             if (item == Weapon)
             {
                 _statsManager.WeaponMinAttack += item.MinAttack;
                 _statsManager.WeaponMaxAttack += item.MaxAttack;
             }
+            else
+                _statsManager.Absorption += item.Absorb;
 
             if (item != Weapon && item != Mount)
                 _speedManager.ExtraAttackSpeed += item.AttackSpeed;
