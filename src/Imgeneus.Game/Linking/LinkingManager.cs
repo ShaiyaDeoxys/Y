@@ -882,7 +882,7 @@ namespace Imgeneus.World.Game.Linking
 
         #region Enchantment
 
-        public int GetEnchantmentRate(Item item, Item lapisia)
+        public int GetEnchantmentRate(Item item, Item lapisia, Item rateBooster)
         {
             int rate = 0;
 
@@ -900,6 +900,9 @@ namespace Imgeneus.World.Game.Linking
                 if (item.IsArmor)
                 _itemEnchantConfig.LapisianEnchantPercentRate.TryGetValue($"DefenseStep{suffix}", out rate);
 
+            if (rateBooster is not null)
+                rate += rateBooster.LinkingRate * 100;
+
             return rate;
         }
 
@@ -908,40 +911,54 @@ namespace Imgeneus.World.Game.Linking
             return (uint)(item.IsArmor ? 1040000 : 2500000);
         }
 
-        public (bool Success, Item Item, Item Lapisia) TryEnchant(byte bag, byte slot, byte lapisiaBag, byte lapisiaSlot)
+        public (bool Success, Item Item, Item Lapisia, bool SafetyScrollLeft) TryEnchant(byte bag, byte slot, byte lapisiaBag, byte lapisiaSlot)
         {
             _inventoryManager.InventoryItems.TryGetValue((lapisiaBag, lapisiaSlot), out var lapisia);
             if (lapisia is null || lapisia.Special != SpecialEffect.Lapisia)
-                return (false, null, null);
+                return (false, null, null, false);
 
             _inventoryManager.InventoryItems.TryGetValue((bag, slot), out var item);
             if (item is null || item.EnchantmentLevel == 20)
-                return (false, null, null);
+                return (false, null, null, false);
 
             if ((item.IsWeapon && !lapisia.IsWeaponLapisia) || (item.IsArmor && !lapisia.IsArmorLapisia) || (item.IsShield && !lapisia.IsWeaponLapisia))
-                return (false, null, null);
+                return (false, null, null, false);
 
             if (item.EnchantmentLevel < lapisia.MinEnchantLevel || item.EnchantmentLevel >= lapisia.MaxEnchantLevel && lapisia.MinEnchantLevel != lapisia.MaxEnchantLevel)
-                return (false, null, null);
+                return (false, null, null, false);
 
             var neededGold = GetEnchantmentGold(item);
             if (_inventoryManager.Gold < neededGold)
-                return (false, null, null);
+                return (false, null, null, false);
 
             _inventoryManager.Gold -= neededGold;
 
-            var ok = Enchant(item, lapisia);
+            var usedSafetyScroll = false;
+            var safetyScroll = _inventoryManager.InventoryItems.Values.FirstOrDefault(x => x.Special == SpecialEffect.SafetyEnchant);
+            if (safetyScroll is not null)
+            {
+                _inventoryManager.TryUseItem(safetyScroll.Bag, safetyScroll.Slot, skipApplyingItemEffect: true);
+                usedSafetyScroll = true;
+            }
+
+            var rateBooster = _inventoryManager.InventoryItems.Values.FirstOrDefault(x => x.Special == SpecialEffect.EnchantEnhancer);
+            if (rateBooster is not null)
+                _inventoryManager.TryUseItem(rateBooster.Bag, rateBooster.Slot, skipApplyingItemEffect: true);
+
+            var ok = Enchant(item, lapisia, rateBooster);
             var oldLevel = item.EnchantmentLevel;
 
             var itemDestroyed = false;
             if (ok)
                 item.EnchantmentLevel++;
-            else
+            else if (!usedSafetyScroll)
+            {
                 if (lapisia.CanBreakItem)
-                itemDestroyed = true;
-            else
+                    itemDestroyed = true;
+                else
                 if (item.EnchantmentLevel != 0)
-                item.EnchantmentLevel--;
+                    item.EnchantmentLevel--;
+            }
 
             if (item.Bag == 0)
             {
@@ -1002,12 +1019,12 @@ namespace Imgeneus.World.Game.Linking
                 }
             }
 
-            return (ok, item, lapisia);
+            return (ok, item, lapisia, safetyScroll is null ? false : safetyScroll.Count > 0);
         }
 
-        private bool Enchant(Item item, Item lapisia)
+        private bool Enchant(Item item, Item lapisia, Item rateBooster)
         {
-            double rate = GetEnchantmentRate(item, lapisia) / 10000;
+            double rate = GetEnchantmentRate(item, lapisia, rateBooster) / 10000;
             var rand = _random.Next(1, 101);
             var success = rate >= rand;
 

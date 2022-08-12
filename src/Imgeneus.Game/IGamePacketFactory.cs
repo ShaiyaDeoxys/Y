@@ -158,7 +158,7 @@ namespace Imgeneus.World.Packets
         #region Enchantment
 
         void SendEnchantRate(IWorldClient client, IEnumerable<byte> lapisiaBag, IEnumerable<byte> lapisiaSlot, IEnumerable<int> rate, uint gold);
-        void SendEnchantAdd(IWorldClient client, bool success, Item lapisia, Item item, uint gold);
+        void SendEnchantAdd(IWorldClient client, bool success, Item lapisia, Item item, uint gold, bool autoEnchant, bool safetyScrollLeft);
 
         #endregion
 

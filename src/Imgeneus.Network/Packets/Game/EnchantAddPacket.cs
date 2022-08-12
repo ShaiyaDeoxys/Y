@@ -10,7 +10,9 @@ namespace Imgeneus.Network.Packets.Game
         public byte ItemBag { get; private set; }
         public byte ItemSlot { get; private set; }
 
-        public byte[] Unknown { get; private set; } = new byte[10];
+        public byte[] Unknown { get; private set; } = new byte[9];
+
+        public bool IsAutoEnchant { get; private set; }
 
         public void Deserialize(ImgeneusPacket packetStream)
         {
@@ -20,8 +22,10 @@ namespace Imgeneus.Network.Packets.Game
             ItemBag = packetStream.ReadByte();
             ItemSlot = packetStream.ReadByte();
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 9; i++)
                 Unknown[i] = packetStream.ReadByte();
+
+            IsAutoEnchant = packetStream.ReadBoolean();
         }
     }
 }

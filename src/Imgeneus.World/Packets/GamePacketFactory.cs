@@ -1080,18 +1080,19 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendEnchantAdd(IWorldClient client, bool success, Item lapisia, Item item, uint gold)
+        public void SendEnchantAdd(IWorldClient client, bool success, Item lapisia, Item item, uint gold, bool autoEnchant, bool safetyScrollLeft)
         {
             using var packet = new ImgeneusPacket(PacketType.ENCHANT_ADD);
 
             packet.Write(success);
             packet.WriteByte(lapisia is null ? (byte)0 : lapisia.Bag);
             packet.WriteByte(lapisia is null ? (byte)0 : lapisia.Slot);
-            packet.WriteByte(lapisia is null ? (byte)0 : (byte)lapisia.Count);
+            packet.WriteByte(lapisia is null ? (byte)0 : lapisia.Count);
             packet.WriteByte(lapisia is null ? (byte)0 : item.Bag);
             packet.WriteByte(lapisia is null ? (byte)0 : item.Slot);
             packet.Write(gold);
-            packet.Write((ushort)0);
+            packet.Write(autoEnchant);
+            packet.WriteByte(safetyScrollLeft ? (byte)0: (byte)1); // 0 still has safety scroll
 
             var craftName = new CraftName(item is null ? Item.DEFAULT_CRAFT_NAME : item.GetCraftName()).Serialize();
             packet.Write(craftName);

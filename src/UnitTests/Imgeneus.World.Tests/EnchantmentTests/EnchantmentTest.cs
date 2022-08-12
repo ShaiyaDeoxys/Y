@@ -16,7 +16,7 @@ namespace Imgeneus.World.Tests.EnchantmentTests
             item.EnchantmentLevel = 20;
             var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
 
-            Assert.Equal(0, character.LinkingManager.GetEnchantmentRate(item, lapisia));
+            Assert.Equal(0, character.LinkingManager.GetEnchantmentRate(item, lapisia, null));
         }
 
         [Fact]
@@ -33,8 +33,8 @@ namespace Imgeneus.World.Tests.EnchantmentTests
 
             var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, AssaultLapisia.Type, AssaultLapisia.TypeId);
 
-            Assert.Equal(200, character.LinkingManager.GetEnchantmentRate(armor, lapisia));
-            Assert.Equal(200, character.LinkingManager.GetEnchantmentRate(weapon, lapisia));
+            Assert.Equal(200, character.LinkingManager.GetEnchantmentRate(armor, lapisia, null));
+            Assert.Equal(200, character.LinkingManager.GetEnchantmentRate(weapon, lapisia, null));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Imgeneus.World.Tests.EnchantmentTests
             weapon.EnchantmentLevel = 19;
 
             var lapisia = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectWeaponLapisia_Lvl2.Type, PerfectWeaponLapisia_Lvl2.TypeId);
-            Assert.Equal(lapisia.EnchantRate * 100, character.LinkingManager.GetEnchantmentRate(weapon, lapisia));
+            Assert.Equal(lapisia.EnchantRate * 100, character.LinkingManager.GetEnchantmentRate(weapon, lapisia, null));
         }
 
         [Fact]

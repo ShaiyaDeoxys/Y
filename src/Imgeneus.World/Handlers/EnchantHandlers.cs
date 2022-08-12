@@ -1,10 +1,12 @@
-﻿using Imgeneus.Network.Packets;
+﻿using Imgeneus.Database.Constants;
+using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
+using System.Linq;
 
 namespace Imgeneus.World.Handlers
 {
@@ -27,6 +29,8 @@ namespace Imgeneus.World.Handlers
             if (item is null)
                 return;
 
+            var rateBooster = _inventoryManager.InventoryItems.Values.FirstOrDefault(x => x.Special == SpecialEffect.EnchantEnhancer);
+
             var rates = new int[10];
             for (var i = 0; i < 10; i++)
             {
@@ -34,7 +38,7 @@ namespace Imgeneus.World.Handlers
                 if (lapisia is null)
                     continue;
 
-                rates[i] = _linkingManager.GetEnchantmentRate(item, lapisia);
+                rates[i] = _linkingManager.GetEnchantmentRate(item, lapisia, rateBooster);
             }
 
             var gold = _linkingManager.GetEnchantmentGold(item);
@@ -46,7 +50,7 @@ namespace Imgeneus.World.Handlers
         public void HandleEnchantAdd(WorldClient client, EnchantAddPacket packet)
         {
             var result = _linkingManager.TryEnchant(packet.ItemBag, packet.ItemSlot, packet.LapisiaBag, packet.LapisiaSlot);
-            _packetFactory.SendEnchantAdd(client, result.Success, result.Lapisia, result.Item, _inventoryManager.Gold);
+            _packetFactory.SendEnchantAdd(client, result.Success, result.Lapisia, result.Item, _inventoryManager.Gold, packet.IsAutoEnchant, result.SafetyScrollLeft);
         }
     }
 }
