@@ -31,13 +31,13 @@ namespace Imgeneus.Network.Serialization
         public CraftName CraftName { get; }
 
         [FieldOrder(8)]
-        public byte[] UnknownBytes { get; }
+        public byte[] UnknownBytes { get; } = new byte[23];
 
         [FieldOrder(9)]
         public bool IsItemDyed { get; }
 
         [FieldOrder(10)]
-        public byte[] UnknownBytes2 { get; }
+        public byte[] UnknownBytes2 { get; } = new byte[26];
 
         public InventoryItem(Item item)
         {
@@ -59,7 +59,6 @@ namespace Imgeneus.Network.Serialization
             CraftName = new CraftName(item.GetCraftName());
 
             // Unknown bytes. Not sure what is it, but if all set to 1 AND CraftName IsDisabled to "true" from and until date is shown.
-            UnknownBytes = new byte[23];
             for (var i = 0; i < UnknownBytes.Length; i++)
             {
                 UnknownBytes[i] = 1;
@@ -68,7 +67,6 @@ namespace Imgeneus.Network.Serialization
             IsItemDyed = item.DyeColor.IsEnabled;
 
             // Unknown bytes. Not sure what is it, but if all set to 1 from and until date is shown.
-            UnknownBytes2 = new byte[26];
             for (var i = 0; i < UnknownBytes2.Length; i++)
             {
                 UnknownBytes2[i] = 1;

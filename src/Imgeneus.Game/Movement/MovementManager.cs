@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Movement
 {
@@ -37,6 +38,13 @@ namespace Imgeneus.World.Game.Movement
             Angle = angle;
             MoveMotion = motion;
         }
+
+        public Task Clear()
+        {
+            Motion = Motion.None;
+            return Task.CompletedTask;
+        }
+
 
         #endregion
 
