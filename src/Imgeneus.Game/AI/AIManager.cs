@@ -539,27 +539,13 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         private void GenerateRandomIdlePosition()
         {
-            float x1 = _movementManager.PosX - _idleSpeed;
-            if (x1 < MoveArea.X1)
-                x1 = MoveArea.X1;
-            float x2 = _movementManager.PosX + _idleSpeed;
-            if (x2 > MoveArea.X2)
-                x2 = MoveArea.X2;
-
-            float z1 = _movementManager.PosZ - _idleSpeed;
-            if (z1 < MoveArea.Z1)
-                z1 = MoveArea.Z1;
-            float z2 = _movementManager.PosZ + _idleSpeed;
-            if (z2 < MoveArea.Z2)
-                z2 = MoveArea.Z2;
-
-            var x = new Random().NextFloat(x1, x2);
-            var z = new Random().NextFloat(z1, z2);
+            var x = new Random().NextFloat(MoveArea.X1, MoveArea.X2);
+            var z = new Random().NextFloat(MoveArea.Z1, MoveArea.Z2);
 
             Move(x, z);
 
 #if DEBUG
-            _logger.LogDebug("AI {hashcode} walks to new position x={PosX} y={PosY} z={PosZ}.", GetHashCode(), _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ);
+            _logger.LogDebug("AI {hashcode} walks to new position x={x} z={z}.", GetHashCode(), x, z);
 #endif
 
             _movementManager.RaisePositionChanged();
