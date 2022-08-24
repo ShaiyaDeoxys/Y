@@ -102,5 +102,10 @@ namespace Imgeneus.World.Game.Attack
         /// Additional attack range gained from buffs.
         /// </summary>
         ushort ExtraAttackRange { get; set; }
+
+        int NextAttackTime { get; }
+        DateTime LastTimeAutoAttack { get; set; }
+        DateTime SkipAutoAttackRequestTime { get; set; }
+        bool SkipNextAutoAttack { get; set; }
     }
 }

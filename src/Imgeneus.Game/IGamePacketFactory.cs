@@ -219,7 +219,7 @@ namespace Imgeneus.World.Packets
         #endregion
 
         #region Attack
-        void SendAttackStart(IWorldClient client);
+        void SendAutoAttackStop(IWorldClient client);
         void SendPlayerInTarget(IWorldClient client, uint characterId, int maxHp, int hp);
         void SendCurrentBuffs(IWorldClient client, IKillable target);
         void SendTargetAddBuff(IWorldClient client, uint targetId, Buff buff, bool isMob);

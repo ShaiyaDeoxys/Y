@@ -62,7 +62,7 @@
         MAP_WEATHER = 0x0451, // 1105
 
         // Attack
-        ATTACK_START = 0x0212, // 530
+        AUTO_ATTACK_STOP = 0x0212, // 530
         SAVEPOS_RESULT = 0x0222, // 546
 
         CHANGE_APPEARANCE = 0x0226, // 550

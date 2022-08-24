@@ -123,7 +123,7 @@ namespace Imgeneus.World.Game.Attack
         /// </summary>
         private DateTime _nextAttackTime;
 
-        private int NextAttackTime
+        public int NextAttackTime
         {
             get
             {
@@ -244,12 +244,18 @@ namespace Imgeneus.World.Game.Attack
             return true;
         }
 
+        public DateTime LastTimeAutoAttack { get; set; }
+        public DateTime SkipAutoAttackRequestTime { get; set; }
+        public bool SkipNextAutoAttack { get; set; }
+
         /// <summary>
         /// Usual physical attack, "auto attack".
         /// </summary>
         public void AutoAttack(IKiller sender)
         {
             StartAttack();
+
+            LastTimeAutoAttack = DateTime.UtcNow;
 
             AttackResult result;
 

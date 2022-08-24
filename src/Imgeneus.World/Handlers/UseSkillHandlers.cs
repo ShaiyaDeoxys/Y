@@ -9,6 +9,7 @@ using Imgeneus.World.Game.Skills;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
+using System;
 
 namespace Imgeneus.World.Handlers
 {
@@ -33,6 +34,8 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.USE_CHARACTER_TARGET_SKILL)]
         public void HandleUseSkillOnPlayer(WorldClient client, CharacterSkillAttackPacket packet)
         {
+            _packetFactory.SendAutoAttackStop(client);
+
             var player = _gameWorld.Players[_gameSession.Character.Id];
             if (player is null)
                 return;
@@ -45,6 +48,8 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.USE_MOB_TARGET_SKILL)]
         public void HandleUseSkillOnMob(WorldClient client, MobSkillAttackPacket packet)
         {
+            _packetFactory.SendAutoAttackStop(client);
+
             var player = _gameWorld.Players[_gameSession.Character.Id];
             if (player is null)
                 return;
@@ -62,12 +67,20 @@ namespace Imgeneus.World.Handlers
             if (skill is null)
                 return;
 
+            _attackManager.SkipNextAutoAttack = false;
+
             if (!_attackManager.CanAttack(skill.Number, target, out var success))
             {
                 if (success != AttackSuccess.TooFastAttack)
+                {
                     _packetFactory.SendUseSkillFailed(client, player.Id, skill, target, success);
+                }
                 else
+                {
+                    _attackManager.SkipNextAutoAttack = true;
+                    _attackManager.SkipAutoAttackRequestTime = DateTime.UtcNow;
                     _packetFactory.SendUseSkillFailed(client, player.Id, skill, target, AttackSuccess.CooldownNotOver);
+                }
                 return;
             }
 

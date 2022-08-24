@@ -6,6 +6,7 @@ using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Zone;
 using Imgeneus.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
+using System;
 
 namespace Imgeneus.World.Handlers
 {
@@ -23,7 +24,7 @@ namespace Imgeneus.World.Handlers
             _gameWorld = gameWorld;
         }
 
-        [HandlerAction(PacketType.ATTACK_START)]
+        [HandlerAction(PacketType.AUTO_ATTACK_STOP)]
         public void HandleAttackStart(WorldClient client, AttackStartPacket packet)
         {
             // Not sure, but maybe I should not permit any attack start?
@@ -32,6 +33,9 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_CHARACTER_AUTO_ATTACK)]
         public void HandleAutoAttackOnPlayer(WorldClient client, CharacterAutoAttackPacket packet)
         {
+            if (_attackManager.SkipNextAutoAttack && DateTime.UtcNow.Subtract(_attackManager.SkipAutoAttackRequestTime).TotalSeconds < 5)
+                return;
+
             var target = _mapProvider.Map.GetPlayer(packet.TargetId);
             if (target is null)
                 return;
@@ -47,6 +51,9 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_MOB_AUTO_ATTACK)]
         public void HandleAutoAttackOnMob(WorldClient client, MobAutoAttackPacket packet)
         {
+            if (_attackManager.SkipNextAutoAttack && DateTime.UtcNow.Subtract(_attackManager.SkipAutoAttackRequestTime).TotalMilliseconds < _attackManager.NextAttackTime * 2)
+                return;
+
             var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.TargetId);
             if (target is null)
                 return;

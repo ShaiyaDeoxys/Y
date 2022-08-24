@@ -611,7 +611,7 @@ namespace Imgeneus.World.Game.AI
             }
 
             // There is some player in vision.
-            _attackManager.Target = enemies.First(x =>
+            _attackManager.Target = enemies.FirstOrDefault(x =>
             {
                 if (x is Character character)
                     return character.StealthManager.IsStealth == false;

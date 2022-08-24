@@ -156,7 +156,7 @@ namespace Imgeneus.World.Game.Player
             StatsManager.OnResetStats += SendResetStats;
             BuffsManager.OnBuffAdded += SendAddBuff;
             BuffsManager.OnBuffRemoved += SendRemoveBuff;
-            AttackManager.OnStartAttack += SendAttackStart;
+            //AttackManager.OnStartAttack += SendAutoAttackStop;
             VehicleManager.OnUsedVehicle += SendUseVehicle;
             SkillsManager.OnResetSkills += SendResetSkills;
             InventoryManager.OnAddItem += SendAddItemToInventory;
@@ -225,7 +225,7 @@ namespace Imgeneus.World.Game.Player
             StatsManager.OnResetStats -= SendResetStats;
             BuffsManager.OnBuffAdded -= SendAddBuff;
             BuffsManager.OnBuffRemoved -= SendRemoveBuff;
-            AttackManager.OnStartAttack -= SendAttackStart;
+            //AttackManager.OnStartAttack -= SendAutoAttackStop;
             VehicleManager.OnUsedVehicle -= SendUseVehicle;
             SkillsManager.OnResetSkills -= SendResetSkills;
             InventoryManager.OnAddItem -= SendAddItemToInventory;

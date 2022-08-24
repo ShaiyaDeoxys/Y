@@ -27,7 +27,7 @@ namespace Imgeneus.World.Game.Player
 
         private void SendRemoveBuff(uint senderId, Buff buff) => _packetFactory.SendRemoveBuff(GameSession.Client, buff.Id);
 
-        private void SendAttackStart() => _packetFactory.SendAttackStart(GameSession.Client);
+        private void SendAutoAttackStop() => _packetFactory.SendAutoAttackStop(GameSession.Client);
 
         private void SendUseMPSP(ushort needMP, ushort needSP) => _packetFactory.SendUseSMMP(GameSession.Client, needMP, needSP);
 

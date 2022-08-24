@@ -1480,9 +1480,9 @@ namespace Imgeneus.World.Packets
 
         #region Attack
 
-        public void SendAttackStart(IWorldClient client)
+        public void SendAutoAttackStop(IWorldClient client)
         {
-            using var packet = new ImgeneusPacket(PacketType.ATTACK_START);
+            using var packet = new ImgeneusPacket(PacketType.AUTO_ATTACK_STOP);
             client.Send(packet);
         }
 
