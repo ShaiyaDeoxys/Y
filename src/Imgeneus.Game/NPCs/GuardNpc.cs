@@ -39,12 +39,15 @@ namespace Imgeneus.World.Game.NPCs
             AIManager.Init(Id,
                            MobAI.Guard,
                            new MoveArea(_moveCoordinates[0].X, _moveCoordinates[0].Y, _moveCoordinates[0].Z, _moveCoordinates[0].X, _moveCoordinates[0].Y, _moveCoordinates[0].Z),
-                           chaseTime: 1800,
-                           chaseSpeed: 8,
+                           chaseTime: 400,
+                           chaseSpeed: 6,
                            chaseRange: 15,
-                           isAttack1Enabled: true);
+                           isAttack1Enabled: true,
+                           attack1Range: 1,
+                           attackTime1: 800);
             StatsManager.Init(Id, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
             AttackManager.Init(Id);
+            AttackManager.WeaponAttackRange = 1;
         }
     }
 }

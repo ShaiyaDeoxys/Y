@@ -182,17 +182,19 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Removes player from map cell.
         /// </summary>
-        public void RemovePlayer(Character character, bool notifyPlayers)
+        public void RemovePlayer(Character character, bool leaveMap)
         {
             RemoveListeners(character);
             Players.TryRemove(character.Id, out var removedCharacter);
 
-            foreach (var mob in GetAllMobs(true).Where(m => m.AttackManager.Target == character))
-                mob.AttackManager.Target = null;
+            if (leaveMap)
+            {
+                foreach (var mob in GetAllMobs(true).Where(m => m.AttackManager.Target == character))
+                    mob.AttackManager.Target = null;
 
-            if (notifyPlayers)
                 foreach (var player in GetAllPlayers(true))
                     Map.PacketFactory.SendCharacterLeave(player.GameSession.Client, character);
+            }
         }
 
         /// <summary>

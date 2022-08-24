@@ -630,6 +630,9 @@ namespace Imgeneus.World.Game.Zone
                 throw new ObjectDisposedException(nameof(Map));
 
             Cells[cellIndex].AddNPC(npc);
+
+            if (npc is GuardNpc guard)
+                guard.AIManager.Start();
         }
 
         /// <summary>

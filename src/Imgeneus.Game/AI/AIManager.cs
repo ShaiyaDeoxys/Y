@@ -318,7 +318,7 @@ namespace Imgeneus.World.Game.AI
                     // Yes: BackToBirthPosition => Idle
                     // No: ReadyToAttack => Chase
 
-                    if (_state == AIState.Idle && (value != AIState.Chase && (AI == MobAI.Relic && value != AIState.ReadyToAttack)))
+                    if (_state == AIState.Idle && (value != AIState.Chase && value != AIState.Stopped && (AI == MobAI.Relic && value != AIState.ReadyToAttack)))
                     {
 #if DEBUG
                         _logger.LogError("Can not go from {a} to {b}", _state, value);
@@ -326,7 +326,7 @@ namespace Imgeneus.World.Game.AI
                         return;
                     }
 
-                    if (_state == AIState.Chase && value != AIState.ReadyToAttack && value != AIState.BackToBirthPosition)
+                    if (_state == AIState.Chase && value != AIState.ReadyToAttack && value != AIState.BackToBirthPosition && value != AIState.Stopped)
                     {
 #if DEBUG
                         _logger.LogError("Can not go from {a} to {b}", _state, value);
@@ -334,7 +334,7 @@ namespace Imgeneus.World.Game.AI
                         return;
                     }
 
-                    if (_state == AIState.ReadyToAttack && (value != AIState.Chase && (AI == MobAI.Relic && value != AIState.ReadyToAttack && value != AIState.Idle)))
+                    if (_state == AIState.ReadyToAttack && (value != AIState.Chase && value != AIState.Stopped && (AI == MobAI.Relic && value != AIState.ReadyToAttack && value != AIState.Idle)))
                     {
 #if DEBUG
                         _logger.LogError("Can not go from {a} to {b}", _state, value);
@@ -343,6 +343,14 @@ namespace Imgeneus.World.Game.AI
                     }
 
                     if (_state == AIState.BackToBirthPosition && value != AIState.Idle)
+                    {
+#if DEBUG
+                        _logger.LogError("Can not go from {a} to {b}", _state, value);
+#endif
+                        return;
+                    }
+
+                    if (_state == AIState.Stopped && value != AIState.Idle)
                     {
 #if DEBUG
                         _logger.LogError("Can not go from {a} to {b}", _state, value);
@@ -359,9 +367,12 @@ namespace Imgeneus.World.Game.AI
                     switch (_state)
                     {
                         case AIState.Idle:
+
+#if !DEBUG
                             // Idle timer generates a mob walk. Not available for altars.
                             if (AI != MobAI.Relic)
                                 _idleTimer.Start();
+#endif
 
                             // If this is combat mob start watching as soon as it's in idle state.
                             if (AI != MobAI.Peaceful && AI != MobAI.Peaceful2)
@@ -371,7 +382,10 @@ namespace Imgeneus.World.Game.AI
                             StartPosX = -1;
                             StartPosZ = -1;
                             _movementManager.MoveMotion = MoveMotion.Walk;
-                            _healthManager.FullRecover();
+
+                            if (AI != MobAI.Guard)
+                                _healthManager.FullRecover();
+
                             Agro.Clear();
                             break;
 
@@ -662,13 +676,19 @@ namespace Imgeneus.World.Game.AI
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} target is already cleared.", GetHashCode());
 #endif
-                if (State == AIState.Chase || State == AIState.ReadyToAttack)
+                if (State == AIState.Chase || State == AIState.ReadyToAttack && !_healthManager.IsDead)
                     State = AIState.BackToBirthPosition;
                 return;
             }
 
-            var distanceToPlayer = Math.Round(MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ));
-            if (distanceToPlayer <= AttackRange1 || distanceToPlayer <= AttackRange2 || distanceToPlayer <= AttackRange3)
+            var distanceToTarget = MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ);
+#if DEBUG
+            _logger.LogInformation("AI {hashcode} distance to target {distanceToTarget}.", GetHashCode(), distanceToTarget);
+#endif
+
+            if ((distanceToTarget - AttackRange1 - _chaseSpeed / 3) < DELTA ||
+                (distanceToTarget - AttackRange2 - _chaseSpeed / 3) < DELTA ||
+                (distanceToTarget - AttackRange3 - _chaseSpeed / 3) < DELTA)
             {
                 State = AIState.ReadyToAttack;
                 //_chaseTimer.Start();
@@ -807,7 +827,7 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         private void ReturnToBirthPosition()
         {
-            if (Math.Round(MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ)) > DELTA)
+            if (MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ) - 1 - _chaseSpeed / 3 > DELTA)
             {
                 _backToBirthPositionTimer.Start();
             }
@@ -819,7 +839,7 @@ namespace Imgeneus.World.Game.AI
 
         private void BackToBirthPositionTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (Math.Round(MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ)) > DELTA)
+            if (MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ) - 1 - _chaseSpeed / 3 > DELTA)
             {
                 Move(StartPosX, StartPosZ);
                 _backToBirthPositionTimer.Start();
@@ -858,7 +878,7 @@ namespace Imgeneus.World.Game.AI
                 return;
             }
 
-            var distanceToPlayer = Math.Round(MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ));
+            var distanceToTarget = MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ);
             var now = DateTime.UtcNow;
             int delay = 1000;
             var attackId = RandomiseAttack(now);
@@ -866,7 +886,7 @@ namespace Imgeneus.World.Game.AI
             var useAttack2 = attackId == 2;
             var useAttack3 = attackId == 3;
 
-            if (useAttack1 && (distanceToPlayer <= AttackRange1 || AttackRange1 == 0))
+            if (useAttack1 && ((distanceToTarget - AttackRange1 - _chaseSpeed / 3) < DELTA || AttackRange1 == 0))
             {
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 1.", GetHashCode());
@@ -876,7 +896,7 @@ namespace Imgeneus.World.Game.AI
                 delay = AttackTime1 > 0 ? AttackTime1 : 5000;
             }
 
-            if (useAttack2 && (distanceToPlayer <= AttackRange2 || AttackRange2 == 0))
+            if (useAttack2 && ((distanceToTarget - AttackRange2 - _chaseSpeed / 3) < DELTA || AttackRange2 == 0))
             {
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 2.", GetHashCode());
@@ -886,7 +906,7 @@ namespace Imgeneus.World.Game.AI
                 delay = AttackTime2 > 0 ? AttackTime2 : 5000;
             }
 
-            if (useAttack3 && (distanceToPlayer <= AttackRange3 || AttackRange3 == 0))
+            if (useAttack3 && ((distanceToTarget - AttackRange3 - _chaseSpeed / 3) < DELTA || AttackRange3 == 0))
             {
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 3.", GetHashCode());
