@@ -686,9 +686,9 @@ namespace Imgeneus.World.Game.AI
             _logger.LogInformation("AI {hashcode} distance to target {distanceToTarget}.", GetHashCode(), distanceToTarget);
 #endif
 
-            if ((distanceToTarget - AttackRange1 - _chaseSpeed / 3) < DELTA ||
-                (distanceToTarget - AttackRange2 - _chaseSpeed / 3) < DELTA ||
-                (distanceToTarget - AttackRange3 - _chaseSpeed / 3) < DELTA)
+            if ((distanceToTarget - AttackRange1) < DELTA ||
+                (distanceToTarget - AttackRange2) < DELTA ||
+                (distanceToTarget - AttackRange3) < DELTA)
             {
                 State = AIState.ReadyToAttack;
                 //_chaseTimer.Start();
@@ -735,7 +735,7 @@ namespace Imgeneus.World.Game.AI
             _logger.LogDebug("AI {hashcode} is moving to target: x - {x}, z - {z}, target x - {targetX}, target z - {targetZ}", GetHashCode(), _movementManager.PosX, _movementManager.PosZ, x, z);
 #endif
 
-            if (MathExtensions.Distance(_movementManager.PosX, x, _movementManager.PosZ, x) < DELTA)
+            if (MathExtensions.Distance(_movementManager.PosX, x, _movementManager.PosZ, z) < DELTA)
                 return;
 
             if (_chaseSpeed == 0 || _chaseTime == 0)
@@ -744,6 +744,12 @@ namespace Imgeneus.World.Game.AI
             if (_speedManager.Immobilize)
                 return;
 
+            var speed = State == AIState.Idle ? _idleSpeed : _chaseSpeed * 1.0;
+            if (MathExtensions.Distance(_movementManager.PosX, x, _movementManager.PosZ, z) < 5)
+                speed = 2;
+
+            var time = State == AIState.Idle ? _idleTime : _chaseTime;
+
             var now = DateTime.UtcNow;
             var mobVector = new Vector2(_movementManager.PosX, _movementManager.PosZ);
             var destinationVector = new Vector2(x, z);
@@ -751,7 +757,7 @@ namespace Imgeneus.World.Game.AI
             var normalizedVector = Vector2.Normalize(destinationVector - mobVector);
             var deltaTime = now.Subtract(_lastMoveUpdate);
             var deltaMilliseconds = deltaTime.TotalMilliseconds > 2000 ? 500 : deltaTime.TotalMilliseconds;
-            var temp = normalizedVector * (float)(State == AIState.Idle ? _idleSpeed : _chaseSpeed * 1.0 / (State == AIState.Idle ? _idleTime : _chaseTime) * deltaMilliseconds);
+            var temp = normalizedVector * (float)(speed / (time) * deltaMilliseconds);
             _movementManager.PosX += float.IsNaN(temp.X) ? 0 : temp.X;
             _movementManager.PosZ += float.IsNaN(temp.Y) ? 0 : temp.Y;
 
@@ -827,7 +833,7 @@ namespace Imgeneus.World.Game.AI
         /// </summary>
         private void ReturnToBirthPosition()
         {
-            if (MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ) - 1 - _chaseSpeed / 3 > DELTA)
+            if (MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ) - 1 > DELTA)
             {
                 _backToBirthPositionTimer.Start();
             }
@@ -839,7 +845,7 @@ namespace Imgeneus.World.Game.AI
 
         private void BackToBirthPositionTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ) - 1 - _chaseSpeed / 3 > DELTA)
+            if (MathExtensions.Distance(_movementManager.PosX, StartPosX, _movementManager.PosZ, StartPosZ) - 1 > DELTA)
             {
                 Move(StartPosX, StartPosZ);
                 _backToBirthPositionTimer.Start();
@@ -886,32 +892,32 @@ namespace Imgeneus.World.Game.AI
             var useAttack2 = attackId == 2;
             var useAttack3 = attackId == 3;
 
-            if (useAttack1 && ((distanceToTarget - AttackRange1 - _chaseSpeed / 3) < DELTA || AttackRange1 == 0))
+            if (useAttack1 && ((distanceToTarget - AttackRange1) < DELTA || AttackRange1 == 0))
             {
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 1.", GetHashCode());
 #endif
-                Attack(AttackType1, AttackAttrib1, Attack1, AttackPlus1);
+                Attack(AttackType1, AttackAttrib1, Attack1, AttackPlus1, AttackRange1);
                 _lastAttack1Time = now;
                 delay = AttackTime1 > 0 ? AttackTime1 : 5000;
             }
 
-            if (useAttack2 && ((distanceToTarget - AttackRange2 - _chaseSpeed / 3) < DELTA || AttackRange2 == 0))
+            if (useAttack2 && ((distanceToTarget - AttackRange2) < DELTA || AttackRange2 == 0))
             {
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 2.", GetHashCode());
 #endif
-                Attack(AttackType2, AttackAttrib2, Attack2, AttackPlus2);
+                Attack(AttackType2, AttackAttrib2, Attack2, AttackPlus2, AttackRange2);
                 _lastAttack2Time = now;
                 delay = AttackTime2 > 0 ? AttackTime2 : 5000;
             }
 
-            if (useAttack3 && ((distanceToTarget - AttackRange3 - _chaseSpeed / 3) < DELTA || AttackRange3 == 0))
+            if (useAttack3 && ((distanceToTarget - AttackRange3) < DELTA || AttackRange3 == 0))
             {
 #if DEBUG
                 _logger.LogDebug("AI {hashcode} used attack 3.", GetHashCode());
 #endif
-                Attack(AttackType3, Element.None, Attack3, AttackPlus3);
+                Attack(AttackType3, Element.None, Attack3, AttackPlus3, AttackRange3);
                 _lastAttack3Time = now;
                 delay = AttackTime3 > 0 ? AttackTime3 : 5000;
             }
@@ -1008,7 +1014,7 @@ namespace Imgeneus.World.Game.AI
         /// <param name="minAttack">min damage</param>
         /// <param name="element">element</param>
         /// <param name="additionalDamage">plus damage</param>
-        public void Attack(ushort skillId, Element element, ushort minAttack, ushort additionalDamage)
+        public void Attack(ushort skillId, Element element, ushort minAttack, ushort additionalDamage, int attackRange)
         {
             var isMeleeAttack = false;
             Skill skill = null;
@@ -1033,6 +1039,7 @@ namespace Imgeneus.World.Game.AI
             {
                 _statsManager.WeaponMinAttack = minAttack;
                 _statsManager.WeaponMaxAttack = minAttack + additionalDamage;
+                _attackManager.WeaponAttackRange = (ushort)attackRange;
                 _elementProvider.AttackSkillElement = _elementProvider.ConstAttackElement;
 
                 if (_attackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, _attackManager.Target, out var _))
@@ -1057,6 +1064,7 @@ namespace Imgeneus.World.Game.AI
 
                     _statsManager.WeaponMinAttack = minAttack;
                     _statsManager.WeaponMaxAttack = minAttack + additionalDamage;
+                    _attackManager.WeaponAttackRange = (ushort)attackRange;
 
                     if (_attackManager.CanAttack(IAttackManager.AUTO_ATTACK_NUMBER, _attackManager.Target, out var _))
                         _attackManager.AutoAttack(Owner);
