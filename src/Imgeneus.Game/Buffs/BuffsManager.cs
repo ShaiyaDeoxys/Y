@@ -126,6 +126,9 @@ namespace Imgeneus.World.Game.Buffs
 
             foreach (var b in ActiveBuffs)
             {
+                if (b.CanBeActivatedAndDisactivated)
+                    continue;
+
                 var dbBuff = new DbCharacterActiveBuff()
                 {
                     CharacterId = _ownerId,

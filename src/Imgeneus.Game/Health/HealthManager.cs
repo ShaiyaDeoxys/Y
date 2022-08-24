@@ -133,10 +133,13 @@ namespace Imgeneus.World.Game.Health
             if (hp == 0)
                 return;
 
-            if (DamageMakers.ContainsKey(damageMaker))
-                DamageMakers[damageMaker] += hp;
-            else
-                DamageMakers.TryAdd(damageMaker, hp);
+            if (damageMaker is not null)
+            {
+                if (DamageMakers.ContainsKey(damageMaker))
+                    DamageMakers[damageMaker] += hp;
+                else
+                    DamageMakers.TryAdd(damageMaker, hp);
+            }
 
             CurrentHP -= hp;
             OnGotDamage?.Invoke(_ownerId, damageMaker, hp);
