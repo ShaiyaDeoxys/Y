@@ -754,6 +754,11 @@ namespace Imgeneus.World.Game.Inventory
 
         public Item AddItem(Item item, bool silent = false)
         {
+            if (item.Type == 0 || item.TypeId == 0)
+            {
+                _logger.LogError("Wrong item type or id.");
+                return null;
+            }
             // Find free space.
             var free = FindFreeSlotInInventory();
 
