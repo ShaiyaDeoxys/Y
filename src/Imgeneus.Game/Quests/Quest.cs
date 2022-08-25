@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.World.Game.Inventory;
+using Parsec.Shaiya.NpcQuest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,6 +113,15 @@ namespace Imgeneus.World.Game.Quests
             IsFinished = true;
             IsSuccessful = successful;
         }
+
+        #region Start items
+
+        /// <summary>
+        /// Items, that are given upon quest start.
+        /// </summary>
+        public List<QuestItem> StartRequiredItems { get => Config.RequiredItems; }
+
+        #endregion
 
         #region Requirements
 

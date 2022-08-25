@@ -131,6 +131,9 @@ namespace Imgeneus.World.Game.Quests
             var quest = new Quest(_definitionsPreloader.Quests[questId]);
             quest.QuestTimeElapsed += Quest_QuestTimeElapsed;
             quest.StartQuestTimer();
+            foreach (var item in quest.StartRequiredItems)
+                _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, item.Type, item.TypeId, item.Count));
+
             Quests.Add(quest);
 
             var dbCharacterQuest = new DbCharacterQuest();
