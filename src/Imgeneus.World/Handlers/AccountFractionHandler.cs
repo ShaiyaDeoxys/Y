@@ -23,6 +23,9 @@ namespace Imgeneus.World.Handlers
         public async Task Handle(WorldClient client, AccountFractionPacket packet)
         {
             await _selectionScreenManager.SetFaction(client.UserId, packet.Fraction);
+            var mode = await _selectionScreenManager.GetMaxMode(client.UserId);
+
+            _packetFactory.SendFaction(client, packet.Fraction, mode);
         }
     }
 }

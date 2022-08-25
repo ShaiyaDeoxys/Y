@@ -56,7 +56,7 @@ namespace Imgeneus.World.SelectionScreen
                                         .AsNoTracking()
                                         .Include(c => c.Items)
                                         .Include(x => x.User)
-                                        .Where(u => u.UserId == userId)
+                                        .Where(u => u.UserId == userId && !u.IsDelete)
                                         .ToListAsync();
 
             foreach (var character in characters)
@@ -68,8 +68,8 @@ namespace Imgeneus.World.SelectionScreen
         public async Task<bool> TryCreateCharacter(int userId, CreateCharacterPacket createCharacterPacket)
         {
             // Get number of user characters.
-            var characters = await _database.Characters.Where(x => x.UserId == userId).ToListAsync();
-            if (characters.Where(c => !c.IsDelete).Count() == MaxCharacterNumber)
+            var characters = await _database.Characters.Where(x => x.UserId == userId && !x.IsDelete).ToListAsync();
+            if (characters.Count == MaxCharacterNumber)
             {
                 // Max number of characters reached.
                 return false;
