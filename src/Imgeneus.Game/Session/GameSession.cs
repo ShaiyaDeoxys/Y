@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Player;
+﻿using Imgeneus.World.Game.Health;
+using Imgeneus.World.Game.Player;
 using Imgeneus.World.Packets;
 using Imgeneus.World.SelectionScreen;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ namespace Imgeneus.World.Game.Session
         private readonly IGamePacketFactory _packetFactory;
         private readonly IGameWorld _gameWorld;
         private readonly ISelectionScreenManager _selectionScreenManager;
+        private readonly IHealthManager _healthManager;
 
         public Character Character { get; set; }
 
@@ -30,14 +32,16 @@ namespace Imgeneus.World.Game.Session
 
         private bool _quitGame;
 
-        public GameSession(ILogger<GameSession> logger, IGamePacketFactory packetFactory, IGameWorld gameWorld, ISelectionScreenManager selectionScreenManager)
+        public GameSession(ILogger<GameSession> logger, IGamePacketFactory packetFactory, IGameWorld gameWorld, ISelectionScreenManager selectionScreenManager, IHealthManager healthManager)
         {
             _logger = logger;
             _packetFactory = packetFactory;
             _gameWorld = gameWorld;
             _selectionScreenManager = selectionScreenManager;
+            _healthManager = healthManager;
 
             _logoutTimer.Elapsed += LogoutTimer_Elapsed;
+            _healthManager.OnGotDamage += HealthManager_OnGotDamage;
 #if DEBUG
             _logger.LogDebug("GameSession {hashcode} created", GetHashCode());
 #endif
@@ -46,6 +50,7 @@ namespace Imgeneus.World.Game.Session
         public void Dispose()
         {
             _logoutTimer.Elapsed -= LogoutTimer_Elapsed;
+            _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
         }
 
 #if DEBUG
@@ -69,6 +74,11 @@ namespace Imgeneus.World.Game.Session
         {
             IsLoggingOff = false;
             _logoutTimer.Stop();
+        }
+
+        private void HealthManager_OnGotDamage(uint senderId, IKiller damageMaker, int damage)
+        {
+            StopLogOff();
         }
 
         private async void LogoutTimer_Elapsed(object sender, ElapsedEventArgs e)
