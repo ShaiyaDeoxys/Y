@@ -32,6 +32,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Element = Imgeneus.Database.Constants.Element;
 
@@ -1045,23 +1046,30 @@ namespace Imgeneus.World.Game.Inventory
 
         public event Action<uint, Item> OnUsedItem;
 
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
         public async Task<bool> TryUseItem(byte bag, byte slot, uint? targetId = null, bool skillApplyingItemEffect = false, byte count = 1)
         {
+            await _semaphore.WaitAsync();
+
             InventoryItems.TryGetValue((bag, slot), out var item);
             if (item is null)
             {
                 _logger.LogWarning("Character {id} is trying to use item, that does not exist. Possible hack?", _ownerId);
+                _semaphore.Release();
                 return false;
             }
 
             if (item.Count < count)
             {
                 _logger.LogWarning("Character {id} is trying to use more items then presented in inventory.", _ownerId);
+                _semaphore.Release();
                 return false;
             }
 
             if (!CanUseItem(item))
             {
+                _semaphore.Release();
                 return false;
             }
 
@@ -1069,6 +1077,7 @@ namespace Imgeneus.World.Game.Inventory
             {
                 if (!CanUseItemOnTarget(item, (uint)targetId))
                 {
+                    _semaphore.Release();
                     return false;
                 }
             }
@@ -1090,6 +1099,7 @@ namespace Imgeneus.World.Game.Inventory
                     InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
             }
 
+            _semaphore.Release();
             return ok;
         }
 

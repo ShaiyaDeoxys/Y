@@ -20,6 +20,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Zone
@@ -948,21 +949,27 @@ namespace Imgeneus.World.Game.Zone
             }
         }
 
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
         /// <summary>
         /// Tries to get item from map cell.
         /// </summary>
         /// <returns>if item is null, means that item doesn't belong to player yet</returns>
         public MapItem GetItem(uint itemId, Character requester, bool includeNeighborCells)
         {
+            _semaphore.Wait();
+
             MapItem mapItem;
             if (Items.TryGetValue(itemId, out mapItem))
             {
                 if (mapItem.Owner == null || mapItem.Owner == requester)
                 {
+                    _semaphore.Release();
                     return mapItem;
                 }
                 else
                 {
+                    _semaphore.Release();
                     return null;
                 }
             }
@@ -976,6 +983,7 @@ namespace Imgeneus.World.Game.Zone
                             break;
                     }
 
+                _semaphore.Release();
                 return mapItem;
             }
         }
