@@ -54,6 +54,7 @@ namespace InterServer.Client
             else
             {
                 _logger.LogError("Failed to connect to {0}.", _config.Endpoint);
+                Connect();
             }
         }
 
@@ -62,6 +63,7 @@ namespace InterServer.Client
 
         private Task Connection_Closed(Exception ex)
         {
+            _logger.LogError(ex.Message);
             Connect();
             return Task.CompletedTask;
         }
