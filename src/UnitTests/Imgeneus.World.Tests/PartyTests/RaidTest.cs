@@ -48,9 +48,9 @@ namespace Imgeneus.World.Tests.PartyTests
 
             raid.DistributeDrop(new List<Item>()
             {
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
             Assert.Equal(3, character1.InventoryManager.InventoryItems.Count);
@@ -74,9 +74,9 @@ namespace Imgeneus.World.Tests.PartyTests
 
             raid.DistributeDrop(new List<Item>()
             {
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
             Assert.Empty(character1.InventoryManager.InventoryItems);
@@ -95,9 +95,9 @@ namespace Imgeneus.World.Tests.PartyTests
 
             raid.DistributeDrop(new List<Item>()
             {
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
             Assert.Equal(2, character1.InventoryManager.InventoryItems.Count);
@@ -129,9 +129,9 @@ namespace Imgeneus.World.Tests.PartyTests
 
             raid.DistributeDrop(new List<Item>()
             {
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
             Assert.Equal(2, character1.InventoryManager.InventoryItems.Count);
@@ -169,8 +169,8 @@ namespace Imgeneus.World.Tests.PartyTests
 
             for (int i = 0; i < 5 * 25; i++) // 5 bags, 24 slots per 1 bag.
             {
-                character1.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
-                character2.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
+                character1.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
+                character2.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
             }
 
             var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);
@@ -179,9 +179,9 @@ namespace Imgeneus.World.Tests.PartyTests
 
             var notDistributedItems = raid.DistributeDrop(new List<Item>()
             {
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
             Assert.Equal(3, notDistributedItems.Count);
@@ -202,9 +202,9 @@ namespace Imgeneus.World.Tests.PartyTests
 
             raid.DistributeDrop(new List<Item>()
             {
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
-                new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId),
+                new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId)
             }, character2);
 
             Assert.True(character1.InventoryManager.InventoryItems.Count >= 0);

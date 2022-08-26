@@ -44,7 +44,6 @@ namespace Imgeneus.World.Game.Inventory
         public const byte MAX_SLOT = 24;
 
         private readonly ILogger _logger;
-        private readonly IDatabasePreloader _databasePreloader;
         private readonly IGameDefinitionsPreloder _gameDefinitions;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
@@ -70,10 +69,9 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IBlessManager _blessManager;
         private uint _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IDatabasePreloader databasePreloader, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager, IBlessManager blessManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager, IBlessManager blessManager)
         {
             _logger = logger;
-            _databasePreloader = databasePreloader;
             _gameDefinitions = gameDefinitions;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
@@ -119,7 +117,7 @@ namespace Imgeneus.World.Game.Inventory
         {
             _ownerId = ownerId;
 
-            foreach (var item in items.Select(x => new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, x)))
+            foreach (var item in items.Select(x => new Item(_gameDefinitions, _enchantConfig, _itemCreateConfig, x)))
             {
                 InventoryItems.TryAdd((item.Bag, item.Slot), item);
 
@@ -873,7 +871,7 @@ namespace Imgeneus.World.Game.Inventory
                 destinationItem.Bag = destinationBag;
                 destinationItem.Slot = destinationSlot;
 
-                sourceItem = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
+                sourceItem = new Item(_gameDefinitions, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
             }
             else
             {
@@ -886,7 +884,7 @@ namespace Imgeneus.World.Game.Inventory
                     // Increase destination item count, if they are joinable.
                     destinationItem.Count += sourceItem.Count;
 
-                    sourceItem = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
+                    sourceItem = new Item(_gameDefinitions, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
                 }
                 else
                 {
@@ -1598,7 +1596,7 @@ namespace Imgeneus.World.Game.Inventory
         {
             result = BuyResult.Unknown;
 
-            _databasePreloader.Items.TryGetValue((product.Type, product.TypeId), out var dbItem);
+            _gameDefinitions.Items.TryGetValue((product.Type, product.TypeId), out var dbItem);
             if (dbItem is null)
             {
                 _logger.LogError($"Trying to buy not presented item(type={product.Type},typeId={product.TypeId}).");
@@ -1621,7 +1619,7 @@ namespace Imgeneus.World.Game.Inventory
 
             Gold = (uint)(Gold - price * count);
 
-            var item = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, dbItem.Type, dbItem.TypeId);
+            var item = new Item(_gameDefinitions, _enchantConfig, _itemCreateConfig, dbItem.Type, dbItem.TypeId);
             item.Count = count;
 
             result = BuyResult.Success;

@@ -6,6 +6,7 @@ using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Market;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
@@ -80,6 +81,7 @@ namespace Imgeneus.World.Game.Player
 
         public Character(ILogger<Character> logger,
                          IDatabasePreloader databasePreloader,
+                         IGameDefinitionsPreloder definitionsPreloader,
                          IGuildManager guildManager,
                          ICountryProvider countryProvider,
                          ISpeedManager speedManager,
@@ -116,7 +118,7 @@ namespace Imgeneus.World.Game.Player
                          IRecoverManager recoverManager,
                          IMarketManager marketManager,
                          IGameSession gameSession,
-                         IGamePacketFactory packetFactory) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
+                         IGamePacketFactory packetFactory) : base(databasePreloader, definitionsPreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
             _logger = logger;
             _packetFactory = packetFactory;
@@ -268,6 +270,7 @@ namespace Imgeneus.World.Game.Player
             DbCharacter dbCharacter,
             ILogger<Character> logger,
             IDatabasePreloader databasePreloader,
+            IGameDefinitionsPreloder definitionsPreloader,
             ICountryProvider countryProvider,
             ISpeedManager speedManager,
             IStatsManager statsManager,
@@ -308,6 +311,7 @@ namespace Imgeneus.World.Game.Player
         {
             var character = new Character(logger,
                                           databasePreloader,
+                                          definitionsPreloader,
                                           guildManger,
                                           countryProvider,
                                           speedManager,

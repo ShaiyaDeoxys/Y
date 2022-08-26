@@ -1,4 +1,4 @@
-﻿using Imgeneus.Database.Preload;
+﻿using Imgeneus.GameDefinitions;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Inventory;
@@ -12,14 +12,14 @@ namespace Imgeneus.World.Handlers
     [Handler]
     public class GMGetItemHandler : BaseHandler
     {
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly IInventoryManager _inventoryManager;
 
-        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
+        public GMGetItemHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
         {
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
             _inventoryManager = inventoryManager;
@@ -36,7 +36,7 @@ namespace Imgeneus.World.Handlers
 
             while (itemCount > 0)
             {
-                var newItem = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, packet.Type, packet.TypeId, itemCount);
+                var newItem = new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, packet.Type, packet.TypeId, itemCount);
 
                 var item = _inventoryManager.AddItem(newItem);
                 if (item != null)

@@ -156,7 +156,7 @@ namespace Imgeneus.World.Tests.MapTests
         {
             var map = testMap;
             var cell = new MapCell(0, new List<int>(), map);
-            cell.AddItem(new MapItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId), null, 0, 0, 0));
+            cell.AddItem(new MapItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId), null, 0, 0, 0));
 
             Assert.NotEmpty(cell.GetAllItems(false));
 

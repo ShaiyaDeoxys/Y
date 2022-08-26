@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
@@ -39,6 +40,7 @@ namespace Imgeneus.World.Game.Monster
                               moveArea,
                               scope.ServiceProvider.GetRequiredService<ILogger<Mob>>(),
                               scope.ServiceProvider.GetRequiredService<IDatabasePreloader>(),
+                              scope.ServiceProvider.GetRequiredService<IGameDefinitionsPreloder>(),
                               scope.ServiceProvider.GetRequiredService<IAIManager>(),
                               scope.ServiceProvider.GetRequiredService<IItemEnchantConfiguration>(),
                               scope.ServiceProvider.GetRequiredService<IItemCreateConfiguration>(),

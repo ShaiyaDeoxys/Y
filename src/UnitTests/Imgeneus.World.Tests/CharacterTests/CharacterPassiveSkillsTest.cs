@@ -1,5 +1,5 @@
-﻿using Imgeneus.Database.Entities;
-using Imgeneus.Game.Skills;
+﻿using Imgeneus.Game.Skills;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Speed;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace Imgeneus.World.Tests
     {
         public CharacterPassiveSkillsTest()
         {
-            databasePreloader
+            definitionsPreloader
                 .SetupGet((preloader) => preloader.Items)
                 .Returns(new Dictionary<(byte Type, byte TypeId), DbItem>() {
                     { (1,1), new DbItem() { Type = 1, TypeId = 1, ItemName = "Long Sword", AttackTime = 5, MinAttack = 10, PlusAttack = 5 } }
@@ -48,7 +48,7 @@ namespace Imgeneus.World.Tests
         public void WeaponMasteryTest()
         {
             var character = CreateCharacter();
-            var sword = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, 1, 1);
+            var sword = new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, 1, 1);
             Assert.Equal(AttackSpeed.None, character.SpeedManager.TotalAttackSpeed);
 
             character.InventoryManager.Weapon = sword;
@@ -67,7 +67,7 @@ namespace Imgeneus.World.Tests
         public void WeaponPowerUpTest()
         {
             var character = CreateCharacter();
-            var sword = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, 1, 1);
+            var sword = new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, 1, 1);
             character.InventoryManager.Weapon = sword;
 
             Assert.Equal(10, character.StatsManager.MinAttack);

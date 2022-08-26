@@ -12,8 +12,8 @@ namespace Imgeneus.GameDefinitions
     {
         private readonly ILogger<GameDefinitionsPreloder> _logger;
 
-        public Dictionary<(long Type, long TypeId), DBItemDataRecord> Items { get; init; } = new();
-        public Dictionary<long, List<DBItemDataRecord>> ItemsByGrade { get; init; } = new();
+        public Dictionary<(byte Type, byte TypeId), DbItem> Items { get; init; } = new();
+        public Dictionary<ushort, List<DbItem>> ItemsByGrade { get; init; } = new();
 
         public Dictionary<(ushort SkillId, byte SkillLevel), DbSkill> Skills { get; private set; } = new();
 
@@ -53,14 +53,15 @@ namespace Imgeneus.GameDefinitions
 
             foreach (var item in items.Records)
             {
-                Items.Add((item.ItemType, item.ItemTypeId), item);
-                if (ItemsByGrade.ContainsKey(item.Grade))
+                var dbItem = new DbItem(item);
+                Items.Add((dbItem.Type, dbItem.TypeId), dbItem);
+                if (ItemsByGrade.ContainsKey(dbItem.Grade))
                 {
-                    ItemsByGrade[item.Grade].Add(item);
+                    ItemsByGrade[dbItem.Grade].Add(dbItem);
                 }
                 else
                 {
-                    ItemsByGrade.Add(item.Grade, new List<DBItemDataRecord>() { item });
+                    ItemsByGrade.Add(dbItem.Grade, new List<DbItem>() { dbItem });
                 }
             }
         }

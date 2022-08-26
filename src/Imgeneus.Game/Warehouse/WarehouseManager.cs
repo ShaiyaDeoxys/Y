@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Packets;
@@ -21,7 +22,7 @@ namespace Imgeneus.World.Game.Warehouse
 
         private readonly ILogger<WarehouseManager> _logger;
         private readonly IDatabase _database;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly IGameWorld _gameWorld;
@@ -29,11 +30,11 @@ namespace Imgeneus.World.Game.Warehouse
         private int _userId;
         private uint _characterId;
 
-        public WarehouseManager(ILogger<WarehouseManager> logger, IDatabase database, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IGameWorld gameWorld, IGamePacketFactory packetFactory)
+        public WarehouseManager(ILogger<WarehouseManager> logger, IDatabase database, IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IGameWorld gameWorld, IGamePacketFactory packetFactory)
         {
             _logger = logger;
             _database = database;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
             _gameWorld = gameWorld;
@@ -60,7 +61,7 @@ namespace Imgeneus.World.Game.Warehouse
             _characterId = characterId;
             GuildId = guildId;
 
-            foreach (var item in items.Select(x => new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, x)))
+            foreach (var item in items.Select(x => new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, x)))
                 _items.TryAdd(item.Slot, item);
 
             Items = new(_items); // Keep it. ReadOnlyDictionary has bug with Items.Values update.
@@ -209,7 +210,7 @@ namespace Imgeneus.World.Game.Warehouse
                 var ok = _database.SaveChanges() > 0;
                 if (ok)
                 {
-                    item = new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, dbItem);
+                    item = new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, dbItem);
 
                     var me = _gameWorld.Players[_characterId];
                     foreach (var member in me.GuildManager.GuildMembers)

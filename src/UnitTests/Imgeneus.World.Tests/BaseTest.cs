@@ -160,7 +160,7 @@ namespace Imgeneus.World.Tests
             var shapeManager = new ShapeManager(new Mock<ILogger<ShapeManager>>().Object, stealthManager, vehicleManager);
             shapeManager.Init(_characterId);
 
-            var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
+            var warehouseManager = new WarehouseManager(new Mock<ILogger<WarehouseManager>>().Object, databaseMock.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, gameWorldMock.Object, packetFactoryMock.Object);
             var attackManager = new AttackManager(new Mock<ILogger<AttackManager>>().Object, statsManager, levelProvider, elementProvider, countryProvider, speedManager, stealthManager, healthManager, shapeManager, movementManager, vehicleManager);
             attackManager.AlwaysHit = true;
 
@@ -173,7 +173,7 @@ namespace Imgeneus.World.Tests
             skillsManager.Init(_characterId, new List<Skill>());
             var skillCastingManager = new SkillCastingManager(new Mock<ILogger<SkillCastingManager>>().Object, movementManager, teleportManager, healthManager, skillsManager, buffsManager, gameWorldMock.Object, castProtectionManager);
             skillCastingManager.Init(_characterId);
-            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, databasePreloader.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager, BlessManager);
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager, BlessManager);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
 
@@ -181,19 +181,20 @@ namespace Imgeneus.World.Tests
             var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, databaseMock.Object, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object);
             guildManager.Init(_characterId);
 
-            var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, databasePreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider, enchantConfig.Object, itemCreateConfig.Object, countryProvider, BlessManager);
+            var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, definitionsPreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider, enchantConfig.Object, itemCreateConfig.Object, countryProvider, BlessManager);
             var tradeManager = new TradeManager(new Mock<ILogger<TradeManager>>().Object, gameWorldMock.Object, inventoryManager);
             var friendsManager = new FriendsManager(new Mock<ILogger<FriendsManager>>().Object, databaseMock.Object, gameWorldMock.Object);
             var duelManager = new DuelManager(new Mock<ILogger<DuelManager>>().Object, gameWorldMock.Object, tradeManager, movementManager, healthManager, killsManager, mapProvider, inventoryManager, teleportManager);
             duelManager.Init(_characterId);
 
-            var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, inventoryManager);
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, levelingManager);
+            var bankManager = new BankManager(new Mock<ILogger<BankManager>>().Object, databaseMock.Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, inventoryManager);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, mapProvider, gameWorldMock.Object, databaseMock.Object, partyManager, inventoryManager, enchantConfig.Object, itemCreateConfig.Object, levelingManager);
             var shopManager = new ShopManager(new Mock<ILogger<ShopManager>>().Object, inventoryManager, mapProvider);
 
             var character = new Character(
                 new Mock<ILogger<Character>>().Object,
                 databasePreloader.Object,
+                definitionsPreloader.Object,
                 guildManager,
                 countryProvider,
                 speedManager,
@@ -281,6 +282,7 @@ namespace Imgeneus.World.Tests
                 new MoveArea(0, 0, 0, 0, 0, 0),
                 mobLoggerMock.Object,
                 databasePreloader.Object,
+                definitionsPreloader.Object,
                 aiManager,
                 enchantConfig.Object,
                 itemCreateConfig.Object,
@@ -387,6 +389,48 @@ namespace Imgeneus.World.Tests
                 });
 
             databasePreloader
+                .SetupGet((preloader) => preloader.MobItems)
+                .Returns(new Dictionary<(ushort MobId, byte ItemOrder), DbMobItems>());
+
+            databasePreloader
+                .SetupGet((preloader) => preloader.Levels)
+                .Returns(new Dictionary<(Mode mode, ushort level), DbLevel>()
+                {
+                    { (Mode.Beginner, 1), Level1_Mode1 },
+                    { (Mode.Normal, 1), Level1_Mode2 },
+                    { (Mode.Hard, 1), Level1_Mode3 },
+                    { (Mode.Ultimate, 1), Level1_Mode4 },
+                    { (Mode.Beginner, 2), Level2_Mode1 },
+                    { (Mode.Normal, 2), Level2_Mode2 },
+                    { (Mode.Hard, 2), Level2_Mode3 },
+                    { (Mode.Ultimate, 2), Level2_Mode4 },
+                    { (Mode.Beginner, 37), Level37_Mode1 },
+                    { (Mode.Normal, 37), Level37_Mode2 },
+                    { (Mode.Hard, 37), Level37_Mode3 },
+                    { (Mode.Ultimate, 37), Level37_Mode4 },
+                    { (Mode.Beginner, 38), Level38_Mode1 },
+                    { (Mode.Normal, 38), Level38_Mode2 },
+                    { (Mode.Hard, 38), Level38_Mode3 },
+                    { (Mode.Ultimate, 38), Level38_Mode4 },
+                    { (Mode.Beginner, 79), Level79_Mode1 },
+                    { (Mode.Normal, 79), Level79_Mode2 },
+                    { (Mode.Hard, 79), Level79_Mode3 },
+                    { (Mode.Ultimate, 79), Level79_Mode4 },
+                    { (Mode.Beginner, 80), Level80_Mode1 },
+                    { (Mode.Normal, 80), Level80_Mode2 },
+                    { (Mode.Hard, 80), Level80_Mode3 },
+                    { (Mode.Ultimate, 80), Level80_Mode4 },
+                });
+
+            definitionsPreloader
+                .SetupGet((preloader) => preloader.NPCs)
+                .Returns(new Dictionary<(NpcType Type, short TypeId), BaseNpc>()
+                {
+                    { (NpcType.Merchant, 1), WeaponMerchant }
+                });
+
+
+            definitionsPreloader
                 .SetupGet((preloader) => preloader.Items)
                 .Returns(new Dictionary<(byte Type, byte TypeId), DbItem>()
                 {
@@ -426,51 +470,10 @@ namespace Imgeneus.World.Tests
                     { (100, 75), DoubleWarehouse },
                 });
 
-            databasePreloader
+            definitionsPreloader
                 .SetupGet((preloader) => preloader.ItemsByGrade)
                 .Returns(new Dictionary<ushort, List<DbItem>>() {
                     { 1, new List<DbItem>() { RedApple, GreenApple } }
-                });
-
-            databasePreloader
-                .SetupGet((preloader) => preloader.MobItems)
-                .Returns(new Dictionary<(ushort MobId, byte ItemOrder), DbMobItems>());
-
-            databasePreloader
-                .SetupGet((preloader) => preloader.Levels)
-                .Returns(new Dictionary<(Mode mode, ushort level), DbLevel>()
-                {
-                    { (Mode.Beginner, 1), Level1_Mode1 },
-                    { (Mode.Normal, 1), Level1_Mode2 },
-                    { (Mode.Hard, 1), Level1_Mode3 },
-                    { (Mode.Ultimate, 1), Level1_Mode4 },
-                    { (Mode.Beginner, 2), Level2_Mode1 },
-                    { (Mode.Normal, 2), Level2_Mode2 },
-                    { (Mode.Hard, 2), Level2_Mode3 },
-                    { (Mode.Ultimate, 2), Level2_Mode4 },
-                    { (Mode.Beginner, 37), Level37_Mode1 },
-                    { (Mode.Normal, 37), Level37_Mode2 },
-                    { (Mode.Hard, 37), Level37_Mode3 },
-                    { (Mode.Ultimate, 37), Level37_Mode4 },
-                    { (Mode.Beginner, 38), Level38_Mode1 },
-                    { (Mode.Normal, 38), Level38_Mode2 },
-                    { (Mode.Hard, 38), Level38_Mode3 },
-                    { (Mode.Ultimate, 38), Level38_Mode4 },
-                    { (Mode.Beginner, 79), Level79_Mode1 },
-                    { (Mode.Normal, 79), Level79_Mode2 },
-                    { (Mode.Hard, 79), Level79_Mode3 },
-                    { (Mode.Ultimate, 79), Level79_Mode4 },
-                    { (Mode.Beginner, 80), Level80_Mode1 },
-                    { (Mode.Normal, 80), Level80_Mode2 },
-                    { (Mode.Hard, 80), Level80_Mode3 },
-                    { (Mode.Ultimate, 80), Level80_Mode4 },
-                });
-
-            definitionsPreloader
-                .SetupGet((preloader) => preloader.NPCs)
-                .Returns(new Dictionary<(NpcType Type, short TypeId), BaseNpc>()
-                {
-                    { (NpcType.Merchant, 1), WeaponMerchant }
                 });
 
             NewBeginnings.Results.Add(new QuestResult() { Exp = 5, Money = 3000 });

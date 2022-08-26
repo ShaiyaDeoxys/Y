@@ -132,7 +132,7 @@ namespace Imgeneus.World.Tests
             var character = CreateCharacter();
             Assert.Equal(Element.None, character.ElementProvider.DefenceElement);
 
-            character.InventoryManager.Armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            character.InventoryManager.Armor = new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             Assert.Equal(Element.Water1, character.ElementProvider.DefenceElement);
 
             character.BuffsManager.AddBuff(new Skill(AttributeRemove, 0, 0), null);
@@ -146,7 +146,7 @@ namespace Imgeneus.World.Tests
             var character = CreateCharacter();
             Assert.Equal(Element.None, character.ElementProvider.AttackElement);
 
-            character.InventoryManager.Weapon = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
+            character.InventoryManager.Weapon = new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId);
             Assert.Equal(Element.Fire1, character.ElementProvider.AttackElement);
 
             character.BuffsManager.AddBuff(new Skill(EarthWeapon, 0, 0), null);
@@ -160,7 +160,7 @@ namespace Imgeneus.World.Tests
             var character = CreateCharacter();
             Assert.Equal(Element.None, character.ElementProvider.DefenceElement);
 
-            character.InventoryManager.Armor = new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
+            character.InventoryManager.Armor = new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId);
             Assert.Equal(Element.Water1, character.ElementProvider.DefenceElement);
 
             character.BuffsManager.AddBuff(new Skill(EarthSkin, 0, 0), null);

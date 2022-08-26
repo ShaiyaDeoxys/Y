@@ -10,12 +10,13 @@ using Imgeneus.World.Game.Linking;
 using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Warehouse;
 using Timer = System.Timers.Timer;
+using Imgeneus.GameDefinitions;
 
 namespace Imgeneus.World.Game.Inventory
 {
     public class Item : IDisposable
     {
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly DbItem _dbItem;
 
@@ -51,7 +52,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public byte EnchantmentLevel;
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbCharacterItems dbCharacterItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbCharacterItem.Type, dbCharacterItem.TypeId, dbCharacterItem.Count)
+        public Item(IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbCharacterItems dbCharacterItem) : this(definitionsPreloader, enchantConfig, itemCreateConfig, dbCharacterItem.Type, dbCharacterItem.TypeId, dbCharacterItem.Count)
         {
             Bag = dbCharacterItem.Bag;
             Slot = dbCharacterItem.Slot;
@@ -67,20 +68,20 @@ namespace Imgeneus.World.Game.Inventory
                 DyeColor = new DyeColor(dbCharacterItem.DyeColorAlpha, dbCharacterItem.DyeColorSaturation, dbCharacterItem.DyeColorR, dbCharacterItem.DyeColorG, dbCharacterItem.DyeColorB);
 
             if (dbCharacterItem.GemTypeId1 != 0)
-                Gem1 = new Gem(databasePreloader, dbCharacterItem.GemTypeId1, 0);
+                Gem1 = new Gem(definitionsPreloader, dbCharacterItem.GemTypeId1, 0);
             if (dbCharacterItem.GemTypeId2 != 0)
-                Gem2 = new Gem(databasePreloader, dbCharacterItem.GemTypeId2, 1);
+                Gem2 = new Gem(definitionsPreloader, dbCharacterItem.GemTypeId2, 1);
             if (dbCharacterItem.GemTypeId3 != 0)
-                Gem3 = new Gem(databasePreloader, dbCharacterItem.GemTypeId3, 2);
+                Gem3 = new Gem(definitionsPreloader, dbCharacterItem.GemTypeId3, 2);
             if (dbCharacterItem.GemTypeId4 != 0)
-                Gem4 = new Gem(databasePreloader, dbCharacterItem.GemTypeId4, 3);
+                Gem4 = new Gem(definitionsPreloader, dbCharacterItem.GemTypeId4, 3);
             if (dbCharacterItem.GemTypeId5 != 0)
-                Gem5 = new Gem(databasePreloader, dbCharacterItem.GemTypeId5, 4);
+                Gem5 = new Gem(definitionsPreloader, dbCharacterItem.GemTypeId5, 4);
             if (dbCharacterItem.GemTypeId6 != 0)
-                Gem6 = new Gem(databasePreloader, dbCharacterItem.GemTypeId6, 5);
+                Gem6 = new Gem(definitionsPreloader, dbCharacterItem.GemTypeId6, 5);
         }
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbWarehouseItem dbWarehouseItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbWarehouseItem.Type, dbWarehouseItem.TypeId, dbWarehouseItem.Count) 
+        public Item(IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbWarehouseItem dbWarehouseItem) : this(definitionsPreloader, enchantConfig, itemCreateConfig, dbWarehouseItem.Type, dbWarehouseItem.TypeId, dbWarehouseItem.Count) 
         {
             Bag = WarehouseManager.WAREHOUSE_BAG;
             Slot = dbWarehouseItem.Slot;
@@ -96,20 +97,20 @@ namespace Imgeneus.World.Game.Inventory
                 DyeColor = new DyeColor(dbWarehouseItem.DyeColorAlpha, dbWarehouseItem.DyeColorSaturation, dbWarehouseItem.DyeColorR, dbWarehouseItem.DyeColorG, dbWarehouseItem.DyeColorB);
 
             if (dbWarehouseItem.GemTypeId1 != 0)
-                Gem1 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId1, 0);
+                Gem1 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId1, 0);
             if (dbWarehouseItem.GemTypeId2 != 0)
-                Gem2 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId2, 1);
+                Gem2 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId2, 1);
             if (dbWarehouseItem.GemTypeId3 != 0)
-                Gem3 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId3, 2);
+                Gem3 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId3, 2);
             if (dbWarehouseItem.GemTypeId4 != 0)
-                Gem4 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId4, 3);
+                Gem4 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId4, 3);
             if (dbWarehouseItem.GemTypeId5 != 0)
-                Gem5 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId5, 4);
+                Gem5 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId5, 4);
             if (dbWarehouseItem.GemTypeId6 != 0)
-                Gem6 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId6, 5);
+                Gem6 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId6, 5);
         }
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbGuildWarehouseItem dbWarehouseItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbWarehouseItem.Type, dbWarehouseItem.TypeId, dbWarehouseItem.Count)
+        public Item(IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbGuildWarehouseItem dbWarehouseItem) : this(definitionsPreloader, enchantConfig, itemCreateConfig, dbWarehouseItem.Type, dbWarehouseItem.TypeId, dbWarehouseItem.Count)
         {
             Bag = WarehouseManager.GUILD_WAREHOUSE_BAG;
             Slot = dbWarehouseItem.Slot;
@@ -125,20 +126,20 @@ namespace Imgeneus.World.Game.Inventory
                 DyeColor = new DyeColor(dbWarehouseItem.DyeColorAlpha, dbWarehouseItem.DyeColorSaturation, dbWarehouseItem.DyeColorR, dbWarehouseItem.DyeColorG, dbWarehouseItem.DyeColorB);
 
             if (dbWarehouseItem.GemTypeId1 != 0)
-                Gem1 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId1, 0);
+                Gem1 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId1, 0);
             if (dbWarehouseItem.GemTypeId2 != 0)
-                Gem2 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId2, 1);
+                Gem2 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId2, 1);
             if (dbWarehouseItem.GemTypeId3 != 0)
-                Gem3 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId3, 2);
+                Gem3 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId3, 2);
             if (dbWarehouseItem.GemTypeId4 != 0)
-                Gem4 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId4, 3);
+                Gem4 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId4, 3);
             if (dbWarehouseItem.GemTypeId5 != 0)
-                Gem5 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId5, 4);
+                Gem5 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId5, 4);
             if (dbWarehouseItem.GemTypeId6 != 0)
-                Gem6 = new Gem(databasePreloader, dbWarehouseItem.GemTypeId6, 5);
+                Gem6 = new Gem(definitionsPreloader, dbWarehouseItem.GemTypeId6, 5);
         }
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbMarketItem dbMarketItem) : this(databasePreloader, enchantConfig, itemCreateConfig, dbMarketItem.Type, dbMarketItem.TypeId, dbMarketItem.Count)
+        public Item(IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, DbMarketItem dbMarketItem) : this(definitionsPreloader, enchantConfig, itemCreateConfig, dbMarketItem.Type, dbMarketItem.TypeId, dbMarketItem.Count)
         {
             Quality = dbMarketItem.Quality;
 
@@ -149,26 +150,26 @@ namespace Imgeneus.World.Game.Inventory
                 DyeColor = new DyeColor(dbMarketItem.DyeColorAlpha, dbMarketItem.DyeColorSaturation, dbMarketItem.DyeColorR, dbMarketItem.DyeColorG, dbMarketItem.DyeColorB);
 
             if (dbMarketItem.GemTypeId1 != 0)
-                Gem1 = new Gem(databasePreloader, dbMarketItem.GemTypeId1, 0);
+                Gem1 = new Gem(definitionsPreloader, dbMarketItem.GemTypeId1, 0);
             if (dbMarketItem.GemTypeId2 != 0)
-                Gem2 = new Gem(databasePreloader, dbMarketItem.GemTypeId2, 1);
+                Gem2 = new Gem(definitionsPreloader, dbMarketItem.GemTypeId2, 1);
             if (dbMarketItem.GemTypeId3 != 0)
-                Gem3 = new Gem(databasePreloader, dbMarketItem.GemTypeId3, 2);
+                Gem3 = new Gem(definitionsPreloader, dbMarketItem.GemTypeId3, 2);
             if (dbMarketItem.GemTypeId4 != 0)
-                Gem4 = new Gem(databasePreloader, dbMarketItem.GemTypeId4, 3);
+                Gem4 = new Gem(definitionsPreloader, dbMarketItem.GemTypeId4, 3);
             if (dbMarketItem.GemTypeId5 != 0)
-                Gem5 = new Gem(databasePreloader, dbMarketItem.GemTypeId5, 4);
+                Gem5 = new Gem(definitionsPreloader, dbMarketItem.GemTypeId5, 4);
             if (dbMarketItem.GemTypeId6 != 0)
-                Gem6 = new Gem(databasePreloader, dbMarketItem.GemTypeId6, 5);
+                Gem6 = new Gem(definitionsPreloader, dbMarketItem.GemTypeId6, 5);
         }
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, BankItem bankItem) : this(databasePreloader, enchantConfig, itemCreateConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
+        public Item(IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, BankItem bankItem) : this(definitionsPreloader, enchantConfig, itemCreateConfig, bankItem.Type, bankItem.TypeId, bankItem.Count)
         {
         }
 
-        public Item(IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, byte type, byte typeId, byte count = 1)
+        public Item(IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, byte type, byte typeId, byte count = 1)
         {
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
             Type = type;
@@ -178,7 +179,7 @@ namespace Imgeneus.World.Game.Inventory
 
             if (Type != 0 && TypeId != 0 && Type != MONEY_ITEM_TYPE)
             {
-                _dbItem = _databasePreloader.Items[(Type, TypeId)];
+                _dbItem = _definitionsPreloader.Items[(Type, TypeId)];
 
                 // Prevent Count from exceeding MaxCount and from being 0 (zero)
                 var newCount = count > MaxCount ? MaxCount : count;
@@ -1267,10 +1268,10 @@ namespace Imgeneus.World.Game.Inventory
                 var random = new Random();
                 var index = random.Next(possibilities.Count);
 
-                var itemsByGrade = _databasePreloader.ItemsByGrade[possibilities[index]];
+                var itemsByGrade = _definitionsPreloader.ItemsByGrade[possibilities[index]];
                 var dbItem = itemsByGrade[random.Next(items.Count)];
 
-                items.Add(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, dbItem.Type, dbItem.TypeId));
+                items.Add(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, dbItem.Type, dbItem.TypeId));
             }
             else 
             {
@@ -1293,7 +1294,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public Item Clone()
         {
-            return new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, Type, TypeId)
+            return new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, Type, TypeId)
             {
                 Bag = Bag,
                 Slot = Slot,

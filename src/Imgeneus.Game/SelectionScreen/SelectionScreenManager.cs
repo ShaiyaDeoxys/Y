@@ -2,6 +2,7 @@
 using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game;
 using Imgeneus.World.Game.Player.Config;
@@ -28,15 +29,15 @@ namespace Imgeneus.World.SelectionScreen
         private readonly IGameWorld _gameWorld;
         private readonly ICharacterConfiguration _characterConfiguration;
         private readonly IDatabase _database;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
 
-        public SelectionScreenManager(ILogger<SelectionScreenManager> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database, IDatabasePreloader databasePreloader)
+        public SelectionScreenManager(ILogger<SelectionScreenManager> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database, IGameDefinitionsPreloder definitionsPreloader)
         {
             _logger = logger;
             _gameWorld = gameWorld;
             _characterConfiguration = characterConfiguration;
             _database = database;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
 
 #if DEBUG
             _logger.LogDebug($"SelectionScreenManager {GetHashCode()} created");
@@ -143,7 +144,7 @@ namespace Imgeneus.World.SelectionScreen
                         Type = itm.Type,
                         TypeId = itm.TypeId,
                         Count = itm.Count,
-                        Quality = _databasePreloader.Items[(itm.Type, itm.TypeId)].Quality,
+                        Quality = _definitionsPreloader.Items[(itm.Type, itm.TypeId)].Quality,
                         Bag = 1,
                         Slot = i
                     });

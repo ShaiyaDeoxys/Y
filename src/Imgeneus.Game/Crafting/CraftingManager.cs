@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Linking;
 using Microsoft.Extensions.Logging;
@@ -16,16 +17,16 @@ namespace Imgeneus.Game.Crafting
         private readonly ILogger<CraftingManager> _logger;
         private readonly IInventoryManager _inventoryManager;
         private readonly ICraftingConfiguration _craftingConfiguration;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
 
-        public CraftingManager(ILogger<CraftingManager> logger, IInventoryManager inventoryManager, ICraftingConfiguration craftingConfiguration, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
+        public CraftingManager(ILogger<CraftingManager> logger, IInventoryManager inventoryManager, ICraftingConfiguration craftingConfiguration, IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
         {
             _logger = logger;
             _inventoryManager = inventoryManager;
             _craftingConfiguration = craftingConfiguration;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
 #if DEBUG
@@ -85,7 +86,7 @@ namespace Imgeneus.Game.Crafting
             var success = rate >= _random.Next(1, 100);
 
             if (success)
-                _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, recipe.Type, recipe.TypeId, recipe.Count));
+                _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, recipe.Type, recipe.TypeId, recipe.Count));
 
             return success;
         }

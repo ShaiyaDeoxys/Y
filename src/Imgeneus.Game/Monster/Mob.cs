@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
@@ -49,6 +50,7 @@ namespace Imgeneus.World.Game.Monster
                    MoveArea moveArea,
                    ILogger<Mob> logger,
                    IDatabasePreloader databasePreloader,
+                   IGameDefinitionsPreloder definitionsPreloader,
                    IAIManager aiManager,
                    IItemEnchantConfiguration enchantConfig,
                    IItemCreateConfiguration itemCreateConfig,
@@ -63,7 +65,7 @@ namespace Imgeneus.World.Game.Monster
                    IElementProvider elementProvider,
                    IMovementManager movementManager,
                    IUntouchableManager untouchableManager,
-                   IMapProvider mapProvider) : base(databasePreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
+                   IMapProvider mapProvider) : base(databasePreloader, definitionsPreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
             _logger = logger;
             _enchantConfig = enchantConfig;
@@ -215,7 +217,7 @@ namespace Imgeneus.World.Game.Monster
         /// </summary>
         public Mob Clone()
         {
-            return new Mob(MobId, ShouldRebirth, _moveArea, _logger, _databasePreloader, AIManager, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider)
+            return new Mob(MobId, ShouldRebirth, _moveArea, _logger, _databasePreloader, _definitionsPreloader, AIManager, _enchantConfig, _itemCreateConfig, CountryProvider, StatsManager, HealthManager, LevelProvider, SpeedManager, AttackManager, SkillsManager, BuffsManager, ElementProvider, MovementManager, UntouchableManager, MapProvider)
             {
                 RespawnTimeInMilliseconds = RespawnTimeInMilliseconds
             };

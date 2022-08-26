@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Health;
@@ -20,7 +21,7 @@ namespace Imgeneus.World.Game.Linking
         private readonly Random _random = new Random();
 
         private readonly ILogger<LinkingManager> _logger;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IInventoryManager _inventoryManager;
         private readonly IStatsManager _statsManager;
         private readonly IHealthManager _healthManager;
@@ -32,10 +33,10 @@ namespace Imgeneus.World.Game.Linking
         private readonly ICountryProvider _countryProvider;
         private readonly IBlessManager _blessManager;
 
-        public LinkingManager(ILogger<LinkingManager> logger, IDatabasePreloader databasePreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider, IItemEnchantConfiguration itemEnchantConfig, IItemCreateConfiguration itemCreateConfig, ICountryProvider countryProvider, IBlessManager blessManager)
+        public LinkingManager(ILogger<LinkingManager> logger, IGameDefinitionsPreloder definitionsPreloader, IInventoryManager inventoryManager, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IGuildManager guildManager, IMapProvider mapProvider, IItemEnchantConfiguration itemEnchantConfig, IItemCreateConfiguration itemCreateConfig, ICountryProvider countryProvider, IBlessManager blessManager)
         {
             _logger = logger;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _inventoryManager = inventoryManager;
             _statsManager = statsManager;
             _healthManager = healthManager;
@@ -173,32 +174,32 @@ namespace Imgeneus.World.Game.Linking
                 if (item.Gem1 is null)
                 {
                     slot = 0;
-                    item.Gem1 = new Gem(_databasePreloader, gem.TypeId, slot);
+                    item.Gem1 = new Gem(_definitionsPreloader, gem.TypeId, slot);
                 }
                 else if (item.Gem2 is null)
                 {
                     slot = 1;
-                    item.Gem2 = new Gem(_databasePreloader, gem.TypeId, slot);
+                    item.Gem2 = new Gem(_definitionsPreloader, gem.TypeId, slot);
                 }
                 else if (item.Gem3 is null)
                 {
                     slot = 2;
-                    item.Gem3 = new Gem(_databasePreloader, gem.TypeId, slot);
+                    item.Gem3 = new Gem(_definitionsPreloader, gem.TypeId, slot);
                 }
                 else if (item.Gem4 is null)
                 {
                     slot = 3;
-                    item.Gem4 = new Gem(_databasePreloader, gem.TypeId, slot);
+                    item.Gem4 = new Gem(_definitionsPreloader, gem.TypeId, slot);
                 }
                 else if (item.Gem2 is null)
                 {
                     slot = 4;
-                    item.Gem5 = new Gem(_databasePreloader, gem.TypeId, slot);
+                    item.Gem5 = new Gem(_definitionsPreloader, gem.TypeId, slot);
                 }
                 else if (item.Gem2 is null)
                 {
                     slot = 5;
-                    item.Gem6 = new Gem(_databasePreloader, gem.TypeId, slot);
+                    item.Gem6 = new Gem(_definitionsPreloader, gem.TypeId, slot);
                 }
             }
             gem.Count--;
@@ -269,7 +270,7 @@ namespace Imgeneus.World.Game.Linking
                 if (success)
                 {
                     savedGems.Add(gem);
-                    var gemItem = new Item(_databasePreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                    var gemItem = new Item(_definitionsPreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                     _inventoryManager.AddItem(gemItem);
 
                     if (gemItem != null)
@@ -309,7 +310,7 @@ namespace Imgeneus.World.Game.Linking
                     if (success)
                     {
                         savedGems.Add(gem);
-                        var gemItem = new Item(_databasePreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
+                        var gemItem = new Item(_definitionsPreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
                         _inventoryManager.AddItem(gemItem);
 
                         if (gemItem != null)

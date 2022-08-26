@@ -24,13 +24,12 @@ namespace Imgeneus.World.Game.Quests
         private readonly IDatabase _database;
         private readonly IPartyManager _partyManager;
         private readonly IInventoryManager _inventoryManager;
-        private readonly IDatabasePreloader _databasePreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private readonly ILevelingManager _levelingManager;
         private uint _ownerId;
 
-        public QuestsManager(ILogger<QuestsManager> logger, IGameDefinitionsPreloder definitionsPreloader, IMapProvider mapProvider, IGameWorld gameWorld, IDatabase database, IPartyManager partyManager, IInventoryManager inventoryManager, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, ILevelingManager levelingManager)
+        public QuestsManager(ILogger<QuestsManager> logger, IGameDefinitionsPreloder definitionsPreloader, IMapProvider mapProvider, IGameWorld gameWorld, IDatabase database, IPartyManager partyManager, IInventoryManager inventoryManager, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, ILevelingManager levelingManager)
         {
             _logger = logger;
             _definitionsPreloader = definitionsPreloader;
@@ -39,7 +38,6 @@ namespace Imgeneus.World.Game.Quests
             _database = database;
             _partyManager = partyManager;
             _inventoryManager = inventoryManager;
-            _databasePreloader = databasePreloader;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
             _levelingManager = levelingManager;
@@ -132,7 +130,7 @@ namespace Imgeneus.World.Game.Quests
             quest.QuestTimeElapsed += Quest_QuestTimeElapsed;
             quest.StartQuestTimer();
             foreach (var item in quest.StartRequiredItems)
-                _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, item.Type, item.TypeId, item.Count));
+                _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, item.Type, item.TypeId, item.Count));
 
             Quests.Add(quest);
 
@@ -248,7 +246,7 @@ namespace Imgeneus.World.Game.Quests
             if (!quest.CanChooseRevard)
             {
                 foreach (var itm in quest.RevardItems)
-                    _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, itm.Type, itm.TypeId, itm.Count));
+                    _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, itm.Type, itm.TypeId, itm.Count));
 
                 if (quest.Gold > 0)
                     _inventoryManager.Gold += quest.Gold;
@@ -282,7 +280,7 @@ namespace Imgeneus.World.Game.Quests
             if (quest.RevardItems.Count < index || quest.RevardItems[index].Type == 0 || quest.RevardItems[index].TypeId == 0)
                 return false;
 
-            _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, quest.RevardItems[index].Type, quest.RevardItems[index].TypeId, quest.RevardItems[index].Count));
+            _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, quest.RevardItems[index].Type, quest.RevardItems[index].TypeId, quest.RevardItems[index].Count));
 
             quest.Finish(true);
             return true;

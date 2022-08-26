@@ -49,7 +49,7 @@ namespace Imgeneus.World.Tests.ShopTests
             Assert.False(ok);
             Assert.Empty(character.ShopManager.Items);
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
 
             ok = character.ShopManager.TryAddItem(1, 0, 0, 100);
             Assert.True(ok);
@@ -63,7 +63,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ItemCanBeAddedToShopOnlyOnce()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             var ok = character.ShopManager.TryAddItem(1, 0, 0, 100);
             Assert.True(ok);
 
@@ -76,8 +76,8 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ItemShouldHaveUniqueSlot()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, GreenApple.Type, GreenApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, GreenApple.Type, GreenApple.TypeId));
 
             var ok = character.ShopManager.TryAddItem(1, 0, 0, 100);
             Assert.True(ok);
@@ -91,7 +91,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ItemRemove()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
 
             var ok = character.ShopManager.TryAddItem(1, 0, 0, 100);
             Assert.True(ok);
@@ -111,7 +111,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ShopStart()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             character.ShopManager.TryAddItem(1, 0, 0, 100);
 
             var ok = character.ShopManager.TryStart("my shop");
@@ -124,7 +124,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ShopWontStart()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
 
             var ok = character.ShopManager.TryStart(string.Empty);
             Assert.False(ok);
@@ -143,7 +143,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ShopStartTwice()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             character.ShopManager.TryAddItem(1, 0, 0, 100);
 
             var ok = character.ShopManager.TryStart("my shop");
@@ -158,7 +158,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ShopCancel()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             character.ShopManager.TryAddItem(1, 0, 0, 100);
             character.ShopManager.TryStart("my shop");
             Assert.True(character.ShopManager.IsShopOpened);
@@ -173,7 +173,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ShopCancelTwice()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             character.ShopManager.TryAddItem(1, 0, 0, 100);
             character.ShopManager.TryStart("my shop");
             Assert.True(character.ShopManager.IsShopOpened);
@@ -189,7 +189,7 @@ namespace Imgeneus.World.Tests.ShopTests
         public void ShopEnd()
         {
             var character = CreateCharacter(_capital);
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             character.ShopManager.TryAddItem(1, 0, 0, 100);
             character.ShopManager.TryStart("my shop");
             Assert.NotEmpty(character.ShopManager.Items);
@@ -217,7 +217,7 @@ namespace Imgeneus.World.Tests.ShopTests
             var character1 = CreateCharacter(_capital);
             var character2 = CreateCharacter(_capital);
 
-            character1.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character1.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             character1.ShopManager.TryAddItem(1, 0, 0, 100);
             character1.ShopManager.TryStart("my shop");
 
@@ -233,7 +233,7 @@ namespace Imgeneus.World.Tests.ShopTests
             var character1 = CreateCharacter(_capital);
             var character2 = CreateCharacter(_capital);
 
-            character1.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character1.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
             character1.ShopManager.TryAddItem(1, 0, 0, 100);
             character1.ShopManager.TryStart("my shop");
 
@@ -249,7 +249,7 @@ namespace Imgeneus.World.Tests.ShopTests
             var character1 = CreateCharacter(_capital);
             var character2 = CreateCharacter(_capital);
 
-            character1.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId, 10));
+            character1.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId, 10));
             character1.ShopManager.TryAddItem(1, 0, 0, 100);
             character1.ShopManager.TryStart("my shop");
 
@@ -273,7 +273,7 @@ namespace Imgeneus.World.Tests.ShopTests
             var character1 = CreateCharacter(_capital);
             var character2 = CreateCharacter(_capital);
 
-            character1.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId, 10));
+            character1.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId, 10));
             character1.ShopManager.TryAddItem(1, 0, 0, 100);
             character1.ShopManager.TryStart("my shop");
 

@@ -49,11 +49,6 @@ namespace Imgeneus.Database
         public DbSet<DbCharacterActiveBuff> ActiveBuffs { get; set; }
 
         /// <summary>
-        /// Collection of items. Taken from original db.
-        /// </summary>
-        public DbSet<DbItem> Items { get; set; }
-
-        /// <summary>
         /// Collection of mobs. Taken from original db.
         /// </summary>
         public DbSet<DbMob> Mobs { get; set; }

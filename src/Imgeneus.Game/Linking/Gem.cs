@@ -1,24 +1,24 @@
 ﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Inventory;
 
 namespace Imgeneus.World.Game.Linking
 {
     public class Gem
     {
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly DbItem _item;
 
         public int TypeId { get; private set; }
 
-        public Gem(IDatabasePreloader databasePreloader, int typeId, byte position)
+        public Gem(IGameDefinitionsPreloder definitionsPreloader, int typeId, byte position)
         {
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             TypeId = typeId;
             Position = position;
 
-            _item = _databasePreloader.Items[(Item.GEM_ITEM_TYPE, (byte)TypeId)];
+            _item = _definitionsPreloader.Items[(Item.GEM_ITEM_TYPE, (byte)TypeId)];
         }
 
         public byte Position { get; private set; }

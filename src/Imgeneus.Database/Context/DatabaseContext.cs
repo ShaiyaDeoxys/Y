@@ -22,8 +22,6 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbCharacterActiveBuff> ActiveBuffs { get; set; }
 
-        public DbSet<DbItem> Items { get; set; }
-
         public DbSet<DbMob> Mobs { get; set; }
 
         public DbSet<DbMobItems> MobItems { get; set; }
@@ -59,8 +57,6 @@ namespace Imgeneus.Database.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DbUser>().HasIndex(c => new { c.UserName, c.Email }).IsUnique();
-
-            modelBuilder.Entity<DbItem>().HasKey(x => new { x.Type, x.TypeId });
 
             modelBuilder.Entity<DbMobItems>().HasKey(x => new { x.MobId, x.ItemOrder });
 

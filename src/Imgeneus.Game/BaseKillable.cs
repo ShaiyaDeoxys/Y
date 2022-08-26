@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
@@ -20,6 +21,8 @@ namespace Imgeneus.World.Game
     public abstract class BaseKillable : IKillable, IMapMember
     {
         protected readonly IDatabasePreloader _databasePreloader;
+        protected readonly IGameDefinitionsPreloder _definitionsPreloader;
+
         public ICountryProvider CountryProvider { get; private set; }
         public IStatsManager StatsManager { get; private set; }
         public IHealthManager HealthManager { get; private set; }
@@ -30,9 +33,10 @@ namespace Imgeneus.World.Game
         public IUntouchableManager UntouchableManager { get; private set; }
         public IMapProvider MapProvider { get; private set; }
 
-        public BaseKillable(IDatabasePreloader databasePreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider, IMovementManager movementManager, IUntouchableManager untouchableManager, IMapProvider mapProvider)
+        public BaseKillable(IDatabasePreloader databasePreloader, IGameDefinitionsPreloder definitionsPreloader, ICountryProvider countryProvider, IStatsManager statsManager, IHealthManager healthManager, ILevelProvider levelProvider, IBuffsManager buffsManager, IElementProvider elementProvider, IMovementManager movementManager, IUntouchableManager untouchableManager, IMapProvider mapProvider)
         {
             _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             CountryProvider = countryProvider;
             StatsManager = statsManager;
             HealthManager = healthManager;

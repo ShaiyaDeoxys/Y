@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Linking;
@@ -21,19 +22,19 @@ namespace Imgeneus.Game.Market
         private readonly ILogger<MarketManager> _logger;
         private readonly IDatabase _database;
         private readonly IInventoryManager _inventoryManager;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IItemEnchantConfiguration _enchantConfig;
         private readonly IItemCreateConfiguration _itemCreateConfig;
         private uint _ownerId;
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        public MarketManager(ILogger<MarketManager> logger, IDatabase database, IInventoryManager inventoryManager, IDatabasePreloader databasePreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
+        public MarketManager(ILogger<MarketManager> logger, IDatabase database, IInventoryManager inventoryManager, IGameDefinitionsPreloder definitionsPreloader, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig)
         {
             _logger = logger;
             _database = database;
             _inventoryManager = inventoryManager;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
 #if DEBUG
@@ -223,7 +224,7 @@ namespace Imgeneus.Game.Market
             var ok = (await _database.SaveChangesAsync()) > 0;
             Item item = null;
             if (ok)
-                item = _inventoryManager.AddItem(new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, marketItem), true);
+                item = _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, marketItem), true);
 
             return (ok, item);
         }
@@ -256,7 +257,7 @@ namespace Imgeneus.Game.Market
             var resultItems = new List<DbMarket>();
             foreach (var item in items)
             {
-                var config = _databasePreloader.Items[(item.MarketItem.Type, item.MarketItem.TypeId)];
+                var config = _definitionsPreloader.Items[(item.MarketItem.Type, item.MarketItem.TypeId)];
 
                 bool shouldAdd = true;
 

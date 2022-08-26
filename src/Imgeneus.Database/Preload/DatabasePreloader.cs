@@ -12,12 +12,6 @@ namespace Imgeneus.Database.Preload
         private readonly IDatabase _database;
 
         /// <inheritdoc />
-        public Dictionary<(byte Type, byte TypeId), DbItem> Items { get; private set; } = new Dictionary<(byte Type, byte TypeId), DbItem>();
-
-        /// <inheritdoc />
-        public Dictionary<ushort, List<DbItem>> ItemsByGrade { get; } = new Dictionary<ushort, List<DbItem>>();
-
-        /// <inheritdoc />
         public Dictionary<ushort, DbMob> Mobs { get; private set; } = new Dictionary<ushort, DbMob>();
 
         /// <inheritdoc />
@@ -42,7 +36,6 @@ namespace Imgeneus.Database.Preload
         {
             try
             {
-                PreloadItems(_database);
                 PreloadMobs(_database);
                 PreloadMobItems(_database);
                 PreloadLevels(_database);
@@ -54,26 +47,6 @@ namespace Imgeneus.Database.Preload
                 _logger.LogError($"Error during preloading database: {ex.Message}");
             }
 
-        }
-
-        /// <summary>
-        /// Preloads all available items from database.
-        /// </summary>
-        private void PreloadItems(IDatabase database)
-        {
-            var items = database.Items;
-            foreach (var item in items)
-            {
-                Items.Add((item.Type, item.TypeId), item);
-                if (ItemsByGrade.ContainsKey(item.Grade))
-                {
-                    ItemsByGrade[item.Grade].Add(item);
-                }
-                else
-                {
-                    ItemsByGrade.Add(item.Grade, new List<DbItem>() { item });
-                }
-            }
         }
 
         /// <summary>

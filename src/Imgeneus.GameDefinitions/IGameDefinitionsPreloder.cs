@@ -13,12 +13,12 @@ namespace Imgeneus.GameDefinitions
         /// <summary>
         /// Preloaded items.
         /// </summary>
-        Dictionary<(long Type, long TypeId), DBItemDataRecord> Items { get; }
+        Dictionary<(byte Type, byte TypeId), DbItem> Items { get; }
 
         /// <summary>
         /// Preloaded items based by grade.
         /// </summary>
-        Dictionary<long, List<DBItemDataRecord>> ItemsByGrade { get; }
+        Dictionary<ushort, List<DbItem>> ItemsByGrade { get; }
 
         /// <summary>
         /// Preloaded skills.

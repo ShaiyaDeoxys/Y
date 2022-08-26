@@ -19,7 +19,7 @@ namespace Imgeneus.World.Tests.QuestTests
         [Description("Quests can be initialized from database.")]
         public void QuestsManagerCanBeInitFromDatabase()
         {
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var dbQuests = new List<DbCharacterQuest>();
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = NewBeginnings.Id, Finish = true, Success = true });
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = Bartering.Id });
@@ -33,7 +33,7 @@ namespace Imgeneus.World.Tests.QuestTests
         [Description("Quests can be initialized from database, regardless if quest is preloaded.")]
         public void QuestNotPreloadedShouldNotBreakInitiation()
         {
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var dbQuests = new List<DbCharacterQuest>();
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = 999, Finish = true, Success = true });
 
@@ -46,7 +46,7 @@ namespace Imgeneus.World.Tests.QuestTests
         [Description("It should be possibl to quit quest.")]
         public void QuitQuest()
         {
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var dbQuests = new List<DbCharacterQuest>();
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = NewBeginnings.Id });
 
@@ -65,7 +65,7 @@ namespace Imgeneus.World.Tests.QuestTests
         [Description("Finish non-existing quest should not break app.")]
         public void FinishNonExistingQuest()
         {
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var ok = questsManager.TryFinishQuest(0, 1, out var q);
 
             Assert.False(ok);
@@ -75,7 +75,7 @@ namespace Imgeneus.World.Tests.QuestTests
         [Description("It should not be possible to finish quest, that has been already finished.")]
         public void FinishAlreadyFinishedQuest()
         {
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, new Mock<IInventoryManager>().Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var dbQuests = new List<DbCharacterQuest>();
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = NewBeginnings.Id, Finish = true, Success = true });
 
@@ -93,7 +93,7 @@ namespace Imgeneus.World.Tests.QuestTests
             inventoryManager.SetupGet(x => x.InventoryItems)
                             .Returns(new ConcurrentDictionary<(byte Bag, byte Slot), Item>());
 
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, inventoryManager.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, inventoryManager.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var dbQuests = new List<DbCharacterQuest>();
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = NewBeginnings.Id });
 
@@ -124,7 +124,7 @@ namespace Imgeneus.World.Tests.QuestTests
             inventoryManager.SetupGet(x => x.InventoryItems)
                             .Returns(items);
 
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, inventoryManager.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, inventoryManager.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var dbQuests = new List<DbCharacterQuest>();
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = Bartering.Id });
 
@@ -133,7 +133,7 @@ namespace Imgeneus.World.Tests.QuestTests
             var ok = questsManager.TryFinishQuest(0, Bartering.Id, out var q);
             Assert.False(ok);
 
-            items.TryAdd((1, 0), new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Bartering.FarmItems[0].Type, Bartering.FarmItems[0].TypeId, Bartering.FarmItems[0].Count));
+            items.TryAdd((1, 0), new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Bartering.FarmItems[0].Type, Bartering.FarmItems[0].TypeId, Bartering.FarmItems[0].Count));
             ok = questsManager.TryFinishQuest(0, Bartering.Id, out q);
             Assert.True(ok);
         }
@@ -143,7 +143,7 @@ namespace Imgeneus.World.Tests.QuestTests
         public void PlayerShouldBeAbleToSelectQuestResult()
         {
             var inventoryManager = new Mock<IInventoryManager>();
-            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, inventoryManager.Object, databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
+            var questsManager = new QuestsManager(new Mock<ILogger<QuestsManager>>().Object, definitionsPreloader.Object, new Mock<IMapProvider>().Object, gameWorldMock.Object, databaseMock.Object, new Mock<IPartyManager>().Object, inventoryManager.Object, enchantConfig.Object, itemCreateConfig.Object, new Mock<ILevelingManager>().Object);
             var dbQuests = new List<DbCharacterQuest>();
             dbQuests.Add(new DbCharacterQuest() { CharacterId = 1, QuestId = SkillsAndStats.Id });
 

@@ -310,6 +310,7 @@ namespace Imgeneus.World.Game.Player
             var player = Character.FromDbCharacter(dbCharacter,
                                         _characterLogger,
                                         _databasePreloader,
+                                        _definitionsPreloder,
                                         _countryProvider,
                                         _speedManager,
                                         _statsManager,

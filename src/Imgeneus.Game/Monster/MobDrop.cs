@@ -53,14 +53,14 @@ namespace Imgeneus.World.Game.Monster
         {
             if (_dropRandom.Next(1, 101) <= dropItem.DropRate)
             {
-                if (!_databasePreloader.ItemsByGrade.ContainsKey(dropItem.Grade))
+                if (!_definitionsPreloader.ItemsByGrade.ContainsKey(dropItem.Grade))
                 {
                     _logger.LogWarning("Mob {id} has unknown grade {grade}.", MobId, dropItem.Grade);
                     return null;
                 }
-                var availableItems = _databasePreloader.ItemsByGrade[dropItem.Grade];
+                var availableItems = _definitionsPreloader.ItemsByGrade[dropItem.Grade];
                 var randomItem = availableItems[_dropRandom.Next(0, availableItems.Count - 1)];
-                return new Item(_databasePreloader, _enchantConfig, _itemCreateConfig, randomItem.Type, randomItem.TypeId);
+                return new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, randomItem.Type, randomItem.TypeId);
             }
             else
             {

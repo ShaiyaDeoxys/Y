@@ -12,7 +12,7 @@ namespace Imgeneus.World.Tests.AccountTests
         public async Task Bank_Test()
         {
             var character = CreateCharacter();
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
 
             character.BankManager.AddBankItem(WaterArmor.Type, WaterArmor.TypeId, 1);
             Assert.NotNull(character.BankManager.BankItems[0]);

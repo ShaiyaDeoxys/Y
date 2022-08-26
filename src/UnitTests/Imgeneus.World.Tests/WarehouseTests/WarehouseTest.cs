@@ -13,7 +13,7 @@ namespace Imgeneus.World.Tests.WarehouseTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
             Assert.True(character.InventoryManager.InventoryItems.ContainsKey((1, 0)));
 
             character.InventoryManager.MoveItem(1, 0, WarehouseManager.WAREHOUSE_BAG, 0);
@@ -26,7 +26,7 @@ namespace Imgeneus.World.Tests.WarehouseTests
         public void FeeWhenTakeOutFromWarehouse()
         {
             var character = CreateCharacter();
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
             character.InventoryManager.MoveItem(1, 0, WarehouseManager.WAREHOUSE_BAG, 0);
             Assert.True(character.WarehouseManager.Items.ContainsKey(0));
 
@@ -47,12 +47,12 @@ namespace Imgeneus.World.Tests.WarehouseTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
             character.InventoryManager.MoveItem(1, 0, WarehouseManager.WAREHOUSE_BAG, 120);
             Assert.True(character.InventoryManager.InventoryItems.ContainsKey((1, 0)));
             Assert.False(character.WarehouseManager.Items.ContainsKey(0));
 
-            character.InventoryManager.AddItem(new Item(databasePreloader.Object, enchantConfig.Object, itemCreateConfig.Object, DoubleWarehouse.Type, DoubleWarehouse.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, DoubleWarehouse.Type, DoubleWarehouse.TypeId));
             Assert.True(character.InventoryManager.InventoryItems.ContainsKey((1, 1)));
             character.InventoryManager.TryUseItem(1, 1);
 
