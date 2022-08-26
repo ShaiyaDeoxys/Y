@@ -33,7 +33,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_CHARACTER_AUTO_ATTACK)]
         public void HandleAutoAttackOnPlayer(WorldClient client, CharacterAutoAttackPacket packet)
         {
-            if (_attackManager.SkipNextAutoAttack && DateTime.UtcNow.Subtract(_attackManager.SkipAutoAttackRequestTime).TotalSeconds < 5)
+            if (_attackManager.SkipNextAutoAttack && DateTime.UtcNow.Subtract(_attackManager.SkipAutoAttackRequestTime).TotalMilliseconds < _attackManager.NextAttackTime * 1.2)
                 return;
 
             var target = _mapProvider.Map.GetPlayer(packet.TargetId);
@@ -51,7 +51,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.CHARACTER_MOB_AUTO_ATTACK)]
         public void HandleAutoAttackOnMob(WorldClient client, MobAutoAttackPacket packet)
         {
-            if (_attackManager.SkipNextAutoAttack && DateTime.UtcNow.Subtract(_attackManager.SkipAutoAttackRequestTime).TotalMilliseconds < _attackManager.NextAttackTime * 2)
+            if (_attackManager.SkipNextAutoAttack && DateTime.UtcNow.Subtract(_attackManager.SkipAutoAttackRequestTime).TotalMilliseconds < _attackManager.NextAttackTime * 1.2)
                 return;
 
             var target = _mapProvider.Map.GetMob(_gameWorld.Players[_gameSession.Character.Id].CellId, packet.TargetId);
