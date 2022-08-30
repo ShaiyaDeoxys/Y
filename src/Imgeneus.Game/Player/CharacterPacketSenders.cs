@@ -39,7 +39,12 @@ namespace Imgeneus.World.Game.Player
 
         private void SendMobTargetHP(uint senderId, int hp, int mp, int sp) => _packetFactory.SendMobTargetHP(GameSession.Client, senderId, hp, AttackSpeed.Normal, MoveSpeed.Normal);
 
-        private void SendCharacterTargetMaxHP(uint senderId, int maxHp) => _packetFactory.SendPlayerInTarget(GameSession.Client, senderId, maxHp, AttackManager.Target.HealthManager.CurrentHP);
+        private void SendCharacterTargetMaxHP(uint senderId, int maxHp)
+       {
+            if (AttackManager.Target is not null)
+                _packetFactory.SendPlayerInTarget(GameSession.Client, senderId, maxHp, AttackManager.Target.HealthManager.CurrentHP);
+
+        }
 
         private void SendDuelResponse(uint senderId, DuelResponse response) => _packetFactory.SendDuelResponse(GameSession.Client, response, senderId);
 
