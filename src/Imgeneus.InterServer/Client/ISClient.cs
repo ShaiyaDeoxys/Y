@@ -34,8 +34,23 @@ namespace InterServer.Client
                 .Build();
 
             _connection.Closed += Connection_Closed;
+            _connection.Reconnecting += Connection_Reconnecting;
+            _connection.Reconnected += Connection_Reconnected;
 
             _connection.On<SessionResponse>(nameof(OnAesKeyResponse), OnAesKeyResponse);
+        }
+
+        private Task Connection_Reconnecting(Exception arg)
+        {
+            _logger.LogInformation("Trying to reconnected to the login server.");
+            return Task.CompletedTask;
+        }
+
+        private Task Connection_Reconnected(string arg)
+        {
+            _logger.LogInformation("Connection the login server restored.");
+            OnConnected?.Invoke();
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>

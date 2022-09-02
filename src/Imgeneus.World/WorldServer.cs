@@ -64,7 +64,6 @@ namespace Imgeneus.World
 
         private void SendWorldInfo()
         {
-            _interClient.OnConnected -= SendWorldInfo;
             _interClient.Send(new ISMessage(ISMessageType.WORLD_INFO, _worldConfiguration));
         }
 
