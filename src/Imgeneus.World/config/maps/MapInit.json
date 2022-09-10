@@ -36,6 +36,10 @@
       }
     },
     {
+      "MapId": 18,
+      "MapType": "Field"
+    },
+    {
       "MapId": 19,
       "MapType": "Field",
       "WeatherState": "Rain",
