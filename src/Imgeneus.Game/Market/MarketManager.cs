@@ -346,7 +346,7 @@ namespace Imgeneus.Game.Market
                             shouldAdd = config.Type == 69 || config.Type == 84;
                             break;
 
-                        case MarketItemType.Mounts:
+                        case MarketItemType.Costume:
                             shouldAdd = config.Type == 150;
                             break;
 

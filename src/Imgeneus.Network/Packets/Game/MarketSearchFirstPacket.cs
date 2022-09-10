@@ -51,7 +51,7 @@ namespace Imgeneus.Network.Packets.Game
         Shoes = 15,
         Coat = 16,
         Shield = 17,
-        Mounts = 18,
+        Costume = 18,
         Necklace= 19,
         Ring = 20,
         Bracelet = 21,
