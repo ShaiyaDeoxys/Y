@@ -28,7 +28,7 @@ namespace Imgeneus.World.Tests.MapTests
                 CellSize = 100
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, definitionsPreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(20, map.Rows);
             Assert.Equal(20, map.Columns);
         }
@@ -43,7 +43,7 @@ namespace Imgeneus.World.Tests.MapTests
                 CellSize = 100
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, definitionsPreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(21, map.Rows);
             Assert.Equal(21, map.Columns);
         }
@@ -57,7 +57,7 @@ namespace Imgeneus.World.Tests.MapTests
                 MapSize = 100,
                 CellSize = 100
             };
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, definitionsPreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Single(map.Cells);
         }
 
@@ -84,7 +84,7 @@ namespace Imgeneus.World.Tests.MapTests
                 MapSize = 1002,
                 CellSize = 100
             };
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, definitionsPreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             var character = CreateCharacter();
             character.MovementManager.PosX = x;
             character.MovementManager.PosZ = z;
@@ -118,7 +118,7 @@ namespace Imgeneus.World.Tests.MapTests
                 CellSize = 1
             };
 
-            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, databasePreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
+            var map = new Map(Map.TEST_MAP_ID, new MapDefinition(), mapConfig, new List<ObeliskConfiguration>(), new List<BossConfiguration>(), mapLoggerMock.Object, packetFactoryMock.Object, definitionsPreloader.Object, mobFactoryMock.Object, npcFactoryMock.Object, obeliskFactoryMock.Object, timeMock.Object);
             Assert.Equal(expectedNeigbors.OrderBy(i => i), map.GetNeighborCellIndexes(cellId).ToArray());
         }
 

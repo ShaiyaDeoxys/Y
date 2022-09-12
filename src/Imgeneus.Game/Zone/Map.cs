@@ -2,6 +2,7 @@
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Monster;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Monster;
@@ -39,7 +40,7 @@ namespace Imgeneus.World.Game.Zone
         private readonly IEnumerable<BossConfiguration> _bossesConfig;
         private readonly ILogger<Map> _logger;
         private readonly IGamePacketFactory _packetFactory;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IMobFactory _mobFactory;
         private readonly INpcFactory _npcFactory;
         private readonly IObeliskFactory _obeliskfactory;
@@ -71,7 +72,7 @@ namespace Imgeneus.World.Game.Zone
 
         public static readonly ushort TEST_MAP_ID = 9999;
 
-        public Map(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks, IEnumerable<BossConfiguration> bosses, ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
+        public Map(ushort id, MapDefinition definition, Svmap config, IEnumerable<ObeliskConfiguration> obelisks, IEnumerable<BossConfiguration> bosses, ILogger<Map> logger, IGamePacketFactory packetFactory, IGameDefinitionsPreloder definitionsPreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService)
         {
             Id = id;
             _definition = definition;
@@ -80,7 +81,7 @@ namespace Imgeneus.World.Game.Zone
             _bossesConfig = bosses;
             _logger = logger;
             _packetFactory = packetFactory;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _mobFactory = mobFactory;
             _npcFactory = npcFactory;
             _obeliskfactory = obeliskFactory;
@@ -510,7 +511,7 @@ namespace Imgeneus.World.Game.Zone
             {
                 foreach (var mobConf in mobArea.Monsters)
                 {
-                    if (_databasePreloader.Mobs.ContainsKey((ushort)mobConf.MobId))
+                    if (_definitionsPreloader.Mobs.ContainsKey((ushort)mobConf.MobId))
                     {
                         for (var i = 0; i < mobConf.Count; i++)
                         {
@@ -533,7 +534,7 @@ namespace Imgeneus.World.Game.Zone
             int finalMobsCount = 0;
             foreach (var mobConfig in _bossesConfig)
             {
-                if (_databasePreloader.Mobs.ContainsKey(mobConfig.MobId))
+                if (_definitionsPreloader.Mobs.ContainsKey(mobConfig.MobId))
                 {
                     var mob = _mobFactory.CreateMob(mobConfig.MobId,
                                                     true,

@@ -20,7 +20,7 @@ namespace Imgeneus.World.Tests.ShopTests
                     new List<BossConfiguration>(),
                     mapLoggerMock.Object,
                     packetFactoryMock.Object,
-                    databasePreloader.Object,
+                    definitionsPreloader.Object,
                     mobFactoryMock.Object,
                     npcFactoryMock.Object,
                     obeliskFactoryMock.Object,

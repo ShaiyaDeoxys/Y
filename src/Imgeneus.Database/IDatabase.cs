@@ -49,16 +49,6 @@ namespace Imgeneus.Database
         public DbSet<DbCharacterActiveBuff> ActiveBuffs { get; set; }
 
         /// <summary>
-        /// Collection of mobs. Taken from original db.
-        /// </summary>
-        public DbSet<DbMob> Mobs { get; set; }
-
-        /// <summary>
-        /// Available drop from a monster. Taken from original db.
-        /// </summary>
-        public DbSet<DbMobItems> MobItems { get; set; }
-
-        /// <summary>
         /// Quick items. E.g. skills on skill bar or motion on skill bar or inventory item on skill bar.
         /// </summary>
         public DbSet<DbQuickSkillBarItem> QuickItems { get; set; }

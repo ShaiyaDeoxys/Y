@@ -10,16 +10,6 @@ namespace Imgeneus.Database.Preload
     public interface IDatabasePreloader
     {
         /// <summary>
-        /// Preloaded mobs.
-        /// </summary>
-        Dictionary<ushort, DbMob> Mobs { get; }
-
-        /// <summary>
-        /// Preloaded mob items.
-        /// </summary>
-        Dictionary<(ushort MobId, byte ItemOrder), DbMobItems> MobItems { get; }
-
-        /// <summary>
         /// Preloaded levels.
         /// </summary>
         Dictionary<(Mode Mode, ushort Level), DbLevel> Levels { get; }

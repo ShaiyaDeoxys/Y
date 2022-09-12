@@ -34,5 +34,15 @@ namespace Imgeneus.GameDefinitions
         /// Preloaded quests.
         /// </summary>
         Dictionary<short, Quest> Quests { get; }
+
+        /// <summary>
+        /// Preloaded mobs.
+        /// </summary>
+        Dictionary<ushort, DbMob> Mobs { get; }
+
+        /// <summary>
+        /// Preloaded mob items.
+        /// </summary>
+        Dictionary<(ushort MobId, byte ItemOrder), DbMobItems> MobItems { get; }
     }
 }

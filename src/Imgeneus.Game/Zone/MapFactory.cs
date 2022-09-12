@@ -1,5 +1,6 @@
 ﻿using Imgeneus.Database.Preload;
 using Imgeneus.Game.Monster;
+using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Monster;
 using Imgeneus.World.Game.NPCs;
@@ -18,18 +19,18 @@ namespace Imgeneus.World.Game.Zone
     {
         private readonly ILogger<Map> _logger;
         private readonly IGamePacketFactory _packetFactory;
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _definitionsPreloader;
         private readonly IMobFactory _mobFactory;
         private readonly INpcFactory _npcFactory;
         private readonly IObeliskFactory _obeliskFactory;
         private readonly ITimeService _timeService;
         private readonly IGuildRankingManager _guildRankingManager;
 
-        public MapFactory(ILogger<Map> logger, IGamePacketFactory packetFactory, IDatabasePreloader databasePreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService, IGuildRankingManager guildRankingManger)
+        public MapFactory(ILogger<Map> logger, IGamePacketFactory packetFactory, IGameDefinitionsPreloder definitionsPreloader, IMobFactory mobFactory, INpcFactory npcFactory, IObeliskFactory obeliskFactory, ITimeService timeService, IGuildRankingManager guildRankingManger)
         {
             _logger = logger;
             _packetFactory = packetFactory;
-            _databasePreloader = databasePreloader;
+            _definitionsPreloader = definitionsPreloader;
             _mobFactory = mobFactory;
             _npcFactory = npcFactory;
             _obeliskFactory = obeliskFactory;
@@ -43,22 +44,22 @@ namespace Imgeneus.World.Game.Zone
             if (obelisks is null)
                 obelisks = new List<ObeliskConfiguration>();
 
-            return new Map(id, definition, config, obelisks, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
+            return new Map(id, definition, config, obelisks, bosses, _logger, _packetFactory, _definitionsPreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
         }
 
         /// <inheritdoc/>
         public IPartyMap CreatePartyMap(ushort id, MapDefinition definition, Svmap config, IGameWorld gameWorld, IParty party, IEnumerable<BossConfiguration> bosses = null)
         {
-            return new PartyMap(party, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
+            return new PartyMap(party, id, definition, config, bosses, _logger, _packetFactory, _definitionsPreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
         }
 
         /// <inheritdoc/>
         public IGuildMap CreateGuildMap(ushort id, MapDefinition definition, Svmap config, IGameWorld gameWorld, uint guildId, IEnumerable<BossConfiguration> bosses = null)
         {
             if (definition.CreateType == CreateType.GRB)
-                return new GRBMap(guildId, _guildRankingManager, id, definition, config, bosses, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
+                return new GRBMap(guildId, _guildRankingManager, id, definition, config, bosses, _logger, _packetFactory, _definitionsPreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
 
-            return new GuildHouseMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _databasePreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
+            return new GuildHouseMap(guildId, _guildRankingManager, id, definition, config, _logger, _packetFactory, _definitionsPreloader, _mobFactory, _npcFactory, _obeliskFactory, _timeService) { GameWorld = gameWorld };
         }
     }
 }

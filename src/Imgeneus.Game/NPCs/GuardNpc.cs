@@ -1,4 +1,4 @@
-﻿using Imgeneus.Database.Constants;
+﻿using Imgeneus.GameDefinitions.Constants;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Country;

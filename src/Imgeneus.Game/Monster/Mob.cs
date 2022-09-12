@@ -1,5 +1,4 @@
 ﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
@@ -70,7 +69,7 @@ namespace Imgeneus.World.Game.Monster
             _logger = logger;
             _enchantConfig = enchantConfig;
             _itemCreateConfig = itemCreateConfig;
-            _dbMob = databasePreloader.Mobs[mobId];
+            _dbMob = definitionsPreloader.Mobs[mobId];
             _moveArea = moveArea;
 
             AIManager = aiManager;

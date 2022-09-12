@@ -66,6 +66,7 @@ using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Monster;
 using Imgeneus.Game.Market;
+using Imgeneus.GameDefinitions.Constants;
 
 namespace Imgeneus.World.Tests
 {
@@ -108,7 +109,7 @@ namespace Imgeneus.World.Tests
                         new List<BossConfiguration>(),
                         mapLoggerMock.Object,
                         packetFactoryMock.Object,
-                        databasePreloader.Object,
+                        definitionsPreloader.Object,
                         mobFactoryMock.Object,
                         npcFactoryMock.Object,
                         obeliskFactoryMock.Object,
@@ -249,7 +250,7 @@ namespace Imgeneus.World.Tests
         protected Mob CreateMob(ushort mobId, Map map, Fraction country = Fraction.NotSelected)
         {
             _mobId++;
-            var dbMob = databasePreloader.Object.Mobs[mobId];
+            var dbMob = definitionsPreloader.Object.Mobs[mobId];
 
             var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
             countryProvider.Init(0, country);
@@ -381,18 +382,6 @@ namespace Imgeneus.World.Tests
                 });
 
             databasePreloader
-                .SetupGet((preloader) => preloader.Mobs)
-                .Returns(new Dictionary<ushort, DbMob>()
-                {
-                    { 1, Wolf },
-                    { 3041, CrypticImmortal }
-                });
-
-            databasePreloader
-                .SetupGet((preloader) => preloader.MobItems)
-                .Returns(new Dictionary<(ushort MobId, byte ItemOrder), DbMobItems>());
-
-            databasePreloader
                 .SetupGet((preloader) => preloader.Levels)
                 .Returns(new Dictionary<(Mode mode, ushort level), DbLevel>()
                 {
@@ -421,6 +410,18 @@ namespace Imgeneus.World.Tests
                     { (Mode.Hard, 80), Level80_Mode3 },
                     { (Mode.Ultimate, 80), Level80_Mode4 },
                 });
+
+            definitionsPreloader
+                .SetupGet((preloader) => preloader.Mobs)
+                .Returns(new Dictionary<ushort, DbMob>()
+                {
+                    { 1, Wolf },
+                    { 3041, CrypticImmortal }
+                });
+
+            definitionsPreloader
+                .SetupGet((preloader) => preloader.MobItems)
+                .Returns(new Dictionary<(ushort MobId, byte ItemOrder), DbMobItems>());
 
             definitionsPreloader
                 .SetupGet((preloader) => preloader.NPCs)
@@ -577,7 +578,6 @@ namespace Imgeneus.World.Tests
         protected DbMob Wolf = new DbMob()
         {
             Id = 1,
-            MobName = "Small Ruined Wolf",
             AI = MobAI.Combative,
             Level = 38,
             HP = 2765,
@@ -595,7 +595,6 @@ namespace Imgeneus.World.Tests
         protected DbMob CrypticImmortal = new DbMob()
         {
             Id = 3041,
-            MobName = "Cryptic the Immortal",
             AI = MobAI.CrypticImmortal,
             Level = 75,
             HP = 35350000,

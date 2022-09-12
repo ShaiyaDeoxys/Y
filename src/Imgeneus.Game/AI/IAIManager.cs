@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Constants;
+using Imgeneus.GameDefinitions.Constants;
 using System;
 
 namespace Imgeneus.World.Game.AI

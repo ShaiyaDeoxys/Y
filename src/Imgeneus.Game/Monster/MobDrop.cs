@@ -1,4 +1,4 @@
-﻿using Imgeneus.Database.Entities;
+﻿using Imgeneus.GameDefinitions;
 using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.NPCs;
 using Microsoft.Extensions.Logging;
@@ -20,13 +20,13 @@ namespace Imgeneus.World.Game.Monster
 
             for (byte i = 1; i <= 9; i++)
             {
-                if (!_databasePreloader.MobItems.ContainsKey((MobId, i)))
+                if (!_definitionsPreloader.MobItems.ContainsKey((MobId, i)))
                 {
                     _logger.LogWarning("Mob {id} doesn't contain drop. Is it expected?", MobId);
                     continue;
                 }
 
-                var dropItem = _databasePreloader.MobItems[(MobId, i)];
+                var dropItem = _definitionsPreloader.MobItems[(MobId, i)];
                 if (dropItem.Grade != 0 && dropItem.DropRate != 0)
                 {
                     var item = GenerateDropItem(dropItem);

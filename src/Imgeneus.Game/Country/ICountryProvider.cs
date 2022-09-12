@@ -1,5 +1,5 @@
-﻿using Imgeneus.Database.Constants;
-using Imgeneus.Database.Entities;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.GameDefinitions.Constants;
 
 namespace Imgeneus.World.Game.Country
 {

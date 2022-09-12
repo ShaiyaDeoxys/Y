@@ -1,4 +1,5 @@
 ﻿using Imgeneus.Database.Preload;
+using Imgeneus.GameDefinitions;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.AI;
@@ -14,14 +15,14 @@ namespace Imgeneus.World.Handlers
     [Handler]
     public class GMCreateMobHandler : BaseHandler
     {
-        private readonly IDatabasePreloader _databasePreloader;
+        private readonly IGameDefinitionsPreloder _gameDefinitions;
         private readonly IMovementManager _movementManager;
         private readonly IMobFactory _mobFactory;
         private readonly IMapProvider _mapProvider;
 
-        public GMCreateMobHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IDatabasePreloader databasePreloader, IMovementManager movementManager, IMobFactory mobFactory, IMapProvider mapProvider) : base(packetFactory, gameSession)
+        public GMCreateMobHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameDefinitionsPreloder gameDefinitions, IMovementManager movementManager, IMobFactory mobFactory, IMapProvider mapProvider) : base(packetFactory, gameSession)
         {
-            _databasePreloader = databasePreloader;
+            _gameDefinitions = gameDefinitions;
             _movementManager = movementManager;
             _mobFactory = mobFactory;
             _mapProvider = mapProvider;
@@ -33,7 +34,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            if (!_databasePreloader.Mobs.ContainsKey(packet.MobId))
+            if (!_gameDefinitions.Mobs.ContainsKey(packet.MobId))
             {
                 _packetFactory.SendGmCommandError(client, PacketType.GM_CREATE_MOB);
                 return;
@@ -50,7 +51,7 @@ namespace Imgeneus.World.Handlers
             if (!_gameSession.IsAdmin)
                 return;
 
-            if (!_databasePreloader.Mobs.ContainsKey(packet.MobId))
+            if (!_gameDefinitions.Mobs.ContainsKey(packet.MobId))
             {
                 _packetFactory.SendGmCommandError(client, PacketType.GM_SHAIYA_US_CREATE_MOB);
                 return;

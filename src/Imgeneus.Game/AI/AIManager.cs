@@ -1,8 +1,8 @@
 ﻿using Imgeneus.Core.Extensions;
-using Imgeneus.Database.Constants;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
+using Imgeneus.GameDefinitions.Constants;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
