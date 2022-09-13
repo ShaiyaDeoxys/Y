@@ -1,3 +1,4 @@
+using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
 using Imgeneus.Database.Context;
 using Imgeneus.Database.Entities;
@@ -28,6 +29,8 @@ namespace Imgeneus.Login
                 .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("TcpServer").Bind(settings));
             services.AddOptions<DatabaseConfiguration>()
                .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("Database").Bind(settings));
+            services.AddOptions<LoginConfiguration>()
+                .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("LoginServer").Bind(settings));
 
             services.RegisterDatabaseServices();
             services.AddSignalR();
