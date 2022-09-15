@@ -7,3 +7,6 @@
 [submodule "submodules/Parsec"]
 	path = submodules/Parsec
 	url = https://github.com/aosyatnik/Parsec
+[submodule "submodules/Imgeneus.Authentication"]
+	path = submodules/Imgeneus.Authentication
+	url = git@github.com:aosyatnik/Imgeneus.Authentication.git
