@@ -37,6 +37,7 @@ properties:
   osType: Linux
   ipAddress:
       type: Private
+      ip: 10.0.2.5
       ports:
       - protocol: tcp
         port: 80
