@@ -457,11 +457,11 @@ namespace Imgeneus.World.Game.Zone
             {
                 Map.PacketFactory.SendShapeUpdate(player.GameSession.Client, senderId, shape, param1, param2);
 
-                if (shape == ShapeEnum.OppositeCountryCharacter)
-                    Map.PacketFactory.SendCharacterShape(player.GameSession.Client, senderId, Map.GameWorld.Players[param1]);
+                if (shape == ShapeEnum.OppositeCountryCharacter && Map.GameWorld.Players.TryGetValue(param1, out var anotherCharacter))
+                    Map.PacketFactory.SendCharacterShape(player.GameSession.Client, senderId, anotherCharacter);
 
-                if (shape == ShapeEnum.None)
-                    Map.PacketFactory.SendCharacterShape(player.GameSession.Client, senderId, Map.GameWorld.Players[senderId]);
+                if (shape == ShapeEnum.None && Map.GameWorld.Players.TryGetValue(senderId, out var sender))
+                    Map.PacketFactory.SendCharacterShape(player.GameSession.Client, senderId, sender);
             }
         }
 
