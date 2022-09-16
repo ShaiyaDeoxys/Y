@@ -1,5 +1,5 @@
-﻿using Imgeneus.Database;
-using Imgeneus.Database.Entities;
+﻿using Imgeneus.Authentication.Context;
+using Imgeneus.Authentication.Entities;
 using Imgeneus.Login.Packets;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Login;
@@ -16,11 +16,11 @@ namespace Imgeneus.Login.Handlers
     {
         private readonly ILoginServer _server;
         private readonly ILoginPacketFactory _loginPacketFactory;
-        private readonly IDatabase _database;
+        private readonly IUsersDatabase _database;
         private readonly IPasswordHasher<DbUser> _passwordHasher;
         private readonly UserManager<DbUser> _userManager;
 
-        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IDatabase database, IPasswordHasher<DbUser> passwordHasher, UserManager<DbUser> userManager)
+        public AuthenticationHandler(ILoginServer server, ILoginPacketFactory loginPacketFactory, IUsersDatabase database, IPasswordHasher<DbUser> passwordHasher, UserManager<DbUser> userManager)
         {
             _server = server;
             _loginPacketFactory = loginPacketFactory;

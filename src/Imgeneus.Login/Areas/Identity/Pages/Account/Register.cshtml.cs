@@ -1,3 +1,5 @@
+using Imgeneus.Authentication.Context;
+using Imgeneus.Authentication.Entities;
 using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Microsoft.AspNetCore.Authentication;
@@ -20,14 +22,14 @@ namespace Imgeneus.World.Areas.Identity.Pages.Account
         private readonly SignInManager<DbUser> _signInManager;
         private readonly UserManager<DbUser> _userManager;
         private readonly IUserStore<DbUser> _userStore;
-        private readonly IDatabase _database;
+        private readonly IUsersDatabase _database;
 
         public RegisterModel(
             ILogger<RegisterModel> logger,
             UserManager<DbUser> userManager,
             IUserStore<DbUser> userStore,
             SignInManager<DbUser> signInManager,
-            IDatabase database)
+            IUsersDatabase database)
         {
             _logger = logger;
             _userManager = userManager;
@@ -76,7 +78,7 @@ namespace Imgeneus.World.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new DbUser() { Faction = Fraction.NotSelected };
+                var user = new DbUser() { Faction = Authentication.Enums.Fraction.NotSelected };
 
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
 

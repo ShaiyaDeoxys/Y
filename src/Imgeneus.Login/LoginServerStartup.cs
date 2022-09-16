@@ -1,3 +1,6 @@
+using Imgeneus.Authentication.Connection;
+using Imgeneus.Authentication.Context;
+using Imgeneus.Authentication.Entities;
 using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
 using Imgeneus.Database.Context;
@@ -10,6 +13,7 @@ using InterServer.Server;
 using InterServer.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,10 +33,14 @@ namespace Imgeneus.Login
                 .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("TcpServer").Bind(settings));
             services.AddOptions<DatabaseConfiguration>()
                .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("Database").Bind(settings));
+            services.AddOptions<UsersDatabaseConfiguration>()
+               .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("UsersDatabase").Bind(settings));
             services.AddOptions<LoginConfiguration>()
                 .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("LoginServer").Bind(settings));
 
             services.RegisterDatabaseServices();
+            services.RegisterUsersDatabaseServices();
+
             services.AddSignalR();
             services.AddHandlers();
 
@@ -53,10 +61,10 @@ namespace Imgeneus.Login
                 options.Password.RequireDigit = false;
             })
                 .AddRoles<DbRole>()
-                .AddEntityFrameworkStores<DatabaseContext>();
+                .AddEntityFrameworkStores<UsersContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration, IDatabase mainDb)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration, IUsersDatabase mainDb, RoleManager<DbRole> roleManager)
         {
             loggerFactory.AddProvider(
                 new SignalRLoggerProvider(
@@ -88,6 +96,10 @@ namespace Imgeneus.Login
             });
 
             mainDb.Migrate();
+
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.SUPER_ADMIN }).Wait();
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.ADMIN }).Wait();
+            roleManager.CreateAsync(new DbRole() { Name = DbRole.USER }).Wait();
 
             loginServer.Start();
         }

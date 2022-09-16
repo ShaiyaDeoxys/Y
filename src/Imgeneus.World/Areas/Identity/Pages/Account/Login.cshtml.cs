@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Imgeneus.Authentication.Context;
+using Imgeneus.Authentication.Entities;
 using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Microsoft.AspNetCore.Authentication;
@@ -20,9 +22,9 @@ namespace Imgeneus.World.Areas.Identity.Pages.Account
     {
         private readonly ILogger<LoginModel> _logger;
         private readonly SignInManager<DbUser> _signInManager;
-        private readonly IDatabase _database;
+        private readonly IUsersDatabase _database;
 
-        public LoginModel(ILogger<LoginModel> logger, SignInManager<DbUser> signInManager, IDatabase database)
+        public LoginModel(ILogger<LoginModel> logger, SignInManager<DbUser> signInManager, IUsersDatabase database)
         {
             _logger = logger;
             _signInManager = signInManager;

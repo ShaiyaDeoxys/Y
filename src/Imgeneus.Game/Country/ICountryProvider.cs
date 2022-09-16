@@ -13,7 +13,7 @@ namespace Imgeneus.World.Game.Country
         /// <summary>
         /// Inits country of player.
         /// </summary>
-        void Init(uint ownerId, Fraction country);
+        void Init(uint ownerId, Authentication.Enums.Fraction country);
 
         /// <summary>
         /// Inits country of mob.

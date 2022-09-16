@@ -1,4 +1,5 @@
-﻿using Imgeneus.Database.Entities;
+﻿using Imgeneus.Authentication.Entities;
+using Imgeneus.Database.Entities;
 using System;
 using System.Collections.Generic;
 

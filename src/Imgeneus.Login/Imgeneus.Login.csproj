@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\submodules\Imgeneus.Authentication\Imegeneus.Authentication\Imgeneus.Authentication.csproj" />
     <ProjectReference Include="..\..\submodules\LiteNetwork\src\LiteNetwork\LiteNetwork.csproj" />
     <ProjectReference Include="..\..\submodules\Sylver.HandlerInvoker\src\Sylver.HandlerInvoker\Sylver.HandlerInvoker.csproj" />
     <ProjectReference Include="..\Imgeneus.Core\Imgeneus.Core.csproj" />

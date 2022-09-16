@@ -1,12 +1,11 @@
 ﻿using Imgeneus.Database.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Imgeneus.Database.Context
 {
-    public class DatabaseContext : IdentityDbContext<DbUser, DbRole, int>, IDatabase
+    public class DatabaseContext : DbContext, IDatabase
     {
         public DbSet<DbCharacter> Characters { get; set; }
 
@@ -46,14 +45,12 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbMarketCharacterFavorite> MarketFavorites { get; set; }
 
-        public DatabaseContext(DbContextOptions options) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DbUser>().HasIndex(c => new { c.UserName, c.Email }).IsUnique();
-
             modelBuilder.Entity<DbCharacter>().HasMany(x => x.QuickItems).WithOne(x => x.Character).IsRequired();
 
             modelBuilder.Entity<DbCharacter>().HasMany(x => x.Friends).WithOne(x => x.Character);
@@ -84,11 +81,7 @@ namespace Imgeneus.Database.Context
             // Quests
             modelBuilder.Entity<DbCharacterQuest>().HasOne(pt => pt.Character).WithMany(p => p.Quests).HasForeignKey(pt => pt.CharacterId);
 
-            // Bank Items
-            modelBuilder.Entity<DbBankItem>().HasOne(x => x.User).WithMany(x => x.BankItems);
-
             // Stored Items
-            modelBuilder.Entity<DbWarehouseItem>().HasOne(x => x.User).WithMany(x => x.WarehouseItems);
             modelBuilder.Entity<DbGuildWarehouseItem>().HasOne(x => x.Guild).WithMany(x => x.WarehouseItems);
 
             #endregion

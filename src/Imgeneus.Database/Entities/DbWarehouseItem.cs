@@ -13,12 +13,6 @@ namespace Imgeneus.Database.Entities
         [Required]
         public int UserId { get; set; }
 
-        /// <summary>
-        /// The bank item's associated user.
-        /// </summary>
-        [ForeignKey(nameof(UserId))]
-        public DbUser User { get; set; }
-
         [Required]
         public byte Type { get; set; }
 

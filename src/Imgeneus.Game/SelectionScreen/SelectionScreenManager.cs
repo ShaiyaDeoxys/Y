@@ -1,4 +1,5 @@
-﻿using Imgeneus.Core.Extensions;
+﻿using Imgeneus.Authentication.Context;
+using Imgeneus.Core.Extensions;
 using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
@@ -28,14 +29,16 @@ namespace Imgeneus.World.SelectionScreen
         private readonly ILogger<SelectionScreenManager> _logger;
         private readonly IGameWorld _gameWorld;
         private readonly ICharacterConfiguration _characterConfiguration;
+        private readonly IUsersDatabase _usersDatabase;
         private readonly IDatabase _database;
         private readonly IGameDefinitionsPreloder _definitionsPreloader;
 
-        public SelectionScreenManager(ILogger<SelectionScreenManager> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database, IGameDefinitionsPreloder definitionsPreloader)
+        public SelectionScreenManager(ILogger<SelectionScreenManager> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IUsersDatabase usersDatabase, IDatabase database, IGameDefinitionsPreloder definitionsPreloader)
         {
             _logger = logger;
             _gameWorld = gameWorld;
             _characterConfiguration = characterConfiguration;
+            _usersDatabase = usersDatabase;
             _database = database;
             _definitionsPreloader = definitionsPreloader;
 
@@ -53,15 +56,18 @@ namespace Imgeneus.World.SelectionScreen
 
         public async Task<IEnumerable<DbCharacter>> GetCharacters(int userId)
         {
+            var user = await _usersDatabase.Users.FindAsync(userId);
+            if (user is null)
+                return new DbCharacter[0];
+
             var characters = await _database.Characters
                                         .AsNoTracking()
                                         .Include(c => c.Items)
-                                        .Include(x => x.User)
                                         .Where(u => u.UserId == userId && !u.IsDelete)
                                         .ToListAsync();
 
             foreach (var character in characters)
-                _gameWorld.EnsureMap(character);
+                _gameWorld.EnsureMap(character, user.Faction);
 
             return characters;
         }
@@ -90,8 +96,8 @@ namespace Imgeneus.World.SelectionScreen
                 return false;
             }
 
-            var user = await _database.Users.FindAsync(userId);
-            var createConfig = _characterConfiguration.CreateConfigs.FirstOrDefault(p => p.Country == user.Faction && p.Job == createCharacterPacket.Class);
+            var user = await _usersDatabase.Users.FindAsync(userId);
+            var createConfig = _characterConfiguration.CreateConfigs.FirstOrDefault(p => (byte)p.Country == (byte)user.Faction && p.Job == createCharacterPacket.Class);
             if (createConfig is null)
             {
                 // Something went very wrong. No default position for this job.
@@ -164,29 +170,21 @@ namespace Imgeneus.World.SelectionScreen
 
         public async Task<Fraction> GetFaction(int userId)
         {
-            var user = await _database.Users.FindAsync(userId);
-            return user.Faction;
+            var user = await _usersDatabase.Users.FindAsync(userId);
+            return (Fraction)user.Faction;
         }
 
         public async Task SetFaction(int userId, Fraction fraction)
         {
-            var user = await _database.Users.FindAsync(userId);
-            user.Faction = fraction;
+            var user = await _usersDatabase.Users.FindAsync(userId);
+            user.Faction = (Authentication.Enums.Fraction)fraction;
 
-            await _database.SaveChangesAsync();
+            await _usersDatabase.SaveChangesAsync();
         }
 
-        public async Task<Mode> GetMaxMode(int userId)
+        public Task<Mode> GetMaxMode(int userId)
         {
-            var user = await _database.Users.FindAsync(userId);
-
-            Mode maxMode = Mode.Normal;
-#if EP8_V2
-            maxMode = Mode.Ultimate;
-#else
-            maxMode = user.MaxMode;
-#endif
-            return maxMode;
+            return Task.FromResult(Mode.Ultimate);
         }
 
         public async Task<bool> TryDeleteCharacter(int userId, uint id)

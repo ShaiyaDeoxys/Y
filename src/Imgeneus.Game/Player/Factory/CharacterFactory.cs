@@ -1,4 +1,6 @@
-﻿using Imgeneus.Database;
+﻿using Imgeneus.Authentication.Context;
+using Imgeneus.Authentication.Entities;
+using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
@@ -48,6 +50,7 @@ namespace Imgeneus.World.Game.Player
     public class CharacterFactory : ICharacterFactory
     {
         private readonly ILogger<ICharacterFactory> _logger;
+        private readonly IUsersDatabase _usersDatabase;
         private readonly IDatabase _database;
         private readonly ILogger<Character> _characterLogger;
         private readonly IGameWorld _gameWorld;
@@ -93,6 +96,7 @@ namespace Imgeneus.World.Game.Player
         private readonly UserManager<DbUser> _userManager;
 
         public CharacterFactory(ILogger<ICharacterFactory> logger,
+                                IUsersDatabase usersDatabase,
                                 IDatabase database,
                                 ILogger<Character> characterLogger,
                                 IGameWorld gameWorld,
@@ -138,6 +142,7 @@ namespace Imgeneus.World.Game.Player
                                 UserManager<DbUser> userManager)
         {
             _logger = logger;
+            _usersDatabase = usersDatabase;
             _database = database;
             _characterLogger = characterLogger;
             _gameWorld = gameWorld;
@@ -187,8 +192,12 @@ namespace Imgeneus.World.Game.Player
         {
             Character.ClearOutdatedValues(_database, characterId);
 
+            var user = await _usersDatabase.Users.FindAsync(userId);
+            if(user is null)
+                return null;
+
             // Before loading character, check, that right map is loaded.
-            _gameWorld.EnsureMap(await _database.Characters.Include(x => x.User).FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId));
+            _gameWorld.EnsureMap(await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId), user.Faction);
             await _database.SaveChangesAsync();
 
             var dbCharacter = await _database.Characters.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId).ConfigureAwait(false);
@@ -206,18 +215,17 @@ namespace Imgeneus.World.Game.Player
             dbCharacter.Quests = await _database.CharacterQuests.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
             dbCharacter.QuickItems = await _database.QuickItems.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
             dbCharacter.SavedPositions = await _database.CharacterSavePositions.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
-            dbCharacter.User = await _database.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == dbCharacter.UserId).ConfigureAwait(false);
-            dbCharacter.User.BankItems = await _database.BankItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);
-            dbCharacter.User.WarehouseItems = await _database.WarehouseItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);                                            
+            var bankItems = await _database.BankItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);
+            var warehouseItems = await _database.WarehouseItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);                                            
 
-            var roles = await _userManager.GetRolesAsync(dbCharacter.User);
+            var roles = await _userManager.GetRolesAsync(user);
             var isAdmin = roles.Contains(DbRole.ADMIN) || roles.Contains(DbRole.SUPER_ADMIN);
 
             _levelProvider.Init(dbCharacter.Id, dbCharacter.Level);
 
             _gameSession.IsAdmin = isAdmin;
 
-            _countryProvider.Init(dbCharacter.Id, dbCharacter.User.Faction);
+            _countryProvider.Init(dbCharacter.Id, user.Faction);
 
             _speedManager.Init(dbCharacter.Id);
 
@@ -237,7 +245,7 @@ namespace Imgeneus.World.Game.Player
                                autoWis: dbCharacter.AutoWis,
                                autoLuc: dbCharacter.AutoLuc);
 
-            _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender, dbCharacter.Mode, dbCharacter.User.Points, dbCharacter.Name);
+            _additionalInfoManager.Init(dbCharacter.Id, dbCharacter.Race, dbCharacter.Class, dbCharacter.Hair, dbCharacter.Face, dbCharacter.Height, dbCharacter.Gender, dbCharacter.Mode, user.Points, dbCharacter.Name);
 
             _buffsManager.Init(dbCharacter.Id, dbCharacter.ActiveBuffs);
 
@@ -290,9 +298,9 @@ namespace Imgeneus.World.Game.Player
                 _guildManager.Init(dbCharacter.Id);
             }
 
-            _bankManager.Init(dbCharacter.UserId, dbCharacter.User.BankItems.Where(bi => !bi.IsClaimed));
+            _bankManager.Init(dbCharacter.UserId, bankItems.Where(bi => !bi.IsClaimed));
 
-            _warehouseManager.Init(dbCharacter.UserId, dbCharacter.Id, dbCharacter.GuildId, dbCharacter.User.WarehouseItems);
+            _warehouseManager.Init(dbCharacter.UserId, dbCharacter.Id, dbCharacter.GuildId, warehouseItems);
 
             _shopManager.Init(dbCharacter.Id);
 

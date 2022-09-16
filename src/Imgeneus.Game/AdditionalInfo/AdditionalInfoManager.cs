@@ -54,12 +54,11 @@ namespace Imgeneus.World.Game.AdditionalInfo
 
         public async Task Clear()
         {
-            var character = await _database.Characters.Include(x => x.User).FirstAsync(x => x.Id == _ownerId);
+            var character = await _database.Characters.FirstAsync(x => x.Id == _ownerId);
             if (character is null)
                 throw new Exception($"Could not save additional info changes for {_ownerId}");
 
             character.Mode = Grow;
-            character.User.Points = Points;
 
             await _database.SaveChangesAsync();
         }

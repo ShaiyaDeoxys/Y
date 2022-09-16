@@ -9,11 +9,6 @@ namespace Imgeneus.Database
     public interface IDatabase : IDisposable
     {
         /// <summary>
-        /// Gets or sets the users.
-        /// </summary>
-        public DbSet<DbUser> Users { get; set; }
-
-        /// <summary>
         /// Gets or sets the characters.
         /// </summary>
         public DbSet<DbCharacter> Characters { get; set; }

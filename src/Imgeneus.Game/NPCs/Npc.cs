@@ -86,7 +86,7 @@ namespace Imgeneus.World.Game.NPCs
                     country = Fraction.NotSelected;
                     break;
             }
-            CountryProvider.Init(Id, country);
+            CountryProvider.Init(Id, (Authentication.Enums.Fraction)country);
         }
 
         public uint Id { get; set; }

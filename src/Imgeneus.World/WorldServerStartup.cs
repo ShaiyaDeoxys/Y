@@ -1,4 +1,7 @@
-﻿using Imgeneus.Core.Structures.Configuration;
+﻿using Imgeneus.Authentication.Connection;
+using Imgeneus.Authentication.Context;
+using Imgeneus.Authentication.Entities;
+using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
 using Imgeneus.Database.Context;
 using Imgeneus.Database.Entities;
@@ -85,12 +88,15 @@ namespace Imgeneus.World
                 .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("WorldServer").Bind(settings));
             services.AddOptions<DatabaseConfiguration>()
                .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("Database").Bind(settings));
+            services.AddOptions<UsersDatabaseConfiguration>()
+               .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("UsersDatabase").Bind(settings));
             services.AddOptions<InterServerConfig>()
                .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("InterServer").Bind(settings));
             services.AddOptions<GuildConfiguration>()
                .Configure<IConfiguration>((settings, configuration) => configuration.GetSection("Game:Guild").Bind(settings));
 
             services.RegisterDatabaseServices();
+            services.RegisterUsersDatabaseServices();
 
             services.AddHandlers();
 
@@ -183,10 +189,10 @@ namespace Imgeneus.World
                     options.Password.RequireDigit = false;
                 })
                 .AddRoles<DbRole>()
-                .AddEntityFrameworkStores<DatabaseContext>();
+                .AddEntityFrameworkStores<UsersContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder, RoleManager<DbRole> roleManager, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration)
         {
             loggerFactory.AddProvider(
                 new SignalRLoggerProvider(
@@ -215,11 +221,6 @@ namespace Imgeneus.World
                 endpoints.MapFallbackToPage("/_Host");
                 endpoints.MapHub<MonitoringHub>(MonitoringHub.HubUrl);
             });
-
-
-            roleManager.CreateAsync(new DbRole() { Name = DbRole.SUPER_ADMIN }).Wait();
-            roleManager.CreateAsync(new DbRole() { Name = DbRole.ADMIN }).Wait();
-            roleManager.CreateAsync(new DbRole() { Name = DbRole.USER }).Wait();
 
             mainDb.Migrate();
             logsDb.Migrate();

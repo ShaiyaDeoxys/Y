@@ -46,11 +46,5 @@ namespace Imgeneus.Database.Entities
         /// </summary>
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
-
-        /// <summary>
-        /// The bank item's associated user.
-        /// </summary>
-        [ForeignKey(nameof(UserId))]
-        public DbUser User { get; set; }
     }
 }

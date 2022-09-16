@@ -1,7 +1,7 @@
 ﻿#nullable disable
 
 using System.Threading.Tasks;
-using Imgeneus.Database.Entities;
+using Imgeneus.Authentication.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

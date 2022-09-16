@@ -127,7 +127,7 @@ namespace Imgeneus.World.Tests
             _characterId++;
 
             var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
-            countryProvider.Init(_characterId, country);
+            countryProvider.Init(_characterId, (Authentication.Enums.Fraction)country);
 
             var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);
             levelProvider.Init(_characterId, 1);
@@ -253,7 +253,7 @@ namespace Imgeneus.World.Tests
             var dbMob = definitionsPreloader.Object.Mobs[mobId];
 
             var countryProvider = new CountryProvider(new Mock<ILogger<CountryProvider>>().Object);
-            countryProvider.Init(0, country);
+            countryProvider.Init(0, (Authentication.Enums.Fraction)country);
 
             var mapProvider = new MapProvider(new Mock<ILogger<MapProvider>>().Object);
             var levelProvider = new LevelProvider(new Mock<ILogger<LevelProvider>>().Object);

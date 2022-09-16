@@ -260,12 +260,6 @@ namespace Imgeneus.Database.Entities
         public int UserId { get; set; }
 
         /// <summary>
-        /// Gets the character associated user.
-        /// </summary>
-        [ForeignKey(nameof(UserId))]
-        public DbUser User { get; set; }
-
-        /// <summary>
         /// Items that belong this character.
         /// </summary>
         public ICollection<DbCharacterItems> Items { get; set; }

@@ -1,4 +1,4 @@
-﻿using Imgeneus.Database.Entities;
+﻿using Imgeneus.Authentication.Entities;
 using Imgeneus.Network.Packets.Login;
 
 namespace Imgeneus.Login.Packets

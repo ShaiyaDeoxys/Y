@@ -27,7 +27,7 @@ namespace Imgeneus.Database
             var dbConfig = new DatabaseConfiguration();
             configuration.Bind("Database", dbConfig);
 
-            var optionsBuilder = new DbContextOptionsBuilder();
+            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             optionsBuilder.ConfigureCorrectDatabase(dbConfig);
 
             return new DatabaseContext(optionsBuilder.Options);

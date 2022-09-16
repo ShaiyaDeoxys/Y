@@ -1,5 +1,5 @@
-﻿using Imgeneus.Database;
-using Imgeneus.Database.Entities;
+﻿using Imgeneus.Authentication.Context;
+using Imgeneus.Authentication.Entities;
 using Imgeneus.Login.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +11,10 @@ namespace Imgeneus.Login.Controllers
     [ApiController]
     public class CredentialsController : ControllerBase
     {
-        private readonly IDatabase _database;
+        private readonly IUsersDatabase _database;
         private readonly IPasswordHasher<DbUser> _passwordHasher;
 
-        public CredentialsController(IDatabase database, IPasswordHasher<DbUser> passwordHasher)
+        public CredentialsController(IUsersDatabase database, IPasswordHasher<DbUser> passwordHasher)
         {
             _database = database;
             _passwordHasher = passwordHasher;
