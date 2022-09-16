@@ -54,10 +54,11 @@ namespace Imgeneus.World.Handlers
 
             var country = await _selectionScreenManager.GetFaction(worldClient.UserId);
             var mode = await _selectionScreenManager.GetMaxMode(worldClient.UserId);
-            _packetFactory.SendFaction(worldClient, country, mode);
 
             if (country != Fraction.NotSelected)
                 _packetFactory.SendCharacterList(worldClient, await _selectionScreenManager.GetCharacters(worldClient.UserId));
+
+            _packetFactory.SendFaction(worldClient, country, mode);
         }
     }
 }
