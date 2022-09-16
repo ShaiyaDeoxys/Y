@@ -31,6 +31,16 @@ properties:
         value: #{dbPassword}#
       - name: Database__SslMode
         value: Required
+
+      - name: UsersDatabase__Host
+        value: imgeneus-test.mysql.database.azure.com
+      - name: UsersDatabase__Username
+        value: aosyatnik
+      - name: UsersDatabase__Password
+        value: #{dbPassword}#
+      - name: UsersDatabase__SslMode
+        value: Required
+
       - name: TcpServer__Host
         value: "0.0.0.0"
       - name: InterServer__Endpoint

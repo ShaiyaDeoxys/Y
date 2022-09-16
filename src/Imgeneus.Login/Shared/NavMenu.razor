@@ -15,6 +15,12 @@
             </NavLink>
 
             <AuthorizeView Roles="SuperAdmin, Admin">
+                <NavLink class="nav-link" href="Users" Match="NavLinkMatch.All">
+                    <span class="oi oi-person" aria-hidden="true"></span> Users
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="SuperAdmin, Admin">
                 <NavLink class="nav-link" href="TcpConnections" Match="NavLinkMatch.All">
                     <span class="oi oi-wifi" aria-hidden="true"></span> TCP connections
                 </NavLink>

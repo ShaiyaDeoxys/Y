@@ -1,9 +1,8 @@
 ﻿using Imgeneus.Authentication.Entities;
-using Imgeneus.Database.Entities;
 using System;
 using System.Collections.Generic;
 
-namespace Imgeneus.World.Pages.Users
+namespace Imgeneus.Login.Pages.Users
 {
     public class UserDTO
     {
