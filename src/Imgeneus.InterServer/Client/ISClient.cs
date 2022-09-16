@@ -43,7 +43,7 @@ namespace InterServer.Client
 
         private Task Connection_Reconnecting(Exception arg)
         {
-            _logger.LogInformation("Trying to reconnected to the login server.");
+            _logger.LogInformation("Trying to reconnected to the login server. Err: " + arg.Message);
             return Task.CompletedTask;
         }
 
@@ -79,7 +79,7 @@ namespace InterServer.Client
 
         private Task Connection_Closed(Exception ex)
         {
-            _logger.LogError(ex.Message);
+            _logger.LogError("Connection the login server lost. Err: " + ex.Message);
             Connect();
             return Task.CompletedTask;
         }
