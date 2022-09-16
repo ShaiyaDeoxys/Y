@@ -9,6 +9,11 @@ namespace Imgeneus.Database
     public interface IDatabase : IDisposable
     {
         /// <summary>
+        /// Selected country for this user.
+        /// </summary>
+        public DbSet<DbUserModeAndCountry> UsersModeAndCountry { get; set; }
+
+        /// <summary>
         /// Gets or sets the characters.
         /// </summary>
         public DbSet<DbCharacter> Characters { get; set; }

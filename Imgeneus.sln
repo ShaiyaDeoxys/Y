@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.Game", "src\Imgene
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.Monitoring", "src\Imgeneus.Monitoring\Imgeneus.Monitoring.csproj", "{9E1E41EE-DC2E-4846-BC49-03BCD55465CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imegeneus.Authentication", "submodules\Imgeneus.Authentication\Imegeneus.Authentication\Imegeneus.Authentication.csproj", "{A70C8248-A19E-444C-BD24-665FC4E7E606}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imgeneus.Authentication", "submodules\Imgeneus.Authentication\Imegeneus.Authentication\Imgeneus.Authentication.csproj", "{A70C8248-A19E-444C-BD24-665FC4E7E606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

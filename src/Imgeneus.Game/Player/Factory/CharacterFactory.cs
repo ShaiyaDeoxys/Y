@@ -193,11 +193,15 @@ namespace Imgeneus.World.Game.Player
             Character.ClearOutdatedValues(_database, characterId);
 
             var user = await _usersDatabase.Users.FindAsync(userId);
-            if(user is null)
+            if (user is null)
+                return null;
+
+            var userCountry = await _database.UsersModeAndCountry.FindAsync(userId);
+            if (userCountry is null)
                 return null;
 
             // Before loading character, check, that right map is loaded.
-            _gameWorld.EnsureMap(await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId), user.Faction);
+            _gameWorld.EnsureMap(await _database.Characters.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId), userCountry.Country);
             await _database.SaveChangesAsync();
 
             var dbCharacter = await _database.Characters.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId && c.Id == characterId).ConfigureAwait(false);
@@ -216,7 +220,7 @@ namespace Imgeneus.World.Game.Player
             dbCharacter.QuickItems = await _database.QuickItems.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
             dbCharacter.SavedPositions = await _database.CharacterSavePositions.AsNoTracking().Where(x => x.CharacterId == characterId).ToListAsync().ConfigureAwait(false);
             var bankItems = await _database.BankItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);
-            var warehouseItems = await _database.WarehouseItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);                                            
+            var warehouseItems = await _database.WarehouseItems.AsNoTracking().Where(x => x.UserId == dbCharacter.UserId).ToListAsync().ConfigureAwait(false);
 
             var roles = await _userManager.GetRolesAsync(user);
             var isAdmin = roles.Contains(DbRole.ADMIN) || roles.Contains(DbRole.SUPER_ADMIN);
@@ -225,7 +229,7 @@ namespace Imgeneus.World.Game.Player
 
             _gameSession.IsAdmin = isAdmin;
 
-            _countryProvider.Init(dbCharacter.Id, user.Faction);
+            _countryProvider.Init(dbCharacter.Id, userCountry.Country);
 
             _speedManager.Init(dbCharacter.Id);
 

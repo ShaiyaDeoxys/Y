@@ -26,6 +26,8 @@ namespace Imgeneus.World.Handlers
             var mode = await _selectionScreenManager.GetMaxMode(client.UserId);
 
             _packetFactory.SendFaction(client, packet.Fraction, mode);
+
+            _packetFactory.SendCharacterList(client, await _selectionScreenManager.GetCharacters(client.UserId));
         }
     }
 }

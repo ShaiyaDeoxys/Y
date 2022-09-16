@@ -185,7 +185,7 @@ namespace Imgeneus.World.Game
         }
 
         /// <inheritdoc/>
-        public void EnsureMap(DbCharacter dbCharacter, Authentication.Enums.Fraction faction)
+        public void EnsureMap(DbCharacter dbCharacter, Fraction faction)
         {
             if (Maps.ContainsKey(dbCharacter.Map)) // All fine, map is presented on server.
                 return;
@@ -193,7 +193,7 @@ namespace Imgeneus.World.Game
             // Map was completely deleted from the server. Fallback to map 0.
             if (!AvailableMapIds.Contains(dbCharacter.Map))
             {
-                var coordinates = Maps[0].GetNearestSpawn(0, 0, 0, faction == Authentication.Enums.Fraction.Light ? CountryType.Light : CountryType.Dark);
+                var coordinates = Maps[0].GetNearestSpawn(0, 0, 0, faction == Fraction.Light ? CountryType.Light : CountryType.Dark);
                 dbCharacter.Map = 0;
                 dbCharacter.PosX = coordinates.X;
                 dbCharacter.PosY = coordinates.Y;
@@ -215,7 +215,7 @@ namespace Imgeneus.World.Game
                     return;
                 }
 
-                if (faction == Authentication.Enums.Fraction.Light)
+                if (faction == Fraction.Light)
                 {
                     dbCharacter.Map = definition.LightRebirthMap.MapId;
                     dbCharacter.PosX = definition.LightRebirthMap.PosX;
@@ -224,7 +224,7 @@ namespace Imgeneus.World.Game
                     return;
                 }
 
-                if (faction == Authentication.Enums.Fraction.Dark)
+                if (faction == Fraction.Dark)
                 {
                     dbCharacter.Map = definition.DarkRebirthMap.MapId;
                     dbCharacter.PosX = definition.DarkRebirthMap.PosX;

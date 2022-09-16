@@ -44,7 +44,7 @@ namespace Imgeneus.World.Game
         /// Reason can be next: map was deleted from the server, map was instance map, something went wrong and we saved wrong map id in database.
         /// </summary>
         /// <param name="dbCharacter"></param>
-        void EnsureMap(DbCharacter dbCharacter, Authentication.Enums.Fraction faction);
+        void EnsureMap(DbCharacter dbCharacter, Fraction faction);
 
         /// <summary>
         /// Loads player into game world.

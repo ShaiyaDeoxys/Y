@@ -7,6 +7,8 @@ namespace Imgeneus.Database.Context
 {
     public class DatabaseContext : DbContext, IDatabase
     {
+        public DbSet<DbUserModeAndCountry> UsersModeAndCountry { get; set; }
+
         public DbSet<DbCharacter> Characters { get; set; }
 
         public DbSet<DbCharacterItems> CharacterItems { get; set; }

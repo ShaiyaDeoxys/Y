@@ -1,4 +1,5 @@
-﻿using Imgeneus.Network.Packets;
+﻿using Imgeneus.Database.Entities;
+using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Packets;
@@ -21,7 +22,7 @@ namespace Imgeneus.World.Handlers
         private readonly ISelectionScreenManager _selectionScreenManager;
         private Guid _sessionId;
 
-        public HandshakeHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IWorldServer server, IInterServerClient interClient, ISelectionScreenManager selectionScreenManager): base(packetFactory, gameSession)
+        public HandshakeHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IWorldServer server, IInterServerClient interClient, ISelectionScreenManager selectionScreenManager) : base(packetFactory, gameSession)
         {
             _server = server;
             _interClient = interClient;
@@ -51,8 +52,12 @@ namespace Imgeneus.World.Handlers
 
             _packetFactory.SendGameHandshake(worldClient);
 
-            _packetFactory.SendCharacterList(worldClient, await _selectionScreenManager.GetCharacters(worldClient.UserId));
-            _packetFactory.SendFaction(worldClient, await _selectionScreenManager.GetFaction(worldClient.UserId), await _selectionScreenManager.GetMaxMode(worldClient.UserId));
+            var country = await _selectionScreenManager.GetFaction(worldClient.UserId);
+            var mode = await _selectionScreenManager.GetMaxMode(worldClient.UserId);
+            _packetFactory.SendFaction(worldClient, country, mode);
+
+            if (country != Fraction.NotSelected)
+                _packetFactory.SendCharacterList(worldClient, await _selectionScreenManager.GetCharacters(worldClient.UserId));
         }
     }
 }

@@ -29,16 +29,14 @@ namespace Imgeneus.World.SelectionScreen
         private readonly ILogger<SelectionScreenManager> _logger;
         private readonly IGameWorld _gameWorld;
         private readonly ICharacterConfiguration _characterConfiguration;
-        private readonly IUsersDatabase _usersDatabase;
         private readonly IDatabase _database;
         private readonly IGameDefinitionsPreloder _definitionsPreloader;
 
-        public SelectionScreenManager(ILogger<SelectionScreenManager> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IUsersDatabase usersDatabase, IDatabase database, IGameDefinitionsPreloder definitionsPreloader)
+        public SelectionScreenManager(ILogger<SelectionScreenManager> logger, IGameWorld gameWorld, ICharacterConfiguration characterConfiguration, IDatabase database, IGameDefinitionsPreloder definitionsPreloader)
         {
             _logger = logger;
             _gameWorld = gameWorld;
             _characterConfiguration = characterConfiguration;
-            _usersDatabase = usersDatabase;
             _database = database;
             _definitionsPreloader = definitionsPreloader;
 
@@ -56,7 +54,7 @@ namespace Imgeneus.World.SelectionScreen
 
         public async Task<IEnumerable<DbCharacter>> GetCharacters(int userId)
         {
-            var user = await _usersDatabase.Users.FindAsync(userId);
+            var user = await _database.UsersModeAndCountry.FindAsync(userId);
             if (user is null)
                 return new DbCharacter[0];
 
@@ -67,7 +65,7 @@ namespace Imgeneus.World.SelectionScreen
                                         .ToListAsync();
 
             foreach (var character in characters)
-                _gameWorld.EnsureMap(character, user.Faction);
+                _gameWorld.EnsureMap(character, user.Country);
 
             return characters;
         }
@@ -96,8 +94,8 @@ namespace Imgeneus.World.SelectionScreen
                 return false;
             }
 
-            var user = await _usersDatabase.Users.FindAsync(userId);
-            var createConfig = _characterConfiguration.CreateConfigs.FirstOrDefault(p => (byte)p.Country == (byte)user.Faction && p.Job == createCharacterPacket.Class);
+            var user = await _database.UsersModeAndCountry.FindAsync(userId);
+            var createConfig = _characterConfiguration.CreateConfigs.FirstOrDefault(p => p.Country == user.Country && p.Job == createCharacterPacket.Class);
             if (createConfig is null)
             {
                 // Something went very wrong. No default position for this job.
@@ -170,16 +168,24 @@ namespace Imgeneus.World.SelectionScreen
 
         public async Task<Fraction> GetFaction(int userId)
         {
-            var user = await _usersDatabase.Users.FindAsync(userId);
-            return (Fraction)user.Faction;
+            var user = await _database.UsersModeAndCountry.FindAsync(userId);
+            if (user is null)
+                return Fraction.NotSelected;
+
+            return user.Country;
         }
 
         public async Task SetFaction(int userId, Fraction fraction)
         {
-            var user = await _usersDatabase.Users.FindAsync(userId);
-            user.Faction = (Authentication.Enums.Fraction)fraction;
+            var user = await _database.UsersModeAndCountry.FindAsync(userId);
+            if (user is null)
+            {
+                user = new DbUserModeAndCountry() { UserId = userId, MaxMode = Mode.Ultimate };
+                _database.UsersModeAndCountry.Add(user);
+            }
+            user.Country = fraction;
 
-            await _usersDatabase.SaveChangesAsync();
+            await _database.SaveChangesAsync();
         }
 
         public Task<Mode> GetMaxMode(int userId)

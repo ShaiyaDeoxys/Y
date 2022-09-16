@@ -13,8 +13,6 @@ namespace Imgeneus.World.Pages.Users
 
         public uint Points { get; }
 
-        public string Faction { get; }
-
         public IList<string> Roles { get; }
 
         public DateTime LastConnectionTime { get; }
@@ -26,7 +24,6 @@ namespace Imgeneus.World.Pages.Users
             Id = user.Id;
             UserName = user.UserName;
             Points = user.Points;
-            Faction = user.Faction.ToString();
             LastConnectionTime = user.LastConnectionTime;
             IsDeleted = user.IsDeleted;
             Roles = roles;

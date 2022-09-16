@@ -30,7 +30,6 @@ namespace Imgeneus.World
             _applicationLifetime = applicationLifetime;
 
             _interClient.OnConnected += SendWorldInfo;
-            _interClient.Connect();
 
             _applicationLifetime.ApplicationStopping.Register(() => {
                 _logger.LogInformation("Application stopped. Server is stopping too.");
@@ -40,6 +39,7 @@ namespace Imgeneus.World
         protected override void OnBeforeStart()
         {
             _gameWorld.Init();
+            _interClient.Connect();
         }
 
         protected override void OnAfterStart()

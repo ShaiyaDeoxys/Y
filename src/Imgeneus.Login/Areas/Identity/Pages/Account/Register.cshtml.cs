@@ -78,7 +78,7 @@ namespace Imgeneus.World.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new DbUser() { Faction = Authentication.Enums.Fraction.NotSelected };
+                var user = new DbUser();
 
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
 

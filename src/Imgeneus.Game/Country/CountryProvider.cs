@@ -26,17 +26,17 @@ namespace Imgeneus.World.Game.Country
 #endif
         public CountryType Country { get; private set; }
 
-        public void Init(uint ownerId, Authentication.Enums.Fraction country)
+        public void Init(uint ownerId, Fraction country)
         {
             _ownerId = ownerId;
 
             switch (country)
             {
-                case Authentication.Enums.Fraction.Light:
+                case Fraction.Light:
                     Country = CountryType.Light;
                     break;
 
-                case Authentication.Enums.Fraction.Dark:
+                case Fraction.Dark:
                     Country = CountryType.Dark;
                     break;
 
