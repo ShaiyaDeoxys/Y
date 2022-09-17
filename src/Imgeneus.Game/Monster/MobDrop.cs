@@ -42,6 +42,28 @@ namespace Imgeneus.World.Game.Monster
                 items.Add(item);
             }
 
+            if (_dbMob.QuestItemId != 0)
+            {
+                DbItem itemDef = null;
+                if (_dbMob.QuestItemId > 1000 && _dbMob.QuestItemId < 3000)
+                {
+                    _definitionsPreloader.Items.TryGetValue((28, (byte)(_dbMob.QuestItemId - 1000)), out itemDef);
+                }
+
+                if (_dbMob.QuestItemId > 3000)
+                {
+                    _definitionsPreloader.Items.TryGetValue((99, (byte)(_dbMob.QuestItemId - 3000)), out itemDef);
+                }
+
+                if (itemDef != null)
+                {
+                    if (_dropRandom.Next(1, 101) <= itemDef.Quality)
+                    {
+                        items.Add(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, itemDef.Type, itemDef.TypeId));
+                    }
+                }
+            }
+
             return items;
         }
 

@@ -116,7 +116,7 @@ namespace Imgeneus.GameDefinitions
         public short MoneyMax { get; set; }
 
         /// <summary>
-        /// ?
+        /// Drops secret quest item.
         /// </summary>
         public int QuestItemId { get; set; }
 

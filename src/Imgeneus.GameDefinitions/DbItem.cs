@@ -38,7 +38,7 @@ namespace Imgeneus.GameDefinitions
             Element = (Element)record.Attrib;
             Special = (SpecialEffect)record.Special;
             Slot = (byte)record.Slot;
-            Quality = (ushort)record.Slot;
+            Quality = (ushort)record.Quality;
             MinAttack = (ushort)record.MinAttack;
             PlusAttack = (ushort)record.PlusAttack;
             Defense = (ushort)record.Defense;
