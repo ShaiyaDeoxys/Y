@@ -26,7 +26,7 @@ namespace Imgeneus.World.Handlers
         }
 
         [HandlerAction(PacketType.AUTO_STATS_SET)]
-        public async Task Handle(WorldClient client, AutoStatsSettingsPacket packet)
+        public async Task HandleSet(WorldClient client, AutoStatsSettingsPacket packet)
         {
             var (str, dex, rec, intl, wis, luc) = packet;
 
@@ -35,6 +35,12 @@ namespace Imgeneus.World.Handlers
 
             var ok = await _statsManager.TrySetAutoStats(str, dex, rec, intl, wis, luc);
             _packetFactory.SendAutoStats(client, str, dex, rec, intl, wis, luc);
+        }
+
+        [HandlerAction(PacketType.AUTO_STATS_SET)]
+        public void HandleList(WorldClient client, EmptyPacket packet)
+        {
+            _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
         }
     }
 }

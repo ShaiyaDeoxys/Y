@@ -109,8 +109,6 @@ namespace Imgeneus.World.Handlers
             if (character.GuildManager.HasGuild)
                 _packetFactory.SendGuildNpcs(client, await character.GuildManager.GetGuildNpcs());
 
-            _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
-
 #if !EP8_V2
             _packetFactory.SendAccountPoints(client, character.AdditionalInfoManager.Points); // WARNING: This is necessary if you have an in-game item mall.
 #endif
