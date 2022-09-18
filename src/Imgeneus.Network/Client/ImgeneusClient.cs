@@ -93,8 +93,7 @@ namespace Imgeneus.Network.Client
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"An error occured while handling a login packet.");
-                _logger.LogDebug(exception.InnerException?.StackTrace);
+                _logger.LogError("An error occured while handling packet: {0}", exception.InnerException?.StackTrace);
             }
             finally
             {
