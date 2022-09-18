@@ -57,7 +57,7 @@ namespace Imgeneus.World.Game.Chat
                     break;
 
                 case MessageType.Map:
-                    var mapPlayers = sender.Map.Cells[sender.CellId].GetPlayers(sender.PosX, sender.PosZ, 0, sender.CountryProvider.Country, true).Cast<Character>();
+                    var mapPlayers = sender.Map.Players.Where(x => x.Value.CountryProvider.Country == sender.CountryProvider.Country).Select(x => x.Value);
                     foreach (var player in mapPlayers)
                     {
                         _packetFactory.SendMap(player.GameSession.Client, sender.AdditionalInfoManager.Name, message);
