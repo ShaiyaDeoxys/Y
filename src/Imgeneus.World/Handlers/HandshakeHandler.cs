@@ -37,6 +37,15 @@ namespace Imgeneus.World.Handlers
 
             _sessionId = client.Id;
 
+            // Disconnect users with the same id.
+            var sameUsers = _server.ConnectedUsers.Where(x => x.UserId == client.UserId && x.Id != client.Id);
+            foreach (var user in sameUsers)
+            {
+                _server.DisconnectUser(user.Id);
+                await user.ClearSession(true).ConfigureAwait(false);
+                user.Dispose();
+            }
+
             // Send request to login server and get client key.
             await _interClient.Send(new ISMessage(ISMessageType.AES_KEY_REQUEST, packet.SessionId));
         }
