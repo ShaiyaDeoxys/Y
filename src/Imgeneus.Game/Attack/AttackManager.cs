@@ -432,6 +432,12 @@ namespace Imgeneus.World.Game.Attack
                         result = new AttackResult(AttackSuccess.Normal, new Damage((ushort)(target.HealthManager.MaxHP * skill.DamageHP / 100), 0, 0));
                         break;
 
+                    case DamageType.MPPercentageDamage:
+                        ushort mpDamage = (ushort)(target.HealthManager.MaxMP * (skill.DamageHP + skill.DamageMP) / 100);
+                        ushort spDamage = (ushort)(target.HealthManager.MaxMP * (skill.DamageHP + skill.DamageSP) / 100);
+                        result = new AttackResult(AttackSuccess.Normal, new Damage(0, mpDamage, spDamage));
+                        break;
+
                     case DamageType.DamageCoefficient:
                         result = CalculateDamage(target,
                                                skill.TypeAttack,
