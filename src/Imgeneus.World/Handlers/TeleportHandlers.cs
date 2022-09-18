@@ -5,6 +5,7 @@ using Imgeneus.World.Game;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Guild;
 using Imgeneus.World.Game.Inventory;
+using Imgeneus.World.Game.Movement;
 using Imgeneus.World.Game.NPCs;
 using Imgeneus.World.Game.Session;
 using Imgeneus.World.Game.Teleport;
@@ -159,6 +160,13 @@ namespace Imgeneus.World.Handlers
         {
             var ok = _teleportationManager.TrySavePosition(packet.Index, packet.MapId, packet.X, packet.Y, packet.Z);
             _packetFactory.SendTeleportSavedPosition(client, ok, packet.Index, packet.MapId, packet.X, packet.Y, packet.Z);
+        }
+
+
+        [HandlerAction(PacketType.TOWN_TELEPORT)]
+        public void HandleTownTeleport(WorldClient client, EmptyPacket packet)
+        {
+            _teleportationManager.StartTownTeleport();
         }
     }
 }

@@ -75,5 +75,10 @@ namespace Imgeneus.World.Game.Teleport
         /// Character's saved positions.
         /// </summary>
         IReadOnlyDictionary<byte, (ushort MapId, float X, float Y, float Z)> SavedPositions { get; }
+
+        /// <summary>
+        /// Teleport within 10 sec to the nearest town.
+        /// </summary>
+        void StartTownTeleport();
     }
 }

@@ -46,6 +46,7 @@ namespace Imgeneus.World.Game.Teleport
             _healthManager = healthManager;
             _blessManager = blessManager;
             _castingTimer.Elapsed += OnCastingTimer_Elapsed;
+            _townTimer.Elapsed += OnTownTimer_Elapsed;
             _healthManager.OnGotDamage += HealthManager_OnGotDamage;
             _movementManager.OnMove += MovementManager_OnMove;
 #if DEBUG
@@ -109,6 +110,7 @@ namespace Imgeneus.World.Game.Teleport
         public void Dispose()
         {
             _castingTimer.Elapsed -= OnCastingTimer_Elapsed;
+            _townTimer.Elapsed -= OnTownTimer_Elapsed;
             _healthManager.OnGotDamage -= HealthManager_OnGotDamage;
             _movementManager.OnMove -= MovementManager_OnMove;
         }
@@ -241,11 +243,13 @@ namespace Imgeneus.World.Game.Teleport
         private void HealthManager_OnGotDamage(uint sender, IKiller damageMaker, int damage)
         {
             CancelCasting();
+            CancelTownTeleport();
         }
 
         private void MovementManager_OnMove(uint senderId, float x, float y, float z, ushort angle, MoveMotion motion)
         {
             CancelCasting();
+            CancelTownTeleport();
         }
 
         private void CancelCasting()
@@ -273,6 +277,31 @@ namespace Imgeneus.World.Game.Teleport
                 _savedPositions.TryRemove(index, out var _);
 
             return _savedPositions.TryAdd(index, (mapId, x, y, z));
+        }
+
+        #endregion
+
+        #region Town teleport 
+
+        private Timer _townTimer = new Timer() { AutoReset = false, Interval = 10000 };
+
+        public void StartTownTeleport()
+        {
+            _townTimer.Start();
+        }
+
+        private void OnTownTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (_gameWorld.Players.TryGetValue(_ownerId, out var player))
+            {
+                var spawn = _mapProvider.Map.GetRebirthMap(player);
+                Teleport(spawn.MapId, spawn.X, spawn.Y, spawn.Z);
+            }
+        }
+
+        private void CancelTownTeleport()
+        {
+            _townTimer.Stop();
         }
 
         #endregion
