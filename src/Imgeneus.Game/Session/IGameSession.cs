@@ -1,4 +1,5 @@
 ﻿using Imgeneus.World.Game.Player;
+using System.Threading.Tasks;
 
 namespace Imgeneus.World.Game.Session
 {
@@ -36,5 +37,12 @@ namespace Imgeneus.World.Game.Session
         /// Stops log off timer.
         /// </summary>
         void StopLogOff();
+
+        /// <summary>
+        /// Leaves game world and clears game session.
+        /// </summary>
+        /// <param name="quitGame"></param>
+        /// <returns></returns>
+        Task Logout(bool quitGame);
     }
 }

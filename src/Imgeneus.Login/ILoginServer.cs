@@ -35,7 +35,7 @@ namespace Imgeneus.Login
         /// <summary>
         /// Disconnects client from server.
         /// </summary>
-        void DisconnectUser(Guid userId);
+        void DisconnectUser(Guid userId, bool silent = false);
 
         /// <summary>
         /// Start server.

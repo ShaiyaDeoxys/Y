@@ -41,9 +41,8 @@ namespace Imgeneus.World.Handlers
             var sameUsers = _server.ConnectedUsers.Where(x => x.UserId == client.UserId && x.Id != client.Id);
             foreach (var user in sameUsers)
             {
-                _server.DisconnectUser(user.Id);
-                await user.ClearSession(true).ConfigureAwait(false);
-                user.Dispose();
+                await user.GameSession.Logout(true);
+                _server.DisconnectUser(user.Id, true);
             }
 
             // Send request to login server and get client key.
@@ -54,7 +53,10 @@ namespace Imgeneus.World.Handlers
         {
             _interClient.OnSessionResponse -= InitGameSession;
 
-            var worldClient = _server.ConnectedUsers.First(x => x.Id == _sessionId);
+            var worldClient = _server.ConnectedUsers.FirstOrDefault(x => x.Id == _sessionId);
+            if (worldClient == null)
+                return;
+
             worldClient.CryptoManager.GenerateAES(sessionInfo.KeyPair.Key, sessionInfo.KeyPair.IV);
 
             _gameSession.Client = worldClient;

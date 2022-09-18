@@ -25,6 +25,6 @@ namespace Imgeneus.World
         /// <summary>
         /// Disconnect client from server.
         /// </summary>
-        void DisconnectUser(Guid clientId);
+        void DisconnectUser(Guid clientId, bool silent);
     }
 }

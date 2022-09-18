@@ -50,13 +50,15 @@ namespace Imgeneus.World
             return _handlerInvoker.InvokeAsync(_scope, type, this, packet);
         }
 
+        public IGameSession GameSession { get => _scope.ServiceProvider.GetService<IGameSession>(); }
+
         protected override void OnDisconnected()
         {
             if (IsDisposed)
                 return;
 
-            var gameSession = _scope.ServiceProvider.GetService<IGameSession>();
-            gameSession.StartLogOff(true);
+            // When user closes game window, he is still in game for 10 secs.
+            GameSession.StartLogOff(true);
         }
 
         public async Task ClearSession(bool quitGame = false)

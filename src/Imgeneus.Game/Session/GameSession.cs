@@ -4,6 +4,7 @@ using Imgeneus.World.Packets;
 using Imgeneus.World.SelectionScreen;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -83,6 +84,11 @@ namespace Imgeneus.World.Game.Session
 
         private async void LogoutTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            await Logout(_quitGame);
+        }
+
+        public async Task Logout(bool quitGame)
+        {
             // First, remove player from game world.
             // Because some managers like Guild Manager provide GuildId and player can be found in guild map ONLY if this id is presented.
             _gameWorld.RemovePlayer(Character.Id);
@@ -90,7 +96,7 @@ namespace Imgeneus.World.Game.Session
             try
             {
                 // ONLY after player is unloaded from game world we can clear session servises.
-                await Client.ClearSession(_quitGame);
+                await Client.ClearSession(quitGame);
             }
             catch (Exception ex)
             {
@@ -100,7 +106,7 @@ namespace Imgeneus.World.Game.Session
             Character = null;
             IsLoggingOff = false;
 
-            if (_quitGame)
+            if (quitGame)
             {
                 _packetFactory.SendQuitGame(Client);
             }
