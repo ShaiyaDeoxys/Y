@@ -422,6 +422,8 @@ namespace Imgeneus.World.Packets
         void SendGmTeleportToPlayer(IWorldClient client, Character player);
         void SendGmSummon(IWorldClient client, uint senderId, ushort mapId, float x, float y, float z);
         void SendWarning(IWorldClient client, string message);
+        void SendGmClearInventory(IWorldClient client);
+
         #endregion
 
         #region Other

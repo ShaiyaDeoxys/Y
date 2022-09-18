@@ -2931,6 +2931,12 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendGmClearInventory(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GM_CLEAR_INVENTORY);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Other
