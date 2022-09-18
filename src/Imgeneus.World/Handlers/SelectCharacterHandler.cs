@@ -46,6 +46,12 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.SELECT_CHARACTER)]
         public async Task Handle(WorldClient client, SelectCharacterPacket packet)
         {
+            if (_gameWorld.Players.TryGetValue(packet.CharacterId, out var existingPlayer))
+            {
+                _packetFactory.SendCharacterSelected(client, false, 0);
+                return;
+            }
+
             var character = await _characterFactory.CreateCharacter(client.UserId, packet.CharacterId);
             if (character is null)
             {
