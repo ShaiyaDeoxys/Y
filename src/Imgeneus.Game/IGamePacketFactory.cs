@@ -423,6 +423,7 @@ namespace Imgeneus.World.Packets
         void SendGmSummon(IWorldClient client, uint senderId, ushort mapId, float x, float y, float z);
         void SendWarning(IWorldClient client, string message);
         void SendGmClearInventory(IWorldClient client);
+        void SendGmClearEquipment(IWorldClient client);
 
         #endregion
 
