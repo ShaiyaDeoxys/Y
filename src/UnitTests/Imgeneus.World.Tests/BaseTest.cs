@@ -231,6 +231,7 @@ namespace Imgeneus.World.Tests
                 BlessManager,
                 recoverManager,
                 new Mock<IMarketManager>().Object,
+                chatMock.Object,
                 gameSessionMock.Object,
                 packetFactoryMock.Object);
 
