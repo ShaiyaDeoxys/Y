@@ -427,6 +427,12 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendInventorySort(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.INVENTORY_SORT);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Vehicle

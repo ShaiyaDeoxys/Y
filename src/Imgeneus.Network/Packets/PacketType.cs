@@ -53,6 +53,7 @@
         USE_VEHICLE_2 = 0x021C, // 540
         VEHICLE_REQUEST = 0x021D, // 541
         VEHICLE_RESPONSE = 0x021E, // 542
+        INVENTORY_SORT = 0x021F, // 543
 
         // Map
         MAP_ADD_ITEM = 0x0401, // 1025

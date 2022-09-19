@@ -85,6 +85,7 @@ namespace Imgeneus.World.Packets
         void SendSoldItem(IWorldClient client, bool success, Item itemToSell, uint gold);
         void SendGoldUpdate(IWorldClient client, uint gold);
         void SendItemExpired(IWorldClient client, Item item, ExpireType expireType);
+        void SendInventorySort(IWorldClient client);
         #endregion
 
         #region Vehicle
