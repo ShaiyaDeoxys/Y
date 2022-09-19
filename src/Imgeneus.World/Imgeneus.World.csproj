@@ -72,6 +72,9 @@
     <None Update="config\maps\1.svmap">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="config\maps\18.svmap">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="config\maps\19.svmap">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
