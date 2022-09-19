@@ -241,16 +241,13 @@ namespace Imgeneus.World.Game.Shop
 
             _inventoryManager.Gold += item.ShopPrice * count;
             item.Count -= count;
-
-            Item resultItem;
             if (item.Count == 0)
             {
                 _items.TryRemove(slot, out var _);
-                resultItem = _inventoryManager.RemoveItem(item);
+                _inventoryManager.RemoveItem(item);
             }
-            else
-                resultItem = item.Clone();
 
+            Item resultItem = item.Clone();
             resultItem.Count = count;
 
             OnSellItemCountChanged?.Invoke(slot, item.Count);
