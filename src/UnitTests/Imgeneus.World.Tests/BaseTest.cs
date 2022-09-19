@@ -312,7 +312,7 @@ namespace Imgeneus.World.Tests
                 .Returns(new ConcurrentDictionary<uint, Character>());
 
             PortalTeleportNotAllowedReason reason;
-            gameWorldMock.Setup(x => x.CanTeleport(It.IsAny<Character>(), It.IsAny<ushort>(), out reason))
+            gameWorldMock.Setup(x => x.CanTeleport(It.IsAny<Character>(), It.IsAny<ushort>(), out reason, false))
                 .Returns(true);
 
             config.Setup((conf) => conf.GetConfig(It.IsAny<int>()))
