@@ -37,7 +37,20 @@
     },
     {
       "MapId": 18,
-      "MapType": "Field"
+      "MapType": "Field",
+      "MaxLevel": 15,
+      "LevelOutMapLight": {
+        "MapId": 1,
+        "PosX": 947.77,
+        "PosY": 8.320,
+        "PosZ": 658.59
+      },
+      "LevelOutMapDark": {
+        "MapId": 2,
+        "PosX": 993.52,
+        "PosY": 53.381,
+        "PosZ": 1114.9
+      }
     },
     {
       "MapId": 19,

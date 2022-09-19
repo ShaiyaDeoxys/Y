@@ -15,6 +15,7 @@ using Imgeneus.World.Game.Zone.Portals;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
 using Sylver.HandlerInvoker.Attributes;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Imgeneus.World.Handlers
@@ -167,6 +168,33 @@ namespace Imgeneus.World.Handlers
         public void HandleTownTeleport(WorldClient client, EmptyPacket packet)
         {
             _teleportationManager.StartTownTeleport();
+        }
+
+        [HandlerAction(PacketType.TELEPORT_TO_BATTLEGROUND)]
+        public void HandleTeleportToBattleground(WorldClient client, TeleportToBattlegroundPacket packet)
+        {
+            if (!_gameWorld.AvailableMapIds.Contains(packet.MapId))
+                return;
+
+            if (_gameSession.Character is null)
+                return;
+
+            if (!_gameWorld.CanTeleport(_gameSession.Character, packet.MapId, out _))
+                return;
+
+            float x = 100;
+            float y = 100;
+            float z = 100;
+            var spawn = _mapLoader.LoadMapConfiguration(packet.MapId).Spawns.FirstOrDefault(s => ((int)s.Faction == 1 && _countryProvider.Country == CountryType.Light) || ((int)s.Faction == 2 && _countryProvider.Country == CountryType.Dark));
+            if (spawn != null)
+            {
+                x = spawn.Area.LowerLimit.X;
+                y = spawn.Area.LowerLimit.Y;
+                z = spawn.Area.LowerLimit.Z;
+            }
+
+            _teleportationManager.Teleport(packet.MapId, x, y, z);
+            _packetFactory.SendTeleportToBattleground(client, true);
         }
     }
 }

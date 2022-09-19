@@ -69,7 +69,8 @@ namespace Imgeneus.World.Game
         /// <param name="player">player to teleport</param>
         /// <param name="mapId">map index</param>
         /// <param name="reason">optional out param, that indicates the reason why teleport is not allowed for this character</param>
+        /// <param name="skipLevelCheck">skips level check of map</param>
         /// <returns>true, if it can teleport</returns>
-        bool CanTeleport(Character player, ushort mapId, out PortalTeleportNotAllowedReason reason);
+        bool CanTeleport(Character player, ushort mapId, out PortalTeleportNotAllowedReason reason, bool skipLevelCheck = false);
     }
 }

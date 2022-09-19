@@ -130,7 +130,7 @@ namespace Imgeneus.World.Game.Teleport
         {
             IsTeleporting = true;
 
-            if (_gameWorld.CanTeleport(_gameWorld.Players[_ownerId], mapId, out var reason))
+            if (_gameWorld.CanTeleport(_gameWorld.Players[_ownerId], mapId, out var reason, teleportedByAdmin || summonedByAdmin))
                 _mapProvider.NextMapId = mapId;
             else
                 if (reason == PortalTeleportNotAllowedReason.Unknown)

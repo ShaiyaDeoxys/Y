@@ -2291,6 +2291,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendTeleportToBattleground(IWorldClient client, bool success)
+        {
+            using var packet = new ImgeneusPacket(PacketType.TELEPORT_TO_BATTLEGROUND);
+            packet.Write(success);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Quests

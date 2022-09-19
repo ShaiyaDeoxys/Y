@@ -115,5 +115,25 @@ namespace Imgeneus.World.Game.Zone.MapConfig
         /// Map config, where light character must rebirth.
         /// </summary>
         public RebirthConfiguration DarkRebirthMap { get; set; }
+
+        /// <summary>
+        /// Min character level allowed.
+        /// </summary>
+        public ushort MinLevel { get; set; } = 0;
+
+        /// <summary>
+        /// Max character level allowed.
+        /// </summary>
+        public ushort MaxLevel { get; set; } = 999;
+
+        /// <summary>
+        /// If character level is not allowed, map where characted should be moved.
+        /// </summary>
+        public RebirthConfiguration LevelOutMapLight { get; set; }
+
+        /// <summary>
+        /// If character level is not allowed, map where characted should be moved.
+        /// </summary>
+        public RebirthConfiguration LevelOutMapDark { get; set; }
     }
 }

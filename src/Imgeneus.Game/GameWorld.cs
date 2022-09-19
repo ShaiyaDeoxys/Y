@@ -87,24 +87,38 @@ namespace Imgeneus.World.Game
         }
 
         /// <inheritdoc />
-        public bool CanTeleport(Character player, ushort destinationMapId, out PortalTeleportNotAllowedReason reason)
+        public bool CanTeleport(Character player, ushort destinationMapId, out PortalTeleportNotAllowedReason reason, bool skipLevelCheck = false)
         {
             reason = PortalTeleportNotAllowedReason.Unknown;
 
+            var destinationMapDef = _mapDefinitions.Maps.FirstOrDefault(d => d.Id == destinationMapId);
+            if (destinationMapDef is null)
+            {
+                _logger.LogWarning("Map {id} is not found in map definitions.", destinationMapId);
+                return false;
+            }
+
             if (Maps.ContainsKey(destinationMapId) || player.Map.Id == destinationMapId)
             {
+                if (!skipLevelCheck)
+                {
+                    if (player.LevelProvider.Level < destinationMapDef.MinLevel)
+                    {
+                        reason = PortalTeleportNotAllowedReason.Unknown;
+                        return false;
+                    }
+
+                    if (player.LevelProvider.Level > destinationMapDef.MaxLevel)
+                    {
+                        reason = PortalTeleportNotAllowedReason.Unknown;
+                        return false;
+                    }
+                }
+
                 return true;
             }
             else // Not "usual" map.
             {
-                var destinationMapDef = _mapDefinitions.Maps.FirstOrDefault(d => d.Id == destinationMapId);
-
-                if (destinationMapDef is null)
-                {
-                    _logger.LogWarning("Map {id} is not found in map definitions.", destinationMapId);
-                    return false;
-                }
-
                 if (destinationMapDef.CreateType == CreateType.Party)
                 {
                     if (player.PartyManager.Party is null)
@@ -187,9 +201,6 @@ namespace Imgeneus.World.Game
         /// <inheritdoc/>
         public void EnsureMap(DbCharacter dbCharacter, Fraction faction)
         {
-            if (Maps.ContainsKey(dbCharacter.Map)) // All fine, map is presented on server.
-                return;
-
             // Map was completely deleted from the server. Fallback to map 0.
             if (!AvailableMapIds.Contains(dbCharacter.Map))
             {
@@ -201,11 +212,38 @@ namespace Imgeneus.World.Game
                 return;
             }
 
+            var definition = _mapDefinitions.Maps.First(m => m.Id == dbCharacter.Map);
+
+            // All fine, map is presented on server, character level is ok.
+            if (Maps.ContainsKey(dbCharacter.Map) && dbCharacter.Level > definition.MinLevel && dbCharacter.Level <= definition.MaxLevel)
+            {
+                return;
+            }
+
+            if (dbCharacter.Level < definition.MinLevel || dbCharacter.Level > definition.MaxLevel)
+            {
+                if (faction == Fraction.Light)
+                {
+                    dbCharacter.Map = definition.LevelOutMapLight.MapId;
+                    dbCharacter.PosX = definition.LevelOutMapLight.PosX;
+                    dbCharacter.PosY = definition.LevelOutMapLight.PosY;
+                    dbCharacter.PosZ = definition.LevelOutMapLight.PosZ;
+                    return;
+                }
+
+                if (faction == Fraction.Dark)
+                {
+                    dbCharacter.Map = definition.LevelOutMapDark.MapId;
+                    dbCharacter.PosX = definition.LevelOutMapDark.PosX;
+                    dbCharacter.PosY = definition.LevelOutMapDark.PosY;
+                    dbCharacter.PosZ = definition.LevelOutMapDark.PosZ;
+                    return;
+                }
+            }
+
             // Map is an instance map. Likely for guild or party. Find out what is the rebirth map.
             if (!Maps.ContainsKey(dbCharacter.Map))
             {
-                var definition = _mapDefinitions.Maps.First(m => m.Id == dbCharacter.Map);
-
                 if (definition.RebirthMap != null) // Rebirth map for both factions set.
                 {
                     dbCharacter.Map = definition.RebirthMap.MapId;
