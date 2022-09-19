@@ -2429,7 +2429,7 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(PacketType.DEAD_REBIRTH);
             packet.Write(sender.Id);
             packet.Write((byte)RebirthType.KillSoulByItem);
-            packet.Write(sender.LevelingManager.Exp);
+            packet.Write(sender.LevelingManager.Exp / 10);
             packet.Write(sender.PosX);
             packet.Write(sender.PosY);
             packet.Write(sender.PosZ);
