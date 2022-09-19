@@ -2956,6 +2956,18 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendGmMutedChat(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GM_MUTE_PLAYER);
+            client.Send(packet);
+        }
+
+        public void SendGmUnmutedChat(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GM_UNMUTE_PLAYER);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Other

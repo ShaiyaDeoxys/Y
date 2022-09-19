@@ -117,7 +117,6 @@ namespace Imgeneus.World
             services.AddSingleton<IMoveTownsConfiguration, MoveTownsConfiguration>((x => MoveTownsConfiguration.LoadFromConfigFile()));
             services.AddSingleton<IItemCreateConfiguration, ItemCreateConfiguration>((x => ItemCreateConfiguration.LoadFromConfigFile()));
             services.AddSingleton<ICraftingConfiguration, CraftingConfiguration>((x => CraftingConfiguration.LoadFromConfigFile()));
-            services.AddSingleton<IChatManager, ChatManager>();
             services.AddSingleton<INoticeManager, NoticeManager>();
             services.AddSingleton<IGuildRankingManager, GuildRankingManager>();
             services.AddSingleton<IEtinManager, EtinManager>();
@@ -172,6 +171,7 @@ namespace Imgeneus.World
             services.AddScoped<IRecoverManager, RecoverManager>();
             services.AddScoped<ICraftingManager, CraftingManager>();
             services.AddScoped<IMarketManager, MarketManager>();
+            services.AddScoped<IChatManager, ChatManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
             services.AddTransient<ILogsDatabase, LogsDbContext>();

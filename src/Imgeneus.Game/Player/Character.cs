@@ -11,6 +11,7 @@ using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Elements;
@@ -77,6 +78,7 @@ namespace Imgeneus.World.Game.Player
         public IBlessManager BlessManager { get; private set; }
         public IRecoverManager RecoverManager { get; private set; }
         public IMarketManager MarketManager { get; private set; }
+        public IChatManager ChatManager { get; private set; }
         public IGameSession GameSession { get; private set; }
 
         public Character(ILogger<Character> logger,
@@ -117,6 +119,7 @@ namespace Imgeneus.World.Game.Player
                          IBlessManager blessManager,
                          IRecoverManager recoverManager,
                          IMarketManager marketManager,
+                         IChatManager chatManager,
                          IGameSession gameSession,
                          IGamePacketFactory packetFactory) : base(databasePreloader, definitionsPreloader, countryProvider, statsManager, healthManager, levelProvider, buffsManager, elementProvider, movementManager, untouchableManager, mapProvider)
         {
@@ -149,6 +152,7 @@ namespace Imgeneus.World.Game.Player
             BlessManager = blessManager;
             RecoverManager = recoverManager;
             MarketManager = marketManager;
+            ChatManager = chatManager;
             GameSession = gameSession;
 
             HealthManager.MP_SP_Used += SendUseMPSP;
@@ -306,6 +310,7 @@ namespace Imgeneus.World.Game.Player
             IBlessManager blessManager,
             IRecoverManager recoverManager,
             IMarketManager marketManager,
+            IChatManager chatManager,
             IGameSession gameSession,
             IGamePacketFactory packetFactory)
         {
@@ -347,6 +352,7 @@ namespace Imgeneus.World.Game.Player
                                           blessManager,
                                           recoverManager,
                                           marketManager,
+                                          chatManager,
                                           gameSession,
                                           packetFactory)
             {

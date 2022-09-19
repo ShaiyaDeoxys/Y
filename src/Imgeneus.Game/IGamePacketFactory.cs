@@ -426,6 +426,8 @@ namespace Imgeneus.World.Packets
         void SendWarning(IWorldClient client, string message);
         void SendGmClearInventory(IWorldClient client);
         void SendGmClearEquipment(IWorldClient client);
+        void SendGmMutedChat(IWorldClient client);
+        void SendGmUnmutedChat(IWorldClient client);
 
         #endregion
 

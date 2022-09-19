@@ -21,6 +21,9 @@ namespace Imgeneus.World.Game.Chat
 
         public void SendMessage(Character sender, MessageType messageType, string message, string targetName = "")
         {
+            if (IsMuted)
+                return;
+
             if (messageType == MessageType.Normal && IsMessageToServer)
             {
                 messageType = MessageType.MessageToServer;
@@ -105,5 +108,7 @@ namespace Imgeneus.World.Game.Chat
         }
 
         public bool IsMessageToServer { get; set; }
+
+        public bool IsMuted { get; set; }
     }
 }

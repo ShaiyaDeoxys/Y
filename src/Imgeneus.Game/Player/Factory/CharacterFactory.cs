@@ -12,6 +12,7 @@ using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Bank;
 using Imgeneus.World.Game.Buffs;
+using Imgeneus.World.Game.Chat;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Duel;
 using Imgeneus.World.Game.Elements;
@@ -92,6 +93,7 @@ namespace Imgeneus.World.Game.Player
         private readonly IBlessManager _blessManager;
         private readonly IRecoverManager _recoverManager;
         private readonly IMarketManager _marketManager;
+        private readonly IChatManager _chatManager;
         private readonly IGamePacketFactory _packetFactory;
         private readonly UserManager<DbUser> _userManager;
 
@@ -138,6 +140,7 @@ namespace Imgeneus.World.Game.Player
                                 IBlessManager blessManager,
                                 IRecoverManager recoverManager,
                                 IMarketManager marketManager,
+                                IChatManager chatManager,
                                 IGamePacketFactory packetFactory,
                                 UserManager<DbUser> userManager)
         {
@@ -184,6 +187,7 @@ namespace Imgeneus.World.Game.Player
             _blessManager = blessManager;
             _recoverManager = recoverManager;
             _marketManager = marketManager;
+            _chatManager = chatManager;
             _packetFactory = packetFactory;
             _userManager = userManager;
         }
@@ -358,6 +362,7 @@ namespace Imgeneus.World.Game.Player
                                         _blessManager,
                                         _recoverManager,
                                         _marketManager,
+                                        _chatManager,
                                         _gameSession,
                                         _packetFactory);
 

@@ -17,5 +17,10 @@ namespace Imgeneus.World.Game.Chat
         /// Is the next message in normal chat willl be message to server?
         /// </summary>
         public bool IsMessageToServer { get; set; }
+
+        /// <summary>
+        /// Character can not write in any chat?
+        /// </summary>
+        public bool IsMuted { get; set; }
     }
 }
