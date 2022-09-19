@@ -50,6 +50,9 @@ properties:
       - name: WorldServer__Host
         value: 20.157.223.73
 
+      - name: Logging__LogLevel__Default
+        value: Trace
+
   osType: Linux
   ipAddress:
       type: Private
