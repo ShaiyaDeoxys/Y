@@ -1,5 +1,4 @@
-﻿using Imgeneus.Database.Preload;
-using Imgeneus.GameDefinitions;
+﻿using Imgeneus.GameDefinitions;
 using Imgeneus.Network.Packets;
 using Imgeneus.Network.Packets.Game;
 using Imgeneus.World.Game.AI;

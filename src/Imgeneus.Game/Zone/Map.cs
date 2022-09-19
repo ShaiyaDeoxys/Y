@@ -487,6 +487,7 @@ namespace Imgeneus.World.Game.Zone
         /// <param name="mob"></param>
         public void RemoveMob(Mob mob)
         {
+            mob.AIManager.Stop();
             Cells[mob.CellId].RemoveMob(mob);
         }
 
