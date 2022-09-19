@@ -321,6 +321,8 @@ namespace Imgeneus.World.Game.Player
 
 #if !DEBUG
             _stealthManager.IsAdminStealth = isAdmin;
+            if (isAdmin)
+                _healthManager.IsAttackable = false;
 #endif
 
             var player = Character.FromDbCharacter(dbCharacter,
