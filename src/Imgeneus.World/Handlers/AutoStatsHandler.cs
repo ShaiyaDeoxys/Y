@@ -37,7 +37,7 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendAutoStats(client, str, dex, rec, intl, wis, luc);
         }
 
-        [HandlerAction(PacketType.AUTO_STATS_SET)]
+        [HandlerAction(PacketType.AUTO_STATS_LIST)]
         public void HandleList(WorldClient client, EmptyPacket packet)
         {
             _packetFactory.SendAutoStats(client, _statsManager.AutoStr, _statsManager.AutoDex, _statsManager.AutoRec, _statsManager.AutoInt, _statsManager.AutoWis, _statsManager.AutoLuc);
