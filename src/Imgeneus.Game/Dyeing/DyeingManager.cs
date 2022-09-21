@@ -141,7 +141,8 @@ namespace Imgeneus.World.Game.Dyeing
                    (dyeItem.TypeId == 56 && targetItem.IsArmor) ||
                    (dyeItem.TypeId == 57 && targetItem.IsMount) ||
                    (dyeItem.TypeId == 58 && targetItem.IsPet) ||
-                   (dyeItem.TypeId == 59 && targetItem.IsCostume);
+                   (dyeItem.TypeId == 59 && targetItem.IsCostume) ||
+                   (dyeItem.TypeId == 60 && targetItem.IsWing);
         }
     }
 }

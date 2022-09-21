@@ -1133,6 +1133,11 @@ namespace Imgeneus.World.Game.Inventory
             get => Type == 150;
         }
 
+        public bool IsWing
+        {
+            get => Type == 121;
+        }
+
         /// <summary>
         /// Transforms weapon type to passive skill type.
         /// </summary>
