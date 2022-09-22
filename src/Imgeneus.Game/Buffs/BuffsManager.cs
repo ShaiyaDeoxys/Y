@@ -265,7 +265,29 @@ namespace Imgeneus.World.Game.Buffs
             if (skill.TypeEffect == TypeEffect.Debuff && DebuffResistances.Contains(skill.StateType))
                 return null;
 
-            var resetTime = skill.KeepTime == 0 || skill.CanBeActivated ? DateTime.UtcNow.AddDays(10) : DateTime.UtcNow.AddSeconds(skill.KeepTime);
+            DateTime resetTime;
+            if (skill.KeepTime == 0 || skill.CanBeActivated)
+            {
+                resetTime = DateTime.UtcNow.AddDays(10);
+            }
+            else
+            {
+                switch (skill.Duration)
+                {
+                    case Duration.DurationInMinutes:
+                        resetTime = DateTime.UtcNow.AddMinutes(skill.KeepTime);
+                        break;
+
+                    case Duration.DurationInHours:
+                        resetTime = DateTime.UtcNow.AddHours(skill.KeepTime);
+                        break;
+
+                    case Duration.ClearAfterDeath:
+                    default:
+                        resetTime = DateTime.UtcNow.AddSeconds(skill.KeepTime);
+                        break;
+                }
+            }
             Buff buff;
 
             if (skill.IsPassive)
@@ -630,6 +652,9 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.Provoke:
                     break;
 
+                case TypeDetail.DungeonMapScroll:
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -865,6 +890,9 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.Provoke:
+                    break;
+
+                case TypeDetail.DungeonMapScroll:
                     break;
 
                 default:

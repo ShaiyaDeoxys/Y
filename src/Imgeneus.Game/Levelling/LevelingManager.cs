@@ -138,7 +138,7 @@ namespace Imgeneus.World.Game.Levelling
             exp = MathExtensions.RoundToTenMultiple(exp);
 
             // Validate the new experience value
-            if (!CanSetExperience(exp))
+            if (!CanSetExperience(exp) || Exp == exp)
                 return false;
 
             Exp = exp;
@@ -173,6 +173,9 @@ namespace Imgeneus.World.Game.Levelling
                 foreach (var partyMember in nearbyPartyMembers)
                 {
                     var exp = CalculateExperienceFromMob(mobLevel, memberExp, partyMember.LevelProvider.Level);
+                    if (exp == 0)
+                        continue;
+
                     partyMember.LevelingManager.TryChangeExperience(partyMember.LevelingManager.Exp + exp);
                 }
             }

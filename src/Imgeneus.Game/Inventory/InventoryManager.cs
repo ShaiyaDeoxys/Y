@@ -1547,6 +1547,17 @@ namespace Imgeneus.World.Game.Inventory
                     _chatManager.IsMessageToServer = true;
                     return true;
 
+                case SpecialEffect.DungeonMap:
+                    if (item.SkillId != 0)
+                    {
+                        var skill = new Skill(_gameDefinitions.Skills[(item.SkillId, item.SkillLevel)], ISkillsManager.ITEM_SKILL_NUMBER, 0);
+                        var me = _gameWorld.Players[_ownerId];
+
+                        _skillsManager.UseSkill(skill, me);
+                        ok = true;
+                    }
+                    return ok;
+
                 default:
                     _logger.LogError("Uninplemented item effect {special}.", item.Special);
                     break;

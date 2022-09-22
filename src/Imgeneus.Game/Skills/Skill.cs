@@ -56,7 +56,8 @@ namespace Imgeneus.Game.Skills
             Type != TypeDetail.EtainShield &&
             Type != TypeDetail.DamageReflection &&
             Type != TypeDetail.PersistBarrier &&
-            Type != TypeDetail.Provoke;
+            Type != TypeDetail.Provoke &&
+            Type != TypeDetail.DungeonMapScroll;
 
         /// <summary>
         /// Skill type.
@@ -204,6 +205,8 @@ namespace Imgeneus.Game.Skills
         /// After character death this skill is cleared from buffs list?
         /// </summary>
         public bool ShouldClearAfterDeath { get => _dbSkill.FixRange == Duration.ClearAfterDeath; }
+
+        public Duration Duration { get => _dbSkill.FixRange; }
 
         /// <summary>
         /// When skill should be activated.

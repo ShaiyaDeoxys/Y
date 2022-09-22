@@ -639,6 +639,7 @@ namespace Imgeneus.World.Game.Skills
                 case TypeDetail.SoulMenace:
                 case TypeDetail.MentalImpact:
                 case TypeDetail.Provoke:
+                case TypeDetail.DungeonMapScroll:
                     break;
 
                 case TypeDetail.PeriodicalDebuff:
