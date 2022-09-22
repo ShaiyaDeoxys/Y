@@ -172,17 +172,17 @@ namespace Imgeneus.Database.Entities
         /// <summary>
         /// Gets or sets the character health points.
         /// </summary>
-        public ushort HealthPoints { get; set; }
+        public int HealthPoints { get; set; }
 
         /// <summary>
         /// Gets or sets the character mana points.
         /// </summary>
-        public ushort ManaPoints { get; set; }
+        public int ManaPoints { get; set; }
 
         /// <summary>
         /// Gets or sets the character stamina points.
         /// </summary>
-        public ushort StaminaPoints { get; set; }
+        public int StaminaPoints { get; set; }
 
         /// <summary>
         /// Gets or sets the character experience.

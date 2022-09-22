@@ -69,9 +69,9 @@ namespace Imgeneus.World.Game.Health
             if (character is null)
                 return;
 
-            character.HealthPoints = (ushort)CurrentHP;
-            character.ManaPoints = (ushort)CurrentMP;
-            character.StaminaPoints = (ushort)CurrentSP;
+            character.HealthPoints = CurrentHP;
+            character.ManaPoints = CurrentMP;
+            character.StaminaPoints = CurrentSP;
 
             await _database.SaveChangesAsync();
         }

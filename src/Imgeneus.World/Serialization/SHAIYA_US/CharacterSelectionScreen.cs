@@ -121,9 +121,9 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
             Intelligence = character.Intelligence;
             Wisdom = character.Wisdom;
             Luck = character.Luck;
-            HealthPoints = character.HealthPoints;
-            ManaPoints = character.ManaPoints;
-            StaminaPoints = character.StaminaPoints;
+            HealthPoints = (ushort)character.HealthPoints;
+            ManaPoints = (ushort)character.ManaPoints;
+            StaminaPoints = (ushort)character.StaminaPoints;
             IsRename = character.IsRename;
 
             var equipmentItems = character.Items.Where(item => item.Bag == 0);
