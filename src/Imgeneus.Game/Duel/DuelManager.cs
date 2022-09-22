@@ -231,7 +231,7 @@ namespace Imgeneus.World.Game.Duel
                 {
                     if (itemPair.Key.CharacterId == _ownerId)
                     {
-                        var item = _inventoryManager.RemoveItem(itemPair.Value);
+                        var item = _inventoryManager.RemoveItem(itemPair.Value, $"lost_duel_to_{OpponentId}");
                         _mapProvider.Map.AddItem(new MapItem(item, opponent, _movementManager.PosX, _movementManager.PosY, _movementManager.PosZ));
                     }
                 }

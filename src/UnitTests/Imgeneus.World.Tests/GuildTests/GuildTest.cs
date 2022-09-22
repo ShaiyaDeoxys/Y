@@ -389,7 +389,7 @@ namespace Imgeneus.World.Tests.GuildTests
         public async void ReturnEtinTest()
         {
             var character = CreateCharacter(testMap);;
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Etin_100.Type, Etin_100.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Etin_100.Type, Etin_100.TypeId), "");
             Assert.NotEmpty(character.InventoryManager.InventoryItems);
 
             var guild = new DbGuild("test_guild", "test_message", 1, Fraction.Light) { Etin = 50 };

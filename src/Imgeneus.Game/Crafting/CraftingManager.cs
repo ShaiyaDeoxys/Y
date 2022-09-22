@@ -86,7 +86,7 @@ namespace Imgeneus.Game.Crafting
             var success = rate >= _random.Next(1, 100);
 
             if (success)
-                _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, recipe.Type, recipe.TypeId, recipe.Count));
+                _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, recipe.Type, recipe.TypeId, recipe.Count), "crafting");
 
             return success;
         }

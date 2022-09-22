@@ -130,7 +130,7 @@ namespace Imgeneus.World.Game.Quests
             quest.QuestTimeElapsed += Quest_QuestTimeElapsed;
             quest.StartQuestTimer();
             foreach (var item in quest.StartRequiredItems)
-                _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, item.Type, item.TypeId, item.Count));
+                _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, item.Type, item.TypeId, item.Count), "quest_start");
 
             Quests.Add(quest);
 
@@ -199,7 +199,7 @@ namespace Imgeneus.World.Game.Quests
                             count1 -= item.Count;
                         }
 
-                        _inventoryManager.RemoveItem(item);
+                        _inventoryManager.RemoveItem(item, "quest_complete");
                     }
 
                 if (count2 != 0)
@@ -219,7 +219,7 @@ namespace Imgeneus.World.Game.Quests
                             count2 -= item.Count;
                         }
 
-                        _inventoryManager.RemoveItem(item);
+                        _inventoryManager.RemoveItem(item, "quest_complete");
                     }
 
                 if (count3 != 0)
@@ -239,14 +239,14 @@ namespace Imgeneus.World.Game.Quests
                             count3 -= item.Count;
                         }
 
-                        _inventoryManager.RemoveItem(item);
+                        _inventoryManager.RemoveItem(item, "quest_complete");
                     }
             }
 
             if (!quest.CanChooseRevard)
             {
                 foreach (var itm in quest.RevardItems)
-                    _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, itm.Type, itm.TypeId, itm.Count));
+                    _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, itm.Type, itm.TypeId, itm.Count), "quest_finish");
 
                 if (quest.Gold > 0)
                     _inventoryManager.Gold += quest.Gold;
@@ -280,7 +280,7 @@ namespace Imgeneus.World.Game.Quests
             if (quest.RevardItems.Count < index || quest.RevardItems[index].Type == 0 || quest.RevardItems[index].TypeId == 0)
                 return false;
 
-            _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, quest.RevardItems[index].Type, quest.RevardItems[index].TypeId, quest.RevardItems[index].Count));
+            _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, quest.RevardItems[index].Type, quest.RevardItems[index].TypeId, quest.RevardItems[index].Count), "quest_finish");
 
             quest.Finish(true);
             return true;

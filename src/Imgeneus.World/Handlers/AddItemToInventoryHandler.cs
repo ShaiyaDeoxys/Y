@@ -42,7 +42,7 @@ namespace Imgeneus.World.Handlers
                 }
                 else
                 {
-                    var inventoryItem = _inventoryManager.AddItem(mapItem.Item);
+                    var inventoryItem = _inventoryManager.AddItem(mapItem.Item, "drop_from_map");
                     if (inventoryItem is null)
                     {
                         _packetFactory.SendFullInventory(client);

@@ -222,7 +222,7 @@ namespace Imgeneus.World.Game.Shop
                 return false;
             }
 
-            _inventoryManager.AddItem(soldItem);
+            _inventoryManager.AddItem(soldItem, "from_local_shop");
 
             return true;
         }
@@ -244,7 +244,7 @@ namespace Imgeneus.World.Game.Shop
             if (item.Count == 0)
             {
                 _items.TryRemove(slot, out var _);
-                _inventoryManager.RemoveItem(item);
+                _inventoryManager.RemoveItem(item, "sold_to_npc");
             }
 
             Item resultItem = item.Clone();

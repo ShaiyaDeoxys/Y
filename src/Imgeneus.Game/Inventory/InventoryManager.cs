@@ -6,6 +6,7 @@ using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
 using Imgeneus.GameDefinitions.Enums;
+using Imgeneus.Logs;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
@@ -67,9 +68,10 @@ namespace Imgeneus.World.Game.Inventory
         private readonly IChatManager _chatManager;
         private readonly IWarehouseManager _warehouseManager;
         private readonly IBlessManager _blessManager;
+        private readonly ILogsManager _logsManager;
         private uint _ownerId;
 
-        public InventoryManager(ILogger<InventoryManager> logger, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager, IBlessManager blessManager)
+        public InventoryManager(ILogger<InventoryManager> logger, IGameDefinitionsPreloder gameDefinitions, IItemEnchantConfiguration enchantConfig, IItemCreateConfiguration itemCreateConfig, IDatabase database, IStatsManager statsManager, IHealthManager healthManager, ISpeedManager speedManager, IElementProvider elementProvider, IVehicleManager vehicleManager, ILevelProvider levelProvider, ILevelingManager levelingManager, ICountryProvider countryProvider, IGameWorld gameWorld, IAdditionalInfoManager additionalInfoManager, ISkillsManager skillsManager, IBuffsManager buffsManager, ICharacterConfiguration characterConfiguration, IAttackManager attackManager, IPartyManager partyManager, ITeleportationManager teleportationManager, IChatManager chatManager, IWarehouseManager warehouseManager, IBlessManager blessManager, ILogsManager logsManager)
         {
             _logger = logger;
             _gameDefinitions = gameDefinitions;
@@ -95,6 +97,7 @@ namespace Imgeneus.World.Game.Inventory
             _chatManager = chatManager;
             _warehouseManager = warehouseManager;
             _blessManager = blessManager;
+            _logsManager = logsManager;
             _speedManager.OnPassiveModificatorChanged += SpeedManager_OnPassiveModificatorChanged;
             _partyManager.OnSummoned += PartyManager_OnSummoned;
             _teleportationManager.OnCastingTeleportFinished += TeleportationManager_OnCastingTeleportFinished;
@@ -600,7 +603,7 @@ namespace Imgeneus.World.Game.Inventory
             _healthManager.ExtraMP -= item.MP;
             _statsManager.ExtraDefense -= item.Defense;
             _statsManager.ExtraResistance -= item.Resistance;
-            
+
 
             if (item == Weapon)
             {
@@ -753,7 +756,7 @@ namespace Imgeneus.World.Game.Inventory
 
         private object _syncAddRemoveItem = new();
 
-        public Item AddItem(Item item, bool silent = false)
+        public Item AddItem(Item item, string source, bool silent = false)
         {
             lock (_syncAddRemoveItem)
             {
@@ -782,6 +785,22 @@ namespace Imgeneus.World.Game.Inventory
                 }
 
                 _logger.LogDebug("Character {characterId} got item {type} {typeId}", _ownerId, item.Type, item.TypeId);
+                _logsManager.LogAddItem(_ownerId,
+                    item.Type,
+                    item.TypeId,
+                    item.Count,
+                    item.Gem1 is null ? 0 : item.Gem1.TypeId,
+                    item.Gem2 is null ? 0 : item.Gem2.TypeId,
+                    item.Gem3 is null ? 0 : item.Gem3.TypeId,
+                    item.Gem4 is null ? 0 : item.Gem4.TypeId,
+                    item.Gem5 is null ? 0 : item.Gem5.TypeId,
+                    item.Gem6 is null ? 0 : item.Gem6.TypeId,
+                    item.DyeColor.IsEnabled,
+                    item.DyeColor.R,
+                    item.DyeColor.G,
+                    item.DyeColor.B,
+                    item.GetCraftName(),
+                    source);
 
                 if (!silent)
                     OnAddItem?.Invoke(item);
@@ -792,7 +811,7 @@ namespace Imgeneus.World.Game.Inventory
 
         public event Action<Item, bool> OnRemoveItem;
 
-        public Item RemoveItem(Item item)
+        public Item RemoveItem(Item item, string source)
         {
             lock (_syncAddRemoveItem)
             {
@@ -806,6 +825,22 @@ namespace Imgeneus.World.Game.Inventory
                     item.TradeQuantity = 0;
 
                     OnRemoveItem?.Invoke(item, item.Count == 0);
+                    _logsManager.LogRemoveItem(_ownerId,
+                        item.Type,
+                        item.TypeId,
+                        item.Count,
+                        item.Gem1 is null ? 0 : item.Gem1.TypeId,
+                        item.Gem2 is null ? 0 : item.Gem2.TypeId,
+                        item.Gem3 is null ? 0 : item.Gem3.TypeId,
+                        item.Gem4 is null ? 0 : item.Gem4.TypeId,
+                        item.Gem5 is null ? 0 : item.Gem5.TypeId,
+                        item.Gem6 is null ? 0 : item.Gem6.TypeId,
+                        item.DyeColor.IsEnabled,
+                        item.DyeColor.R,
+                        item.DyeColor.G,
+                        item.DyeColor.B,
+                        item.GetCraftName(),
+                        source);
 
                     return givenItem;
                 }
@@ -819,6 +854,22 @@ namespace Imgeneus.World.Game.Inventory
                 }
 
                 _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _ownerId, item.Type, item.TypeId);
+                _logsManager.LogRemoveItem(_ownerId,
+                    item.Type,
+                    item.TypeId,
+                    item.Count,
+                    item.Gem1 is null ? 0 : item.Gem1.TypeId,
+                    item.Gem2 is null ? 0 : item.Gem2.TypeId,
+                    item.Gem3 is null ? 0 : item.Gem3.TypeId,
+                    item.Gem4 is null ? 0 : item.Gem4.TypeId,
+                    item.Gem5 is null ? 0 : item.Gem5.TypeId,
+                    item.Gem6 is null ? 0 : item.Gem6.TypeId,
+                    item.DyeColor.IsEnabled,
+                    item.DyeColor.R,
+                    item.DyeColor.G,
+                    item.DyeColor.B,
+                    item.GetCraftName(),
+                    source);
 
                 OnRemoveItem?.Invoke(item, true);
                 return item;
@@ -1103,6 +1154,22 @@ namespace Imgeneus.World.Game.Inventory
                 _itemCooldowns[item.ReqIg] = DateTime.UtcNow;
 
                 OnUsedItem?.Invoke(_ownerId, item);
+                _logsManager.LogRemoveItem(_ownerId,
+                        item.Type,
+                        item.TypeId,
+                        item.Count,
+                        item.Gem1 is null ? 0 : item.Gem1.TypeId,
+                        item.Gem2 is null ? 0 : item.Gem2.TypeId,
+                        item.Gem3 is null ? 0 : item.Gem3.TypeId,
+                        item.Gem4 is null ? 0 : item.Gem4.TypeId,
+                        item.Gem5 is null ? 0 : item.Gem5.TypeId,
+                        item.Gem6 is null ? 0 : item.Gem6.TypeId,
+                        item.DyeColor.IsEnabled,
+                        item.DyeColor.R,
+                        item.DyeColor.G,
+                        item.DyeColor.B,
+                        item.GetCraftName(),
+                        "used_item");
 
                 if (item.Count == 0)
                     InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
@@ -1381,7 +1448,7 @@ namespace Imgeneus.World.Game.Inventory
                         return false;
 
                     foreach (var x in items)
-                        AddItem(x);
+                        AddItem(x, "generated_from_another_item");
 
                     return true;
 
@@ -1635,7 +1702,7 @@ namespace Imgeneus.World.Game.Inventory
 
             result = BuyResult.Success;
 
-            return AddItem(item);
+            return AddItem(item, "buy_from_npc");
         }
 
         public Item SellItem(Item item, byte count)
@@ -1645,7 +1712,7 @@ namespace Imgeneus.World.Game.Inventory
 
             item.TradeQuantity = count > item.Count ? item.Count : count;
             Gold = (uint)(Gold + item.Sell * item.TradeQuantity);
-            return RemoveItem(item);
+            return RemoveItem(item, "sold_to_npc");
         }
 
         #endregion
@@ -1657,7 +1724,7 @@ namespace Imgeneus.World.Game.Inventory
         private void Item_OnExpiration(Item item)
         {
             OnItemExpired?.Invoke(item);
-            RemoveItem(item);
+            RemoveItem(item, "item_expired");
         }
 
         #endregion

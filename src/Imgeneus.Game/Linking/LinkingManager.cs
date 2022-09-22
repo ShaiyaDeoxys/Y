@@ -121,7 +121,7 @@ namespace Imgeneus.World.Game.Linking
 
             if (!result.Success && saveItem == null && gem.CanBreakItem)
             {
-                _inventoryManager.RemoveItem(item);
+                _inventoryManager.RemoveItem(item, "broken_by_gem");
 
                 if (item.Bag == 0)
                 {
@@ -204,7 +204,7 @@ namespace Imgeneus.World.Game.Linking
             }
             gem.Count--;
             if (gem.Count == 0)
-                _inventoryManager.RemoveItem(gem);
+                _inventoryManager.RemoveItem(gem, "used_in_linking");
 
             return (success, slot);
         }
@@ -271,7 +271,7 @@ namespace Imgeneus.World.Game.Linking
                 {
                     savedGems.Add(gem);
                     var gemItem = new Item(_definitionsPreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
-                    _inventoryManager.AddItem(gemItem);
+                    _inventoryManager.AddItem(gemItem, "remove_gem");
 
                     if (gemItem != null)
                         gemItems[gem.Position] = gemItem;
@@ -311,7 +311,7 @@ namespace Imgeneus.World.Game.Linking
                     {
                         savedGems.Add(gem);
                         var gemItem = new Item(_definitionsPreloader, _itemEnchantConfig, _itemCreateConfig, Item.GEM_ITEM_TYPE, (byte)gem.TypeId);
-                        _inventoryManager.AddItem(gemItem);
+                        _inventoryManager.AddItem(gemItem, "remove_gem");
 
                         if (gemItem != null)
                             gemItems[gem.Position] = gemItem;
@@ -400,7 +400,7 @@ namespace Imgeneus.World.Game.Linking
 
             if (itemDestroyed)
             {
-                _inventoryManager.RemoveItem(item);
+                _inventoryManager.RemoveItem(item, "remove_gem_failed");
             }
             else
             {
@@ -998,7 +998,7 @@ namespace Imgeneus.World.Game.Linking
                     else if (item == _inventoryManager.Costume)
                         _inventoryManager.Costume = null;
 
-                    _inventoryManager.RemoveItem(item);
+                    _inventoryManager.RemoveItem(item, "enchant_failed");
                 }
                 else
                 {
@@ -1031,7 +1031,7 @@ namespace Imgeneus.World.Game.Linking
 
             lapisia.Count--;
             if (lapisia.Count == 0)
-                _inventoryManager.RemoveItem(lapisia);
+                _inventoryManager.RemoveItem(lapisia, "used_during_enchant");
 
             return success;
         }

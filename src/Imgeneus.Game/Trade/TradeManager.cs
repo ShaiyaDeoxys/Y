@@ -93,11 +93,11 @@ namespace Imgeneus.World.Game.Trade
             foreach (var item in Request.TradeItems.Where(x => x.Key.CharacterId == _ownerId))
             {
                 var tradeItem = item.Value;
-                var resultItm = _inventoryManager.RemoveItem(tradeItem);
+                var resultItm = _inventoryManager.RemoveItem(tradeItem, $"give_in_trade_to_{PartnerId}");
 
-                if (_gameWorld.Players[PartnerId].InventoryManager.AddItem(resultItm) is null) // No place for this item.
+                if (_gameWorld.Players[PartnerId].InventoryManager.AddItem(resultItm, $"trade_from_{_ownerId}") is null) // No place for this item.
                 {
-                    _inventoryManager.AddItem(resultItm);
+                    _inventoryManager.AddItem(resultItm, "trade_no_place");
                 }
             }
 

@@ -160,7 +160,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                 {
                     if (item.Type != Item.MONEY_ITEM_TYPE)
                     {
-                        var inventoryItem = Leader.InventoryManager.AddItem(item);
+                        var inventoryItem = Leader.InventoryManager.AddItem(item, "raid_drop");
                         if (inventoryItem != null)
                         {
                             foreach (var member in Members.Where(m => m != Leader))
@@ -207,7 +207,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     {
                         if (item.Type != Item.MONEY_ITEM_TYPE)
                         {
-                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item);
+                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item, "raid_drop");
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;
@@ -258,7 +258,7 @@ namespace Imgeneus.World.Game.PartyAndRaid
                     {
                         if (item.Type != Item.MONEY_ITEM_TYPE)
                         {
-                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item);
+                            var inventoryItem = dropReceiver.InventoryManager.AddItem(item, "raid_drop");
                             if (inventoryItem != null)
                             {
                                 itemAdded = true;

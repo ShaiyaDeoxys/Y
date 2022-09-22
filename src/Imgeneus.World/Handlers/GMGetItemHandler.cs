@@ -38,7 +38,7 @@ namespace Imgeneus.World.Handlers
             {
                 var newItem = new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, packet.Type, packet.TypeId, itemCount);
 
-                var item = _inventoryManager.AddItem(newItem);
+                var item = _inventoryManager.AddItem(newItem, "gm_created");
                 if (item != null)
                 {
                     ok = true;

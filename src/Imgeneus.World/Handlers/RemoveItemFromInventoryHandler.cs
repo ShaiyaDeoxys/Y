@@ -33,7 +33,7 @@ namespace Imgeneus.World.Handlers
 
             item.TradeQuantity = packet.Count <= item.Count ? packet.Count : item.Count;
 
-            var removedItem = _inventoryManager.RemoveItem(item);
+            var removedItem = _inventoryManager.RemoveItem(item, "drop_on_map");
             if (removedItem is null)
                 return;
 

@@ -734,7 +734,7 @@ namespace Imgeneus.World.Game.Guild
             var etins = _inventoryManager.InventoryItems.Select(x => x.Value).Where(itm => itm.Special == SpecialEffect.Etin_1 || itm.Special == SpecialEffect.Etin_10 || itm.Special == SpecialEffect.Etin_100 || itm.Special == SpecialEffect.Etin_1000).ToList();
             foreach (var etin in etins)
             {
-                _inventoryManager.RemoveItem(etin);
+                _inventoryManager.RemoveItem(etin, "return_etin");
 
                 var etinNumber = 0;
                 switch (etin.Special)

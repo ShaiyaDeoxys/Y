@@ -108,7 +108,7 @@ namespace Imgeneus.World.Game.Bank
 
             bankItem.ClaimTime = DateTime.UtcNow;
 
-            var item = _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, bankItem));
+            var item = _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, bankItem), "from_bank");
             if (item == null)
             {
                 BankItems.TryAdd(bankItem.Slot, bankItem);

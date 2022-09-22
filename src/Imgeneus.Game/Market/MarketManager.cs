@@ -130,7 +130,7 @@ namespace Imgeneus.Game.Market
             {
                 item.Count -= count;
                 if (item.Count == 0)
-                    _inventoryManager.RemoveItem(item);
+                    _inventoryManager.RemoveItem(item, "registered_on_market");
 
                 _inventoryManager.Gold -= marketFee;
             }
@@ -224,7 +224,7 @@ namespace Imgeneus.Game.Market
             var ok = (await _database.SaveChangesAsync()) > 0;
             Item item = null;
             if (ok)
-                item = _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, marketItem), true);
+                item = _inventoryManager.AddItem(new Item(_definitionsPreloader, _enchantConfig, _itemCreateConfig, marketItem), "buy_from_market", true);
 
             return (ok, item);
         }
