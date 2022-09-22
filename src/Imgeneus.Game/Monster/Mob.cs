@@ -2,6 +2,7 @@
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
+using Imgeneus.GameDefinitions.Enums;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
@@ -19,7 +20,6 @@ using Imgeneus.World.Game.Untouchable;
 using Imgeneus.World.Game.Zone;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Parsec.Shaiya.Skill;
 using System;
 using System.Timers;
 

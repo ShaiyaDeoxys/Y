@@ -5,6 +5,7 @@ using Imgeneus.Database.Preload;
 using Imgeneus.Game.Recover;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
+using Imgeneus.GameDefinitions.Enums;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.AI;
 using Imgeneus.World.Game.Attack;

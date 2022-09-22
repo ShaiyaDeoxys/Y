@@ -82,9 +82,9 @@ namespace Imgeneus.GameDefinitions
             for (var i = 0; i < skills.Records.Count; i++)
             {
                 var skill = skills.Records[i];
-                if (skill.SkillId < 0 || skill.SkillId > ushort.MaxValue)
+                if (skill.Id < 0 || skill.Id > ushort.MaxValue)
                 {
-                    _logger.LogWarning("Skill id is incorrect {id}", skill.SkillId);
+                    _logger.LogWarning("Skill id is incorrect {id}", skill.Id);
                     continue;
                 }
 
@@ -94,16 +94,16 @@ namespace Imgeneus.GameDefinitions
                     continue;
                 }
 
-                Skills.Add(((ushort)skill.SkillId, (byte)skill.SkillLevel), new DbSkill(skill));
+                Skills.Add(((ushort)skill.Id, (byte)skill.SkillLevel), new DbSkill(skill));
             }
 
             var mobSkills = Reader.ReadFromFile<DBNpcSkillData>("config/SData/DBNpcSkillData.SData");
             for (var i = 0; i < mobSkills.Records.Count; i++)
             {
                 var skill = mobSkills.Records[i];
-                if (skill.SkillId < 0 || skill.SkillId > ushort.MaxValue)
+                if (skill.Id < 0 || skill.Id > ushort.MaxValue)
                 {
-                    _logger.LogWarning("Mob skill id is incorrect {id}", skill.SkillId);
+                    _logger.LogWarning("Mob skill id is incorrect {id}", skill.Id);
                     continue;
                 }
 
@@ -115,7 +115,7 @@ namespace Imgeneus.GameDefinitions
 
                 skill.SkillLevel = 100; // 100 is default level for mob's skills.
 
-                Skills.Add(((ushort)skill.SkillId, (byte)skill.SkillLevel), new DbSkill(skill));
+                Skills.Add(((ushort)skill.Id, (byte)skill.SkillLevel), new DbSkill(skill));
             }
         }
 

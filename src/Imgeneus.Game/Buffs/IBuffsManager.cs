@@ -1,9 +1,9 @@
 ﻿using Imgeneus.Database.Entities;
 using Imgeneus.Game.Skills;
+using Imgeneus.GameDefinitions.Enums;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Session;
 using MvvmHelpers;
-using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Generic;
 

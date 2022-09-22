@@ -1,4 +1,5 @@
 ﻿using Imgeneus.GameDefinitions;
+using Imgeneus.GameDefinitions.Enums;
 using Parsec.Shaiya.Skill;
 using System.Collections.Generic;
 using Element = Imgeneus.Database.Constants.Element;

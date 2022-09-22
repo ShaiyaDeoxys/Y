@@ -39,10 +39,10 @@ namespace Imgeneus.GameDefinitions
             Special = (SpecialEffect)record.Special;
             Slot = (byte)record.Slot;
             Quality = (ushort)record.Quality;
-            MinAttack = (ushort)record.MinAttack;
-            PlusAttack = (ushort)record.PlusAttack;
-            Defense = (ushort)record.Defense;
-            Resistance = (ushort)record.Resistance;
+            MinAttack = (ushort)record.Effect1;
+            PlusAttack = (ushort)record.Effect2;
+            Defense = (ushort)record.Effect3;
+            Resistance = (ushort)record.Effect4;
             ConstHP = (ushort)record.ConstHp;
             ConstSP = (ushort)record.ConstSp;
             ConstMP = (ushort)record.ConstMp;

@@ -67,6 +67,7 @@ using Imgeneus.Game.Recover;
 using Imgeneus.Game.Monster;
 using Imgeneus.Game.Market;
 using Imgeneus.GameDefinitions.Constants;
+using Imgeneus.GameDefinitions.Enums;
 
 namespace Imgeneus.World.Tests
 {

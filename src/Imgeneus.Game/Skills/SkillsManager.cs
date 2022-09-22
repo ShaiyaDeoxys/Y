@@ -3,6 +3,7 @@ using Imgeneus.Database;
 using Imgeneus.Database.Entities;
 using Imgeneus.Game.Skills;
 using Imgeneus.GameDefinitions;
+using Imgeneus.GameDefinitions.Enums;
 using Imgeneus.World.Game.AdditionalInfo;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;

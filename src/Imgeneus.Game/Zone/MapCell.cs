@@ -1,6 +1,7 @@
 ﻿using Imgeneus.Core.Extensions;
 using Imgeneus.Database.Constants;
 using Imgeneus.Game.Skills;
+using Imgeneus.GameDefinitions.Enums;
 using Imgeneus.Network.Packets;
 using Imgeneus.World.Game.Attack;
 using Imgeneus.World.Game.Buffs;
@@ -15,7 +16,6 @@ using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Shape;
 using Imgeneus.World.Game.Speed;
 using Parsec.Shaiya.NpcQuest;
-using Parsec.Shaiya.Skill;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -2,6 +2,7 @@
 using Imgeneus.Database.Constants;
 using Imgeneus.Database.Entities;
 using Imgeneus.Game.Skills;
+using Imgeneus.GameDefinitions.Enums;
 using Imgeneus.World.Game.Buffs;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Elements;
@@ -17,7 +18,6 @@ using Imgeneus.World.Game.Stats;
 using Imgeneus.World.Game.Stealth;
 using Imgeneus.World.Game.Vehicle;
 using Microsoft.Extensions.Logging;
-using Parsec.Shaiya.Skill;
 using System;
 using System.Linq;
 using Element = Imgeneus.Database.Constants.Element;
