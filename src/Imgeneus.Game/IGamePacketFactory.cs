@@ -428,6 +428,8 @@ namespace Imgeneus.World.Packets
         void SendGmClearEquipment(IWorldClient client);
         void SendGmMutedChat(IWorldClient client);
         void SendGmUnmutedChat(IWorldClient client);
+        void SendGmStopOn(IWorldClient client);
+        void SendGmStopOff(IWorldClient client);
 
         #endregion
 

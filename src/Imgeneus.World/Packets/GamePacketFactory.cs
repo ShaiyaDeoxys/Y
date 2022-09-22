@@ -2968,6 +2968,18 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendGmStopOn(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GM_STOP_ON);
+            client.Send(packet);
+        }
+
+        public void SendGmStopOff(IWorldClient client)
+        {
+            using var packet = new ImgeneusPacket(PacketType.GM_STOP_OFF);
+            client.Send(packet);
+        }
+
         #endregion
 
         #region Other
