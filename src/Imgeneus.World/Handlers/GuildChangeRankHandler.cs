@@ -25,7 +25,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GUILD_USER_STATE)]
         public async Task Handle(WorldClient client, GuildUserStatePacket packet)
         {
-            if (!_guildManager.HasGuild || _guildManager.GuildRank > 3)
+            if (!_guildManager.HasGuild || _guildManager.GuildMemberRank > 3)
                 return;
 
             var rank = await _guildManager.TryChangeRank(packet.CharacterId, packet.Demote);
@@ -33,7 +33,7 @@ namespace Imgeneus.World.Handlers
                 return;
 
             if (_gameWorld.Players.ContainsKey(packet.CharacterId))
-                _gameWorld.Players[packet.CharacterId].GuildManager.GuildRank = rank;
+                _gameWorld.Players[packet.CharacterId].GuildManager.GuildMemberRank = rank;
 
             foreach (var member in _guildManager.GuildMembers.ToList())
             {

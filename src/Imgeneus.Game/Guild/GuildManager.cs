@@ -59,7 +59,7 @@ namespace Imgeneus.World.Game.Guild
 
         #region Init & Clear
 
-        public void Init(uint ownerId, uint guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null)
+        public void Init(uint ownerId, uint guildId = 0, string name = "", byte rank = 0, byte guildRank = 0, IEnumerable<DbCharacter> members = null)
         {
             _ownerId = ownerId;
             GuildId = guildId;
@@ -67,7 +67,8 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId != 0)
             {
                 GuildName = name;
-                GuildRank = rank;
+                GuildMemberRank = rank;
+                GuildRank = guildRank;
                 GuildMembers.AddRange(members);
                 NotifyGuildMembersOnline();
             }
@@ -78,7 +79,7 @@ namespace Imgeneus.World.Game.Guild
             NotifyGuildMembersOffline();
             GuildId = 0;
             GuildName = string.Empty;
-            GuildRank = 0;
+            GuildMemberRank = 0;
             GuildMembers.Clear();
             return Task.CompletedTask;
         }
@@ -89,7 +90,11 @@ namespace Imgeneus.World.Game.Guild
 
         public string GuildName { get; set; } = string.Empty;
 
-        public byte GuildRank { get; set; }
+        public byte GuildMemberRank { get; set; }
+
+        public bool IsGuildMaster { get => GuildMemberRank == 1; }
+
+        public byte GuildRank { get; private set; }
 
         public bool HasTopRank
         {
@@ -364,6 +369,9 @@ namespace Imgeneus.World.Game.Guild
         {
             foreach (var res in results)
             {
+                if (res.GuildId == GuildId)
+                    GuildRank = res.Rank;
+
                 var guild = _database.Guilds.Find(res.GuildId);
                 if (guild is null)
                     return;
@@ -493,7 +501,7 @@ namespace Imgeneus.World.Game.Guild
         /// <inheritdoc/>
         public async Task<GuildHouseBuyReason> TryBuyHouse()
         {
-            if (GuildRank != 1)
+            if (GuildMemberRank != 1)
             {
                 return GuildHouseBuyReason.NotAuthorized;
             }
@@ -540,7 +548,7 @@ namespace Imgeneus.World.Game.Guild
 
             requiredRank = 30;
 
-            if (GuildRank > 30)
+            if (GuildMemberRank > 30)
                 return false;
 
             var npcInfo = FindNpcInfo(_countryProvider.Country, type, typeId);
@@ -549,7 +557,7 @@ namespace Imgeneus.World.Game.Guild
                 return false;
 
             requiredRank = npcInfo.MinRank;
-            return requiredRank >= GuildRank;
+            return requiredRank >= GuildMemberRank;
         }
 
         public bool HasNpcLevel(NpcType type, short typeId)

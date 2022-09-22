@@ -57,7 +57,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GUILD_NPC_UPGRADE)]
         public async Task HandleGuildUpgradeNpc(WorldClient client, GuildNpcUpgradePacket packet)
         {
-            if (!_guildManager.HasGuild || (_guildManager.GuildRank != 1 && _guildManager.GuildRank != 2))
+            if (!_guildManager.HasGuild || (_guildManager.GuildMemberRank != 1 && _guildManager.GuildMemberRank != 2))
             {
                 _packetFactory.SendGuildUpgradeNpc(client, GuildNpcUpgradeReason.Failed, packet.NpcType, packet.NpcGroup, packet.NpcLevel);
                 return;

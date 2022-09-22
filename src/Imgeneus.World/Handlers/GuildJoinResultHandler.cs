@@ -27,7 +27,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GUILD_JOIN_RESULT_USER)]
         public async Task Handle(WorldClient client, GuildJoinResultPacket packet)
         {
-            if (!_guildManager.HasGuild || _guildManager.GuildRank > 3)
+            if (!_guildManager.HasGuild || _guildManager.GuildMemberRank > 3)
                 return;
 
             await _guildManager.RemoveRequestJoin(packet.CharacterId);
@@ -66,11 +66,11 @@ namespace Imgeneus.World.Handlers
             {
                 onlinePlayer.GuildManager.GuildId = _guildManager.GuildId;
                 onlinePlayer.GuildManager.GuildName = _guildManager.GuildName;
-                onlinePlayer.GuildManager.GuildRank = 9;
+                onlinePlayer.GuildManager.GuildMemberRank = 9;
                 onlinePlayer.GuildManager.GuildMembers.AddRange(_guildManager.GuildMembers);
                 onlinePlayer.WarehouseManager.GuildId = _guildManager.GuildId;
 
-                _packetFactory.SendGuildJoinResult(onlinePlayer.GameSession.Client, true, onlinePlayer.GuildManager.GuildId, onlinePlayer.GuildManager.GuildRank, onlinePlayer.GuildManager.GuildName);
+                _packetFactory.SendGuildJoinResult(onlinePlayer.GameSession.Client, true, onlinePlayer.GuildManager.GuildId, onlinePlayer.GuildManager.GuildMemberRank, onlinePlayer.GuildManager.GuildName);
                 _packetFactory.SendGuildNpcs(onlinePlayer.GameSession.Client, await onlinePlayer.GuildManager.GetGuildNpcs());
 
                 var online = new List<DbCharacter>();

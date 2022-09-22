@@ -25,13 +25,13 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.INVENTORY_MOVE_ITEM)]
         public void Handle(WorldClient client, MoveItemInInventoryPacket packet)
         {
-            if (packet.CurrentBag == WarehouseManager.GUILD_WAREHOUSE_BAG && _guildManager.GuildRank > 2)
+            if (packet.CurrentBag == WarehouseManager.GUILD_WAREHOUSE_BAG && _guildManager.GuildMemberRank > 2)
             {
                 // Characters of high rank can not take items of guild warehouse.
                 return;
             }
 
-            if (packet.DestinationBag == WarehouseManager.GUILD_WAREHOUSE_BAG && _guildManager.GuildRank > 8)
+            if (packet.DestinationBag == WarehouseManager.GUILD_WAREHOUSE_BAG && _guildManager.GuildMemberRank > 8)
             {
                 // Characters with rank 8+ can not store items in guild warehouse.
                 return;

@@ -25,7 +25,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GUILD_DISMANTLE)]
         public async Task Handle(WorldClient client, GuildDismantlePacket packet)
         {
-            if (!_guildManager.HasGuild || _guildManager.GuildRank != 1)
+            if (!_guildManager.HasGuild || _guildManager.GuildMemberRank != 1)
                 return;
 
             var ok = await _guildManager.TryDeleteGuild();

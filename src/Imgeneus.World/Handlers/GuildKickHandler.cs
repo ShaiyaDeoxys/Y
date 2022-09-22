@@ -25,7 +25,7 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.GUILD_KICK)]
         public async Task Handle(WorldClient client, GuildKickPacket packet)
         {
-            if (!_guildManager.HasGuild || _guildManager.GuildRank > 3)
+            if (!_guildManager.HasGuild || _guildManager.GuildMemberRank > 3)
             {
                 _packetFactory.SendGuildKickMember(client, false, packet.CharacterId);
                 return;

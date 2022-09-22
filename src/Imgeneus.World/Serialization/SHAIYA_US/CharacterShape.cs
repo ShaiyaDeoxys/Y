@@ -64,9 +64,15 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
         public string Name;
 
         [FieldOrder(18)]
-        public byte[] UnknownBytes3 = new byte[29];
+        public byte GuildFrame { get; } = 255; // Guild frames: 0,1,2 crown. 
 
-        [FieldOrder(19), FieldLength(25)]
+        [FieldOrder(19)]
+        public bool IsGuildMaster { get; }
+
+        [FieldOrder(20)]
+        public byte[] UnknownBytes3 = new byte[27];
+
+        [FieldOrder(21), FieldLength(25)]
         public string GuildName;
 
         public CharacterShape(Character character)
@@ -83,6 +89,7 @@ namespace Imgeneus.World.Serialization.SHAIYA_US
             Mode = character.AdditionalInfoManager.Grow;
             Kills = character.KillsManager.Kills;
             Name = character.AdditionalInfoManager.FakeName is null ? character.AdditionalInfoManager.Name : character.AdditionalInfoManager.FakeName;
+            IsGuildMaster = character.GuildManager.IsGuildMaster;
             GuildName = character.AdditionalInfoManager.FakeGuildName is null ? character.GuildManager.GuildName : character.AdditionalInfoManager.FakeGuildName;
 
             for (byte i = 0; i < 17; i++)

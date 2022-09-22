@@ -244,7 +244,7 @@ namespace Imgeneus.World.Tests.GuildTests
             var character = CreateCharacter(testMap);
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration() { HouseBuyMoney = 100 }, databaseMock.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
-            guildManager.GuildRank = 1;
+            guildManager.GuildMemberRank = 1;
 
             var result = await guildManager.TryBuyHouse();
 
@@ -262,7 +262,7 @@ namespace Imgeneus.World.Tests.GuildTests
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
             guildManager.GuildId = 1;
-            guildManager.GuildRank = 1;
+            guildManager.GuildMemberRank = 1;
 
             var result = await guildManager.TryBuyHouse();
 
@@ -280,7 +280,7 @@ namespace Imgeneus.World.Tests.GuildTests
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
             guildManager.GuildId = 1;
-            guildManager.GuildRank = 1;
+            guildManager.GuildMemberRank = 1;
 
             var result = await guildManager.TryBuyHouse();
 
@@ -299,7 +299,7 @@ namespace Imgeneus.World.Tests.GuildTests
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), new GuildHouseConfiguration(), database.Object, gameWorldMock.Object, timeMock.Object, character.InventoryManager, character.PartyManager, character.CountryProvider, etinMock.Object);
             guildManager.GuildId = 1;
-            guildManager.GuildRank = 1;
+            guildManager.GuildMemberRank = 1;
 
             var result = await guildManager.TryBuyHouse();
 
@@ -328,7 +328,7 @@ namespace Imgeneus.World.Tests.GuildTests
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), houseConfig, database.Object, gameWorldMock.Object, timeMock.Object, inventoryMock.Object, partyMock.Object, countryMock.Object, etinMock.Object);
             guildManager.GuildId = 1;
-            guildManager.GuildRank = 6;
+            guildManager.GuildMemberRank = 6;
 
             var canUse = guildManager.CanUseNpc(NpcType.Merchant, 1, out var requiredRank);
 
@@ -347,7 +347,7 @@ namespace Imgeneus.World.Tests.GuildTests
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), houseConfig, database.Object, gameWorldMock.Object, timeMock.Object, inventoryMock.Object, partyMock.Object, countryMock.Object, etinMock.Object);
             guildManager.GuildId = 1;
-            guildManager.GuildRank = 31;
+            guildManager.GuildMemberRank = 31;
 
             var canUse = guildManager.CanUseNpc(NpcType.Merchant, 1, out var requiredRank);
 
@@ -377,7 +377,7 @@ namespace Imgeneus.World.Tests.GuildTests
 
             var guildManager = new GuildManager(guildLoggerMock.Object, new GuildConfiguration(), houseConfig, database.Object, gameWorldMock.Object, timeMock.Object, inventoryMock.Object, partyMock.Object, countryMock.Object, etinMock.Object);
             guildManager.GuildId = 1;
-            guildManager.GuildRank = 5;
+            guildManager.GuildMemberRank = 5;
 
             var canUse = guildManager.CanUseNpc(NpcType.Merchant, 1, out var requiredRank);
 

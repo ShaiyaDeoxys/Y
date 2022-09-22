@@ -10,7 +10,7 @@ namespace Imgeneus.World.Game.Guild
 {
     public interface IGuildManager : ISessionedService
     {
-        void Init(uint ownerId, uint guildId = 0, string name = "", byte rank = 0, IEnumerable<DbCharacter> members = null);
+        void Init(uint ownerId, uint guildId = 0, string name = "", byte rank = 0, byte guildRank = 0, IEnumerable<DbCharacter> members = null);
 
         /// <summary>
         /// Owner guild id.
@@ -30,7 +30,17 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Character rank in the current guild.
         /// </summary>
-        byte GuildRank { get; set; }
+        byte GuildMemberRank { get; set; }
+
+        /// <summary>
+        /// Is it guild creator?
+        /// </summary>
+        bool IsGuildMaster { get; }
+
+        /// <summary>
+        /// Global guild rank.
+        /// </summary>
+        byte GuildRank { get; }
 
         /// <summary>
         /// Guild has guild house?

@@ -67,7 +67,7 @@ namespace Imgeneus.World.Handlers
 
                 m.GuildManager.GuildId = guild.Id;
                 m.GuildManager.GuildName = guild.Name;
-                m.GuildManager.GuildRank = rank;
+                m.GuildManager.GuildMemberRank = rank;
                 m.WarehouseManager.GuildId = guild.Id;
 
                 await m.GuildManager.TryAddMember(m.Id, rank);
@@ -76,7 +76,7 @@ namespace Imgeneus.World.Handlers
             foreach (var m in _guildManager.CreationRequest.Members)
             {
                 m.GuildManager.GuildMembers.AddRange(guild.Members);
-                _packetFactory.SendGuildCreateSuccess(m.GameSession.Client, guild.Id, m.GuildManager.GuildRank, guild.Name, guild.Message);
+                _packetFactory.SendGuildCreateSuccess(m.GameSession.Client, guild.Id, m.GuildManager.GuildMemberRank, guild.Name, guild.Message);
                 _packetFactory.SendGuildMembersOnline(client, m.GuildManager.GuildMembers, true);
 
                 m.GuildManager.CreationRequest.Dispose();

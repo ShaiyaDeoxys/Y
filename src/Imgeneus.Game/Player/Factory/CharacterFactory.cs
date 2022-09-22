@@ -299,7 +299,7 @@ namespace Imgeneus.World.Game.Player
             if (dbCharacter.GuildId != null)
             {
                 var guild = await _database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == dbCharacter.GuildId);
-                _guildManager.Init(dbCharacter.Id, dbCharacter.GuildId.Value, guild?.Name, dbCharacter.GuildRank, guild?.Members);
+                _guildManager.Init(dbCharacter.Id, dbCharacter.GuildId.Value, guild?.Name, dbCharacter.GuildRank, guild is null ? (byte)0 : guild.Rank, guild?.Members);
             }
             else
             {
