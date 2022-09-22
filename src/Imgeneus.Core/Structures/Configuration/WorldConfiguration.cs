@@ -26,5 +26,10 @@
         /// Message, that is sent as soon as player connects to game world.
         /// </summary>
         public string WelcomeMessage { get; set; }
+
+        /// <summary>
+        /// Connection string to storage, where game logs will be stored.
+        /// </summary>
+        public string LogsStorageConnectionString { get; set; }
     }
 }

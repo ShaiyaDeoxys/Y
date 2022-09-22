@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\submodules\Imgeneus.Authentication\Imegeneus.Authentication\Imgeneus.Authentication.csproj" />
     <ProjectReference Include="..\Imgeneus.Database\Imgeneus.Database.csproj" />
     <ProjectReference Include="..\Imgeneus.GameDefinitions\Imgeneus.GameDefinitions.csproj" />
+    <ProjectReference Include="..\Imgeneus.Logs\Imgeneus.Logs.csproj" />
     <ProjectReference Include="..\Imgeneus.Network\Imgeneus.Network.csproj" />
   </ItemGroup>
 

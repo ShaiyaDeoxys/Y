@@ -3,8 +3,6 @@ using Imgeneus.Authentication.Context;
 using Imgeneus.Authentication.Entities;
 using Imgeneus.Core.Structures.Configuration;
 using Imgeneus.Database;
-using Imgeneus.Database.Context;
-using Imgeneus.Database.Entities;
 using Imgeneus.Database.Preload;
 using Imgeneus.Game.Blessing;
 using Imgeneus.Game.Crafting;
@@ -101,6 +99,7 @@ namespace Imgeneus.World
             services.AddHandlers();
 
             services.AddSingleton<IInterServerClient, ISClient>();
+            services.AddSingleton<ILogsManager, LogsManager>();
             services.AddSingleton<IWorldServer, WorldServer>();
             services.AddSingleton<IGamePacketFactory, GamePacketFactory>();
             services.AddSingleton<IGameWorld, GameWorld>();
@@ -174,7 +173,6 @@ namespace Imgeneus.World
             services.AddScoped<IChatManager, ChatManager>();
 
             services.AddTransient<ICryptoManager, CryptoManager>();
-            services.AddTransient<ILogsDatabase, LogsDbContext>();
             services.AddTransient<ITimeService, TimeService>();
 
             // Add admin website
@@ -192,7 +190,7 @@ namespace Imgeneus.World
                 .AddEntityFrameworkStores<UsersContext>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, ILogsDatabase logsDb, IDatabase mainDb, IGameDefinitionsPreloder definitionsPreloder, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IWorldServer worldServer, IDatabase mainDb, ILogsManager logsManager, IGameDefinitionsPreloder definitionsPreloder, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration)
         {
             loggerFactory.AddProvider(
                 new SignalRLoggerProvider(
@@ -223,8 +221,12 @@ namespace Imgeneus.World
             });
 
             mainDb.Migrate();
-            logsDb.Migrate();
             definitionsPreloder.Preload();
+
+            var logsConnectionString = configuration.GetValue<string>("WorldServer:LogsStorageConnectionString");
+            if (!string.IsNullOrWhiteSpace(logsConnectionString))
+                logsManager.Connect(logsConnectionString);
+
             worldServer.Start();
         }
     }

@@ -1,4 +1,5 @@
-﻿using Imgeneus.World.Game.Country;
+﻿using Imgeneus.Logs;
+using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Packets;
 using Microsoft.Extensions.Logging;
@@ -11,12 +12,14 @@ namespace Imgeneus.World.Game.Chat
         private readonly ILogger<IChatManager> _logger;
         private readonly IGameWorld _gameWorld;
         private readonly IGamePacketFactory _packetFactory;
+        private readonly ILogsManager _logsManager;
 
-        public ChatManager(ILogger<IChatManager> logger, IGameWorld gameWorld, IGamePacketFactory packetFactory)
+        public ChatManager(ILogger<IChatManager> logger, IGameWorld gameWorld, IGamePacketFactory packetFactory, ILogsManager logsManager)
         {
             _logger = logger;
             _gameWorld = gameWorld;
             _packetFactory = packetFactory;
+            _logsManager = logsManager;
         }
 
         public void SendMessage(Character sender, MessageType messageType, string message, string targetName = "")
@@ -105,6 +108,8 @@ namespace Imgeneus.World.Game.Chat
                     _logger.LogError("Not implemented message type.");
                     break;
             }
+
+            _logsManager.LogChat(sender.Id, messageType.ToString(), message, targetName);
         }
 
         public bool IsMessageToServer { get; set; }
