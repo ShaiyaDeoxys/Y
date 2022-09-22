@@ -325,6 +325,9 @@ namespace Imgeneus.World.Game.Zone
             if (oldCellId == newCellId) // All is fine, character is in the right cell
                 return;
 
+            if (newCellId >= Cells.Count)
+                newCellId = Cells.Count - 1;
+
             // Need to calculate new cell...
 #if DEBUG
             _logger.LogDebug("Character {characterId} change map cell from {oldCellId} to {newCellId}.", sender.Id, oldCellId, newCellId);
