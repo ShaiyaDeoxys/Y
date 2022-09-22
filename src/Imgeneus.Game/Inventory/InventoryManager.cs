@@ -751,283 +751,294 @@ namespace Imgeneus.World.Game.Inventory
             }
         }
 
+        private object _syncAddRemoveItem = new();
+
         public Item AddItem(Item item, bool silent = false)
         {
-            if (item.Type == 0 || item.TypeId == 0)
+            lock (_syncAddRemoveItem)
             {
-                _logger.LogError("Wrong item type or id.");
-                return null;
+                if (item.Type == 0 || item.TypeId == 0)
+                {
+                    _logger.LogError("Wrong item type or id.");
+                    return null;
+                }
+                // Find free space.
+                var free = FindFreeSlotInInventory();
+
+                // Calculated bag slot can not be 0, because 0 means worn item. Newly created item can not be worn.
+                if (free.Bag == 0 || free.Slot == -1)
+                {
+                    return null;
+                }
+
+                item.Bag = free.Bag;
+                item.Slot = (byte)free.Slot;
+
+                InventoryItems.TryAdd((item.Bag, item.Slot), item);
+
+                if (item.ExpirationTime != null)
+                {
+                    item.OnExpiration += Item_OnExpiration;
+                }
+
+                _logger.LogDebug("Character {characterId} got item {type} {typeId}", _ownerId, item.Type, item.TypeId);
+
+                if (!silent)
+                    OnAddItem?.Invoke(item);
+
+                return item;
             }
-            // Find free space.
-            var free = FindFreeSlotInInventory();
-
-            // Calculated bag slot can not be 0, because 0 means worn item. Newly created item can not be worn.
-            if (free.Bag == 0 || free.Slot == -1)
-            {
-                return null;
-            }
-
-            item.Bag = free.Bag;
-            item.Slot = (byte)free.Slot;
-
-            InventoryItems.TryAdd((item.Bag, item.Slot), item);
-
-            if (item.ExpirationTime != null)
-            {
-                item.OnExpiration += Item_OnExpiration;
-            }
-
-            _logger.LogDebug("Character {characterId} got item {type} {typeId}", _ownerId, item.Type, item.TypeId);
-
-            if (!silent)
-                OnAddItem?.Invoke(item);
-
-            return item;
         }
 
         public event Action<Item, bool> OnRemoveItem;
 
         public Item RemoveItem(Item item)
         {
-            // If we are giving consumable item.
-            if (item.TradeQuantity < item.Count && item.TradeQuantity != 0)
+            lock (_syncAddRemoveItem)
             {
-                var givenItem = item.Clone();
-                givenItem.Count = item.TradeQuantity;
+                // If we are giving consumable item.
+                if (item.TradeQuantity < item.Count && item.TradeQuantity != 0)
+                {
+                    var givenItem = item.Clone();
+                    givenItem.Count = item.TradeQuantity;
 
-                item.Count -= item.TradeQuantity;
-                item.TradeQuantity = 0;
+                    item.Count -= item.TradeQuantity;
+                    item.TradeQuantity = 0;
 
-                OnRemoveItem?.Invoke(item, item.Count == 0);
+                    OnRemoveItem?.Invoke(item, item.Count == 0);
 
-                return givenItem;
+                    return givenItem;
+                }
+
+                InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
+
+                if (item.ExpirationTime != null)
+                {
+                    item.StopExpirationTimer();
+                    item.OnExpiration -= Item_OnExpiration;
+                }
+
+                _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _ownerId, item.Type, item.TypeId);
+
+                OnRemoveItem?.Invoke(item, true);
+                return item;
             }
-
-            InventoryItems.TryRemove((item.Bag, item.Slot), out var removedItem);
-
-            if (item.ExpirationTime != null)
-            {
-                item.StopExpirationTimer();
-                item.OnExpiration -= Item_OnExpiration;
-            }
-
-            _logger.LogDebug("Character {characterId} lost item {type} {typeId}", _ownerId, item.Type, item.TypeId);
-
-            OnRemoveItem?.Invoke(item, true);
-            return item;
         }
 
         public (Item sourceItem, Item destinationItem) MoveItem(byte sourceBag, byte sourceSlot, byte destinationBag, byte destinationSlot)
         {
-            // Find source item.
-            Item sourceItem;
-            if (sourceBag != WarehouseManager.WAREHOUSE_BAG && sourceBag != WarehouseManager.GUILD_WAREHOUSE_BAG)
-                InventoryItems.TryRemove((sourceBag, sourceSlot), out sourceItem);
-            else
-                _warehouseManager.TryRemove(sourceBag, sourceSlot, out sourceItem);
-
-            if (sourceItem is null)
+            lock (_syncAddRemoveItem)
             {
-                // wrong packet, source item should be always presented.
-                _logger.LogError("Could not find source item for player {characterId}", _ownerId);
-                return (null, null);
-            }
-
-            if (sourceBag == WarehouseManager.WAREHOUSE_BAG || sourceBag == WarehouseManager.GUILD_WAREHOUSE_BAG)
-            {
-                var fee = (uint)Math.Round(sourceItem.Price * 0.05);
-                if (Gold < fee)
-                {
-                    // Game should check if it's possible to take out item from warehouse.
-                    // If packet still came, probably player is cheating.
-                    _warehouseManager.TryAdd(sourceBag, sourceSlot, sourceItem);
-                    _logger.LogError("Could not take out item from warehouse for {characterId}", _ownerId);
-                    return (null, null);
-                }
+                // Find source item.
+                Item sourceItem;
+                if (sourceBag != WarehouseManager.WAREHOUSE_BAG && sourceBag != WarehouseManager.GUILD_WAREHOUSE_BAG)
+                    InventoryItems.TryRemove((sourceBag, sourceSlot), out sourceItem);
                 else
-                    Gold -= fee;
-            }
+                    _warehouseManager.TryRemove(sourceBag, sourceSlot, out sourceItem);
 
-            // Check, if any other item is at destination slot.
-            Item destinationItem;
-            if (destinationBag != WarehouseManager.WAREHOUSE_BAG && destinationBag != WarehouseManager.GUILD_WAREHOUSE_BAG)
-                InventoryItems.TryRemove((destinationBag, destinationSlot), out destinationItem);
-            else
-            {
-                var ok = _warehouseManager.TryRemove(destinationBag, destinationSlot, out destinationItem);
-                if (!ok)
+                if (sourceItem is null)
                 {
-                    InventoryItems.TryAdd((sourceBag, sourceSlot), sourceItem);
+                    // wrong packet, source item should be always presented.
+                    _logger.LogError("Could not find source item for player {characterId}", _ownerId);
                     return (null, null);
                 }
-            }
 
-            if (destinationItem is null)
-            {
-                // No item at destination place.
-                // Since there is no destination item we will use source item as destination.
-                // The only change, that we need to do is to set new bag and slot.
-                destinationItem = sourceItem;
-                destinationItem.Bag = destinationBag;
-                destinationItem.Slot = destinationSlot;
-
-                sourceItem = new Item(_gameDefinitions, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
-            }
-            else
-            {
-                // There is some item at destination place.
-                if (sourceItem.Type == destinationItem.Type &&
-                    sourceItem.TypeId == destinationItem.TypeId &&
-                    destinationItem.IsJoinable &&
-                    destinationItem.Count + sourceItem.Count <= destinationItem.MaxCount)
+                if (sourceBag == WarehouseManager.WAREHOUSE_BAG || sourceBag == WarehouseManager.GUILD_WAREHOUSE_BAG)
                 {
-                    // Increase destination item count, if they are joinable.
-                    destinationItem.Count += sourceItem.Count;
+                    var fee = (uint)Math.Round(sourceItem.Price * 0.05);
+                    if (Gold < fee)
+                    {
+                        // Game should check if it's possible to take out item from warehouse.
+                        // If packet still came, probably player is cheating.
+                        _warehouseManager.TryAdd(sourceBag, sourceSlot, sourceItem);
+                        _logger.LogError("Could not take out item from warehouse for {characterId}", _ownerId);
+                        return (null, null);
+                    }
+                    else
+                        Gold -= fee;
+                }
+
+                // Check, if any other item is at destination slot.
+                Item destinationItem;
+                if (destinationBag != WarehouseManager.WAREHOUSE_BAG && destinationBag != WarehouseManager.GUILD_WAREHOUSE_BAG)
+                    InventoryItems.TryRemove((destinationBag, destinationSlot), out destinationItem);
+                else
+                {
+                    var ok = _warehouseManager.TryRemove(destinationBag, destinationSlot, out destinationItem);
+                    if (!ok)
+                    {
+                        InventoryItems.TryAdd((sourceBag, sourceSlot), sourceItem);
+                        return (null, null);
+                    }
+                }
+
+                if (destinationItem is null)
+                {
+                    // No item at destination place.
+                    // Since there is no destination item we will use source item as destination.
+                    // The only change, that we need to do is to set new bag and slot.
+                    destinationItem = sourceItem;
+                    destinationItem.Bag = destinationBag;
+                    destinationItem.Slot = destinationSlot;
 
                     sourceItem = new Item(_gameDefinitions, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
                 }
                 else
                 {
-                    // Swap them.
-                    destinationItem.Bag = sourceBag;
-                    destinationItem.Slot = sourceSlot;
+                    // There is some item at destination place.
+                    if (sourceItem.Type == destinationItem.Type &&
+                        sourceItem.TypeId == destinationItem.TypeId &&
+                        destinationItem.IsJoinable &&
+                        destinationItem.Count + sourceItem.Count <= destinationItem.MaxCount)
+                    {
+                        // Increase destination item count, if they are joinable.
+                        destinationItem.Count += sourceItem.Count;
 
-                    sourceItem.Bag = destinationBag;
-                    sourceItem.Slot = destinationSlot;
+                        sourceItem = new Item(_gameDefinitions, _enchantConfig, _itemCreateConfig, 0, 0) { Bag = sourceBag, Slot = sourceSlot }; // empty item.
+                    }
+                    else
+                    {
+                        // Swap them.
+                        destinationItem.Bag = sourceBag;
+                        destinationItem.Slot = sourceSlot;
+
+                        sourceItem.Bag = destinationBag;
+                        sourceItem.Slot = destinationSlot;
+                    }
                 }
-            }
 
-            // Update equipment if needed.
-            if (sourceBag == 0 && destinationBag != 0)
-            {
-                switch (sourceSlot)
+                // Update equipment if needed.
+                if (sourceBag == 0 && destinationBag != 0)
                 {
-                    case 0:
-                        Helmet = null;
-                        break;
-                    case 1:
-                        Armor = null;
-                        break;
-                    case 2:
-                        Pants = null;
-                        break;
-                    case 3:
-                        Gauntlet = null;
-                        break;
-                    case 4:
-                        Boots = null;
-                        break;
-                    case 5:
-                        Weapon = null;
-                        break;
-                    case 6:
-                        Shield = null;
-                        break;
-                    case 7:
-                        Cape = null;
-                        break;
-                    case 8:
-                        Amulet = null;
-                        break;
-                    case 9:
-                        Ring1 = null;
-                        break;
-                    case 10:
-                        Ring2 = null;
-                        break;
-                    case 11:
-                        Bracelet1 = null;
-                        break;
-                    case 12:
-                        Bracelet2 = null;
-                        break;
-                    case 13:
-                        Mount = null;
-                        break;
-                    case 14:
-                        Pet = null;
-                        break;
-                    case 15:
-                        Costume = null;
-                        break;
-                    case 16:
-                        Wings = null;
-                        break;
+                    switch (sourceSlot)
+                    {
+                        case 0:
+                            Helmet = null;
+                            break;
+                        case 1:
+                            Armor = null;
+                            break;
+                        case 2:
+                            Pants = null;
+                            break;
+                        case 3:
+                            Gauntlet = null;
+                            break;
+                        case 4:
+                            Boots = null;
+                            break;
+                        case 5:
+                            Weapon = null;
+                            break;
+                        case 6:
+                            Shield = null;
+                            break;
+                        case 7:
+                            Cape = null;
+                            break;
+                        case 8:
+                            Amulet = null;
+                            break;
+                        case 9:
+                            Ring1 = null;
+                            break;
+                        case 10:
+                            Ring2 = null;
+                            break;
+                        case 11:
+                            Bracelet1 = null;
+                            break;
+                        case 12:
+                            Bracelet2 = null;
+                            break;
+                        case 13:
+                            Mount = null;
+                            break;
+                        case 14:
+                            Pet = null;
+                            break;
+                        case 15:
+                            Costume = null;
+                            break;
+                        case 16:
+                            Wings = null;
+                            break;
+                    }
                 }
-            }
 
-            if (destinationBag == 0)
-            {
-                var item = sourceItem.Bag == destinationBag && sourceItem.Slot == destinationSlot ? sourceItem : destinationItem;
-                switch (item.Slot)
+                if (destinationBag == 0)
                 {
-                    case 0:
-                        Helmet = item;
-                        break;
-                    case 1:
-                        Armor = item;
-                        break;
-                    case 2:
-                        Pants = item;
-                        break;
-                    case 3:
-                        Gauntlet = item;
-                        break;
-                    case 4:
-                        Boots = item;
-                        break;
-                    case 5:
-                        Weapon = item;
-                        break;
-                    case 6:
-                        Shield = item;
-                        break;
-                    case 7:
-                        Cape = item;
-                        break;
-                    case 8:
-                        Amulet = item;
-                        break;
-                    case 9:
-                        Ring1 = item;
-                        break;
-                    case 10:
-                        Ring2 = item;
-                        break;
-                    case 11:
-                        Bracelet1 = item;
-                        break;
-                    case 12:
-                        Bracelet2 = item;
-                        break;
-                    case 13:
-                        Mount = item;
-                        break;
-                    case 14:
-                        Pet = item;
-                        break;
-                    case 15:
-                        Costume = item;
-                        break;
-                    case 16:
-                        Wings = item;
-                        break;
+                    var item = sourceItem.Bag == destinationBag && sourceItem.Slot == destinationSlot ? sourceItem : destinationItem;
+                    switch (item.Slot)
+                    {
+                        case 0:
+                            Helmet = item;
+                            break;
+                        case 1:
+                            Armor = item;
+                            break;
+                        case 2:
+                            Pants = item;
+                            break;
+                        case 3:
+                            Gauntlet = item;
+                            break;
+                        case 4:
+                            Boots = item;
+                            break;
+                        case 5:
+                            Weapon = item;
+                            break;
+                        case 6:
+                            Shield = item;
+                            break;
+                        case 7:
+                            Cape = item;
+                            break;
+                        case 8:
+                            Amulet = item;
+                            break;
+                        case 9:
+                            Ring1 = item;
+                            break;
+                        case 10:
+                            Ring2 = item;
+                            break;
+                        case 11:
+                            Bracelet1 = item;
+                            break;
+                        case 12:
+                            Bracelet2 = item;
+                            break;
+                        case 13:
+                            Mount = item;
+                            break;
+                        case 14:
+                            Pet = item;
+                            break;
+                        case 15:
+                            Costume = item;
+                            break;
+                        case 16:
+                            Wings = item;
+                            break;
+                    }
                 }
+
+                if (sourceItem.Type != 0 && sourceItem.TypeId != 0)
+                    if (sourceItem.Bag != WarehouseManager.WAREHOUSE_BAG && sourceItem.Bag != WarehouseManager.GUILD_WAREHOUSE_BAG)
+                        InventoryItems.TryAdd((sourceItem.Bag, sourceItem.Slot), sourceItem);
+                    else
+                        _warehouseManager.TryAdd(sourceItem.Bag, sourceItem.Slot, sourceItem);
+
+                if (destinationItem.Type != 0 && destinationItem.TypeId != 0)
+                    if (destinationItem.Bag != WarehouseManager.WAREHOUSE_BAG && destinationItem.Bag != WarehouseManager.GUILD_WAREHOUSE_BAG)
+                        InventoryItems.TryAdd((destinationItem.Bag, destinationItem.Slot), destinationItem);
+                    else
+                        _warehouseManager.TryAdd(destinationItem.Bag, destinationItem.Slot, destinationItem);
+
+                return (sourceItem, destinationItem);
             }
-
-            if (sourceItem.Type != 0 && sourceItem.TypeId != 0)
-                if (sourceItem.Bag != WarehouseManager.WAREHOUSE_BAG && sourceItem.Bag != WarehouseManager.GUILD_WAREHOUSE_BAG)
-                    InventoryItems.TryAdd((sourceItem.Bag, sourceItem.Slot), sourceItem);
-                else
-                    _warehouseManager.TryAdd(sourceItem.Bag, sourceItem.Slot, sourceItem);
-
-            if (destinationItem.Type != 0 && destinationItem.TypeId != 0)
-                if (destinationItem.Bag != WarehouseManager.WAREHOUSE_BAG && destinationItem.Bag != WarehouseManager.GUILD_WAREHOUSE_BAG)
-                    InventoryItems.TryAdd((destinationItem.Bag, destinationItem.Slot), destinationItem);
-                else
-                    _warehouseManager.TryAdd(destinationItem.Bag, destinationItem.Slot, destinationItem);
-
-            return (sourceItem, destinationItem);
         }
 
         #endregion

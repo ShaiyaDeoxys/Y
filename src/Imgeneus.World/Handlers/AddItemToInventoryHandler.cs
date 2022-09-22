@@ -13,6 +13,7 @@ namespace Imgeneus.World.Handlers
     {
         private readonly IGameWorld _gameWorld;
         private readonly IInventoryManager _inventoryManager;
+        private static readonly object _syncObject = new();
 
         public AddItemToInventoryHandler(IGamePacketFactory packetFactory, IGameSession gameSession, IGameWorld gameWorld, IInventoryManager inventoryManager) : base(packetFactory, gameSession)
         {
@@ -23,33 +24,36 @@ namespace Imgeneus.World.Handlers
         [HandlerAction(PacketType.ADD_ITEM)]
         public void Handle(WorldClient client, MapPickUpItemPacket packet)
         {
-            var player = _gameWorld.Players[_gameSession.Character.Id];
-            var mapItem = player.Map.GetItem(packet.ItemId, player);
-            if (mapItem is null)
+            lock (_syncObject)
             {
-                _packetFactory.SendItemDoesNotBelong(client);
-                return;
-            }
-
-            if (mapItem.Item.Type == Item.MONEY_ITEM_TYPE)
-            {
-                player.Map.RemoveItem(player.CellId, mapItem.Id);
-                player.InventoryManager.Gold += (uint)mapItem.Item.Gold;
-                _packetFactory.SendAddItem(client, mapItem.Item);
-            }
-            else
-            {
-                var inventoryItem = _inventoryManager.AddItem(mapItem.Item);
-                if (inventoryItem is null)
+                var player = _gameWorld.Players[_gameSession.Character.Id];
+                var mapItem = player.Map.GetItem(packet.ItemId, player);
+                if (mapItem is null)
                 {
-                    _packetFactory.SendFullInventory(client);
+                    _packetFactory.SendItemDoesNotBelong(client);
+                    return;
+                }
+
+                if (mapItem.Item.Type == Item.MONEY_ITEM_TYPE)
+                {
+                    player.Map.RemoveItem(player.CellId, mapItem.Id);
+                    player.InventoryManager.Gold += (uint)mapItem.Item.Gold;
+                    _packetFactory.SendAddItem(client, mapItem.Item);
                 }
                 else
                 {
-                    player.Map.RemoveItem(player.CellId, mapItem.Id);
+                    var inventoryItem = _inventoryManager.AddItem(mapItem.Item);
+                    if (inventoryItem is null)
+                    {
+                        _packetFactory.SendFullInventory(client);
+                    }
+                    else
+                    {
+                        player.Map.RemoveItem(player.CellId, mapItem.Id);
 
-                    if (player.PartyManager.Party != null)
-                        player.PartyManager.Party.MemberGetItem(player, inventoryItem);
+                        if (player.PartyManager.Party != null)
+                            player.PartyManager.Party.MemberGetItem(player, inventoryItem);
+                    }
                 }
             }
         }

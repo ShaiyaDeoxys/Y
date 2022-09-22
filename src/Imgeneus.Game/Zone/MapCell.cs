@@ -1008,9 +1008,22 @@ namespace Imgeneus.World.Game.Zone
         /// <summary>
         /// Removes item from map.
         /// </summary>
-        public MapItem RemoveItem(uint itemId)
+        public MapItem RemoveItem(uint itemId, bool includeNeighborCells)
         {
-            if (Items.TryRemove(itemId, out var mapItem))
+            if (!Items.TryRemove(itemId, out var mapItem)) // Maybe item is in neighbor cell?
+            {
+                if (includeNeighborCells)
+                {
+                    foreach (var cellId in NeighborCells)
+                    {
+                        mapItem = Map.Cells[cellId].RemoveItem(itemId, false);
+                        if (mapItem != null)
+                            break;
+                    }
+                }
+            }
+
+            if (mapItem != null)
             {
                 mapItem.StopRemoveTimer();
                 foreach (var player in GetAllPlayers(true))

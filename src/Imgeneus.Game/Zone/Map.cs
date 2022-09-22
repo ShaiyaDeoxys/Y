@@ -576,18 +576,23 @@ namespace Imgeneus.World.Game.Zone
 
         #region Items
 
+        private object _syncAddRemoveItem = new();
+
         /// <summary>
         /// Adds item on map.
         /// </summary>
         /// <param name="item">new added item</param>
         public void AddItem(MapItem item)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(nameof(Map));
+            lock (_syncAddRemoveItem)
+            {
+                if (_isDisposed)
+                    throw new ObjectDisposedException(nameof(Map));
 
-            item.Id = GenerateId();
-            Cells[GetCellIndex(item)].AddItem(item);
-            item.OnRemove += Item_OnRemove;
+                item.Id = GenerateId();
+                Cells[GetCellIndex(item)].AddItem(item);
+                item.OnRemove += Item_OnRemove;
+            }
         }
 
         /// <summary>
@@ -596,7 +601,10 @@ namespace Imgeneus.World.Game.Zone
         /// <returns>if item is null, means that item doesn't belong to player yet</returns>
         public MapItem GetItem(uint itemId, Character requester)
         {
-            return Cells[requester.CellId].GetItem(itemId, requester, true);
+            lock (_syncAddRemoveItem)
+            {
+                return Cells[requester.CellId].GetItem(itemId, requester, true);
+            }
         }
 
         /// <summary>
@@ -604,11 +612,14 @@ namespace Imgeneus.World.Game.Zone
         /// </summary>
         public void RemoveItem(int cellId, uint itemId)
         {
-            var item = Cells[cellId].RemoveItem(itemId);
-            if (item != null)
+            lock (_syncAddRemoveItem)
             {
-                item.OnRemove -= Item_OnRemove;
-                item.Dispose();
+                var item = Cells[cellId].RemoveItem(itemId, true);
+                if (item != null)
+                {
+                    item.OnRemove -= Item_OnRemove;
+                    item.Dispose();
+                }
             }
         }
 
