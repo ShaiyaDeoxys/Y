@@ -209,14 +209,14 @@ namespace Imgeneus.World.Tests.CharacterTests
         {
             var character = CreateCharacter();
             var character2 = CreateCharacter(country: Fraction.Dark);
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId), "");
             character.InventoryManager.MoveItem(1, 0, 0, 5);
 
             character.SkillsManager.CanUseSkill(new Skill(NettleSting, 0, 0), character2, out var result);
             Assert.Equal(AttackSuccess.WrongEquipment, result);
 
             // Give spear.
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Spear.Type, Spear.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Spear.Type, Spear.TypeId), "");
             character.InventoryManager.MoveItem(1, 0, 0, 5);
 
             character.SkillsManager.CanUseSkill(new Skill(NettleSting, 0, 0), character2, out result);
@@ -1035,7 +1035,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             var map = testMap;
             var character = CreateCharacter(map);
             var character2 = CreateCharacter(map, country: Fraction.Dark);
-            character2.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character2.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId), "");
             character2.InventoryManager.MoveItem(1, 0, 0, 5);
 
             Assert.True(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));
@@ -1054,7 +1054,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             var map = testMap;
             var character = CreateCharacter(map);
             var character2 = CreateCharacter(map, country: Fraction.Dark);
-            character2.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId));
+            character2.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, FireSword.Type, FireSword.TypeId), "");
             character2.InventoryManager.MoveItem(1, 0, 0, 5);
 
             Assert.True(character2.SkillsManager.CanUseSkill(new Skill(MagicRoots_Lvl1, 0, 0), character, out var _));

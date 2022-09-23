@@ -68,6 +68,7 @@ using Imgeneus.Game.Monster;
 using Imgeneus.Game.Market;
 using Imgeneus.GameDefinitions.Constants;
 using Imgeneus.GameDefinitions.Enums;
+using Imgeneus.Logs;
 
 namespace Imgeneus.World.Tests
 {
@@ -96,6 +97,7 @@ namespace Imgeneus.World.Tests
         protected Mock<IEtinManager> etinMock = new Mock<IEtinManager>();
         protected Mock<IItemEnchantConfiguration> enchantConfig = new Mock<IItemEnchantConfiguration>();
         protected Mock<IItemCreateConfiguration> itemCreateConfig = new Mock<IItemCreateConfiguration>();
+        protected Mock<ILogsManager> logsManagerMock = new Mock<ILogsManager>();
         protected BlessManager BlessManager = new BlessManager();
 
         protected Map testMap
@@ -175,7 +177,7 @@ namespace Imgeneus.World.Tests
             skillsManager.Init(_characterId, new List<Skill>());
             var skillCastingManager = new SkillCastingManager(new Mock<ILogger<SkillCastingManager>>().Object, movementManager, teleportManager, healthManager, skillsManager, buffsManager, gameWorldMock.Object, castProtectionManager);
             skillCastingManager.Init(_characterId);
-            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager, BlessManager);
+            var inventoryManager = new InventoryManager(new Mock<ILogger<InventoryManager>>().Object, definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, databaseMock.Object, statsManager, healthManager, speedManager, elementProvider, vehicleManager, levelProvider, levelingManager, countryProvider, gameWorldMock.Object, additionalInfoManager, skillsManager, buffsManager, config.Object, attackManager, partyManager, teleportManager, new Mock<IChatManager>().Object, warehouseManager, BlessManager, logsManagerMock.Object);
             inventoryManager.Init(_characterId, new List<DbCharacterItems>(), 0);
 
 
@@ -679,7 +681,8 @@ namespace Imgeneus.World.Tests
             SkillLevel = 100,
             TypeDetail = TypeDetail.RemoveAttribute,
             TypeAttack = TypeAttack.MagicAttack,
-            DamageType = DamageType.FixedDamage
+            DamageType = DamageType.FixedDamage,
+            KeepTime = 3600
         };
 
         protected DbSkill FireWeapon = new DbSkill()
@@ -688,7 +691,8 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             TypeDetail = TypeDetail.ElementalAttack,
             Element = Element.Fire1,
-            TypeAttack = TypeAttack.ShootingAttack
+            TypeAttack = TypeAttack.ShootingAttack,
+            KeepTime = 60
         };
 
         protected DbSkill EarthWeapon = new DbSkill()
@@ -697,7 +701,8 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             TypeDetail = TypeDetail.ElementalAttack,
             Element = Element.Earth1,
-            TypeAttack = TypeAttack.ShootingAttack
+            TypeAttack = TypeAttack.ShootingAttack,
+            KeepTime = 60
         };
 
         protected DbSkill FireSkin = new DbSkill()
@@ -706,7 +711,8 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             TypeDetail = TypeDetail.ElementalProtection,
             Element = Element.Fire1,
-            TypeAttack = TypeAttack.MagicAttack
+            TypeAttack = TypeAttack.MagicAttack,
+            KeepTime = 60
         };
 
         protected DbSkill EarthSkin = new DbSkill()
@@ -715,7 +721,8 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             TypeDetail = TypeDetail.ElementalProtection,
             Element = Element.Earth1,
-            TypeAttack = TypeAttack.MagicAttack
+            TypeAttack = TypeAttack.MagicAttack,
+            KeepTime = 60
         };
 
         protected DbSkill Panic_Lvl1 = new DbSkill()
@@ -726,7 +733,8 @@ namespace Imgeneus.World.Tests
             AbilityType1 = AbilityType.PhysicalDefense,
             AbilityValue1 = 119,
             TypeAttack = TypeAttack.MagicAttack,
-            TypeEffect = TypeEffect.Debuff
+            TypeEffect = TypeEffect.Debuff,
+            KeepTime = 6
         };
 
         protected DbSkill Dispel = new DbSkill()
@@ -746,7 +754,9 @@ namespace Imgeneus.World.Tests
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.HP,
             AbilityValue1 = 500,
-            FixRange = Duration.DurationInMinutes
+            FixRange = Duration.DurationInMinutes,
+            KeepTime = 3600
+
         };
 
         protected DbSkill Leadership = new DbSkill()
@@ -760,7 +770,8 @@ namespace Imgeneus.World.Tests
             ApplyRange = 50,
             AbilityType1 = AbilityType.PhysicalAttackPower,
             AbilityValue1 = 13,
-            FixRange = Duration.ClearAfterDeath
+            FixRange = Duration.ClearAfterDeath,
+            KeepTime = 900
         };
 
         protected DbSkill EXP = new DbSkill()
@@ -802,7 +813,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.AbsorptionAura,
-            AbilityValue1 = 20
+            AbilityValue1 = 20,
+            KeepTime = 8
         };
 
         protected DbSkill Untouchable = new DbSkill()
@@ -812,7 +824,8 @@ namespace Imgeneus.World.Tests
             TypeDetail = TypeDetail.Untouchable,
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
-            TargetType = TargetType.Caster
+            TargetType = TargetType.Caster,
+            KeepTime = 3
         };
 
         protected DbSkill BullsEye = new DbSkill()
@@ -832,7 +845,8 @@ namespace Imgeneus.World.Tests
             TypeDetail = TypeDetail.Stealth,
             SuccessType = SuccessType.SuccessBasedOnValue,
             TargetType = TargetType.Caster,
-            TypeEffect = TypeEffect.Buff
+            TypeEffect = TypeEffect.Buff,
+            KeepTime = 10
         };
 
         protected DbSkill SpeedRemedy_Lvl1 = new DbSkill()
@@ -847,7 +861,8 @@ namespace Imgeneus.World.Tests
             AbilityValue1 = 1,
             NeedWeapon1 = 1,
             NeedWeapon2 = 1,
-            NeedShield = 1
+            NeedShield = 1,
+            KeepTime = 600
         };
 
         protected DbSkill MinSunStone_Lvl1 = new DbSkill()
@@ -859,7 +874,8 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.ExpGainRate,
-            AbilityValue1 = 150
+            AbilityValue1 = 150,
+            KeepTime = 3600
         };
 
         protected DbSkill BlueDragonCharm_Lvl1 = new DbSkill()
@@ -871,7 +887,8 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.BlueDragonCharm,
-            AbilityValue1 = 1
+            AbilityValue1 = 1,
+            KeepTime = 240
         };
 
         protected DbSkill DoubleWarehouseStone_Lvl1 = new DbSkill()
@@ -883,7 +900,8 @@ namespace Imgeneus.World.Tests
             SuccessType = SuccessType.SuccessBasedOnValue,
             TargetType = TargetType.Caster,
             AbilityType1 = AbilityType.WarehouseSize,
-            AbilityValue1 = 1
+            AbilityValue1 = 1,
+            KeepTime = 720
         };
 
         protected DbSkill MainWeaponPowerUp = new DbSkill()
@@ -902,14 +920,16 @@ namespace Imgeneus.World.Tests
             SkillId = 711,
             SkillLevel = 10,
             TypeDetail = TypeDetail.BlockShootingAttack,
-            DefenceValue = 100
+            DefenceValue = 100,
+            KeepTime = 18
         };
 
         protected DbSkill Transformation = new DbSkill()
         {
             SkillId = 460,
             SkillLevel = 1,
-            TypeDetail = TypeDetail.Transformation
+            TypeDetail = TypeDetail.Transformation,
+            KeepTime = 20
         };
 
         protected DbSkill BerserkersRage = new DbSkill()
@@ -1001,6 +1021,7 @@ namespace Imgeneus.World.Tests
             DefenceValue = 3,
             SuccessType = SuccessType.SuccessBasedOnValue,
             SuccessValue = 100,
+            KeepTime = 60
         };
 
         protected DbSkill EtainsEmbrace = new DbSkill()
@@ -1013,7 +1034,8 @@ namespace Imgeneus.World.Tests
             MP = 850,
             TargetType = TargetType.Caster,
             TypeEffect = TypeEffect.Buff,
-            TypeAttack = TypeAttack.MagicAttack
+            TypeAttack = TypeAttack.MagicAttack,
+            KeepTime = 2
         };
 
         protected DbSkill MagicMirror = new DbSkill()
@@ -1022,7 +1044,8 @@ namespace Imgeneus.World.Tests
             SkillLevel = 1,
             TypeDetail = TypeDetail.DamageReflection,
             AbilityValue3 = 1,
-            TargetType = TargetType.Caster
+            TargetType = TargetType.Caster,
+            KeepTime = 2
         };
 
         protected DbSkill PersistBarrier = new DbSkill()
@@ -1102,7 +1125,8 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.MagicAttack,
             TypeEffect = TypeEffect.Buff,
-            UsedByPriest = 1
+            UsedByPriest = 1,
+            KeepTime = 60
         };
 
         protected DbSkill Polymorph = new DbSkill()
@@ -1116,7 +1140,8 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.MagicAttack,
             TypeEffect = TypeEffect.Debuff,
-            UsedByPriest = 1
+            UsedByPriest = 1,
+            KeepTime = 5
         };
 
         protected DbSkill Detection = new DbSkill()
@@ -1157,7 +1182,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             TypeAttack = TypeAttack.MagicAttack,
             TypeEffect = TypeEffect.Buff,
-            UsedByRanger = 1
+            UsedByRanger = 1,
+            KeepTime = 60
         };
 
         protected DbSkill Disguise = new DbSkill()
@@ -1170,7 +1196,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             TypeAttack = TypeAttack.MagicAttack,
             TypeEffect = TypeEffect.Buff,
-            UsedByRanger = 1
+            UsedByRanger = 1,
+            KeepTime = 200
         };
 
         protected DbSkill Misfortune = new DbSkill()
@@ -1188,6 +1215,7 @@ namespace Imgeneus.World.Tests
             AbilityValue1 = 166,
             AbilityType2 = AbilityType.Dex,
             AbilityValue2 = 166,
+            KeepTime = 25
         };
 
         protected DbSkill StunSlam = new DbSkill()
@@ -1200,7 +1228,8 @@ namespace Imgeneus.World.Tests
             SuccessValue = 100,
             TypeAttack = TypeAttack.PhysicalAttack,
             TypeEffect = TypeEffect.Debuff,
-            StateType = StateType.Stun
+            StateType = StateType.Stun,
+            KeepTime = 2
         };
 
         protected DbSkill DeathTouch = new DbSkill()
@@ -1272,7 +1301,8 @@ namespace Imgeneus.World.Tests
             TypeEffect = TypeEffect.Buff,
             TargetType = TargetType.Caster,
             DamageType = DamageType.FixedDamage,
-            TypeAttack = TypeAttack.MagicAttack
+            TypeAttack = TypeAttack.MagicAttack,
+            KeepTime = 40
         };
 
         protected DbSkill LongRange = new DbSkill()
@@ -1285,7 +1315,8 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.FixedDamage,
             TypeAttack = TypeAttack.Passive,
             AbilityType1 = AbilityType.AttackRange,
-            AbilityValue1 = 6
+            AbilityValue1 = 6,
+            KeepTime = 60
         };
 
         protected DbSkill HealthDrain = new DbSkill()
@@ -1309,7 +1340,8 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.PlusExtraDamage,
             TypeAttack = TypeAttack.PhysicalAttack,
             TargetType = TargetType.EnemiesNearTarget,
-            StateType = StateType.Darkness
+            StateType = StateType.Darkness,
+            KeepTime = 4
         };
 
         protected DbSkill BlindingBlow = new DbSkill()
@@ -1321,7 +1353,8 @@ namespace Imgeneus.World.Tests
             DamageType = DamageType.PlusExtraDamage,
             TypeAttack = TypeAttack.PhysicalAttack,
             TargetType = TargetType.EnemiesNearTarget,
-            StateType = StateType.Silence
+            StateType = StateType.Silence,
+            KeepTime = 3
         };
 
         protected DbSkill Provoke = new DbSkill()

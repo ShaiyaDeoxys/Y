@@ -13,9 +13,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var hammer = character.InventoryManager.InventoryItems[(1, 1)];
@@ -39,8 +39,8 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var gem = character.InventoryManager.InventoryItems[(1, 1)];
@@ -63,8 +63,8 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var gem = character.InventoryManager.InventoryItems[(1, 1)];
@@ -84,9 +84,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId), "");
             character.InventoryManager.MoveItem(1, 0, 0, 1);
 
             Assert.NotNull(character.InventoryManager.Armor);
@@ -114,8 +114,8 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId), "");
             character.InventoryManager.MoveItem(1, 0, 0, 1);
 
             Assert.NotNull(character.InventoryManager.Armor);
@@ -136,11 +136,11 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var hammer1 = character.InventoryManager.InventoryItems[(1, 1)];
@@ -173,11 +173,11 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var hammer1 = character.InventoryManager.InventoryItems[(1, 1)];
@@ -207,9 +207,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var hammer = character.InventoryManager.InventoryItems[(1, 1)];
@@ -234,9 +234,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, LuckyCharm.Type, LuckyCharm.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_7.Type, Gem_Str_Level_7.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, LuckyCharm.Type, LuckyCharm.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var gem = character.InventoryManager.InventoryItems[(1, 1)];
@@ -260,9 +260,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, LuckyCharm.Type, LuckyCharm.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Str_Level_1.Type, Gem_Str_Level_1.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, LuckyCharm.Type, LuckyCharm.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var gem = character.InventoryManager.InventoryItems[(1, 1)];
@@ -294,8 +294,8 @@ namespace Imgeneus.World.Tests.GemLinkingTests
                 Gem1 = new Gem(definitionsPreloader.Object, Gem_Str_Level_1.TypeId, 0)
             };
 
-            character.InventoryManager.AddItem(armorItem);
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectExtractingHammer.Type, PerfectExtractingHammer.TypeId));
+            character.InventoryManager.AddItem(armorItem, "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectExtractingHammer.Type, PerfectExtractingHammer.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var hammer = character.InventoryManager.InventoryItems[(1, 1)];
@@ -321,7 +321,7 @@ namespace Imgeneus.World.Tests.GemLinkingTests
                 Gem2 = new Gem(definitionsPreloader.Object, Gem_Str_Level_3.TypeId, 1),
             };
 
-            character.InventoryManager.AddItem(armorItem);
+            character.InventoryManager.AddItem(armorItem, "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             Assert.NotNull(armor);
@@ -359,7 +359,7 @@ namespace Imgeneus.World.Tests.GemLinkingTests
                 Gem1 = new Gem(definitionsPreloader.Object, Gem_Str_Level_7.TypeId, 0)
             };
 
-            character.InventoryManager.AddItem(armorItem);
+            character.InventoryManager.AddItem(armorItem, "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             Assert.NotNull(armor);
@@ -380,7 +380,7 @@ namespace Imgeneus.World.Tests.GemLinkingTests
             {
                 Gem1 = new Gem(definitionsPreloader.Object, Gem_Str_Level_1.TypeId, 0)
             };
-            character.InventoryManager.AddItem(armorItem);
+            character.InventoryManager.AddItem(armorItem, "");
             character.InventoryManager.MoveItem(1, 0, 0, 1);
             Assert.NotNull(character.InventoryManager.Armor);
             Assert.Equal(JustiaArmor.ConstStr + Gem_Str_Level_1.ConstStr, character.StatsManager.TotalStr);
@@ -400,7 +400,7 @@ namespace Imgeneus.World.Tests.GemLinkingTests
             {
                 Gem1 = new Gem(definitionsPreloader.Object, Gem_Str_Level_7.TypeId, 0)
             };
-            character.InventoryManager.AddItem(armorItem);
+            character.InventoryManager.AddItem(armorItem, "");
             character.InventoryManager.MoveItem(1, 0, 0, 1);
             Assert.NotNull(character.InventoryManager.Armor);
             Assert.Equal(JustiaArmor.ConstStr + Gem_Str_Level_7.ConstStr, character.StatsManager.TotalStr);
@@ -417,9 +417,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_4.Type, Gem_Absorption_Level_4.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_4.Type, Gem_Absorption_Level_4.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var hammer = character.InventoryManager.InventoryItems[(1, 1)];
@@ -441,9 +441,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_4.Type, Gem_Absorption_Level_4.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_4.Type, Gem_Absorption_Level_4.TypeId), "");
             character.InventoryManager.MoveItem(1, 0, 0, 1);
 
             Assert.NotNull(character.InventoryManager.Armor);
@@ -464,9 +464,9 @@ namespace Imgeneus.World.Tests.GemLinkingTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_4.Type, Gem_Absorption_Level_4.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_4.Type, Gem_Absorption_Level_4.TypeId), "");
 
             var armor = character.InventoryManager.InventoryItems[(1, 0)];
             var hammer = character.InventoryManager.InventoryItems[(1, 1)];
@@ -475,8 +475,8 @@ namespace Imgeneus.World.Tests.GemLinkingTests
             // Add lvl 4 gem.
             character.LinkingManager.AddGem(gem.Bag, gem.Slot, armor.Bag, armor.Slot, hammer.Bag, hammer.Slot);
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_5.Type, Gem_Absorption_Level_5.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, PerfectLinkingHammer.Type, PerfectLinkingHammer.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, Gem_Absorption_Level_5.Type, Gem_Absorption_Level_5.TypeId), "");
 
             // Add lvl 5 gem.
             character.LinkingManager.AddGem(gem.Bag, gem.Slot, armor.Bag, armor.Slot, hammer.Bag, hammer.Slot);

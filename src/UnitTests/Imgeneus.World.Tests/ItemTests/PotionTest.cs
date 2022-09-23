@@ -25,7 +25,7 @@ namespace Imgeneus.World.Tests.ItemTests
             character.HealthManager.DecreaseHP(90, character2);
             Assert.Equal(10, character.HealthManager.CurrentHP);
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, EtainPotion.Type, EtainPotion.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, EtainPotion.Type, EtainPotion.TypeId), "");
             character.InventoryManager.TryUseItem(1, 0);
 
             Assert.Equal(85, character.HealthManager.CurrentHP);
@@ -52,7 +52,7 @@ namespace Imgeneus.World.Tests.ItemTests
             character.HealthManager.DecreaseHP(90, character2);
             Assert.Equal(10, character.HealthManager.CurrentHP);
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId), "");
             character.InventoryManager.TryUseItem(1, 0);
 
             Assert.Equal(60, character.HealthManager.CurrentHP);
@@ -64,8 +64,8 @@ namespace Imgeneus.World.Tests.ItemTests
         {
             var character = CreateCharacter();
 
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, GreenApple.Type, GreenApple.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId), "");
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, GreenApple.Type, GreenApple.TypeId), "");
 
             // Can use green apple
             Assert.True(character.InventoryManager.CanUseItem(character.InventoryManager.InventoryItems[(1, 1)]));

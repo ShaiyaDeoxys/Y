@@ -12,7 +12,7 @@ namespace Imgeneus.Game.Tests.CharacterTests
         public void CurrentHPNotMoreThanMaxHPTest()
         {
             var character = CreateCharacter(testMap);
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, JustiaArmor.Type, JustiaArmor.TypeId), "");
             character.InventoryManager.MoveItem(1, 0, 0, 1);
 
             character.HealthManager.FullRecover();

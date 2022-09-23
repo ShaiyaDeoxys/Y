@@ -12,7 +12,7 @@ namespace Imgeneus.World.Tests.ItemTests
         public async Task ShouldGenerateAnotherItem()
         {
             var character = CreateCharacter();
-            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, BoxWithApples.Type, BoxWithApples.TypeId));
+            character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, BoxWithApples.Type, BoxWithApples.TypeId), "");
 
             var ok = await character.InventoryManager.TryUseItem(1, 0);
             Assert.True(ok);
@@ -29,10 +29,10 @@ namespace Imgeneus.World.Tests.ItemTests
 
             for (var i = 0; i < InventoryManager.MAX_BAG * InventoryManager.MAX_SLOT - 1; i++)
             {
-                character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId));
+                character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, RedApple.Type, RedApple.TypeId), "");
             }
 
-            var box = character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, BoxWithApples.Type, BoxWithApples.TypeId));
+            var box = character.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, BoxWithApples.Type, BoxWithApples.TypeId), "");
             Assert.NotNull(box);
 
             var ok = await character.InventoryManager.TryUseItem(box.Bag, box.Slot);

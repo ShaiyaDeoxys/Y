@@ -169,8 +169,8 @@ namespace Imgeneus.World.Tests.PartyTests
 
             for (int i = 0; i < 5 * 25; i++) // 5 bags, 24 slots per 1 bag.
             {
-                character1.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
-                character2.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId));
+                character1.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId), "");
+                character2.InventoryManager.AddItem(new Item(definitionsPreloader.Object, enchantConfig.Object, itemCreateConfig.Object, WaterArmor.Type, WaterArmor.TypeId), "");
             }
 
             var raid = new Raid(true, RaidDropType.Group, packetFactoryMock.Object);

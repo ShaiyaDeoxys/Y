@@ -152,7 +152,7 @@ namespace Imgeneus.World.Tests.QuestTests
             var ok = questsManager.TryFinishQuestSelect(0, SkillsAndStats.Id, 0);
             Assert.True(ok);
 
-            inventoryManager.Verify(x => x.AddItem(It.IsAny<Item>(), false), Times.Once());
+            inventoryManager.Verify(x => x.AddItem(It.IsAny<Item>(), "quest_finish", false), Times.Once());
         }
     }
 }
