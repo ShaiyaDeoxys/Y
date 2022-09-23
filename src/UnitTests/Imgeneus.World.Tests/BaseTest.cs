@@ -240,6 +240,7 @@ namespace Imgeneus.World.Tests
 
 
             character.Id = _characterId;
+            character.HealthManager.IncreaseHP(1);
 
             if (map != null)
                 map.LoadPlayer(character);

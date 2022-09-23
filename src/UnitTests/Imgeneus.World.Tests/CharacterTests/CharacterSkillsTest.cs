@@ -459,14 +459,15 @@ namespace Imgeneus.World.Tests.CharacterTests
             var priest = CreateCharacter();
             priest.StatsManager.TrySetStats(wis: 1);
 
-            Assert.Equal(0, character1.HealthManager.CurrentHP);
+            int startHP = 1;
+            Assert.Equal(startHP, character1.HealthManager.CurrentHP);
 
             var result = new AttackResult();
 
             priest.SkillsManager.OnUsedSkill += (uint senderId, IKillable target, Skill skill, AttackResult res) => result = res;
             priest.SkillsManager.UseSkill(new Skill(Healing, 0, 0), priest, character1);
 
-            Assert.Equal(54, character1.HealthManager.CurrentHP);
+            Assert.Equal(54 + startHP, character1.HealthManager.CurrentHP);
             Assert.Equal(AttackSuccess.Normal, result.Success);
             Assert.Equal(54, result.Damage.HP);
         }
@@ -1024,7 +1025,7 @@ namespace Imgeneus.World.Tests.CharacterTests
             Assert.True(character.SkillsManager.CanUseSkill(new Skill(HealthDrain, 0, 0), character2, out var _));
             character.SkillsManager.UseSkill(new Skill(HealthDrain, 0, 0), character, character2);
 
-            Assert.Equal(78, character.HealthManager.CurrentHP);
+            Assert.Equal(79, character.HealthManager.CurrentHP);
             Assert.Equal(32, character2.HealthManager.CurrentHP);
         }
 
