@@ -168,7 +168,17 @@ namespace Imgeneus.World.Game.Buffs
 
                 // Set up timer.
                 _resetTimer.Stop();
-                _resetTimer.Interval = _resetTime.Subtract(DateTime.UtcNow).TotalMilliseconds > int.MaxValue ? int.MaxValue : _resetTime.Subtract(DateTime.UtcNow).TotalMilliseconds;
+
+                var timeLeft = _resetTime.Subtract(DateTime.UtcNow).TotalMilliseconds;
+                if (timeLeft > int.MaxValue)
+                {
+                    timeLeft = int.MaxValue;
+                }
+                else if (timeLeft < 0)
+                {
+                    timeLeft = 1;
+                }
+                _resetTimer.Interval = timeLeft;
                 _resetTimer.Start();
             }
         }

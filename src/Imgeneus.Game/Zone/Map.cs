@@ -471,6 +471,9 @@ namespace Imgeneus.World.Game.Zone
         {
             sender.TimeToRebirth -= RebirthMob;
 
+            if (_isDisposed) // Map already disposed.
+                return;
+
             // Create mob clone, because we can not reuse the same id.
             var mob = sender.Clone();
 

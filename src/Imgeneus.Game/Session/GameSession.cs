@@ -79,7 +79,8 @@ namespace Imgeneus.World.Game.Session
 
         private void HealthManager_OnGotDamage(uint senderId, IKiller damageMaker, int damage)
         {
-            StopLogOff();
+            if (damageMaker != Character) // Berserker buff makes damage to himself.
+                StopLogOff();
         }
 
         private async void LogoutTimer_Elapsed(object sender, ElapsedEventArgs e)

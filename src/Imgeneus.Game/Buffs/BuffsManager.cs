@@ -266,12 +266,18 @@ namespace Imgeneus.World.Game.Buffs
                 return null;
 
             DateTime resetTime;
-            if (skill.KeepTime == 0 || skill.CanBeActivated)
+            if (skill.CanBeActivated || (skill.KeepTime == 0 && skill.IsPassive))
             {
-                resetTime = DateTime.UtcNow.AddDays(10);
+                resetTime = DateTime.UtcNow.AddDays(100);
             }
             else
             {
+                if (skill.KeepTime == 0 && !skill.IsPassive)
+                {
+                    _logger.LogWarning("Buff {skill.SkillId} {skill.SkillLevel} has 0 keep time. Please, check.", skill.SkillId, skill.SkillLevel);
+                    return null;
+                }
+
                 switch (skill.Duration)
                 {
                     case Duration.DurationInMinutes:
