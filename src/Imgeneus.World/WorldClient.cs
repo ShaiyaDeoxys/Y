@@ -65,28 +65,24 @@ namespace Imgeneus.World
         {
             var x = _scope.ServiceProvider;
 
-            var tasks = new List<Task>();
-
-            tasks.Add(x.GetService<IStatsManager>().Clear());
-            tasks.Add(x.GetService<IInventoryManager>().Clear());
-            tasks.Add(x.GetService<ISkillsManager>().Clear());
-            tasks.Add(x.GetService<IBuffsManager>().Clear());
-            tasks.Add(x.GetService<IKillsManager>().Clear());
-            tasks.Add(x.GetService<ITeleportationManager>().Clear());
-            tasks.Add(x.GetService<IHealthManager>().Clear());
-            tasks.Add(x.GetService<IPartyManager>().Clear());
-            tasks.Add(x.GetService<ITradeManager>().Clear());
-            tasks.Add(x.GetService<IDuelManager>().Clear());
-            tasks.Add(x.GetService<ILevelingManager>().Clear());
-            tasks.Add(x.GetService<IGuildManager>().Clear());
-            tasks.Add(x.GetService<IQuestsManager>().Clear());
-            tasks.Add(x.GetService<IAdditionalInfoManager>().Clear());
-            tasks.Add(x.GetService<IBankManager>().Clear());
-            tasks.Add(x.GetService<IWarehouseManager>().Clear());
-            tasks.Add(x.GetService<IShopManager>().Clear());
-            tasks.Add(x.GetService<IMovementManager>().Clear());
-
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await x.GetService<IStatsManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IInventoryManager>().Clear().ConfigureAwait(false);
+            await x.GetService<ISkillsManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IBuffsManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IKillsManager>().Clear().ConfigureAwait(false);
+            await x.GetService<ITeleportationManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IHealthManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IPartyManager>().Clear().ConfigureAwait(false);
+            await x.GetService<ITradeManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IDuelManager>().Clear().ConfigureAwait(false);
+            await x.GetService<ILevelingManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IGuildManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IQuestsManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IAdditionalInfoManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IBankManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IWarehouseManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IShopManager>().Clear().ConfigureAwait(false);
+            await x.GetService<IMovementManager>().Clear().ConfigureAwait(false);
 
             if (quitGame)
                 base.OnDisconnected();
