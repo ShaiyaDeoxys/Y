@@ -130,7 +130,7 @@ namespace Imgeneus.World.Game.Health
 
         public void DecreaseHP(int hp, IKiller damageMaker)
         {
-            if (hp == 0)
+            if (hp == 0 || CurrentHP == 0)
                 return;
 
             _logger.LogDebug("HealthManager {hashcode} got damage {damage}", GetHashCode(), hp);

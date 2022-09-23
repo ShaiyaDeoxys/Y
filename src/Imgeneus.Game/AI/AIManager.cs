@@ -433,17 +433,11 @@ namespace Imgeneus.World.Game.AI
                 case MobAI.Combative:
                 case MobAI.Peaceful:
                 case MobAI.Guard:
+                case MobAI.Relic:
                     if (_chaseSpeed > 0)
                         State = AIState.Chase;
                     else
                         if (_attackManager.Target != null && MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ) <= _chaseRange)
-                        State = AIState.ReadyToAttack;
-                    else
-                        State = AIState.Idle;
-                    break;
-
-                case MobAI.Relic:
-                    if (_attackManager.Target != null && MathExtensions.Distance(_movementManager.PosX, _attackManager.Target.MovementManager.PosX, _movementManager.PosZ, _attackManager.Target.MovementManager.PosZ) <= _chaseRange)
                         State = AIState.ReadyToAttack;
                     else
                         State = AIState.Idle;

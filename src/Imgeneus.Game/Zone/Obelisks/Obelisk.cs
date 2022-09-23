@@ -212,20 +212,23 @@ namespace Imgeneus.World.Game.Zone.Obelisks
         {
             foreach (var mob in _config.Mobs)
             {
-                ushort guardId = 0;
-                if (ObeliskCountry == ObeliskCountry.None)
-                    guardId = mob.NeutralMobId;
-                else if (ObeliskCountry == ObeliskCountry.Light)
-                    guardId = mob.LightMobId;
-                else if (ObeliskCountry == ObeliskCountry.Dark)
-                    guardId = mob.DarkMobId;
+                for (var i = 0; i < mob.Count; i++)
+                {
+                    ushort guardId = 0;
+                    if (ObeliskCountry == ObeliskCountry.None)
+                        guardId = mob.NeutralMobId;
+                    else if (ObeliskCountry == ObeliskCountry.Light)
+                        guardId = mob.LightMobId;
+                    else if (ObeliskCountry == ObeliskCountry.Dark)
+                        guardId = mob.DarkMobId;
 
-                var guardAI = _mobFactory.CreateMob(guardId,
-                                      false,
-                                      new MoveArea(mob.PosX, mob.PosX, mob.PosY, mob.PosY, mob.PosZ, mob.PosZ));
-                Map.AddMob(guardAI);
-                Guards.Add(guardAI);
-                guardAI.HealthManager.OnDead += Guard_OnDead;
+                    var guardAI = _mobFactory.CreateMob(guardId,
+                                          false,
+                                          new MoveArea(mob.PosX, mob.PosX, mob.PosY, mob.PosY, mob.PosZ, mob.PosZ));
+                    Map.AddMob(guardAI);
+                    Guards.Add(guardAI);
+                    guardAI.HealthManager.OnDead += Guard_OnDead;
+                }
             }
         }
 

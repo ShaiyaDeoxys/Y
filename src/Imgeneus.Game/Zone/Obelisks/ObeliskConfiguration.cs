@@ -9,7 +9,7 @@ namespace Imgeneus.World.Game.Zone.Obelisks
 
     public class MapObeliskConfiguration
     {
-        public ushort MapId;
+        public ushort MapId { get; set; }
 
         public IEnumerable<ObeliskConfiguration> Obelisks { get; set; }
     }

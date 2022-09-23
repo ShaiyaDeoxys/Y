@@ -216,10 +216,19 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && target.CountryProvider.Country == _countryProvider.Country && (target is Character && ((Character)target).DuelManager.OpponentId != _ownerId))
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && target.CountryProvider.Country == _countryProvider.Country)
             {
-                success = AttackSuccess.WrongTarget;
-                return false;
+                if (target is Character && ((Character)target).DuelManager.OpponentId != _ownerId)
+                {
+                    success = AttackSuccess.WrongTarget;
+                    return false;
+                }
+
+                if (target is Mob)
+                {
+                    success = AttackSuccess.WrongTarget;
+                    return false;
+                }
             }
 
             if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && !_speedManager.IsAbleToPhysicalAttack)
@@ -228,7 +237,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ) > WeaponAttackRange + 1 + ExtraAttackRange)
+            if (skillNumber == IAttackManager.AUTO_ATTACK_NUMBER && MathExtensions.Distance(_movementManager.PosX, target.MovementManager.PosX, _movementManager.PosZ, target.MovementManager.PosZ) > WeaponAttackRange + 4 + ExtraAttackRange)
             {
                 success = AttackSuccess.InsufficientRange;
                 return false;
