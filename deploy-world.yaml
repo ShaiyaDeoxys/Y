@@ -49,6 +49,8 @@ properties:
         value: ImgeneusDev
       - name: WorldServer__Host
         value: 20.157.223.73
+       - name: WorldServer__LogsStorageConnectionString
+        value: #{logsStorageConnectionString}#
 
       - name: Logging__LogLevel__Default
         value: Trace
