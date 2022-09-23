@@ -272,11 +272,14 @@ namespace Imgeneus.World.Game.Buffs
             }
             else
             {
-                if (skill.KeepTime == 0 && !skill.IsPassive)
-                {
-                    _logger.LogWarning("Buff {skill.SkillId} {skill.SkillLevel} has 0 keep time. Please, check.", skill.SkillId, skill.SkillLevel);
-                    return null;
-                }
+                if (skill.KeepTime == 0 && skill.Type == TypeDetail.DungeonMapScroll)
+                    resetTime = DateTime.UtcNow.AddHours(1);
+                else
+                    if (skill.KeepTime == 0 && !skill.IsPassive)
+                    {
+                        _logger.LogWarning("Buff {skill.SkillId} {skill.SkillLevel} has 0 keep time. Please, check.", skill.SkillId, skill.SkillLevel);
+                        return null;
+                    }
 
                 switch (skill.Duration)
                 {
