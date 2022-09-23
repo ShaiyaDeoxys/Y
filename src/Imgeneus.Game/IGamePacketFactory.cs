@@ -146,6 +146,7 @@ namespace Imgeneus.World.Packets
         #region Composition
         void SendComposition(IWorldClient client, bool ok, Item item);
         void SendAbsoluteComposition(IWorldClient client, bool ok, Item item);
+        void SendRuneSynthesize(IWorldClient client, bool success, Item rune);
         #endregion
 
         #region Dyeing

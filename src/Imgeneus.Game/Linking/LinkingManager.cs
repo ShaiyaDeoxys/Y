@@ -879,6 +879,33 @@ namespace Imgeneus.World.Game.Linking
             return (true, itemClone);
         }
 
+        public (bool Success, Item PerfectRune) TryRuneSynthesize(byte runeBag, byte runeSlot, byte vialBag, byte vialSlot)
+        {
+            if (_inventoryManager.IsFull)
+                return (false, null);
+
+            _inventoryManager.InventoryItems.TryGetValue((runeBag, runeSlot), out var rune);
+            if (rune is null || rune.Special != SpecialEffect.RecreationRune || rune.Count < 2)
+                return (false, null);
+
+            _inventoryManager.InventoryItems.TryGetValue((vialBag, vialSlot), out var vial);
+            if (vial is null || (vial.Special != SpecialEffect.RecreationRune_Vial_STR &&
+                                 vial.Special != SpecialEffect.RecreationRune_Vial_DEX &&
+                                 vial.Special != SpecialEffect.RecreationRune_Vial_INT &&
+                                 vial.Special != SpecialEffect.RecreationRune_Vial_REC &&
+                                 vial.Special != SpecialEffect.RecreationRune_Vial_WIS &&
+                                 vial.Special != SpecialEffect.RecreationRune_Vial_LUC))
+                return (false, null);
+
+            _inventoryManager.TryUseItem(rune.Bag, rune.Slot, skipApplyingItemEffect: true, count: 2);
+            _inventoryManager.TryUseItem(vial.Bag, vial.Slot, skipApplyingItemEffect: true);
+
+            var perfectRune = new Item(_definitionsPreloader, _itemEnchantConfig, _itemCreateConfig, 101, (byte)(vial.Special - 92));
+            _inventoryManager.AddItem(perfectRune, "rune_synthesize");
+
+            return (true, perfectRune);
+        }
+
         #endregion
 
         #region Enchantment

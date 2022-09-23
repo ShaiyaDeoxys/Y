@@ -63,5 +63,10 @@ namespace Imgeneus.World.Game.Linking
         /// Tries to enchant item.
         /// </summary>
         (bool Success, Item Item, Item Lapisia, bool SafetyScrollLeft) TryEnchant(byte bag, byte slot, byte lapisiaBag, byte lapisiaSlot);
+
+        /// <summary>
+        /// Tries to create perfect rune from normal rune + vial.
+        /// </summary>
+        (bool Success, Item PerfectRune) TryRuneSynthesize(byte runeBag, byte runeSlot, byte vialBag, byte vialSlot);
     }
 }

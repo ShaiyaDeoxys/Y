@@ -1009,6 +1009,13 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
+        public void SendRuneSynthesize(IWorldClient client, bool ok, Item rune)
+        {
+            using var packet = new ImgeneusPacket(PacketType.RUNE_SYNTHESIZE);
+            packet.Write(ok ? (byte)0 : (byte)1);
+            client.Send(packet);
+        }
+
 
         #endregion
 
