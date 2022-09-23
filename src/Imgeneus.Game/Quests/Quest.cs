@@ -19,7 +19,11 @@ namespace Imgeneus.World.Game.Quests
             if (dbCharacterQuest.Delay > 0)
             {
                 _endTime = DateTime.UtcNow.AddMinutes(dbCharacterQuest.Delay);
-                _endTimer.Interval = dbCharacterQuest.Delay * 60 * 1000;
+
+                var interval = dbCharacterQuest.Delay * 60 * 1000;
+                if (interval < 0)
+                    interval = 10000;
+                _endTimer.Interval = interval;
                 _endTimer.Start();
             }
             CountMob1 = dbCharacterQuest.Count1;

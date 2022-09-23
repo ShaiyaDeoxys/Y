@@ -94,6 +94,12 @@ namespace Imgeneus.GameDefinitions
                     continue;
                 }
 
+                if (Skills.ContainsKey(((ushort)skill.Id, (byte)skill.SkillLevel)))
+                {
+                    _logger.LogWarning("Skill {id} level {level} already added", skill.Id, skill.SkillLevel);
+                    continue;
+                }
+
                 Skills.Add(((ushort)skill.Id, (byte)skill.SkillLevel), new DbSkill(skill));
             }
 
@@ -176,7 +182,7 @@ namespace Imgeneus.GameDefinitions
         {
             var mobs = Reader.ReadFromFile<DBMonsterData>("config/SData/DBMonsterData.SData", Episode.EP8);
 
-            foreach(var record in mobs.Records)
+            foreach (var record in mobs.Records)
             {
                 var dbMob = new DbMob(record);
                 Mobs.Add(dbMob.Id, dbMob);
