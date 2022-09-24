@@ -942,7 +942,7 @@ namespace Imgeneus.World.Game.Linking
         public (bool Success, Item Item, Item Lapisia, bool SafetyScrollLeft) TryEnchant(byte bag, byte slot, byte lapisiaBag, byte lapisiaSlot)
         {
             _inventoryManager.InventoryItems.TryGetValue((lapisiaBag, lapisiaSlot), out var lapisia);
-            if (lapisia is null || lapisia.Special != SpecialEffect.Lapisia)
+            if (lapisia is null || (lapisia.Special != SpecialEffect.Lapisia && lapisia.Type != 95))
                 return (false, null, null, false);
 
             _inventoryManager.InventoryItems.TryGetValue((bag, slot), out var item);
