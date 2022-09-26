@@ -62,6 +62,11 @@ namespace Imgeneus.Login
             })
                 .AddRoles<DbRole>()
                 .AddEntityFrameworkStores<UsersContext>();
+
+            services.AddCors(p => p.AddPolicy("corsapp", builder =>
+            {
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            }));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoginServer loginServer, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, IConfiguration configuration, IUsersDatabase mainDb, RoleManager<DbRole> roleManager)
@@ -82,7 +87,7 @@ namespace Imgeneus.Login
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseCors("corsapp");
             app.UseAuthentication();
             app.UseAuthorization();
 
