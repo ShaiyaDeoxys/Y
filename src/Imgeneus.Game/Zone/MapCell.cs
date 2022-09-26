@@ -309,7 +309,10 @@ namespace Imgeneus.World.Game.Zone
         private void Character_OnEquipmentChanged(uint characterId, Item equipmentItem, byte slot)
         {
             foreach (var player in GetAllPlayers(true))
+            {
+                Map.PacketFactory.SendCharacterChangedEquipment(player.GameSession.Client, characterId, null, slot); // Fix for equipment enchantment animation.
                 Map.PacketFactory.SendCharacterChangedEquipment(player.GameSession.Client, characterId, equipmentItem, slot);
+            }
         }
 
         /// <summary>

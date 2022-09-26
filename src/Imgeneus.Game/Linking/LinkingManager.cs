@@ -1044,6 +1044,8 @@ namespace Imgeneus.World.Game.Linking
                         _statsManager.Absorption -= (ushort)_itemEnchantConfig.LapisianEnchantAddValue[$"DefenseStep{oldSuffix}"];
                         _statsManager.Absorption += (ushort)_itemEnchantConfig.LapisianEnchantAddValue[$"DefenseStep{suffix}"];
                     }
+
+                    _inventoryManager.RaiseEquipmentChanged(item.Slot);
                 }
             }
 
