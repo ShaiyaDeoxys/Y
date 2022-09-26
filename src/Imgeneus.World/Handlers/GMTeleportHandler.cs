@@ -106,7 +106,7 @@ namespace Imgeneus.World.Handlers
                 if (player.Map is IGuildMap)
                     _guildManager.GuildId = player.GuildManager.GuildId;
 
-                _teleportationManager.Teleport(player.Map.Id, player.PosX, player.PosY, player.PosZ);
+                _teleportationManager.Teleport(player.Map.Id, player.PosX, player.PosY, player.PosZ, true);
 
                 _packetFactory.SendGmCommandSuccess(client);
                 _packetFactory.SendGmTeleportToPlayer(client, player);
