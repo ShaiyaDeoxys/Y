@@ -133,7 +133,7 @@ namespace Imgeneus.World.Game.Health
             if (hp == 0 || CurrentHP == 0)
                 return;
 
-            _logger.LogDebug("HealthManager {hashcode} got damage {damage}", GetHashCode(), hp);
+            //_logger.LogDebug("HealthManager {hashcode} got damage {damage}", GetHashCode(), hp);
 
             if (damageMaker is not null)
             {
@@ -418,7 +418,7 @@ namespace Imgeneus.World.Game.Health
 
                 if (_isDead)
                 {
-                    _logger.LogDebug("HealthManager {hashcode} is dead", GetHashCode());
+                    //_logger.LogDebug("HealthManager {hashcode} is dead", GetHashCode());
 
                     var killer = MaxDamageMaker;
                     OnDead?.Invoke(_ownerId, killer);
