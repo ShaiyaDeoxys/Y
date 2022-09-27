@@ -57,7 +57,8 @@ namespace Imgeneus.Game.Skills
             Type != TypeDetail.DamageReflection &&
             Type != TypeDetail.PersistBarrier &&
             Type != TypeDetail.Provoke &&
-            Type != TypeDetail.DungeonMapScroll;
+            Type != TypeDetail.DungeonMapScroll &&
+            Type != TypeDetail.AbilityExchange;
 
         /// <summary>
         /// Skill type.

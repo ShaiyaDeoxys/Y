@@ -658,6 +658,13 @@ namespace Imgeneus.World.Game.Buffs
                     buff.StartDeathThouchTimer();
                     break;
 
+                case TypeDetail.AbilityExchange:
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, false, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, true, buff, skill);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
+                    break;
+
                 case TypeDetail.Provoke:
                     break;
 
@@ -901,10 +908,20 @@ namespace Imgeneus.World.Game.Buffs
                     buff.OnDeathTouch -= Buff_OnDeathTouch;
                     break;
 
+                case TypeDetail.AbilityExchange:
+                    ApplyAbility(skill.AbilityType1, skill.AbilityValue1, true, buff, skill);
+                    ApplyAbility(skill.AbilityType2, skill.AbilityValue2, false, buff, skill);
+
+                    _statsManager.RaiseAdditionalStatsUpdate();
+                    break;
+
                 case TypeDetail.Provoke:
                     break;
 
                 case TypeDetail.DungeonMapScroll:
+                    break;
+
+                case TypeDetail.EnergyBlackhole:
                     break;
 
                 default:
