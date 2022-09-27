@@ -5,7 +5,7 @@ namespace Imgeneus.World.Game.Kills
 {
     public interface IKillsManager : ISessionedService, IDisposable
     {
-        void Init(uint ownerId, uint kills = 0, uint deaths = 0, uint victories = 0, uint defeats = 0, byte killLevel = 0, byte deathLevel = 0);
+        void Init(uint ownerId, uint kills = 0, uint deaths = 0, uint victories = 0, uint defeats = 0, byte killLevel = 1, byte deathLevel = 1);
 
         /// <summary>
         /// Event is fired, when number of kills changes.

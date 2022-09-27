@@ -236,7 +236,7 @@ namespace Imgeneus.Database.Entities
         /// Gets or sets the character creation time.
         /// </summary>
         [Column(TypeName = "DATETIME")]
-        public DateTime CreateTime { get; private set; }
+        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the character delete time.

@@ -134,6 +134,9 @@ namespace Imgeneus.World.SelectionScreen
                 HealthPoints = 1000,
                 ManaPoints = 1000,
                 StaminaPoints = 1000,
+                KillLevel = 1,
+                DeathLevel = 1,
+                CreateTime = DateTime.UtcNow
             };
 
             var result = await _database.Characters.AddAsync(character);

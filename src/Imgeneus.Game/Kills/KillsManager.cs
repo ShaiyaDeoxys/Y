@@ -57,7 +57,7 @@ namespace Imgeneus.World.Game.Kills
 
         #region Init & Clear
 
-        public void Init(uint ownerId, uint kills = 0, uint deaths = 0, uint victories = 0, uint defeats = 0, byte killLevel = 0, byte deathLevel = 0)
+        public void Init(uint ownerId, uint kills = 0, uint deaths = 0, uint victories = 0, uint defeats = 0, byte killLevel = 1, byte deathLevel = 1)
         {
             _ownerId = ownerId;
 
