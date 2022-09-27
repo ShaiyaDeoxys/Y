@@ -216,7 +216,7 @@ namespace Imgeneus.World
             {
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapFallbackToPage("/Error");
                 endpoints.MapHub<MonitoringHub>(MonitoringHub.HubUrl);
             });
 
