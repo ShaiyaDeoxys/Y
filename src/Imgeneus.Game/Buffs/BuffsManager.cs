@@ -664,6 +664,9 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.DungeonMapScroll:
                     break;
 
+                case TypeDetail.EnergyBlackhole:
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;

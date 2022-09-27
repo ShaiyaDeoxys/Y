@@ -65,13 +65,14 @@ namespace Imgeneus.World
         {
             var x = _scope.ServiceProvider;
 
+            // Pay attention! Health should be saved before inventory.
+            await x.GetService<IHealthManager>().Clear().ConfigureAwait(false);
             await x.GetService<IStatsManager>().Clear().ConfigureAwait(false);
             await x.GetService<IInventoryManager>().Clear().ConfigureAwait(false);
             await x.GetService<ISkillsManager>().Clear().ConfigureAwait(false);
             await x.GetService<IBuffsManager>().Clear().ConfigureAwait(false);
             await x.GetService<IKillsManager>().Clear().ConfigureAwait(false);
             await x.GetService<ITeleportationManager>().Clear().ConfigureAwait(false);
-            await x.GetService<IHealthManager>().Clear().ConfigureAwait(false);
             await x.GetService<IPartyManager>().Clear().ConfigureAwait(false);
             await x.GetService<ITradeManager>().Clear().ConfigureAwait(false);
             await x.GetService<IDuelManager>().Clear().ConfigureAwait(false);
