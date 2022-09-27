@@ -1235,7 +1235,7 @@ namespace Imgeneus.World.Game.AI
         {
             if (!_healthManager.IsDead)
             {
-                if (damageMaker is Character character)
+                if (damageMaker is Character character && character.HealthManager.IsAttackable)
                 {
                     if (!Agro.ContainsKey(character.Id))
                         Agro.TryAdd(character.Id, 0);
