@@ -323,7 +323,7 @@ namespace Imgeneus.World.Game.Attack
                 return false;
             }
 
-            if (skill != null && (skill.StateType == StateType.FlatDamage || skill.StateType == StateType.DeathTouch))
+            if (skill != null && (skill.StateType == StateType.FlatDamage || skill.StateType == StateType.DeathTouch || skill.Type == TypeDetail.ElementalAttack || skill.Type == TypeDetail.ElementalProtection))
                 return true;
 
             if (skill != null && skill.UseSuccessValue)
