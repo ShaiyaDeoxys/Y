@@ -958,7 +958,7 @@ namespace Imgeneus.World.Game.Zone
         /// Tries to get item from map cell.
         /// </summary>
         /// <returns>if item is null, means that item doesn't belong to player yet</returns>
-        public MapItem GetItem(uint itemId, Character requester, bool includeNeighborCells)
+        public (MapItem Item, bool notOnMap) GetItem(uint itemId, Character requester, bool includeNeighborCells)
         {
             _semaphore.Wait();
 
@@ -968,26 +968,29 @@ namespace Imgeneus.World.Game.Zone
                 if (mapItem.Owner == null || mapItem.Owner == requester)
                 {
                     _semaphore.Release();
-                    return mapItem;
+                    return (mapItem, false);
                 }
                 else
                 {
                     _semaphore.Release();
-                    return null;
+                    return (null, false);
                 }
             }
             else // Maybe item is in neighbor cell?
             {
+                var notOnMap = true;
                 if (includeNeighborCells)
                     foreach (var cellId in NeighborCells)
                     {
-                        mapItem = Map.Cells[cellId].GetItem(itemId, requester, false);
+                        var res = Map.Cells[cellId].GetItem(itemId, requester, false);
+                        mapItem = res.Item;
+                        notOnMap = res.notOnMap;
                         if (mapItem != null)
                             break;
                     }
 
                 _semaphore.Release();
-                return mapItem;
+                return (mapItem, notOnMap);
             }
         }
 

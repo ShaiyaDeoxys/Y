@@ -27,29 +27,32 @@ namespace Imgeneus.World.Handlers
             lock (_syncObject)
             {
                 var player = _gameWorld.Players[_gameSession.Character.Id];
-                var mapItem = player.Map.GetItem(packet.ItemId, player);
-                if (mapItem is null)
+                var res = player.Map.GetItem(packet.ItemId, player);
+                if (res.notOnMap)
+                    return;
+
+                if (res.Item is null)
                 {
                     _packetFactory.SendItemDoesNotBelong(client);
                     return;
                 }
 
-                if (mapItem.Item.Type == Item.MONEY_ITEM_TYPE)
+                if (res.Item.Item.Type == Item.MONEY_ITEM_TYPE)
                 {
-                    player.Map.RemoveItem(player.CellId, mapItem.Id);
-                    player.InventoryManager.Gold += (uint)mapItem.Item.Gold;
-                    _packetFactory.SendAddItem(client, mapItem.Item);
+                    player.Map.RemoveItem(player.CellId, res.Item.Id);
+                    player.InventoryManager.Gold += (uint)res.Item.Item.Gold;
+                    _packetFactory.SendAddItem(client, res.Item.Item);
                 }
                 else
                 {
-                    var inventoryItem = _inventoryManager.AddItem(mapItem.Item, "drop_from_map");
+                    var inventoryItem = _inventoryManager.AddItem(res.Item.Item, "drop_from_map");
                     if (inventoryItem is null)
                     {
                         _packetFactory.SendFullInventory(client);
                     }
                     else
                     {
-                        player.Map.RemoveItem(player.CellId, mapItem.Id);
+                        player.Map.RemoveItem(player.CellId, res.Item.Id);
 
                         if (player.PartyManager.Party != null)
                             player.PartyManager.Party.MemberGetItem(player, inventoryItem);

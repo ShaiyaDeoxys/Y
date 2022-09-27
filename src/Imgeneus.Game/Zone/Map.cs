@@ -605,7 +605,7 @@ namespace Imgeneus.World.Game.Zone
         /// Tries to get item from map.
         /// </summary>
         /// <returns>if item is null, means that item doesn't belong to player yet</returns>
-        public MapItem GetItem(uint itemId, Character requester)
+        public (MapItem Item, bool notOnMap) GetItem(uint itemId, Character requester)
         {
             lock (_syncAddRemoveItem)
             {
