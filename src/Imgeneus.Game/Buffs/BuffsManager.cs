@@ -674,6 +674,9 @@ namespace Imgeneus.World.Game.Buffs
                 case TypeDetail.EnergyBlackhole:
                     break;
 
+                case TypeDetail.Interpretation:
+                    break;
+
                 default:
                     _logger.LogError("Not implemented buff skill type {skillType}.", skill.TypeDetail);
                     break;
@@ -922,6 +925,9 @@ namespace Imgeneus.World.Game.Buffs
                     break;
 
                 case TypeDetail.EnergyBlackhole:
+                    break;
+
+                case TypeDetail.Interpretation:
                     break;
 
                 default:

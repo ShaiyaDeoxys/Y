@@ -450,5 +450,8 @@
         KILLSTATUS_RESULT_INFO = 0x0218, // 536
         KILLS_GET_REWARD = 0x0219, // 537
         DEATHS_GET_REWARD = 0x021A, // 538
+
+        // Infinite sanctuary
+        INFINITE_SANCTUARY = 0x0234 // 564
     }
 }
