@@ -182,7 +182,7 @@ namespace Imgeneus.World.Game.Kills
                 return (false, 0);
 
             var freeStats = _killsStat[KillLevel];
-            _statsManager.TrySetStats(statPoints: freeStats);
+            _statsManager.TrySetStats(statPoints: (ushort)(_statsManager.StatPoint + freeStats));
             KillLevel++;
 
             return (true, freeStats);
