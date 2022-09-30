@@ -8,10 +8,10 @@ using Imgeneus.World.Game.PartyAndRaid;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Time;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Parsec.Shaiya.NpcQuest;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,28 +21,28 @@ namespace Imgeneus.World.Game.Guild
     public class GuildManager : IGuildManager
     {
         private readonly ILogger<IGuildManager> _logger;
-        private readonly IDatabase _database;
         private readonly IGameWorld _gameWorld;
         private readonly ITimeService _timeService;
         private readonly IInventoryManager _inventoryManager;
         private readonly IPartyManager _partyManager;
         private readonly ICountryProvider _countryProvider;
         private readonly IEtinManager _etinManager;
+        private readonly IServiceProvider _serviceProvider;
         private uint _ownerId;
 
         private readonly IGuildConfiguration _config;
         private readonly IGuildHouseConfiguration _houseConfig;
 
-        public GuildManager(ILogger<IGuildManager> logger, IGuildConfiguration config, IGuildHouseConfiguration houseConfig, IDatabase database, IGameWorld gameWorld, ITimeService timeService, IInventoryManager inventoryManager, IPartyManager partyManager, ICountryProvider countryProvider, IEtinManager etinManager)
+        public GuildManager(ILogger<IGuildManager> logger, IGuildConfiguration config, IGuildHouseConfiguration houseConfig, IGameWorld gameWorld, ITimeService timeService, IInventoryManager inventoryManager, IPartyManager partyManager, ICountryProvider countryProvider, IEtinManager etinManager, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _database = database;
             _gameWorld = gameWorld;
             _timeService = timeService;
             _inventoryManager = inventoryManager;
             _partyManager = partyManager;
             _countryProvider = countryProvider;
             _etinManager = etinManager;
+            _serviceProvider = serviceProvider;
             _config = config;
             _houseConfig = houseConfig;
 #if DEBUG
@@ -77,18 +77,16 @@ namespace Imgeneus.World.Game.Guild
         public Task Clear()
         {
             NotifyGuildMembersOffline();
-            GuildId = 0;
-            GuildName = string.Empty;
-            GuildMemberRank = 0;
+            SetGuildInfo(0, string.Empty, 0);
             GuildMembers.Clear();
             return Task.CompletedTask;
         }
 
-        public uint GuildId { get; set; }
+        public uint GuildId { get; private set; }
 
         public bool HasGuild { get => GuildId != 0; }
 
-        public string GuildName { get; set; } = string.Empty;
+        public string GuildName { get; private set; } = string.Empty;
 
         public byte GuildMemberRank { get; set; }
 
@@ -106,6 +104,16 @@ namespace Imgeneus.World.Game.Guild
                 return GuildRank <= 30;
             }
         }
+
+        public void SetGuildInfo(uint guildId, string name, byte memberRank)
+        {
+            GuildId = guildId;
+            GuildName = name;
+            GuildMemberRank = memberRank;
+            OnGuildInfoChanged?.Invoke(_ownerId);
+        }
+
+        public event Action<uint> OnGuildInfoChanged;
 
         public List<DbCharacter> GuildMembers { get; init; } = new List<DbCharacter>();
 
@@ -215,7 +223,9 @@ namespace Imgeneus.World.Game.Guild
         /// <returns>true is penalty</returns>
         private async Task<bool> CheckPenalty(uint characterId)
         {
-            var character = await _database.Characters.FindAsync(characterId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var character = await database.Characters.FindAsync(characterId);
             if (character is null)
                 return true;
 
@@ -249,17 +259,20 @@ namespace Imgeneus.World.Game.Guild
 
         public async Task<DbGuild> TryCreateGuild(string name, string message, uint masterId)
         {
-            var guild = new DbGuild(name, message, masterId, _countryProvider.Country == Country.CountryType.Light ? Fraction.Light : Fraction.Dark);
+            var database = _serviceProvider.GetService<IDatabase>();
 
-            _database.Guilds.Add(guild);
+            var guild = new DbGuild(name, message, masterId, _countryProvider.Country == CountryType.Light ? Fraction.Light : Fraction.Dark);
+            database.Guilds.Add(guild);
 
-            var result = await _database.SaveChangesAsync();
+            var result = await database.SaveChangesAsync();
 
             if (result > 0)
             {
                 var guildCreator = _gameWorld.Players[masterId];
                 guildCreator.InventoryManager.Gold -= _config.MinGold;
                 guildCreator.SendGoldUpdate();
+
+                guild.Master = await database.Characters.FindAsync(masterId);
 
                 return guild;
             }
@@ -276,7 +289,9 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("Guild can not be deleted, if guild manager is not initialized.");
 
-            var guild = await _database.Guilds.Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.AsNoTracking().Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == GuildId);
             if (guild is null)
                 return false;
 
@@ -286,9 +301,9 @@ namespace Imgeneus.World.Game.Guild
                 m.GuildRank = 0;
             }
 
-            _database.Guilds.Remove(guild);
+            database.Guilds.Remove(guild);
 
-            var result = await _database.SaveChangesAsync();
+            var result = await database.SaveChangesAsync();
             return result > 0;
         }
 
@@ -301,11 +316,13 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("Member can not be added to guild, if guild manager is not initialized.");
 
-            var guild = await _database.Guilds.FindAsync(GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.FindAsync(GuildId);
             if (guild is null)
                 return null;
 
-            var character = await _database.Characters.FindAsync(characterId);
+            var character = await database.Characters.FindAsync(characterId);
             if (character is null)
                 return null;
 
@@ -313,7 +330,7 @@ namespace Imgeneus.World.Game.Guild
             character.GuildRank = rank;
             character.GuildJoinTime = _timeService.UtcNow;
 
-            var result = await _database.SaveChangesAsync();
+            var result = await database.SaveChangesAsync();
             if (result > 0)
                 return character;
             else
@@ -325,20 +342,21 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("Member can not be removed from guild, if guild manager is not initialized.");
 
-            var guild = await _database.Guilds.FindAsync(GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.FindAsync(GuildId);
             if (guild is null)
                 return false;
 
-            var character = await _database.Characters.FindAsync(characterId);
+            var character = await database.Characters.FindAsync(characterId);
             if (character is null)
                 return false;
 
-            guild.Members.Remove(character);
             character.GuildId = null;
             character.GuildRank = 0;
             character.GuildLeaveTime = _timeService.UtcNow;
 
-            var result = await _database.SaveChangesAsync();
+            var result = await database.SaveChangesAsync();
             return result > 0;
         }
 
@@ -348,16 +366,20 @@ namespace Imgeneus.World.Game.Guild
 
         public Task<DbGuild[]> GetAllGuilds(Fraction country = Fraction.NotSelected)
         {
-            if (country == Fraction.NotSelected)
-                return _database.Guilds.Include(g => g.Master).ToArrayAsync();
+            var database = _serviceProvider.GetService<IDatabase>();
 
-            return _database.Guilds.Include(g => g.Master).Where(g => g.Country == country).ToArrayAsync();
+            if (country == Fraction.NotSelected)
+                return database.Guilds.Include(g => g.Master).ToArrayAsync();
+
+            return database.Guilds.Include(g => g.Master).Where(g => g.Country == country).ToArrayAsync();
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DbCharacter>> GetMemebers(int guildId)
+        public async Task<ICollection<DbCharacter>> GetMemebers(uint guildId)
         {
-            var guild = await _database.Guilds.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == guildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == guildId);
             if (guild is null)
                 return new List<DbCharacter>();
 
@@ -367,12 +389,14 @@ namespace Imgeneus.World.Game.Guild
         /// <inheritdoc/>
         public void ReloadGuildRanks(IEnumerable<(uint GuildId, int Points, byte Rank)> results)
         {
+            var database = _serviceProvider.GetService<IDatabase>();
+
             foreach (var res in results)
             {
                 if (res.GuildId == GuildId)
                     GuildRank = res.Rank;
 
-                var guild = _database.Guilds.Find(res.GuildId);
+                var guild = database.Guilds.Find(res.GuildId);
                 if (guild is null)
                     return;
 
@@ -387,22 +411,25 @@ namespace Imgeneus.World.Game.Guild
 
         #region Request join
 
-        /// <summary>
-        /// Dictionary of join requests.
-        /// Key is player id.
-        /// Value is guild id.
-        /// </summary>
-        public static readonly ConcurrentDictionary<uint, uint> JoinRequests = new ConcurrentDictionary<uint, uint>();
-
         public async Task<bool> RequestJoin(uint guildId, Character player)
         {
-            var guild = await _database.Guilds.FindAsync(guildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == guildId);
             if (guild is null)
                 return false;
 
             await RemoveRequestJoin(player.Id);
 
-            JoinRequests.TryAdd(player.Id, guildId);
+            await database.GuildJoinRequests.AddAsync(new DbGuildJoinRequest()
+            {
+                GuildId = guildId,
+                CharacterId = player.Id,
+                CreateTime = DateTime.UtcNow
+            });
+            var ok = await database.SaveChangesAsync() > 0;
+            if (!ok)
+                return false;
 
             foreach (var m in guild.Members.Where(x => x.GuildRank < 3))
             {
@@ -419,21 +446,41 @@ namespace Imgeneus.World.Game.Guild
         /// <inheritdoc/>
         public async Task RemoveRequestJoin(uint playerId)
         {
-            if (JoinRequests.TryRemove(playerId, out var removed))
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var requests = await database.GuildJoinRequests.Where(x => x.CharacterId == playerId).ToListAsync();
+            if (requests.Count == 0)
+                return;
+
+            foreach (var request in requests)
+                database.GuildJoinRequests.Remove(request);
+
+            await database.SaveChangesAsync();
+
+            var guildId = requests.Last().GuildId;
+            var guild = await database.Guilds.Include(x => x.Members).FirstOrDefaultAsync(x => x.Id == guildId);
+            if (guild is null)
+                return;
+
+            foreach (var m in guild.Members.Where(x => x.GuildRank < 3))
             {
-                var guild = await _database.Guilds.FindAsync(removed);
-                if (guild is null)
-                    return;
+                if (!_gameWorld.Players.ContainsKey(m.Id))
+                    continue;
 
-                foreach (var m in guild.Members.Where(x => x.GuildRank < 3))
-                {
-                    if (!_gameWorld.Players.ContainsKey(m.Id))
-                        continue;
-
-                    var guildMember = _gameWorld.Players[m.Id];
-                    guildMember.SendGuildJoinRequestRemove(playerId);
-                }
+                var guildMember = _gameWorld.Players[m.Id];
+                guildMember.SendGuildJoinRequestRemove(playerId);
             }
+        }
+
+        public async Task<IEnumerable<DbGuildJoinRequest>> GetJoinRequests()
+        {
+            if (GuildId == 0)
+                throw new Exception("Can not get join requests, if guild manager is not initialized.");
+
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var requests = await database.GuildJoinRequests.Include(x => x.Character).Where(x => x.GuildId == GuildId).ToListAsync();
+            return requests;
         }
 
         #endregion
@@ -445,7 +492,9 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("Rank of member can not be changed, if guild manager is not initialized.");
 
-            var character = await _database.Characters.FirstOrDefaultAsync(x => x.GuildId == GuildId && x.Id == playerId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var character = await database.Characters.FirstOrDefaultAsync(x => x.GuildId == GuildId && x.Id == playerId);
             if (character is null)
                 return 0;
 
@@ -460,7 +509,7 @@ namespace Imgeneus.World.Game.Guild
             else
                 character.GuildRank--;
 
-            var result = await _database.SaveChangesAsync();
+            var result = await database.SaveChangesAsync();
             return result > 0 ? character.GuildRank : (byte)0;
         }
 
@@ -475,7 +524,9 @@ namespace Imgeneus.World.Game.Guild
                 if (!HasGuild)
                     return false;
 
-                var guild = _database.Guilds.AsNoTracking().FirstOrDefault(x => x.Id == GuildId);
+                var database = _serviceProvider.GetService<IDatabase>();
+
+                var guild = database.Guilds.FirstOrDefault(x => x.Id == GuildId);
                 if (guild is null)
                     return false;
 
@@ -490,7 +541,9 @@ namespace Imgeneus.World.Game.Guild
                 if (!HasGuild)
                     return false;
 
-                var guild = _database.Guilds.AsNoTracking().FirstOrDefault(x => x.Id == GuildId);
+                var database = _serviceProvider.GetService<IDatabase>();
+
+                var guild = database.Guilds.FirstOrDefault(x => x.Id == GuildId);
                 if (guild is null)
                     return false;
 
@@ -511,7 +564,9 @@ namespace Imgeneus.World.Game.Guild
                 return GuildHouseBuyReason.NoGold;
             }
 
-            var guild = await _database.Guilds.FindAsync(GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.FindAsync(GuildId);
             if (guild is null || guild.Rank > 30)
             {
                 return GuildHouseBuyReason.LowRank;
@@ -525,7 +580,7 @@ namespace Imgeneus.World.Game.Guild
             _inventoryManager.Gold = (uint)(_inventoryManager.Gold - _houseConfig.HouseBuyMoney);
 
             guild.HasHouse = true;
-            var count = await _database.SaveChangesAsync();
+            var count = await database.SaveChangesAsync();
 
             return count > 0 ? GuildHouseBuyReason.Ok : GuildHouseBuyReason.Unknown;
         }
@@ -533,7 +588,8 @@ namespace Imgeneus.World.Game.Guild
         ///  <inheritdoc/>
         public byte GetRank(int guildId)
         {
-            var guild = _database.Guilds.Find(guildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+            var guild = database.Guilds.Find(guildId);
             if (guild is null)
                 return 0;
 
@@ -548,7 +604,7 @@ namespace Imgeneus.World.Game.Guild
 
             requiredRank = 30;
 
-            if (GuildMemberRank > 30)
+            if (GuildRank > 30)
                 return false;
 
             var npcInfo = FindNpcInfo(_countryProvider.Country, type, typeId);
@@ -565,7 +621,9 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
 
-            var guild = _database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
             if (guild is null)
                 return false;
 
@@ -582,12 +640,14 @@ namespace Imgeneus.World.Game.Guild
             return currentLevel != null && currentLevel.NpcLevel >= npcInfo.NpcLvl;
         }
 
-        public bool HasNpcLevel(NpcType type, byte level) 
+        public bool HasNpcLevel(NpcType type, byte level)
         {
             if (GuildId == 0)
                 throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
 
-            var guild = _database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
             if (guild is null)
                 return false;
 
@@ -601,7 +661,9 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("NPC level can not be checked, if guild manager is not initialized.");
 
-            var guild = _database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = database.Guilds.Include(x => x.NpcLvls).FirstOrDefault(x => x.Id == GuildId);
             if (guild is null)
                 return 0;
 
@@ -625,7 +687,9 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("NPC list can not be loaded, if guild manager is not initialized.");
 
-            return await _database.GuildNpcLvls.AsNoTracking().Where(x => x.GuildId == GuildId).ToListAsync();
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            return await database.GuildNpcLvls.AsNoTracking().Where(x => x.GuildId == GuildId).ToListAsync();
         }
 
         ///  <inheritdoc/>
@@ -634,11 +698,13 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("NPC can not be upgraded, if guild manager is not initialized.");
 
-            var guild = await _database.Guilds.FindAsync(GuildId);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.FindAsync(GuildId);
             if (guild is null || guild.Rank > 30)
                 return GuildNpcUpgradeReason.LowRank;
 
-            var currentLevel = _database.GuildNpcLvls.FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == npcType && x.Group == npcGroup);
+            var currentLevel = database.GuildNpcLvls.FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == npcType && x.Group == npcGroup);
             if (currentLevel is null && nextLevel != 1) // current npc level is 0
                 return GuildNpcUpgradeReason.OneByOneLvl;
 
@@ -661,15 +727,15 @@ namespace Imgeneus.World.Game.Guild
             }
             else // Remove prevous level.
             {
-                _database.GuildNpcLvls.Remove(currentLevel);
-                await _database.SaveChangesAsync();
+                database.GuildNpcLvls.Remove(currentLevel);
+                await database.SaveChangesAsync();
             }
             currentLevel.NpcLevel++;
 
             guild.Etin -= npcInfo.UpPrice;
-            _database.GuildNpcLvls.Add(currentLevel);
+            database.GuildNpcLvls.Add(currentLevel);
 
-            var count = await _database.SaveChangesAsync();
+            var count = await database.SaveChangesAsync();
 
             return count > 0 ? GuildNpcUpgradeReason.Ok : GuildNpcUpgradeReason.Failed;
         }
@@ -700,7 +766,9 @@ namespace Imgeneus.World.Game.Guild
             if (GuildId == 0)
                 throw new Exception("Linking rate can not be calculated, if guild manager is not initialized.");
 
-            var npc = _database.GuildNpcLvls.AsNoTracking().FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == NpcType.Blacksmith && x.Group == 0);
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var npc = database.GuildNpcLvls.AsNoTracking().FirstOrDefault(x => x.GuildId == GuildId && x.NpcType == NpcType.Blacksmith && x.Group == 0);
             if (npc is null)
                 return (0, 0);
 
@@ -727,7 +795,10 @@ namespace Imgeneus.World.Game.Guild
         public async Task<IList<Item>> ReturnEtin()
         {
             var result = new List<Item>();
-            var guild = await _database.Guilds.FindAsync(GuildId);
+
+            var database = _serviceProvider.GetService<IDatabase>();
+
+            var guild = await database.Guilds.FindAsync(GuildId);
 
             var totalEtin = 0;
 
@@ -762,7 +833,7 @@ namespace Imgeneus.World.Game.Guild
 
             guild.Etin = await GetEtin() + totalEtin;
 
-            var count = await _database.SaveChangesAsync();
+            var count = await database.SaveChangesAsync();
 
             return count > 0 ? result : throw new Exception("Could not save etins to database");
         }

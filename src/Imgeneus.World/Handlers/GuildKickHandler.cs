@@ -57,10 +57,9 @@ namespace Imgeneus.World.Handlers
                         guildPlayer.GuildManager.GuildMembers.Remove(temp);
                 }
 
+                _packetFactory.SendGuildKickMember(guildPlayer.GameSession.Client, true, removedId);
                 _packetFactory.SendGuildMemberRemove(guildPlayer.GameSession.Client, removedId);
             }
-
-            _packetFactory.SendGuildKickMember(client, true, removedId);
         }
     }
 }

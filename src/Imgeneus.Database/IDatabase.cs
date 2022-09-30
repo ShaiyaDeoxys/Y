@@ -85,6 +85,11 @@ namespace Imgeneus.Database
         public DbSet<DbGuildNpcLvl> GuildNpcLvls { get; set; }
 
         /// <summary>
+        /// Join requests to guild.
+        /// </summary>
+        public DbSet<DbGuildJoinRequest> GuildJoinRequests { get; set; }
+
+        /// <summary>
         /// Auction board.
         /// </summary>
         public DbSet<DbMarket> Market { get; set; }

@@ -289,7 +289,7 @@ namespace Imgeneus.World.Packets
         void SendGuildList(IWorldClient client, DbGuild[] guilds);
         void SendGuildMembersOnline(IWorldClient client, List<DbCharacter> members, bool online);
         void SendGuildJoinRequest(IWorldClient client, bool ok);
-        void SendGuildJoinRequestAdd(IWorldClient client, Character character);
+        void SendGuildJoinRequestAdd(IWorldClient client, uint playerId, ushort level, CharacterProfession job, string name);
         void SendGuildJoinRequestRemove(IWorldClient client, uint playerId);
         void SendGuildJoinResult(IWorldClient client, bool ok, uint guildId = 0, byte rank = 9, string name = "");
         void SendGuildUserListAdd(IWorldClient client, DbCharacter character, bool online);

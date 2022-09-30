@@ -182,7 +182,7 @@ namespace Imgeneus.World.Tests
 
 
             var killsManager = new KillsManager(new Mock<ILogger<KillsManager>>().Object, databaseMock.Object, healthManager, countryProvider, mapProvider, movementManager, levelProvider, statsManager, inventoryManager);
-            var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, databaseMock.Object, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object);
+            var guildManager = new GuildManager(new Mock<ILogger<GuildManager>>().Object, guildConfiguration, guildHouseConfiguration, gameWorldMock.Object, timeMock.Object, inventoryManager, partyManager, countryProvider, etinMock.Object, null);
             guildManager.Init(_characterId);
 
             var linkingManager = new LinkingManager(new Mock<ILogger<LinkingManager>>().Object, definitionsPreloader.Object, inventoryManager, statsManager, healthManager, speedManager, guildManager, mapProvider, enchantConfig.Object, itemCreateConfig.Object, countryProvider, BlessManager);

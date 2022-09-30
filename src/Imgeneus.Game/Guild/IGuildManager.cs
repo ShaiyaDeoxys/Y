@@ -3,6 +3,7 @@ using Imgeneus.World.Game.Inventory;
 using Imgeneus.World.Game.Player;
 using Imgeneus.World.Game.Session;
 using Parsec.Shaiya.NpcQuest;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,7 +16,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Owner guild id.
         /// </summary>
-        uint GuildId { get; set; }
+        uint GuildId { get; }
 
         /// <summary>
         /// Bool indicator, that shows if character is guild member.
@@ -25,7 +26,7 @@ namespace Imgeneus.World.Game.Guild
         /// <summary>
         /// Current guild name.
         /// </summary>
-        string GuildName { get; set; }
+        string GuildName { get; }
 
         /// <summary>
         /// Character rank in the current guild.
@@ -36,6 +37,16 @@ namespace Imgeneus.World.Game.Guild
         /// Is it guild creator?
         /// </summary>
         bool IsGuildMaster { get; }
+
+        /// <summary>
+        /// Sets guild info and raises changed event.
+        /// </summary>
+        void SetGuildInfo(uint guildId, string name, byte memberRank);
+
+        /// <summary>
+        /// Event is fired, when player enters/leaves the guild.
+        /// </summary>
+        event Action<uint> OnGuildInfoChanged;
 
         /// <summary>
         /// Global guild rank.
@@ -110,7 +121,7 @@ namespace Imgeneus.World.Game.Guild
         /// Gets guild members.
         /// </summary>
         /// <returns>collection of memebers</returns>
-        Task<IEnumerable<DbCharacter>> GetMemebers(int guildId);
+        Task<ICollection<DbCharacter>> GetMemebers(uint guildId);
 
         /// <summary>
         /// Player requests to join a guild.
@@ -122,6 +133,11 @@ namespace Imgeneus.World.Game.Guild
         /// Removes player from join requests.
         /// </summary>
         Task RemoveRequestJoin(uint playerId);
+
+        /// <summary>
+        /// Current join requests.
+        /// </summary>
+        Task<IEnumerable<DbGuildJoinRequest>> GetJoinRequests();
 
         /// <summary>
         /// Change guild rank of character.

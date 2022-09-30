@@ -2014,10 +2014,10 @@ namespace Imgeneus.World.Packets
             client.Send(packet);
         }
 
-        public void SendGuildJoinRequestAdd(IWorldClient client, Character character)
+        public void SendGuildJoinRequestAdd(IWorldClient client, uint playerId, ushort level, CharacterProfession job, string name)
         {
             using var packet = new ImgeneusPacket(PacketType.GUILD_JOIN_LIST_ADD);
-            packet.Write(new GuildJoinUserUnit(character).Serialize());
+            packet.Write(new GuildJoinUserUnit(playerId, level, job, name).Serialize());
             client.Send(packet);
         }
 

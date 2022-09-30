@@ -70,7 +70,7 @@ namespace Imgeneus.World.Handlers
             var notOnline = new List<DbCharacter>();
             foreach (var m in _guildManager.GuildMembers)
             {
-                if (_gameWorld.Players.ContainsKey(m.Id))
+                if (_gameWorld.Players.ContainsKey(m.Id) || character.Id == m.Id)
                     online.Add(m);
                 else
                     notOnline.Add(m);
@@ -107,7 +107,16 @@ namespace Imgeneus.World.Handlers
             _packetFactory.SendTeleportSavedPositions(client, character.TeleportationManager.SavedPositions);
 
             if (character.GuildManager.HasGuild)
+            {
                 _packetFactory.SendGuildNpcs(client, await character.GuildManager.GetGuildNpcs());
+                
+                if (character.GuildManager.GuildMemberRank <= 3)
+                {
+                    var requests = await _guildManager.GetJoinRequests();
+                    foreach (var request in requests)
+                        _packetFactory.SendGuildJoinRequestAdd(client, request.CharacterId, request.Character.Level, request.Character.Class, request.Character.Name);
+                }
+            }
 
 #if !EP8_V2
             _packetFactory.SendAccountPoints(client, character.AdditionalInfoManager.Points); // WARNING: This is necessary if you have an in-game item mall.

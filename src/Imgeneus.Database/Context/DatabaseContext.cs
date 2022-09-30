@@ -37,6 +37,8 @@ namespace Imgeneus.Database.Context
 
         public DbSet<DbGuildNpcLvl> GuildNpcLvls { get; set; }
 
+        public DbSet<DbGuildJoinRequest> GuildJoinRequests { get; set; }
+
         public DbSet<DbMarket> Market { get; set; }
 
         public DbSet<DbMarketItem> MarketItems { get; set; }
@@ -66,6 +68,7 @@ namespace Imgeneus.Database.Context
                                           .OnDelete(DeleteBehavior.ClientSetNull);
 
             modelBuilder.Entity<DbGuildNpcLvl>().HasKey(x => new { x.GuildId, x.NpcType, x.Group, x.NpcLevel });
+            modelBuilder.Entity<DbGuildJoinRequest>().HasKey(x => new { x.CharacterId, x.GuildId });
 
             modelBuilder.Entity<DbCharacterSavePositions>().HasKey(x => new { x.CharacterId, x.Slot });
 

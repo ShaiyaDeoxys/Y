@@ -19,12 +19,12 @@ namespace Imgeneus.World.Serialization
         [FieldOrder(3), FieldLength(21)]
         public string Name { get; }
 
-        public GuildJoinUserUnit(Character character)
+        public GuildJoinUserUnit(uint id, ushort level, CharacterProfession job, string name)
         {
-            Id = character.Id;
-            Level = character.LevelProvider.Level;
-            Job = character.AdditionalInfoManager.Class;
-            Name = character.AdditionalInfoManager.Name;
+            Id = id;
+            Level = level;
+            Job = job;
+            Name = name;
         }
     }
 }

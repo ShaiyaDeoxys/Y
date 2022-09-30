@@ -30,15 +30,17 @@ namespace Imgeneus.World.Handlers
 
             _guildManager.CreationRequest.Acceptance[_gameSession.Character.Id] = packet.Ok;
 
+            var request = _guildManager.CreationRequest;
+
             if (!packet.Ok)
             {
-                foreach (var m in _guildManager.CreationRequest.Members)
+                foreach (var m in request.Members)
                 {
                     _packetFactory.SendGuildCreateFailed(m.GameSession.Client, GuildCreateFailedReason.PartyMemberRejected);
-                    m.GuildManager.CreationRequest.Dispose();
                     m.GuildManager.CreationRequest = null;
                 }
 
+                request.Dispose();
                 return;
             }
 
@@ -49,39 +51,37 @@ namespace Imgeneus.World.Handlers
             var guild = await _guildManager.TryCreateGuild(_guildManager.CreationRequest.Name, _guildManager.CreationRequest.Message, _guildManager.CreationRequest.GuildCreatorId);
             if (guild is null) // Creation failed.
             {
-                foreach (var m in _guildManager.CreationRequest.Members)
+                foreach (var m in request.Members)
                 {
                     _packetFactory.SendGuildCreateFailed(m.GameSession.Client, GuildCreateFailedReason.Unknown);
-                    m.GuildManager.CreationRequest.Dispose();
                     m.GuildManager.CreationRequest = null;
                 }
-
+                request.Dispose();
                 return;
             }
 
-            foreach (var m in _guildManager.CreationRequest.Members)
+            foreach (var m in request.Members)
             {
                 byte rank = 9;
                 if (m.Id == _guildManager.CreationRequest.GuildCreatorId)
                     rank = 1;
 
-                m.GuildManager.GuildId = guild.Id;
-                m.GuildManager.GuildName = guild.Name;
-                m.GuildManager.GuildMemberRank = rank;
+                m.GuildManager.SetGuildInfo(guild.Id, guild.Name, rank);
                 m.WarehouseManager.GuildId = guild.Id;
 
                 await m.GuildManager.TryAddMember(m.Id, rank);
             }
+            guild.Members = await _guildManager.GetMemebers(guild.Id);
 
-            foreach (var m in _guildManager.CreationRequest.Members)
+            foreach (var m in request.Members)
             {
                 m.GuildManager.GuildMembers.AddRange(guild.Members);
                 _packetFactory.SendGuildCreateSuccess(m.GameSession.Client, guild.Id, m.GuildManager.GuildMemberRank, guild.Name, guild.Message);
-                _packetFactory.SendGuildMembersOnline(client, m.GuildManager.GuildMembers, true);
+                _packetFactory.SendGuildMembersOnline(m.GameSession.Client, m.GuildManager.GuildMembers, true);
 
-                m.GuildManager.CreationRequest.Dispose();
                 m.GuildManager.CreationRequest = null;
             }
+            request.Dispose();
 
             foreach (var player in _gameWorld.Players.Values.ToList())
                 _packetFactory.SendGuildListAdd(player.GameSession.Client, guild);

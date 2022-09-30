@@ -82,7 +82,7 @@ namespace Imgeneus.World.Game.Player
 
         public void SendGuildMemberIsOffline(uint playerId) => _packetFactory.SendGuildMemberIsOffline(GameSession.Client, playerId);
 
-        public void SendGuildJoinRequestAdd(Character character) => _packetFactory.SendGuildJoinRequestAdd(GameSession.Client, character);
+        public void SendGuildJoinRequestAdd(Character character) => _packetFactory.SendGuildJoinRequestAdd(GameSession.Client, character.Id, character.LevelProvider.Level, character.AdditionalInfoManager.Class, character.AdditionalInfoManager.Name);
 
         public void SendGuildJoinRequestRemove(uint playerId) => _packetFactory.SendGuildJoinRequestRemove(GameSession.Client, playerId);
 

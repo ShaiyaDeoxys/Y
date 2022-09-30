@@ -32,7 +32,7 @@ namespace Imgeneus.World.Handlers
 
             await _guildManager.RemoveRequestJoin(packet.CharacterId);
 
-            var onlinePlayer = _gameWorld.Players[packet.CharacterId];
+            _gameWorld.Players.TryGetValue(packet.CharacterId, out var onlinePlayer);
             if (!packet.Ok)
             {
                 if (onlinePlayer != null)
@@ -64,9 +64,7 @@ namespace Imgeneus.World.Handlers
             // Send additional info to new member, if he is online.
             if (onlinePlayer != null)
             {
-                onlinePlayer.GuildManager.GuildId = _guildManager.GuildId;
-                onlinePlayer.GuildManager.GuildName = _guildManager.GuildName;
-                onlinePlayer.GuildManager.GuildMemberRank = 9;
+                onlinePlayer.GuildManager.SetGuildInfo(_guildManager.GuildId, _guildManager.GuildName, 9);
                 onlinePlayer.GuildManager.GuildMembers.AddRange(_guildManager.GuildMembers);
                 onlinePlayer.WarehouseManager.GuildId = _guildManager.GuildId;
 

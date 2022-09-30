@@ -104,7 +104,7 @@ namespace Imgeneus.World.Handlers
                 }
 
                 if (player.Map is IGuildMap)
-                    _guildManager.GuildId = player.GuildManager.GuildId;
+                    _guildManager.SetGuildInfo(player.GuildManager.GuildId, player.GuildManager.GuildName, 9);
 
                 _teleportationManager.Teleport(player.Map.Id, player.PosX, player.PosY, player.PosZ, true);
 
