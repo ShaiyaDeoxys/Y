@@ -97,3 +97,5 @@ Our main goal is learning, clients are used only for testing. We are not trying 
 Issues are usually marked as `// TODO: <some comment>` throughout the code base.
 
 Find the current state of development [here](https://trello.com/b/lHvyQDuH/shaiya-imgeneus).
+
+Project website [here](https://shaiya.imgeneus.online/).
