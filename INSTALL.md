@@ -111,7 +111,7 @@ When you register the first user, it will automatically become the **admin**.
 ### 8. Run the game client
 
 Download the client from:
-[https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz](https://www.elitepvpers.com/link/?https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz)
+[https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz](https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz)
 
 Start the game from the console:
 
