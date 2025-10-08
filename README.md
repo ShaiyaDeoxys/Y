@@ -53,7 +53,7 @@ Any game feature must have a corresponding unit test.
 
 #### Client versions support
 Our main goal is learning, clients are used only for testing. We are not trying to harm any server or dev team. That's why we are not exposing any clients or server name, where these clients are used. Next versions supported:
-* EP 8 (ps0032). [https://www.elitepvpers.com/link/?https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz](https://www.elitepvpers.com/link/?https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz)
+* EP 8 (ps0032). [https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz](https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz)
 
 ## Results
 ![image1](images/image1.JPG?raw=true "Title")
