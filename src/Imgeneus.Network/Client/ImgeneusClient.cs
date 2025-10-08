@@ -43,6 +43,12 @@ namespace Imgeneus.Network.Client
                 return;
             }
 
+            if (packet.Length == 0)
+            {
+                _logger.LogWarning("Received empty packet from {0}", Socket.RemoteEndPoint);
+                return;
+            }
+
             try
             {
                 packetType = (PacketType)packet.Read<ushort>();
