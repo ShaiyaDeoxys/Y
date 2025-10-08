@@ -8,24 +8,6 @@ It's not about playing a game or competing with any services provided by Aeriaga
 
 This repo also uses the best parts of these repos: [Drakkus/ShaiyaGenesis](https://github.com/Drakkus/ShaiyaGenesis), [Origin](https://github.com/aosyatnik/Origin) and original Imgeneus (removed by creator).
 
-## Build and run
-1. Build the solution.
-2. Create 3 files `appsettings.Development.json` in Imgeneus.Login & Imgeneus.World & Imgeneus.Database projects. Override default configs with your development config. E.g. you can provide your password as following:
-```
-{
-  "Database": {
-    "Password": "your_password"
-  }
-}
-```
-These files are added to the ignore list, so you can be sure, that you won't commit any of your credentials.
-
-3. Add to folder `config\SData` next files: `DBItemData.SData`, `NpcQuest.SData`. You can find these files in os game data.saf. If you can not open EP 8 data.saf file, please check [Parsec project](https://github.com/matigramirez/Parsec).
-
-4. Run Imgeneus.Login & Imgeneus.World projects. For this right click on solution => Properties => Startup Project => Multiple startup projects => Imgeneus.Login - Start; Imgeneus.World - Start.
-
-__You are not dev, feel lost but still want to start?__  Check out our [wiki page](https://github.com/aosyatnik/Imgeneus/wiki/Setup-for-non-devs).
-
 ## Solution description
 
 ##### Imgeneus.Core
@@ -71,9 +53,7 @@ Any game feature must have a corresponding unit test.
 
 #### Client versions support
 Our main goal is learning, clients are used only for testing. We are not trying to harm any server or dev team. That's why we are not exposing any clients or server name, where these clients are used. Next versions supported:
-* EP 8, you can find it on e**rs.com. In code marked as `EP8_V1`. __No longer supported__
-* EP 8, the newest version of private server. In code marked as `EP8_V2`.
-* EP 8, the latest version of the Shaiya US client. You can download the client from the official publisher. Marked as `SHAIYA_US` in the build configuration.
+* EP 8 (ps0032). [https://www.elitepvpers.com/link/?https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz](https://www.elitepvpers.com/link/?https://archive.openshaiya.org/api/build/shaiya-ga-ps0032.tar.gz)
 
 ## Results
 ![image1](images/image1.JPG?raw=true "Title")
@@ -97,5 +77,3 @@ Our main goal is learning, clients are used only for testing. We are not trying 
 Issues are usually marked as `// TODO: <some comment>` throughout the code base.
 
 Find the current state of development [here](https://trello.com/b/lHvyQDuH/shaiya-imgeneus).
-
-Project website [here](https://shaiya.imgeneus.online/).
