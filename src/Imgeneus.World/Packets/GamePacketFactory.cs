@@ -1,6 +1,6 @@
 ﻿#if EP8_V1
 using Imgeneus.World.Serialization.EP_8_V1;
-#elif EP8_V2
+#elif SHAIYA_EG
 using Imgeneus.World.Serialization.EP_8_V2;
 #else
 using Imgeneus.World.Serialization.SHAIYA_US;
@@ -335,7 +335,7 @@ namespace Imgeneus.World.Packets
         {
             using var packet = new ImgeneusPacket(PacketType.INVENTORY_MOVE_ITEM);
 
-#if EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
+#if SHAIYA_EG || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
             packet.Write(0); // Unknown int in V2.
 #endif
             packet.Write(new MovedItem(sourceItem).Serialize());
@@ -1876,13 +1876,13 @@ namespace Imgeneus.World.Packets
             using var packet = new ImgeneusPacket(packetType);
             packet.Write(senderId);
 
-#if EP8_V2
+#if SHAIYA_EG
             packet.WriteByte((byte)(message.Length + 1));
 #endif
 
             packet.WriteByte((byte)message.Length);
 
-#if (EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
+#if (SHAIYA_EG || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
             packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);
@@ -1900,13 +1900,13 @@ namespace Imgeneus.World.Packets
 
             packet.WriteString(senderName, 21);
 
-#if EP8_V2
+#if SHAIYA_EG
             packet.WriteByte((byte)(message.Length + 1));
 #endif
 
             packet.WriteByte((byte)message.Length);
 
-#if (EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
+#if (SHAIYA_EG || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
             packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);
@@ -2541,7 +2541,7 @@ namespace Imgeneus.World.Packets
             packet.Write(true); // Is open?
             packet.WriteByte((byte)(shopName.Length + 1));
 
-#if (EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
+#if (SHAIYA_EG || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG)
             packet.WriteString(shopName, shopName.Length + 1, Encoding.Unicode);
 #else
             packet.WriteString(shopName, shopName.Length + 1);

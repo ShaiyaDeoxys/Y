@@ -118,7 +118,7 @@ namespace Imgeneus.World.Handlers
                 }
             }
 
-#if !EP8_V2
+#if !SHAIYA_EG
             _packetFactory.SendAccountPoints(client, character.AdditionalInfoManager.Points); // WARNING: This is necessary if you have an in-game item mall.
 #endif
 

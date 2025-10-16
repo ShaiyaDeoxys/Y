@@ -104,7 +104,7 @@ namespace Imgeneus.World.Game.Notice
 
             packet.WriteByte((byte)message.Length);
 
-#if EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
+#if SHAIYA_EG || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
             packet.WriteString(message, message.Length, Encoding.Unicode);
 #else
             packet.WriteString(message);

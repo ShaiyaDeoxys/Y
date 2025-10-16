@@ -79,7 +79,7 @@ namespace Imgeneus.Network.Serialization
 
         public CharacterDetails(Character character)
         {
-#if !EP8_V2 // ep8 V2 crashes if these values are set.
+#if !SHAIYA_EG // ep8 V2 crashes if these values are set.
             Strength = character.StatsManager.Strength;
             Dexterity = character.StatsManager.Dexterity;
             Rec = character.StatsManager.Reaction;

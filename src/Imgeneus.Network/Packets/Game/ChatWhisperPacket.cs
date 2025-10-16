@@ -13,13 +13,13 @@ namespace Imgeneus.Network.Packets.Game
         {
             TargetName = packetStream.ReadString(21);
 
-#if EP8_V2
+#if SHAIYA_EG
             var length0 = packetStream.Read<byte>();
 #endif
 
             var messageLength = packetStream.Read<byte>();
 
-#if EP8_V2 || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
+#if SHAIYA_EG || SHAIYA_US || SHAIYA_US_DEBUG || DEBUG
             Message = packetStream.ReadString(messageLength, Encoding.Unicode);
 #else
             Message = packetStream.ReadString(messageLength);

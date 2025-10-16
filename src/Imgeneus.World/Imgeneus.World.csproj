@@ -12,6 +12,10 @@
 	<DefineConstants>SHAIYA_US</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='SHAIYA_EG'">
+    <DefineConstants>$(DefineConstants);SHAIYA_EG</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="BinarySerializer" Version="8.6.2.2" />
     <PackageReference Include="Blazor.Extensions.Canvas" Version="1.1.1" />

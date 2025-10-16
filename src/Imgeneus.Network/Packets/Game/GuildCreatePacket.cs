@@ -13,7 +13,7 @@ namespace Imgeneus.Network.Packets.Game
         {
             Name = packetStream.ReadString(25);
 
-#if EP8_V2 || SHAIYA_US || DEBUG
+#if SHAIYA_EG || SHAIYA_US || DEBUG
             Message = packetStream.ReadString(25, Encoding.Unicode);
 #else
             Message = packetStream.ReadString(25);

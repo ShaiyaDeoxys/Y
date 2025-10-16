@@ -19,7 +19,7 @@ namespace Imgeneus.World.SelectionScreen
     /// <inheritdoc/>
     public class SelectionScreenManager : ISelectionScreenManager
     {
-#if EP8_V2
+#if SHAIYA_EG
         public const byte MaxCharacterNumber = 6;
 #else
         public const byte MaxCharacterNumber = 5;
