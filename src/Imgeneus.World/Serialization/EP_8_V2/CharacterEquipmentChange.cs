@@ -7,7 +7,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
     public class CharacterEquipmentChange : BaseSerializable
     {
         [FieldOrder(0)]
-        public int CharacterId;
+        public uint CharacterId;
 
         [FieldOrder(1)]
         public byte Slot;
@@ -36,7 +36,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
         [FieldOrder(9)]
         public byte[] CloakInfo = new byte[6];
 
-        public CharacterEquipmentChange(int characterId, byte slot, Item item)
+        public CharacterEquipmentChange(uint characterId, byte slot, Item item)
         {
             CharacterId = characterId;
             Slot = slot;

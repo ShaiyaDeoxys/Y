@@ -10,7 +10,7 @@ namespace Imgeneus.Network.Packets.Game
         public void Deserialize(ImgeneusPacket packetStream)
         {
 #if EP8_V2
-            var length0 = packet.packetStream<byte>();
+            var length0 = packetStream.Read<byte>();
 #endif
             var messageLength = packetStream.Read<byte>();
 
