@@ -71,22 +71,22 @@ namespace Imgeneus.World.Serialization.EP_8_V2
         public ushort StaminaPoints;
 
         [FieldOrder(20)]
-        public byte[] EquipmentItemsType = new byte[20];
+        public byte[] EquipmentItemsType = new byte[22];
 
         [FieldOrder(21)]
-        public byte[] EquipmentItemsTypeId = new byte[20];
+        public byte[] EquipmentItemsTypeId = new byte[22];
 
         [FieldOrder(22)]
-        public bool[] EquipmentItemHasColor = new bool[17];
+        public bool[] EquipmentItemHasColor = new bool[22];
 
         [FieldOrder(23)]
-        public int UnknownInt = 0;
+        public int UnknownInt = 114;
 
         [FieldOrder(24)]
-        public DyeColorSerialized[] Colors = new DyeColorSerialized[17];
+        public DyeColorSerialized[] Colors = new DyeColorSerialized[22];
 
         [FieldOrder(25)]
-        public byte[] UnknownBytes = new byte[445];
+        public byte[] UnknownBytes = new byte[508];
 
         [FieldOrder(26)]
         public byte[] CloakInfo = new byte[6];
@@ -127,7 +127,7 @@ namespace Imgeneus.World.Serialization.EP_8_V2
             IsRename = character.IsRename;
 
             var equipmentItems = character.Items.Where(item => item.Bag == 0);
-            for (var i = 0; i < 17; i++)
+            for (var i = 0; i < 22; i++)
             {
                 var item = equipmentItems.FirstOrDefault(itm => itm.Slot == i);
                 if (item != null)
