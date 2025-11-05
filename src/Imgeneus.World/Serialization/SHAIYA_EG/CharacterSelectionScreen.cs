@@ -3,7 +3,7 @@ using Imgeneus.Database.Entities;
 using Imgeneus.Network.Serialization;
 using System.Linq;
 
-namespace Imgeneus.World.Serialization.EP_8_V2
+namespace Imgeneus.World.Serialization.SHAIYA_EG
 {
     /// <summary>
     /// Serializer for character selection screen.

@@ -5,7 +5,7 @@ using Imgeneus.Network.Serialization;
 using Imgeneus.World.Game.Country;
 using Imgeneus.World.Game.Player;
 
-namespace Imgeneus.World.Serialization.EP_8_V2
+namespace Imgeneus.World.Serialization.SHAIYA_EG
 {
     public class CharacterShape : BaseSerializable
     {
@@ -45,35 +45,32 @@ namespace Imgeneus.World.Serialization.EP_8_V2
         [FieldOrder(11)]
         public uint Kills { get; }
 
-        [FieldOrder(12)]
-        public EquipmentItem[] EquipmentItems { get; } = new EquipmentItem[17];
-
-        [FieldOrder(13)]
-        public byte[] UnknownBytes3 { get; } = new byte[9];
-
-        [FieldOrder(14)]
-        public bool[] EquipmentItemHasColor { get; } = new bool[17];
-
-        [FieldOrder(15)]
-        public int UnknownInt { get; }
-
-        [FieldOrder(16)]
-        public DyeColorSerialized[] EquipmentItemColor { get; } = new DyeColorSerialized[17];
-
-        [FieldOrder(17)]
-        public byte[] UnknownBytes2 { get; } = new byte[451];
-
-        [FieldOrder(18), FieldLength(21)]
+        [FieldOrder(12), FieldLength(21)]
         public string Name;
 
-        [FieldOrder(19), FieldLength(21)]
+        [FieldOrder(13), FieldLength(21)]
         public string Name2;
 
-        [FieldOrder(20)]
-        public byte[] UnknownBytes4 = new byte[29];
+        [FieldOrder(14)]
+        public EquipmentItem[] EquipmentItems { get; } = new EquipmentItem[22];
 
-        [FieldOrder(21)]
-        public byte[] GuildName = new byte[25];
+        [FieldOrder(15)]
+        public bool[] EquipmentItemHasColor { get; } = new bool[22];
+
+        [FieldOrder(16)]
+        public DyeColorSerialized[] EquipmentItemColor { get; } = new DyeColorSerialized[22];
+
+        [FieldOrder(17)]
+        public byte[] UnknownBytes2 { get; } = new byte[431];
+
+        [FieldOrder(18)]
+        public byte GuildFrame { get; } // Guild frames: 0 non, 1 crown icon, 2 wing icon, >=3 star icon. 
+
+        [FieldOrder(19)]
+        public byte[] UnknownBytes4 = new byte[27];
+
+        [FieldOrder(20), FieldLength(25)]
+        public string GuildName;
 
         public CharacterShape(Character character)
         {
@@ -88,10 +85,12 @@ namespace Imgeneus.World.Serialization.EP_8_V2
             Gender = character.AdditionalInfoManager.Gender;
             Mode = character.AdditionalInfoManager.Grow;
             Kills = character.KillsManager.Kills;
-            Name = character.AdditionalInfoManager.Name;
-            Name2 = character.AdditionalInfoManager.Name; // not sure why, but server definitely sends name twice
+            Name = character.AdditionalInfoManager.FakeName is null ? character.AdditionalInfoManager.Name : character.AdditionalInfoManager.FakeName;
+            Name2 = character.AdditionalInfoManager.FakeName is null ? character.AdditionalInfoManager.Name : character.AdditionalInfoManager.FakeName; // not sure why, but server definitely sends name twice
+            GuildFrame = (byte)(character.GuildManager.IsGuildMaster ? 1 : 0);
+            GuildName = character.AdditionalInfoManager.FakeGuildName is null ? character.GuildManager.GuildName : character.AdditionalInfoManager.FakeGuildName;
 
-            for (byte i = 0; i < 17; i++)
+            for (byte i = 0; i < 22; i++)
             {
                 character.InventoryManager.InventoryItems.TryGetValue((0, i), out var item);
                 EquipmentItems[i] = new EquipmentItem(item);
@@ -122,12 +121,6 @@ namespace Imgeneus.World.Serialization.EP_8_V2
             else
             {
                 PartyDefinition = 0;
-            }
-
-            var chars = character.GuildManager.GuildName.ToCharArray();
-            for (var i = 0; i < chars.Length; i++)
-            {
-                GuildName[i] = (byte)chars[i];
             }
         }
     }

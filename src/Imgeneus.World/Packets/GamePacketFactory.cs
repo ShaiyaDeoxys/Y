@@ -1,7 +1,7 @@
 ﻿#if EP8_V1
 using Imgeneus.World.Serialization.EP_8_V1;
 #elif SHAIYA_EG
-using Imgeneus.World.Serialization.EP_8_V2;
+using Imgeneus.World.Serialization.SHAIYA_EG;
 #else
 using Imgeneus.World.Serialization.SHAIYA_US;
 #endif
@@ -302,13 +302,18 @@ namespace Imgeneus.World.Packets
         #region Inventory
         public void SendInventoryItems(IWorldClient client, ICollection<Item> inventoryItems)
         {
-            var steps = inventoryItems.Count / 50;
-            var left = inventoryItems.Count % 50;
+            // We can sent not more then X items in 1 packet.
+            // Different clients have different packet capacity.
+            // Some can handle up to 50 items in 1 packet, others can handle only 5.
+            var itemChunk = 5;
+
+            var steps = inventoryItems.Count / itemChunk;
+            var left = inventoryItems.Count % itemChunk;
 
             for (var i = 0; i <= steps; i++)
             {
-                var startIndex = i * 50;
-                var length = i == steps ? left : 50;
+                var startIndex = i * itemChunk;
+                var length = i == steps ? left : itemChunk;
                 var endIndex = startIndex + length;
 
                 using var packet = new ImgeneusPacket(PacketType.CHARACTER_ITEMS);
